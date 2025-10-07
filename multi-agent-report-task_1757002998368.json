@@ -1,0 +1,699 @@
+{
+  "taskId": "task_1757002998368",
+  "timestamp": "2025-09-04T16:24:47.886Z",
+  "orchestrator": {
+    "agent": {
+      "name": "Deployment Master",
+      "role": "orchestrator",
+      "responsibilities": [
+        "coordination",
+        "validation",
+        "dependency-management"
+      ],
+      "context7_patterns": [
+        "deployment",
+        "ci-cd",
+        "kubernetes"
+      ],
+      "priority": 1,
+      "parallel": false
+    },
+    "result": "Loaded cached credentials.\nExcellent. Analyzing the TrustBoost deployment task. Loading Context7 patterns and formulating the orchestration strategy based on the mandatory multi-agent, multi-task execution model.\n\nHere is the comprehensive plan for coordinating the six specialist agents.\n\n---\n\n### 1. AGENT COORDINATION PLAN\n\nThis plan is structured in four weekly sprints, culminating in the final deployment. Parallel execution is prioritized from Day 1.\n\n**Phase 1: Foundation & Parallel Kick-off (J1 - J7)**\n*   **DevOps Agent (Lead Task):** Immediately initialize the GitHub repository. Configure Vercel project linking and set up the initial CI/CD pipeline using `/actions/starter-workflows`. This pipeline must include placeholders for testing, vulnerability scanning, and Lighthouse checks. A \"Hello World\" Next.js app should be deployable to a preview environment by J3.\n*   **Design System Agent:** Begin development of the Storybook component library in parallel. Focus on core UI elements (buttons, forms, layout) required for commercial and onboarding pages.\n*   **Testing & QA Agent:** Set up the Playwright test environment. Write initial E2E tests for the empty application shell and user authentication flow stubs. Integrate test execution into the DevOps agent's CI pipeline.\n*   **Business Agent:** Draft wireframes and copy for all commercial and onboarding pages. Define the user flow for the <5min onboarding goal.\n*   **Legal Agent:** Draft the Privacy Policy and Terms of Service based on GDPR requirements. Create a compliance checklist for the Business agent's pages.\n*   **Performance Agent:** Establish performance budgets using Lighthouse. Configure Lighthouse CI to run on every Vercel preview deployment, reporting scores back to pull requests.\n\n**Phase 2: Integration & Initial Build (J8 - J14)**\n*   The core activity is the integration of front-end components. The **Business Agent** provides requirements to a development team (simulated or real) which uses components from the **Design System Agent**.\n*   **DevOps Agent:** Refines the CI/CD pipeline to include Dockerized build steps using `/docker/metadata-action` for consistent, versioned builds before deploying to Vercel.\n*   **Testing & QA Agent:** Expands the E2E test suite to cover the newly integrated commercial pages and onboarding flow. All tests must pass in the preview environment.\n\n**Phase 3: Optimization & Compliance (J15 - J21)**\n*   **Performance Agent (Lead Task):** Actively analyze Lighthouse reports from preview deployments. Create specific optimization tasks (e.g., image compression, code splitting) and assign them.\n*   **Legal Agent:** Reviews all deployed pages in the preview environment against the GDPR checklist. Provides mandatory changes for compliance.\n*   **Testing & QA Agent:** Adds tests for accessibility (A11y) and legal requirements (e.g., \"assert cookie banner is visible\").\n*   **Design System Agent:** Refines components based on feedback from performance and testing agents.\n\n**Phase 4: Finalization & Go-Live (J22 - J28)**\n*   This phase is a feature-freeze period.\n*   **Testing & QA Agent (Lead Task):** Executes a full regression suite, including security, performance, and accessibility checks.\n*   **DevOps Agent:** Implements final security hardening on the CI/CD pipeline and Vercel project settings. Conducts a final vulnerability scan.\n*   **All Agents:** Provide final sign-off on their respective success criteria. The **Orchestrator** makes the Go/No-Go decision based on this input.\n\n### 2. DEPENDENCY MAPPING\n\n*   **Testing & QA Agent** depends on:\n    *   **DevOps Agent:** For a stable CI environment to run tests.\n    *   **Business Agent:** For user flows and pages to create tests for.\n    *   **Design System Agent:** For component specifications to write selectors.\n\n*   **DevOps Agent** depends on:\n    *   **Testing & QA Agent:** For the test commands to integrate into the CI pipeline.\n    *   **Performance Agent:** For the Lighthouse CI configuration.\n\n*   **Business Agent** depends on:\n    *   **Design System Agent:** For UI components to build pages.\n    *   **Legal Agent:** For compliance requirements before finalizing page content.\n\n*   **Performance Agent** depends on:\n    *   **DevOps Agent:** For preview deployments to analyze.\n    *   **Business Agent:** For key pages and user flows to target for optimization.\n\n*   **Design System Agent:** Largely independent initially, but later depends on feedback from **Testing** and **Performance** agents for component refinement.\n\n*   **Legal Agent:** Largely independent initially, but later depends on the **Business Agent** providing pages for review.\n\n### 3. SUCCESS CRITERIA (Per Agent)\n\n*   **Testing & QA Agent:**\n    *   KPI: >95% E2E test coverage for critical user paths.\n    *   Metric: Zero blocking bugs found during the final validation checkpoint (J28).\n\n*   **Design System Agent:**\n    *   KPI: 100% of core components are documented in Storybook.\n    *   Metric: All components achieve WCAG 2.1 AA compliance.\n\n*   **DevOps Agent:**\n    *   KPI: End-to-end deployment time (commit to Vercel deployment) is <10 minutes.\n    *   Metric: Production uptime is 99.9% (monitored post-deployment). 0 critical vulnerabilities reported by integrated security scanners.\n\n*   **Business Agent:**\n    *   KPI: Onboarding user flow can be completed in <5 minutes.\n    *   Metric: All specified commercial pages are deployed and accessible.\n\n*   **Legal Agent:**\n    *   KPI: All public-facing pages pass the GDPR compliance checklist.\n    *   Metric: Privacy Policy and ToS are published and correctly linked in the application footer.\n\n*   **Performance Agent:**\n    *   KPI: Lighthouse score is >95 for the homepage, pricing, and start of the onboarding flow.\n    *   Metric: All Core Web Vitals (LCP, FID, CLS) are in the \"Good\" category on key pages.\n\n### 4. VALIDATION CHECKPOINTS (Gemini Reviews)\n\n*   **J7 - Foundation Review:**\n    *   **Gate:** A Vercel preview URL is available. The CI pipeline runs successfully, even if tests are minimal.\n    *   **Review:** Verify the basic `/vercel/next.js` and `/actions/starter-workflows` patterns are correctly implemented.\n\n*   **J14 - Integration Gate:**\n    *   **Gate:** The first version of the onboarding flow is deployed to preview. E2E tests from the QA agent run automatically in the CI pipeline.\n    *   **Review:** Assess the dependency flow between Design System, Business, and QA agents.\n\n*   **J21 - Feature Freeze & Optimization Review:**\n    *   **Gate:** All features are code-complete. The application is deployed to a staging environment.\n    *   **Review:** Verify that Lighthouse scores are meeting the target and legal content is integrated.\n\n*   **J28 - Go/No-Go Decision:**\n    *   **Gate:** All agents submit their final reports confirming they have met their success criteria.\n    *   **Review:** Final check of all KPIs and metrics. Authorize production deployment.\n\n### 5. RISK ASSESSMENT\n\n*   **Risk 1: Dependency Bottleneck on DevOps.**\n    *   **Description:** The DevOps agent fails to provide a stable CI/CD and preview environment early, blocking all other agents.\n    *   **Mitigation:** This is the highest priority task (Day 1). The use of Vercel's native Next.js integration and GitHub's starter workflows are mandatory to accelerate this.\n\n*   **Risk 2: Component Integration Conflict.**\n    *   **Description:** Components from the Design System Agent are not compatible with the page structures from the Business Agent.\n    *   **Mitigation:** Mandate a shared TypeScript type definition library for props. The Testing Agent must run integration tests on every PR that combines new components and pages.\n\n*   **Risk 3: Performance vs. Features.**\n    *   **Description:** The Business Agent requests features that negatively impact the >95 Lighthouse score target.\n    *   **Mitigation:** The CI pipeline will automatically fail any PR that causes a significant drop in the Lighthouse score. The Performance Agent has veto power on feature implementation if performance budgets are exceeded.\n\n*   **Risk 4: Late-stage Compliance Issues.**\n    *   **Description:** The Legal Agent identifies a major GDPR violation just before deployment, requiring significant rework.\n    *   **Mitigation:** The Legal Agent must provide the compliance checklist at J7. The Testing Agent will create E2E tests to enforce compliance rules (e.g., assert a cookie banner exists) early in the process.",
+    "duration": 50627,
+    "success": true,
+    "context7Data": [
+      {
+        "pattern": "deployment",
+        "agentId": "deployment-master",
+        "bestPractices": [
+          "deployment industry best practices",
+          "deployment security considerations",
+          "deployment performance optimizations"
+        ],
+        "codeExamples": [
+          "// deployment basic implementation",
+          "// deployment advanced usage",
+          "// deployment error handling"
+        ],
+        "architecture": {
+          "framework": "Next.js",
+          "patterns": [
+            "deployment"
+          ],
+          "dependencies": [
+            "deployment-lib",
+            "typescript"
+          ],
+          "structure": "deployment standard architecture"
+        }
+      },
+      {
+        "pattern": "ci-cd",
+        "agentId": "deployment-master",
+        "bestPractices": [
+          "ci-cd industry best practices",
+          "ci-cd security considerations",
+          "ci-cd performance optimizations"
+        ],
+        "codeExamples": [
+          "// ci-cd basic implementation",
+          "// ci-cd advanced usage",
+          "// ci-cd error handling"
+        ],
+        "architecture": {
+          "framework": "Next.js",
+          "patterns": [
+            "ci-cd"
+          ],
+          "dependencies": [
+            "ci-cd-lib",
+            "typescript"
+          ],
+          "structure": "ci-cd standard architecture"
+        }
+      },
+      {
+        "pattern": "kubernetes",
+        "agentId": "deployment-master",
+        "bestPractices": [
+          "kubernetes industry best practices",
+          "kubernetes security considerations",
+          "kubernetes performance optimizations"
+        ],
+        "codeExamples": [
+          "// kubernetes basic implementation",
+          "// kubernetes advanced usage",
+          "// kubernetes error handling"
+        ],
+        "architecture": {
+          "framework": "Next.js",
+          "patterns": [
+            "kubernetes"
+          ],
+          "dependencies": [
+            "kubernetes-lib",
+            "typescript"
+          ],
+          "structure": "kubernetes standard architecture"
+        }
+      }
+    ]
+  },
+  "specialists": {
+    "performance": {
+      "agent": {
+        "name": "Performance Agent",
+        "role": "specialist",
+        "responsibilities": [
+          "lighthouse-optimization",
+          "bundle-size",
+          "core-vitals"
+        ],
+        "context7_patterns": [
+          "performance",
+          "lighthouse",
+          "optimization"
+        ],
+        "priority": 3,
+        "parallel": true
+      },
+      "result": "Loaded cached credentials.\nHere is my execution plan as the Performance Agent.\n\n### 1. IMPLEMENTATION PLAN\n\nMy execution is aligned with the four-sprint project structure.\n\n**Phase 1: Foundation & Parallel Kick-off (J1 - J7)**\n*   **Action 1.1 (J1):** Define the Performance Budget. Based on the \">95 Lighthouse\" and \"Good Core Web Vitals\" goals, I will establish specific thresholds:\n    *   Largest Contentful Paint (LCP): < 1.8s\n    *   First Input Delay (FID) / Interaction to Next Paint (INP): < 100ms\n    *   Cumulative Layout Shift (CLS): < 0.1\n    *   Total Page Size: < 500KB\n    *   JavaScript Main-Thread Blocking Time: < 200ms\n*   **Action 1.2 (J2):** Create the Lighthouse CI configuration (`lighthouserc.js`). This file will define the URLs to test (initially the homepage), the number of runs, and the assertion criteria based on the budget above.\n*   **Action 1.3 (J3):** Deliver the configuration and installation commands (`pnpm add -D @lhci/cli`) to the DevOps Agent for integration into the main CI/CD pipeline.\n*   **Action 1.4 (J5):** Run a baseline Lighthouse report on the initial \"Hello World\" deployment to validate that the CI integration is reporting correctly.\n\n**Phase 2: Integration & Initial Build (J8 - J14)**\n*   **Action 2.1 (Continuous):** Monitor Lighthouse scores on every pull request via the automated GitHub checks configured by the DevOps agent.\n*   **Action 2.2 (J14):** Conduct a formal analysis of the first integrated pages (commercial and onboarding). I will identify the top 3 performance bottlenecks (e.g., unoptimized images from the business team, heavy components from the design system) and log them.\n\n**Phase 3: Optimization & Compliance (J15 - J21)**\n*   **Action 3.1 (Lead Task, J15):** Based on the J14 analysis, create and assign specific, actionable optimization tasks for the development team. Examples:\n    *   \"Refactor the hero banner to use `next/image` for automatic AVIF/WebP conversion and correct sizing.\"\n    *   \"Implement `next/dynamic` to code-split the customer testimonials component, as it is below the fold.\"\n    *   \"Audit third-party scripts and defer the loading of non-essential ones like analytics or chat widgets.\"\n*   **Action 3.2 (J20):** Re-run a full analysis to validate that the optimization tasks have resolved the identified bottlenecks and that Lighthouse scores are trending toward the >95 target.\n\n**Phase 4: Finalization & Go-Live (J22 - J28)**\n*   **Action 4.1 (J25):** Execute a final, comprehensive performance audit on the release candidate in the staging environment. This audit will cover all key pages and user flows defined by the Business and QA agents.\n*   **Action 4.2 (J28):** Produce the final Performance Sign-off Report, confirming that all KPIs (>95 Lighthouse score, \"Good\" Core Web Vitals) have been met. This deliverable is my \"Go\" for the deployment.\n\n### 2. CONTEXT7 COMPLIANCE\n\nI will adhere strictly to the provided Context7 patterns:\n\n*   **`performance` pattern:**\n    *   **Best Practices:** I will enforce code splitting via `next/dynamic`, leverage Next.js's built-in caching for static assets, and ensure efficient data fetching methods (e.g., `getStaticProps`) are used.\n    *   **Architecture:** I will advocate for using Incremental Static Regeneration (ISR) for pages like the homepage and pricing to balance performance with content freshness.\n    *   **Dependencies:** I will use `webpack-bundle-analyzer` (as a stand-in for the conceptual `performance-lib`) to visualize bundle composition and identify tree-shaking opportunities.\n*   **`lighthouse` pattern:**\n    *   **Best Practices:** My Lighthouse CI configuration will be a gating mechanism, automatically failing any PR that introduces a performance regression below the established budget.\n    *   **Dependencies:** I will use the `lighthouse-lib` (`@lhci/cli` npm package) and write the configuration in TypeScript to ensure type safety.\n*   **`optimization` pattern:**\n    *   **Best Practices:** I will mandate the use of the `<Image>` component from Next.js for all images. I will also enforce font optimization strategies using `next/font`.\n    *   **Dependencies:** My optimization tasks will directly reference these Next.js APIs, treating them as the implementation of the conceptual `optimization-lib`.\n\n### 3. DELIVERABLES\n\n*   **`lighthouserc.ts`:** A TypeScript-based configuration file for Lighthouse CI.\n*   **Performance Budget Document:** A markdown file in the repository defining the performance targets.\n*   **Actionable Optimization Tickets:** Issues created in the project's issue tracker during Phase 3.\n*   **Final Performance Sign-off Report (J28):** A summary report with final scores, confirming all success criteria are met.\n\n### 4. QUALITY MEASURES\n\n*   **Automated Gating:** The CI pipeline is the primary quality gate. No code that drops the Lighthouse score below 95 on a key page will be merged.\n*   **Core Web Vitals (CWV) Monitoring:** I will use Vercel Analytics to monitor real-user CWV data post-deployment, ensuring the lab scores from Lighthouse translate to a good user experience.\n*   **Bundle Size Assertion:** The CI pipeline will include a step to check bundle size using a tool like `next-bundle-analyzer` and fail if the budget is exceeded.\n*   **Manual Audit:** I will perform a final manual check of perceived performance on a staging device before giving my final sign-off.\n\n### 5. INTEGRATION POINTS\n\n*   **DevOps Agent:** I am critically dependent on their CI pipeline for preview deployments. I will provide them with the `lighthouserc.ts` config and the necessary CLI commands (`pnpm lhci autorun`) to integrate into the GitHub Actions workflow.\n*   **Business Agent:** I require their definition of \"key pages\" and \"critical user paths\" to focus my optimization and monitoring efforts.\n*   **Testing & QA Agent:** I can leverage their Playwright user flows to configure Lighthouse CI to run tests on complex, multi-step interactions, not just static pages.\n*   **Design System Agent:** I will provide direct feedback on the performance characteristics of their Storybook components, ensuring they are built with efficiency in mind from the start. Any component causing a significant performance drop will be flagged for rework.",
+      "duration": 32489,
+      "success": true,
+      "context7Data": [
+        {
+          "pattern": "performance",
+          "agentId": "performance",
+          "bestPractices": [
+            "performance industry best practices",
+            "performance security considerations",
+            "performance performance optimizations"
+          ],
+          "codeExamples": [
+            "// performance basic implementation",
+            "// performance advanced usage",
+            "// performance error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "performance"
+            ],
+            "dependencies": [
+              "performance-lib",
+              "typescript"
+            ],
+            "structure": "performance standard architecture"
+          }
+        },
+        {
+          "pattern": "lighthouse",
+          "agentId": "performance",
+          "bestPractices": [
+            "lighthouse industry best practices",
+            "lighthouse security considerations",
+            "lighthouse performance optimizations"
+          ],
+          "codeExamples": [
+            "// lighthouse basic implementation",
+            "// lighthouse advanced usage",
+            "// lighthouse error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "lighthouse"
+            ],
+            "dependencies": [
+              "lighthouse-lib",
+              "typescript"
+            ],
+            "structure": "lighthouse standard architecture"
+          }
+        },
+        {
+          "pattern": "optimization",
+          "agentId": "performance",
+          "bestPractices": [
+            "optimization industry best practices",
+            "optimization security considerations",
+            "optimization performance optimizations"
+          ],
+          "codeExamples": [
+            "// optimization basic implementation",
+            "// optimization advanced usage",
+            "// optimization error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "optimization"
+            ],
+            "dependencies": [
+              "optimization-lib",
+              "typescript"
+            ],
+            "structure": "optimization standard architecture"
+          }
+        }
+      ]
+    },
+    "business": {
+      "agent": {
+        "name": "Business Agent",
+        "role": "specialist",
+        "responsibilities": [
+          "onboarding",
+          "commercial-pages",
+          "user-flow"
+        ],
+        "context7_patterns": [
+          "business-logic",
+          "user-experience",
+          "conversion"
+        ],
+        "priority": 2,
+        "parallel": true
+      },
+      "result": "Loaded cached credentials.\nHere is my execution plan as the Business Agent for the TrustBoost deployment.\n\n### 1. IMPLEMENTATION PLAN\n\nMy work is divided into four weekly sprints, aligned with the master orchestration plan.\n\n*   **Phase 1: Definition & Blueprint (J1 - J7)**\n    *   **J1-J3:** Define the scope of commercial pages (Homepage, Pricing, Features/Benefits) and the high-level stages of the onboarding flow.\n    *   **J4-J5:** Create detailed user journey maps for both prospective customers and new users signing up.\n    *   **J6-J7:** Produce low-fidelity wireframes for all defined pages and onboarding steps. Simultaneously, write the first draft of all marketing and instructional copy. The output of this phase is a complete blueprint for what to build.\n\n*   **Phase 2: Handoff & Integration (J8 - J14)**\n    *   **J8-J9:** Translate wireframes and user journeys into formal requirement documents (User Stories) for the development team.\n    *   **J10:** Hold a formal handoff meeting with the Design System and Testing & QA agents to ensure they have clear, actionable inputs.\n    *   **J11-J14:** Continuously review the Vercel preview deployments to ensure the integrated components and layouts align with the vision. Provide rapid feedback.\n\n*   **Phase 3: Compliance & Refinement (J15 - J21)**\n    *   **J15-J17:** Integrate mandatory changes from the Legal Agent into the copy and user flows (e.g., adding consent checkboxes, linking to policies).\n    *   **J18-J21:** Review feedback from Performance and QA agents. Refine user flows to eliminate friction points or performance bottlenecks identified in testing.\n\n*   **Phase 4: Final Validation & Sign-off (J22 - J28)**\n    *   **J22-J24:** Conduct a full, end-to-end review of the user journey in the staging environment.\n    *   **J25:** Manually time the onboarding process multiple times to validate the \"<5 minute\" KPI.\n    *   **J26-J28:** Prepare and submit the final Business Agent Sign-off Report, confirming that all commercial pages are deployed and the onboarding goal is met.\n\n### 2. CONTEXT7 PATTERN COMPLIANCE\n\nI will ensure all my deliverables adhere to the specified Context7 patterns:\n\n*   **`business-logic`:** The onboarding flow will be designed as a clear, finite state machine. Each step will have defined inputs and outputs, representing the `business-logic standard architecture`. This ensures the logic is predictable and testable. Security considerations will be met by explicitly defining that no sensitive user data is ever passed as a URL parameter between steps.\n*   **`user-experience`:** My primary focus is applying `user-experience industry best practices`. The onboarding flow will be designed to be frictionless by minimizing form fields, using clear and encouraging language, and providing a visible progress indicator. The wireframes will serve as the blueprint for a clean, intuitive `user-experience standard architecture`.\n*   **`conversion`:** To optimize for sign-ups, I will apply `conversion industry best practices`. This includes crafting compelling value propositions on the commercial pages, designing strong calls-to-action (CTAs), and ensuring the transition from marketing page to onboarding is seamless. The user journey map will identify key conversion points and potential drop-offs, aligning with `conversion performance optimizations`.\n\n### 3. DELIVERABLES\n\nI will produce the following concrete outputs:\n\n1.  **User Journey Map:** A visual diagram illustrating all user touchpoints.\n2.  **Wireframe Deck:** Low-fidelity mockups for the Homepage, Pricing, Features, and all Onboarding screens.\n3.  **Copy Document:** A centralized document containing all final text for the application.\n4.  **User Stories:** A set of actionable requirement documents for the development and QA teams.\n5.  **Final Sign-off Report:** A formal document certifying that all Business Agent success criteria have been achieved.\n\n### 4. QUALITY MEASURES\n\nI will ensure excellence through these measures:\n\n*   **Onboarding Time-Trial:** I will personally execute and time the onboarding flow on the staging environment. The average of five separate runs must be under 4 minutes and 30 seconds to provide a buffer.\n*   **Requirement Clarity Review:** I will hold a mandatory review session of the User Stories with the QA and Development leads to get their sign-off, ensuring zero ambiguity before implementation begins.\n*   **Compliance Checklist:** I will maintain a checklist to track the implementation of every specific requirement provided by the Legal Agent.\n*   **Funnel Definition:** The user flow will be documented as a measurable conversion funnel (e.g., Step 1 Views -> Step 2 Views -> Completion), enabling future analytics.\n\n### 5. INTEGRATION POINTS\n\nMy coordination with other agents is critical:\n\n*   **To Design System Agent:** I will deliver the final wireframes by J7, providing the primary input for their component development queue. I will sync with them daily during Phase 2 to ensure component designs meet the functional needs of the user flow.\n*   **To Testing & QA Agent:** I will provide the complete User Journey Map and User Stories by J8. This is their primary source for creating E2E test scripts. I will be their point of contact for any questions on expected user behavior.\n*   **From Legal Agent:** I require the GDPR compliance checklist by J7 at the latest. I will submit all copy and user flows for their review by J14 and expect feedback by J16 to avoid late-stage rework.\n*   **To Performance Agent:** I will provide the list of critical pages (Homepage, Pricing, Onboarding Step 1) by J7, allowing them to configure Lighthouse CI to monitor the most important user-facing entry points first.\n*   **From DevOps Agent:** I will rely on the preview deployment URLs they provide from J3 onwards to conduct my reviews and validate progress.",
+      "duration": 32710,
+      "success": true,
+      "context7Data": [
+        {
+          "pattern": "business-logic",
+          "agentId": "business",
+          "bestPractices": [
+            "business-logic industry best practices",
+            "business-logic security considerations",
+            "business-logic performance optimizations"
+          ],
+          "codeExamples": [
+            "// business-logic basic implementation",
+            "// business-logic advanced usage",
+            "// business-logic error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "business-logic"
+            ],
+            "dependencies": [
+              "business-logic-lib",
+              "typescript"
+            ],
+            "structure": "business-logic standard architecture"
+          }
+        },
+        {
+          "pattern": "user-experience",
+          "agentId": "business",
+          "bestPractices": [
+            "user-experience industry best practices",
+            "user-experience security considerations",
+            "user-experience performance optimizations"
+          ],
+          "codeExamples": [
+            "// user-experience basic implementation",
+            "// user-experience advanced usage",
+            "// user-experience error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "user-experience"
+            ],
+            "dependencies": [
+              "user-experience-lib",
+              "typescript"
+            ],
+            "structure": "user-experience standard architecture"
+          }
+        },
+        {
+          "pattern": "conversion",
+          "agentId": "business",
+          "bestPractices": [
+            "conversion industry best practices",
+            "conversion security considerations",
+            "conversion performance optimizations"
+          ],
+          "codeExamples": [
+            "// conversion basic implementation",
+            "// conversion advanced usage",
+            "// conversion error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "conversion"
+            ],
+            "dependencies": [
+              "conversion-lib",
+              "typescript"
+            ],
+            "structure": "conversion standard architecture"
+          }
+        }
+      ]
+    },
+    "devops": {
+      "agent": {
+        "name": "DevOps Agent",
+        "role": "specialist",
+        "responsibilities": [
+          "ci-cd",
+          "github-actions",
+          "infrastructure"
+        ],
+        "context7_patterns": [
+          "devops",
+          "docker",
+          "github-actions"
+        ],
+        "priority": 2,
+        "parallel": true
+      },
+      "result": "Loaded cached credentials.\nHere is my execution plan as the specialized DevOps Agent.\n\n### 1. IMPLEMENTATION PLAN\n\nMy actions are sequenced across the four sprints to build a robust, secure, and efficient CI/CD pipeline, culminating in a production-ready deployment system.\n\n**Phase 1: Foundation & Parallel Kick-off (J1 - J7)**\n1.  **Initialize Project:**\n    *   Verify the project is a Git repository.\n    *   Create a `pnpm` workspace and initialize a Next.js + TypeScript application in a `webapp` directory.\n    *   Create a basic \"Hello World\" page at `webapp/pages/index.tsx`.\n2.  **Establish CI/CD Pipeline:**\n    *   Create a `.github/workflows/ci-cd.yml` file, starting with a standard Node.js starter workflow template as per `/actions/starter-workflows`.\n    *   Configure the workflow to use `pnpm` for dependency management, including caching for speed.\n    *   Add initial jobs: `lint`, `build`, and a placeholder `test` job.\n3.  **Deploy to Vercel:**\n    *   Create a new project on the Vercel platform.\n    *   Link the GitHub repository to the Vercel project, enabling the native `/vercel/next.js` integration for automatic preview deployments on every pull request.\n    *   Ensure the first \"Hello World\" deployment succeeds and a preview URL is generated.\n\n**Phase 2: Integration & Initial Build (J8 - J14)**\n1.  **Incorporate Dockerized Builds:**\n    *   Enhance the `ci-cd.yml` workflow.\n    *   Add a job that uses the `/docker/metadata-action` pattern to generate tags and labels for a Docker image based on Git metadata.\n    *   This job will build a Docker image of the Next.js application. While Vercel uses a source deployment, this containerized artifact serves as a versioned, immutable build record for traceability and potential future use.\n\n**Phase 3: Optimization & Compliance (J15 - J21)**\n1.  **Integrate Security Scanning:**\n    *   Add a `vulnerability-scan` job to the `ci-cd.yml` workflow using a security scanner action (e.g., Trivy, Snyk).\n    *   Configure this job to fail if any \"CRITICAL\" or \"HIGH\" severity vulnerabilities are detected in the application code or its dependencies.\n2.  **Refine Pipeline Efficiency:**\n    *   Optimize build times by refining `pnpm` caching strategies and parallelizing jobs where possible, targeting the `<10 minute` goal.\n\n**Phase 4: Finalization & Go-Live (J22 - J28)**\n1.  **Harden Security:**\n    *   Review and configure Vercel project settings, ensuring environment variables are stored as secrets and production branch protection is enabled.\n    *   Conduct a final, comprehensive vulnerability scan across all code and infrastructure configurations.\n2.  **Prepare for Production:**\n    *   Create a separate `release` workflow or job that triggers deployment to the production environment on Vercel.\n    *   This workflow will only run on merges to the `main` branch after all checks (test, performance, security) have passed.\n\n### 2. CONTEXT7 PATTERN COMPLIANCE\n\n*   **/vercel/next.js deployment:** I will leverage Vercel's native Git integration. This pattern ensures hyper-optimized, automated builds and deployments for Next.js applications, handling infrastructure details like CDN, serverless functions, and caching automatically.\n*   **/actions/starter-workflows CI/CD:** The foundation of my `ci-cd.yml` will be a battle-tested starter workflow from GitHub. This ensures I begin with industry best practices for Node.js/TypeScript projects, which I will then customize with project-specific jobs.\n*   **/docker/metadata-action container:** I will use this action within the CI pipeline to create semantically versioned Docker image tags based on the Git state (e.g., `type=sha,prefix=,suffix=,format=long`). This creates a reproducible build artifact, ensuring what is tested is exactly what could be deployed, even though Vercel is the primary deployment target.\n\n### 3. DELIVERABLES\n\n*   A fully configured Next.js + TypeScript project structure.\n*   A `ci-cd.yml` GitHub Actions workflow file.\n*   A linked and configured Vercel project.\n*   Preview deployment URLs generated for every pull request.\n*   Reports from integrated security scanners.\n*   A final `release` workflow for production deployment.\n\n### 4. QUALITY MEASURES\n\n*   **<10 min Deployment:** I will monitor workflow execution times in GitHub Actions. Caching `pnpm` dependencies and Vercel's build cache will be the primary tools to meet this KPI.\n*   **99.9% Uptime:** This will be ensured by Vercel's highly available infrastructure. I will configure monitoring and alerts within Vercel to be notified of any downtime.\n*   **0 Critical Vulnerabilities:** The CI pipeline will have a dedicated, mandatory job that scans for vulnerabilities. This job will be configured to fail the entire workflow if a critical vulnerability is found, preventing insecure code from ever reaching a preview or production environment.\n\n### 5. INTEGRATION POINTS\n\n*   **Testing & QA Agent:** I require the exact `pnpm` command to execute the Playwright E2E test suite. I will integrate this command into the `test` job of the `ci-cd.yml` file. I will provide the agent with the dynamic Vercel preview URL on which to run their tests.\n*   **Performance Agent:** I need the Lighthouse CI command or configuration. I will add a `performance-check` job to the pipeline that runs after each preview deployment, reporting scores back to the pull request as a status check.\n*   **All Other Agents (Business, Design System, Legal):** My CI/CD pipeline serves as the central integration point for all their work. When their feature branches are merged, my pipeline automatically builds, tests, scans, and deploys their contributions to a preview environment, providing a live URL for immediate review and validation.",
+      "duration": 33015,
+      "success": true,
+      "context7Data": [
+        {
+          "pattern": "devops",
+          "agentId": "devops",
+          "bestPractices": [
+            "devops industry best practices",
+            "devops security considerations",
+            "devops performance optimizations"
+          ],
+          "codeExamples": [
+            "// devops basic implementation",
+            "// devops advanced usage",
+            "// devops error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "devops"
+            ],
+            "dependencies": [
+              "devops-lib",
+              "typescript"
+            ],
+            "structure": "devops standard architecture"
+          }
+        },
+        {
+          "pattern": "docker",
+          "agentId": "devops",
+          "bestPractices": [
+            "docker industry best practices",
+            "docker security considerations",
+            "docker performance optimizations"
+          ],
+          "codeExamples": [
+            "// docker basic implementation",
+            "// docker advanced usage",
+            "// docker error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "docker"
+            ],
+            "dependencies": [
+              "docker-lib",
+              "typescript"
+            ],
+            "structure": "docker standard architecture"
+          }
+        },
+        {
+          "pattern": "github-actions",
+          "agentId": "devops",
+          "bestPractices": [
+            "github-actions industry best practices",
+            "github-actions security considerations",
+            "github-actions performance optimizations"
+          ],
+          "codeExamples": [
+            "// github-actions basic implementation",
+            "// github-actions advanced usage",
+            "// github-actions error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "github-actions"
+            ],
+            "dependencies": [
+              "github-actions-lib",
+              "typescript"
+            ],
+            "structure": "github-actions standard architecture"
+          }
+        }
+      ]
+    },
+    "design-system": {
+      "agent": {
+        "name": "Design System Agent",
+        "role": "specialist",
+        "responsibilities": [
+          "storybook",
+          "wcag-compliance",
+          "design-tokens"
+        ],
+        "context7_patterns": [
+          "design-system",
+          "storybook",
+          "accessibility"
+        ],
+        "priority": 2,
+        "parallel": true
+      },
+      "result": "Loaded cached credentials.\nHere is my execution plan as the Design System Agent for the TrustBoost project.\n\n### 1. IMPLEMENTATION PLAN\n\nMy work is divided into four weekly sprints, aligned with the orchestrator's master plan.\n\n*   **Phase 1: Foundation & Core Components (J1 - J7)**\n    *   **J1-J2 (Setup):** I will initialize a dedicated `design-system` directory. This will be a self-contained package with its own `package.json`, configured to use `pnpm`. I will install Storybook, React, TypeScript, and key addons like `@storybook/addon-essentials` and `@storybook/addon-a11y`.\n    *   **J3-J4 (Design Tokens):** I will define the foundational design tokens as TypeScript objects. This includes `colors.ts`, `typography.ts`, `spacing.ts`, and `radii.ts`. This ensures consistency from the very beginning.\n    *   **J5-J7 (Core Component Implementation):** Based on the Business Agent's initial wireframes, I will develop the first set of atomic components: `Button`, `Input`, `Label`, `Card`, and `Grid`. Each component will have a corresponding Storybook story (`*.stories.tsx`) for documentation and interactive testing.\n\n*   **Phase 2: Component Expansion (J8 - J14)**\n    *   I will build more complex \"molecule\" and \"organism\" level components required for the commercial and onboarding pages. This includes `Header`, `Footer`, `Navigation`, `Modal`, and `CookieBanner`.\n    *   I will ensure all new components are composed from the foundational tokens and atomic components from Phase 1.\n\n*   **Phase 3: Optimization & Compliance (J15 - J21)**\n    *   This phase is dedicated to refinement. I will actively solicit feedback from the Performance and Testing agents.\n    *   Based on Lighthouse reports, I will apply performance optimizations like `React.memo` or refactor expensive styles.\n    *   Based on QA reports, I will fix any accessibility issues discovered in integrated E2E tests that were not caught by Storybook's `addon-a11y`.\n\n*   **Phase 4: Finalization & Documentation (J22 - J28)**\n    *   I will freeze all feature development on the component library.\n    *   My focus will be on polishing all Storybook documentation, ensuring every component `prop` is clearly described with usage examples.\n    *   I will conduct a final, comprehensive WCAG 2.1 AA audit across the entire library and produce the final compliance report. I will provide my final sign-off for deployment.\n\n### 2. CONTEXT7 PATTERN COMPLIANCE\n\nI will adhere strictly to the provided Context7 patterns:\n\n*   **`design-system` Pattern:**\n    *   **Architecture:** I will follow a standard architecture: components will be located in `src/components`, tokens in `src/tokens`, and stories co-located with their components. The final output will be a versioned NPM package.\n    *   **Best Practices:** Performance is key. Components will be designed to be lightweight and composable. Security will be handled by ensuring no raw HTML is rendered from props and all passed data is treated as text unless explicitly designed otherwise.\n    *   **Dependencies:** The library will have `react` and `react-dom` as peer dependencies, with `typescript` as a development dependency.\n\n*   **`storybook` Pattern:**\n    *   **Architecture:** Storybook will be configured in a `.storybook` directory at the root of the `design-system` package.\n    *   **Best Practices:** I will leverage `addon-docs` for auto-generating props tables and `addon-controls` to create a fully interactive component playground. The `@storybook/addon-a11y` will be used on every story to provide immediate accessibility feedback.\n\n*   **`accessibility` (via `wcag-compliance`) Pattern:**\n    *   **Architecture:** Accessibility is not an afterthought. I will use semantic HTML (e.g., `<nav>`, `<main>`, `<button>`) as the foundation for all components. ARIA attributes will be used correctly and only when necessary.\n    *   **Best Practices:** I will enforce WCAG 2.1 AA compliance. This includes keyboard navigability for all interactive components, sufficient color contrast ratios (checked against our design tokens), and screen-reader-friendly labeling.\n\n### 3. DELIVERABLES\n\n*   A private NPM package (`@trustboost/design-system`) containing all versioned, reusable React components and TypeScript-based design tokens.\n*   A deployed Storybook instance, serving as the single source of truth for UI components, accessible to all agents and stakeholders.\n*   A final WCAG 2.1 AA compliance report, confirming all components meet the required accessibility standard.\n\n### 4. QUALITY MEASURES\n\n*   **Zero-Violation Policy:** A component is only considered complete if it passes all checks in the Storybook `@storybook/addon-a11y` panel with zero violations.\n*   **Documentation-Driven:** Every component and all of its `props` will be fully documented in Storybook before it can be merged into the main branch.\n*   **Performance Budgets:** Components will be designed to be minimal and performant, adhering to any budgets set by the Performance Agent.\n*   **Peer Review:** I will treat feedback from the Testing & QA and Performance agents as mandatory change requests to ensure components are robust and optimized in a real-world context.\n\n### 5. INTEGRATION POINTS\n\n*   **Business Agent:** I am a direct consumer of their wireframes and page requirements. Their needs dictate my development priorities.\n*   **Testing & QA Agent:** I will provide them with a stable API for each component, including consistent `data-testid` attributes to facilitate reliable E2E tests. I depend on their feedback to find and fix accessibility issues in the integrated application.\n*   **Performance Agent:** I depend on their Lighthouse reports to identify components that require optimization. I will provide them with component refactors to meet the project's performance targets.\n*   **DevOps Agent:** I will coordinate with them to add a step to their CI/CD pipeline to automatically publish the Storybook documentation upon any merge to the `main` branch.",
+      "duration": 33899,
+      "success": true,
+      "context7Data": [
+        {
+          "pattern": "design-system",
+          "agentId": "design-system",
+          "bestPractices": [
+            "design-system industry best practices",
+            "design-system security considerations",
+            "design-system performance optimizations"
+          ],
+          "codeExamples": [
+            "// design-system basic implementation",
+            "// design-system advanced usage",
+            "// design-system error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "design-system"
+            ],
+            "dependencies": [
+              "design-system-lib",
+              "typescript"
+            ],
+            "structure": "design-system standard architecture"
+          }
+        },
+        {
+          "pattern": "storybook",
+          "agentId": "design-system",
+          "bestPractices": [
+            "storybook industry best practices",
+            "storybook security considerations",
+            "storybook performance optimizations"
+          ],
+          "codeExamples": [
+            "// storybook basic implementation",
+            "// storybook advanced usage",
+            "// storybook error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "storybook"
+            ],
+            "dependencies": [
+              "storybook-lib",
+              "typescript"
+            ],
+            "structure": "storybook standard architecture"
+          }
+        },
+        {
+          "pattern": "accessibility",
+          "agentId": "design-system",
+          "bestPractices": [
+            "accessibility industry best practices",
+            "accessibility security considerations",
+            "accessibility performance optimizations"
+          ],
+          "codeExamples": [
+            "// accessibility basic implementation",
+            "// accessibility advanced usage",
+            "// accessibility error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "accessibility"
+            ],
+            "dependencies": [
+              "accessibility-lib",
+              "typescript"
+            ],
+            "structure": "accessibility standard architecture"
+          }
+        }
+      ]
+    },
+    "testing-qa": {
+      "agent": {
+        "name": "Testing & QA Agent",
+        "role": "specialist",
+        "responsibilities": [
+          "e2e-testing",
+          "coverage-analysis",
+          "playwright"
+        ],
+        "context7_patterns": [
+          "testing",
+          "playwright",
+          "jest"
+        ],
+        "priority": 2,
+        "parallel": true
+      },
+      "result": "Loaded cached credentials.\nAcknowledged. As the Testing & QA Agent, I will now outline my execution plan in accordance with the orchestrator's guidance and my specialized responsibilities.\n\n### 1. IMPLEMENTATION PLAN\n\nThis plan is structured across the four-week project timeline, focusing on progressive test suite development and integration.\n\n**Phase 1: Foundation & Setup (J1 - J7)**\n*   **Day 1-2:** Initialize the testing environment.\n    *   Add Playwright as a dev dependency: `pnpm add -D @playwright/test`.\n    *   Create the standard Playwright configuration file (`playwright.config.ts`) and directory structure (`tests/e2e/`).\n*   **Day 3-4:** Develop initial smoke tests.\n    *   Create `tests/e2e/smoke.spec.ts`.\n    *   This test will target the \"Hello World\" application deployed by the DevOps agent, asserting that the page loads and the main heading is visible.\n*   **Day 5-7:** CI Integration & Initial Reporting.\n    *   Provide the test execution command (`pnpm playwright test`) to the DevOps agent for integration into the initial CI/CD pipeline.\n    *   Configure Playwright to output an HTML report for artifact storage in the CI pipeline.\n\n**Phase 2: E2E Test Suite Expansion (J8 - J14)**\n*   **Day 8-11:** Develop tests for the primary user flow.\n    *   Based on wireframes from the Business Agent, create `tests/e2e/onboarding.spec.ts`.\n    *   Implement a multi-step E2E test covering the entire `<5min` onboarding flow. This includes form input, navigation, and successful submission assertion.\n*   **Day 12-14:** Implement Page Object Models (POM).\n    *   Refactor existing tests to use the POM pattern for improved maintainability and readability, creating files like `tests/pages/onboarding.page.ts`. This ensures selectors are centralized, simplifying updates when the Design System evolves.\n\n**Phase 3: Compliance & Advanced Testing (J15 - J21)**\n*   **Day 15-17:** Implement compliance and legal tests.\n    *   Add `@axe-core/playwright` dependency to test for accessibility.\n    *   Create `tests/e2e/accessibility.spec.ts` to run `axe` scans on all key pages defined by the Business Agent.\n    *   Create `tests/e2e/compliance.spec.ts` to assert legal requirements from the Legal Agent's checklist (e.g., \"Cookie Banner is visible and contains a link to the Privacy Policy\").\n*   **Day 18-21:** Error handling and negative path testing.\n    *   Expand the `onboarding.spec.ts` to include tests for invalid form submissions (e.g., invalid email format, blank required fields) and assert that correct error messages appear.\n\n**Phase 4: Final Validation & Sign-off (J22 - J28)**\n*   **Day 22-25:** Full regression and cross-browser testing.\n    *   Execute the entire test suite (smoke, onboarding, accessibility, compliance) across all configured browsers (Chromium, Firefox, WebKit) in the CI environment.\n    *   Analyze reports for any flaky tests or inconsistencies.\n*   **Day 26-27:** Final Report Generation.\n    *   Measure final E2E test coverage for critical user paths.\n    *   Prepare the final QA sign-off report, documenting test results, bug statistics (verifying zero blocking bugs), and the final coverage percentage.\n*   **Day 28:** Go/No-Go Decision.\n    *   Submit the final report to the Orchestrator to confirm that all QA success criteria have been met.\n\n### 2. CONTEXT7 COMPLIANCE\n\nMy implementation will strictly adhere to the loaded Context7 patterns:\n\n*   **`playwright:architecture`**: I will establish the standard project structure with `playwright.config.ts`, a `tests/e2e` directory for test specs, and a `tests/pages` directory for Page Object Models.\n*   **`playwright:best-practices`**: I will use `data-testid` attributes for resilient selectors, implement the Page Object Model pattern, and configure cross-browser testing.\n*   **`playwright:dependencies`**: The core dependency will be `playwright-lib` (`@playwright/test`) with `typescript`.\n*   **`testing:best-practices`**: I will implement accessibility testing using `axe-core`, which is an industry best practice.\n*   **`testing:security-considerations`**: My compliance tests (e.g., asserting the presence of a cookie banner and privacy policy links) directly address this pattern.\n*   **`jest:architecture` / `jest:best-practices`**: While my primary focus is E2E with Playwright, I will advocate for and provide guidance to the development team on implementing unit tests with Jest. This includes using Jest's built-in mocking capabilities and aiming for high unit test coverage on critical business logic, complementing the E2E suite.\n\n### 3. DELIVERABLES\n\n*   **Configuration Files:** `playwright.config.ts`.\n*   **Test Suite Code:** A complete suite of E2E tests within the `tests/` directory, including `smoke.spec.ts`, `onboarding.spec.ts`, `accessibility.spec.ts`, and `compliance.spec.ts`.\n*   **Page Object Models:** Reusable page classes in the `tests/pages/` directory.\n*   **CI/CD Artifacts:** HTML test reports generated on every pipeline run.\n*   **Final Report:** A final sign-off document for J28 detailing coverage metrics and confirming the \"zero blocking bugs\" KPI.\n\n### 4. QUALITY MEASURES\n\n*   **Test Coverage (>95%):** I will map all critical user paths defined by the Business Agent and ensure each has corresponding E2E test coverage. Coverage will be tracked and reported weekly.\n*   **Zero Blocking Bugs:** I will establish a clear bug severity definition. Any bug classified as \"blocking\" (i.e., prevents a critical user path from being completed) will be reported immediately and must be fixed before the final validation checkpoint.\n*   **CI Integration:** All tests will be executed automatically on every pull request. A failing test will block the PR from being merged, ensuring no regressions are introduced into the main branch.\n*   **Maintainability:** By using the Page Object Model and collaborating with the Design System agent on stable selectors, I will ensure the test suite is robust and easy to maintain.\n\n### 5. INTEGRATION POINTS\n\n*   **DevOps Agent:**\n    *   **I Provide:** Test execution commands, test report configurations.\n    *   **I Consume:** A stable CI environment for running tests on every PR and deployment.\n*   **Business Agent:**\n    *   **I Consume:** Wireframes, user flows, and definitions of \"critical user paths\" to define test cases.\n    *   **I Provide:** Feedback on usability issues or bugs discovered during E2E testing.\n*   **Design System Agent:**\n    *   **I Consume:** Component specifications and a convention for stable test IDs (e.g., `data-testid`).\n    *   **I Provide:** Reports on any component bugs or accessibility issues found.\n*   **Legal Agent:**\n    *   **I Consume:** The GDPR compliance checklist.\n    *   **I Provide:** E2E tests that programmatically validate compliance requirements on deployed pages.\n*   **Performance Agent:**\n    *   **I Consume:** Lighthouse reports to identify user flows that are slow.\n    *   **I Provide:** Context on functional changes that may have caused performance regressions detected in their reports.",
+      "duration": 37374,
+      "success": true,
+      "context7Data": [
+        {
+          "pattern": "testing",
+          "agentId": "testing-qa",
+          "bestPractices": [
+            "testing industry best practices",
+            "testing security considerations",
+            "testing performance optimizations"
+          ],
+          "codeExamples": [
+            "// testing basic implementation",
+            "// testing advanced usage",
+            "// testing error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "testing"
+            ],
+            "dependencies": [
+              "testing-lib",
+              "typescript"
+            ],
+            "structure": "testing standard architecture"
+          }
+        },
+        {
+          "pattern": "playwright",
+          "agentId": "testing-qa",
+          "bestPractices": [
+            "playwright industry best practices",
+            "playwright security considerations",
+            "playwright performance optimizations"
+          ],
+          "codeExamples": [
+            "// playwright basic implementation",
+            "// playwright advanced usage",
+            "// playwright error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "playwright"
+            ],
+            "dependencies": [
+              "playwright-lib",
+              "typescript"
+            ],
+            "structure": "playwright standard architecture"
+          }
+        },
+        {
+          "pattern": "jest",
+          "agentId": "testing-qa",
+          "bestPractices": [
+            "jest industry best practices",
+            "jest security considerations",
+            "jest performance optimizations"
+          ],
+          "codeExamples": [
+            "// jest basic implementation",
+            "// jest advanced usage",
+            "// jest error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "jest"
+            ],
+            "dependencies": [
+              "jest-lib",
+              "typescript"
+            ],
+            "structure": "jest standard architecture"
+          }
+        }
+      ]
+    },
+    "legal": {
+      "agent": {
+        "name": "Legal Agent",
+        "role": "specialist",
+        "responsibilities": [
+          "rgpd-compliance",
+          "privacy-policy",
+          "terms"
+        ],
+        "context7_patterns": [
+          "legal",
+          "privacy",
+          "compliance"
+        ],
+        "priority": 3,
+        "parallel": true
+      },
+      "result": "Loaded cached credentials.\nAcknowledged. As the Legal Agent, I will now execute my specialized responsibilities in alignment with the master orchestration plan and mandatory Context7 patterns.\n\n---\n\n### 1. IMPLEMENTATION PLAN\n\nThis plan details my specific actions within the four-sprint structure.\n\n**Phase 1: Foundation & Policy Drafting (J1 - J7)**\n1.  **Draft Legal Documents:** Based on GDPR requirements and industry best practices, I will write the initial versions of the **Privacy Policy** and **Terms of Service**.\n2.  **Develop GDPR Compliance Checklist:** I will create a comprehensive checklist in a `LEGAL-COMPLIANCE.md` file. This checklist will be the primary tool for auditing the application and will include items such as:\n    *   Cookie consent mechanism (opt-in, granular controls).\n    *   Data collection notices at points of entry.\n    *   Accessibility of legal documents (e.g., footer links).\n    *   User rights for data access and deletion.\n    *   Consent for marketing communications.\n3.  **Initial Code Scaffolding:** I will create placeholder files within the Next.js architecture to house the legal documents (e.g., `/pages/legal/privacy-policy.tsx`, `/pages/legal/terms-of-service.tsx`).\n\n**Phase 2: Consultation & Integration Support (J8 - J14)**\n1.  **Provide Legal Guidance:** I will be on standby to answer compliance-related questions from the Business and Design System agents as they build the commercial and onboarding pages.\n2.  **Review Initial Links:** I will verify that the initial page structures correctly link to the placeholder legal pages created in Phase 1.\n\n**Phase 3: Active Audit & Enforcement (J15 - J21)**\n1.  **Conduct Full Compliance Audit:** Using the GDPR checklist, I will perform a thorough review of all pages and user flows deployed to the Vercel preview environment.\n2.  **Report & Assign Non-Compliance Issues:** I will create detailed issues in the project's issue tracker for every identified violation, tagging the responsible agent (e.g., Business Agent for missing consent text, Design System Agent for non-compliant UI elements).\n\n**Phase 4: Final Validation & Sign-Off (J22 - J28)**\n1.  **Execute Final Regression Audit:** I will re-run the entire compliance checklist against the release candidate to ensure all previously identified issues have been resolved.\n2.  **Produce Final Compliance Report:** I will generate a final report summarizing the application's GDPR compliance status.\n3.  **Provide Legal Sign-Off:** Upon successful final validation, I will formally submit my \"Go\" decision to the Orchestrator for the production deployment.\n\n### 2. CONTEXT7 COMPLIANCE\n\nI will apply the specified patterns as follows:\n\n*   **`legal` Pattern:**\n    *   **Architecture:** The Terms of Service and other general legal notices will be structured as components or pages within the Next.js `/pages/legal/` directory.\n    *   **Dependencies:** The content will be implemented using TypeScript (`.tsx`), satisfying the `typescript` dependency. The `legal-lib` concept will be realized as a module, e.g., `/lib/legal/content.ts`, exporting legal text as constants to be imported by the UI pages.\n\n*   **`privacy` Pattern:**\n    *   **Architecture:** Privacy-related logic, such as cookie consent management, will be encapsulated in a client-side hook (e.g., `usePrivacyConsent`) or a context provider to manage user consent state across the application.\n    *   **Dependencies:** This logic will be written in TypeScript. The `privacy-lib` will be a dedicated module, e.g., `/lib/privacy.ts`, containing functions to set, get, and check for specific consent categories, abstracting the cookie/localStorage implementation.\n\n*   **`compliance` Pattern:**\n    *   **Architecture:** The GDPR compliance checklist will serve as the architectural guide for manual and automated checks.\n    *   **Dependencies:** The `compliance-lib` will be a set of TypeScript utility functions and constants (`/lib/compliance-rules.ts`) that the **Testing & QA Agent** can import into their Playwright tests to programmatically verify compliance (e.g., `assertCookieBannerIsVisible()`, `assertConsentIsNotPreChecked()`).\n\n### 3. DELIVERABLES\n\nMy concrete outputs for this project will be:\n\n1.  **`PRIVACY-POLICY.md` / `.tsx`:** The complete Privacy Policy document.\n2.  **`TERMS-OF-SERVICE.md` / `.tsx`:** The complete Terms of Service document.\n3.  **`LEGAL-COMPLIANCE.md`:** The master GDPR compliance checklist for project-wide use.\n4.  **Compliance Audit Reports:** Markdown files detailing findings from the J21 and J28 audits.\n5.  **TypeScript Modules:** `privacy.ts` and `legal.ts` modules containing the core logic and text for integration.\n\n### 4. QUALITY MEASURES\n\nI will ensure excellence through the following measures:\n\n*   **Clarity:** Legal documents will be written in plain, understandable language, avoiding unnecessary jargon.\n*   **Testability:** I will define clear, actionable test cases in the compliance checklist for the Testing & QA agent to implement, ensuring our compliance is verifiable and repeatable.\n*   **Version Control:** All deliverables (documents, checklists, reports) will be committed to the Git repository, providing a transparent audit trail.\n*   **Primary Metric:** The ultimate quality measure is achieving the project's success criterion: **\"Privacy Policy and ToS are published and correctly linked,\"** and **\"All public-facing pages pass the GDPR compliance checklist.\"**\n\n### 5. INTEGRATION POINTS\n\nMy coordination with other agents is as follows:\n\n*   **To Business Agent:** I will provide the GDPR compliance checklist by J7 so they can incorporate requirements into their wireframes and copy from the start.\n*   **From Business Agent:** I will receive the completed pages and user flows in the preview environment for my audit during J15-J21.\n*   **To Testing & QA Agent:** I will provide the compliance checklist and specific test scenarios (e.g., \"Verify that marketing consent checkboxes are not pre-checked\") for them to build into the E2E test suite.\n*   **To Design System Agent:** I will provide requirements for compliant UI components, such as the cookie banner and consent forms, ensuring they are designed for opt-in consent.\n*   **From DevOps Agent:** I depend on a stable Vercel preview environment to conduct my audits.\n*   **To Orchestrator:** I will provide weekly status updates and the final go/no-go sign-off for my domain.",
+      "duration": 38888,
+      "success": true,
+      "context7Data": [
+        {
+          "pattern": "legal",
+          "agentId": "legal",
+          "bestPractices": [
+            "legal industry best practices",
+            "legal security considerations",
+            "legal performance optimizations"
+          ],
+          "codeExamples": [
+            "// legal basic implementation",
+            "// legal advanced usage",
+            "// legal error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "legal"
+            ],
+            "dependencies": [
+              "legal-lib",
+              "typescript"
+            ],
+            "structure": "legal standard architecture"
+          }
+        },
+        {
+          "pattern": "privacy",
+          "agentId": "legal",
+          "bestPractices": [
+            "privacy industry best practices",
+            "privacy security considerations",
+            "privacy performance optimizations"
+          ],
+          "codeExamples": [
+            "// privacy basic implementation",
+            "// privacy advanced usage",
+            "// privacy error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "privacy"
+            ],
+            "dependencies": [
+              "privacy-lib",
+              "typescript"
+            ],
+            "structure": "privacy standard architecture"
+          }
+        },
+        {
+          "pattern": "compliance",
+          "agentId": "legal",
+          "bestPractices": [
+            "compliance industry best practices",
+            "compliance security considerations",
+            "compliance performance optimizations"
+          ],
+          "codeExamples": [
+            "// compliance basic implementation",
+            "// compliance advanced usage",
+            "// compliance error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "compliance"
+            ],
+            "dependencies": [
+              "compliance-lib",
+              "typescript"
+            ],
+            "structure": "compliance standard architecture"
+          }
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalAgents": 7,
+    "successfulAgents": 7,
+    "failedAgents": 0,
+    "totalDuration": 259002,
+    "context7PatternsLoaded": 21
+  }
+}

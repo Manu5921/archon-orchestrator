@@ -1,0 +1,54 @@
+{
+  "name": "Orchestra MCP Server",
+  "description": "Triple-Agent Orchestra - Intelligent routing between Archon, Gemini, and Claude",
+  "version": "1.0.0",
+  "type": "external",
+  "url": "ws://localhost:3456",
+  "protocol": "mcp",
+  "capabilities": {
+    "tools": true,
+    "resources": true,
+    "logging": true
+  },
+  "tools": [
+    {
+      "name": "orchestra:route_task",
+      "description": "Intelligently route tasks to the best agent",
+      "category": "orchestration"
+    },
+    {
+      "name": "orchestra:agent_handoff",
+      "description": "Transfer tasks between agents with context",
+      "category": "orchestration"
+    },
+    {
+      "name": "orchestra:sync_context",
+      "description": "Synchronize context between agents",
+      "category": "orchestration"
+    },
+    {
+      "name": "orchestra:performance_stats",
+      "description": "Get agent performance metrics",
+      "category": "monitoring"
+    },
+    {
+      "name": "orchestra:pattern_learning",
+      "description": "Train routing patterns from results",
+      "category": "learning"
+    }
+  ],
+  "startup": {
+    "command": "node",
+    "args": ["src/index.js"],
+    "cwd": "/Users/manu/Documents/DEV/archon-orchestrator",
+    "env": {
+      "MCP_PORT": "3456",
+      "LOG_LEVEL": "info"
+    }
+  },
+  "healthCheck": {
+    "endpoint": "ws://localhost:3456",
+    "interval": 30000,
+    "timeout": 5000
+  }
+}

@@ -1,0 +1,77 @@
+# Docker Compose pour test complet MCP - Version progressive
+
+services:
+  # Redis (base nécessaire)
+  redis:
+    image: redis:7-alpine
+    container_name: archon_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - archon_network
+
+  # GitHub MCP Server (Mock for testing)
+  github-mcp:
+    build:
+      context: ./docker/github-mcp
+      dockerfile: Dockerfile.simple
+    container_name: archon_github_mcp
+    environment:
+      - GITHUB_PAT=${GITHUB_PAT}
+      - MCP_PORT=3000
+    ports:
+      - "8054:3000"
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - archon_network
+
+  # Archon Orchestrator (version simplifiée)
+  archon-orchestrator:
+    build:
+      context: .
+      dockerfile: docker/archon/Dockerfile.simple
+    container_name: archon_main
+    environment:
+      - NODE_ENV=test
+      - MCP_PORT=3456
+      - LOG_LEVEL=debug
+      - REDIS_URL=redis://redis:6379
+      - GITHUB_MCP_URL=http://github-mcp:3000
+      - GITHUB_PAT=${GITHUB_PAT}
+      - GITHUB_MCP_ENABLED=true
+    ports:
+      - "3458:3456"
+    volumes:
+      - ./logs:/app/logs
+      - ./.env:/app/.env:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+      github-mcp:
+        condition: service_started
+    networks:
+      - archon_network
+
+networks:
+  archon_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
+
+volumes:
+  redis_data:
+    driver: local

@@ -1,0 +1,35 @@
+{
+  "id": "wf_archon-orchestrator-6-piliers-complet_1756910716055",
+  "name": "archon-orchestrator-6-piliers-complet",
+  "steps": [
+    "1. Context7 obligatoire: /mcp context7 resolve-library-id + get-library-docs",
+    "2. Prompts Claude-Gemini: node generate-collaboration-prompts.cjs",
+    "3. Validation architecture bidirectionnelle (score >85/100)",
+    "4. Orchestration multi-task: 6 agents en 3 phases parallèles",
+    "5. GitHub + Jules async: repo + issues auto-créés",
+    "6. Validation checkpoints: Gemini review tous les 5 changements",
+    "7. Auto-learning: Capture patterns dans RAG pour futures sessions"
+  ],
+  "requirements": [
+    "Archon MCP server running (port 8051)",
+    "Context7 MCP accessible",
+    "GitHub MCP configured",
+    "Gemini CLI ou Bridge disponible",
+    "Claude Code avec MCP enabled"
+  ],
+  "validationCriteria": [
+    "Context7 utilisé avant tout code",
+    "Architecture approuvée par Gemini >85/100",
+    "All 6 agents orchestration completed",
+    "Repository GitHub créé et accessible",
+    "Jules tasks créées et assignées",
+    "Validation checkpoints respectés",
+    "Session learnings sauvegardés dans RAG"
+  ],
+  "metadata": {
+    "sessionId": "session_20250903_15azri",
+    "createdAt": "2025-09-03T14:45:16.055Z",
+    "tested": true,
+    "successRate": "100%"
+  }
+}

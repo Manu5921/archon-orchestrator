@@ -1,0 +1,1 @@
+{"ts": "2025-10-05T16:34:03.504693Z", "event": "subagent_stop", "agent": "test", "validation": {"issues": 0, "warnings": 0, "artifacts_count": 1}, "metrics": {"agent": "test", "timestamp": "2025-10-05T16:34:03.504385Z", "artifacts_count": 1}, "quality_gates": {"mentioned": false, "passed": [], "failed": []}}

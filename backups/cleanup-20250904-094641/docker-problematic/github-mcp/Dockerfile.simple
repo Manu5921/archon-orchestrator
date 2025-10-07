@@ -1,0 +1,44 @@
+# GitHub MCP Server - Simplified Mock for Testing
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Create a simple mock GitHub MCP server
+RUN echo '#!/bin/sh' > /app/github-mcp-mock.sh && \
+    echo 'echo "🐙 Starting GitHub MCP Mock Server..."' >> /app/github-mcp-mock.sh && \
+    echo 'echo "✅ Listening on port 3000"' >> /app/github-mcp-mock.sh && \
+    echo 'echo "🔧 GitHub PAT: ${GITHUB_PAT:0:20}..."' >> /app/github-mcp-mock.sh && \
+    echo 'echo "📡 Starting HTTP server..."' >> /app/github-mcp-mock.sh && \
+    echo 'exec node -e "' >> /app/github-mcp-mock.sh && \
+    echo 'const http = require(\"http\");' >> /app/github-mcp-mock.sh && \
+    echo 'const server = http.createServer((req, res) => {' >> /app/github-mcp-mock.sh && \
+    echo '  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);' >> /app/github-mcp-mock.sh && \
+    echo '  if (req.url === \"/health\") {' >> /app/github-mcp-mock.sh && \
+    echo '    res.writeHead(200, {\"Content-Type\": \"application/json\"});' >> /app/github-mcp-mock.sh && \
+    echo '    res.end(JSON.stringify({status: \"healthy\", service: \"github-mcp\", timestamp: new Date().toISOString()}));' >> /app/github-mcp-mock.sh && \
+    echo '  } else if (req.url === \"/mcp/tools\") {' >> /app/github-mcp-mock.sh && \
+    echo '    res.writeHead(200, {\"Content-Type\": \"application/json\"});' >> /app/github-mcp-mock.sh && \
+    echo '    res.end(JSON.stringify({tools: [\"create_repository\", \"create_issue\", \"create_pull_request\"]}));' >> /app/github-mcp-mock.sh && \
+    echo '  } else {' >> /app/github-mcp-mock.sh && \
+    echo '    res.writeHead(200, {\"Content-Type\": \"application/json\"});' >> /app/github-mcp-mock.sh && \
+    echo '    res.end(JSON.stringify({message: \"GitHub MCP Mock - Ready\", timestamp: new Date().toISOString()}));' >> /app/github-mcp-mock.sh && \
+    echo '  }' >> /app/github-mcp-mock.sh && \
+    echo '});' >> /app/github-mcp-mock.sh && \
+    echo 'server.listen(3000, () => console.log(\"✅ GitHub MCP Mock ready on http://localhost:3000\"));' >> /app/github-mcp-mock.sh && \
+    echo '"' >> /app/github-mcp-mock.sh && \
+    chmod +x /app/github-mcp-mock.sh
+
+# Create logs directory
+RUN mkdir -p /app/logs
+
+# Non-root user for security
+RUN adduser -D -s /bin/sh appuser
+RUN chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 3000
+
+CMD ["./github-mcp-mock.sh"]

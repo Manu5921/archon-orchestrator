@@ -1,0 +1,393 @@
+name: TrustBoost Phase 4 - Backup & Disaster Recovery
+
+on:
+  schedule:
+    # Daily backups at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      backup_type:
+        description: 'Type of backup to perform'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - incremental
+          - database_only
+          - code_only
+      restore_point:
+        description: 'Create restore point before backup'
+        required: false
+        type: boolean
+        default: true
+
+env:
+  BACKUP_RETENTION_DAYS: 30
+  CRITICAL_RETENTION_DAYS: 90
+  AWS_REGION: us-east-1
+
+jobs:
+  # ==========================================
+  # BACKUP ORCHESTRATION
+  # ==========================================
+  backup-orchestration:
+    name: Backup Orchestration
+    runs-on: ubuntu-latest
+    outputs:
+      backup-id: ${{ steps.backup-meta.outputs.backup-id }}
+      backup-type: ${{ steps.backup-meta.outputs.backup-type }}
+      timestamp: ${{ steps.backup-meta.outputs.timestamp }}
+    
+    steps:
+      - name: Generate Backup Metadata
+        id: backup-meta
+        run: |
+          BACKUP_ID="backup-$(date +%Y%m%d-%H%M%S)-${GITHUB_RUN_NUMBER}"
+          BACKUP_TYPE="${{ github.event.inputs.backup_type || 'full' }}"
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          
+          echo "backup-id=$BACKUP_ID" >> $GITHUB_OUTPUT
+          echo "backup-type=$BACKUP_TYPE" >> $GITHUB_OUTPUT  
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          
+          echo "🗂️ Backup ID: $BACKUP_ID"
+          echo "📋 Backup Type: $BACKUP_TYPE"
+          echo "⏰ Timestamp: $TIMESTAMP"
+      
+      - name: Notify Backup Start
+        run: |
+          echo "🚀 Starting TrustBoost Phase 4 backup process..."
+          echo "Backup ID: ${{ steps.backup-meta.outputs.backup-id }}"
+          echo "Type: ${{ steps.backup-meta.outputs.backup-type }}"
+
+  # ==========================================
+  # DATABASE BACKUP
+  # ==========================================
+  database-backup:
+    name: Database Backup
+    runs-on: ubuntu-latest
+    needs: backup-orchestration
+    if: contains(fromJSON('["full", "database_only"]'), needs.backup-orchestration.outputs.backup-type)
+    
+    steps:
+      - name: Setup Database Backup Tools
+        run: |
+          echo "🔧 Setting up database backup tools..."
+          # Install required tools for database backup
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-common postgresql-client
+      
+      - name: Create Database Backup
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BACKUP_ID: ${{ needs.backup-orchestration.outputs.backup-id }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          echo "📊 Creating database backup..."
+          
+          # Create database dump with compression
+          BACKUP_FILE="db-${BACKUP_ID}.sql.gz"
+          
+          # Extract database connection details
+          # This is a template - adjust based on your actual database
+          pg_dump "$DATABASE_URL" | gzip > "$BACKUP_FILE"
+          
+          # Verify backup integrity
+          gunzip -t "$BACKUP_FILE"
+          
+          # Upload to AWS S3 with encryption
+          aws s3 cp "$BACKUP_FILE" "s3://trustboost-backups/database/${BACKUP_FILE}" \
+            --storage-class STANDARD_IA \
+            --server-side-encryption AES256 \
+            --metadata "backup-type=database,backup-id=${BACKUP_ID},created-at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          
+          echo "✅ Database backup completed: $BACKUP_FILE"
+      
+      - name: Verify Database Backup
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          BACKUP_ID: ${{ needs.backup-orchestration.outputs.backup-id }}
+        run: |
+          echo "🔍 Verifying database backup..."
+          BACKUP_FILE="db-${BACKUP_ID}.sql.gz"
+          
+          # Check if backup exists in S3
+          aws s3 ls "s3://trustboost-backups/database/${BACKUP_FILE}"
+          
+          # Get backup size and metadata
+          aws s3api head-object --bucket trustboost-backups --key "database/${BACKUP_FILE}"
+          
+          echo "✅ Database backup verification completed"
+
+  # ==========================================
+  # CODE REPOSITORY BACKUP
+  # ==========================================
+  code-backup:
+    name: Code Repository Backup
+    runs-on: ubuntu-latest
+    needs: backup-orchestration
+    if: contains(fromJSON('["full", "code_only"]'), needs.backup-orchestration.outputs.backup-type)
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Create Code Archive
+        env:
+          BACKUP_ID: ${{ needs.backup-orchestration.outputs.backup-id }}
+        run: |
+          echo "📦 Creating code repository backup..."
+          
+          # Create tar archive with compression
+          BACKUP_FILE="code-${BACKUP_ID}.tar.gz"
+          
+          # Exclude sensitive files and directories
+          tar --exclude='.git' \
+              --exclude='node_modules' \
+              --exclude='.next' \
+              --exclude='dist' \
+              --exclude='.env*' \
+              --exclude='*.log' \
+              -czf "$BACKUP_FILE" .
+          
+          echo "✅ Code archive created: $BACKUP_FILE"
+          ls -lah "$BACKUP_FILE"
+      
+      - name: Upload Code Backup
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          BACKUP_ID: ${{ needs.backup-orchestration.outputs.backup-id }}
+        run: |
+          echo "☁️ Uploading code backup to S3..."
+          BACKUP_FILE="code-${BACKUP_ID}.tar.gz"
+          
+          # Upload to S3 with metadata
+          aws s3 cp "$BACKUP_FILE" "s3://trustboost-backups/code/${BACKUP_FILE}" \
+            --storage-class STANDARD_IA \
+            --server-side-encryption AES256 \
+            --metadata "backup-type=code,backup-id=${BACKUP_ID},commit-sha=${GITHUB_SHA},branch=${GITHUB_REF_NAME}"
+          
+          echo "✅ Code backup uploaded successfully"
+
+  # ==========================================
+  # ENVIRONMENT BACKUP
+  # ==========================================
+  environment-backup:
+    name: Environment Configuration Backup
+    runs-on: ubuntu-latest
+    needs: backup-orchestration
+    if: needs.backup-orchestration.outputs.backup-type == 'full'
+    
+    steps:
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+      
+      - name: Export Environment Variables
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          BACKUP_ID: ${{ needs.backup-orchestration.outputs.backup-id }}
+        run: |
+          echo "⚙️ Exporting environment configuration..."
+          
+          # Create environment backup
+          BACKUP_FILE="env-${BACKUP_ID}.json"
+          
+          # Export Vercel project configuration (excluding sensitive values)
+          vercel env ls --token="$VERCEL_TOKEN" > "vercel-env-list.txt"
+          
+          # Create structured backup
+          cat > "$BACKUP_FILE" << EOF
+          {
+            "backup_id": "${BACKUP_ID}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "project_id": "${VERCEL_PROJECT_ID}",
+            "org_id": "${VERCEL_ORG_ID}",
+            "environment_variables": "$(cat vercel-env-list.txt | base64 -w 0)"
+          }
+          EOF
+          
+          # Upload environment backup
+          aws s3 cp "$BACKUP_FILE" "s3://trustboost-backups/environment/${BACKUP_FILE}" \
+            --storage-class STANDARD_IA \
+            --server-side-encryption AES256
+          
+          echo "✅ Environment configuration backed up"
+
+  # ==========================================
+  # BACKUP VERIFICATION
+  # ==========================================
+  backup-verification:
+    name: Backup Integrity Verification
+    runs-on: ubuntu-latest
+    needs: [backup-orchestration, database-backup, code-backup, environment-backup]
+    if: always() && !failure()
+    
+    steps:
+      - name: Verify All Backups
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          BACKUP_ID: ${{ needs.backup-orchestration.outputs.backup-id }}
+        run: |
+          echo "🔍 Verifying backup integrity..."
+          
+          # Check all backup files exist
+          if [[ "${{ needs.backup-orchestration.outputs.backup-type }}" == "full" ]] || [[ "${{ needs.backup-orchestration.outputs.backup-type }}" == "database_only" ]]; then
+            aws s3 ls "s3://trustboost-backups/database/db-${BACKUP_ID}.sql.gz" || exit 1
+            echo "✅ Database backup verified"
+          fi
+          
+          if [[ "${{ needs.backup-orchestration.outputs.backup-type }}" == "full" ]] || [[ "${{ needs.backup-orchestration.outputs.backup-type }}" == "code_only" ]]; then
+            aws s3 ls "s3://trustboost-backups/code/code-${BACKUP_ID}.tar.gz" || exit 1
+            echo "✅ Code backup verified"
+          fi
+          
+          if [[ "${{ needs.backup-orchestration.outputs.backup-type }}" == "full" ]]; then
+            aws s3 ls "s3://trustboost-backups/environment/env-${BACKUP_ID}.json" || exit 1
+            echo "✅ Environment backup verified"
+          fi
+          
+          echo "🎉 All backups verified successfully"
+      
+      - name: Update Backup Registry
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          BACKUP_ID: ${{ needs.backup-orchestration.outputs.backup-id }}
+          TIMESTAMP: ${{ needs.backup-orchestration.outputs.timestamp }}
+        run: |
+          echo "📋 Updating backup registry..."
+          
+          # Create backup registry entry
+          REGISTRY_FILE="backup-registry.json"
+          cat > "$REGISTRY_FILE" << EOF
+          {
+            "backup_id": "${BACKUP_ID}",
+            "timestamp": "${TIMESTAMP}",
+            "type": "${{ needs.backup-orchestration.outputs.backup-type }}",
+            "status": "completed",
+            "commit_sha": "${GITHUB_SHA}",
+            "branch": "${GITHUB_REF_NAME}",
+            "workflow_run": "${GITHUB_RUN_ID}",
+            "components": {
+              "database": $(if [[ "${{ needs.database-backup.result }}" == "success" ]]; then echo "true"; else echo "false"; fi),
+              "code": $(if [[ "${{ needs.code-backup.result }}" == "success" ]]; then echo "true"; else echo "false"; fi),
+              "environment": $(if [[ "${{ needs.environment-backup.result }}" == "success" ]]; then echo "true"; else echo "false"; fi)
+            }
+          }
+          EOF
+          
+          # Upload registry entry
+          aws s3 cp "$REGISTRY_FILE" "s3://trustboost-backups/registry/${BACKUP_ID}.json"
+          
+          echo "✅ Backup registry updated"
+
+  # ==========================================
+  # CLEANUP OLD BACKUPS
+  # ==========================================
+  cleanup-old-backups:
+    name: Cleanup Old Backups
+    runs-on: ubuntu-latest
+    needs: backup-verification
+    if: always() && needs.backup-verification.result == 'success'
+    
+    steps:
+      - name: Remove Expired Backups
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          echo "🧹 Cleaning up old backups..."
+          
+          # Calculate cutoff dates
+          STANDARD_CUTOFF=$(date -d "${BACKUP_RETENTION_DAYS} days ago" +%Y%m%d)
+          CRITICAL_CUTOFF=$(date -d "${CRITICAL_RETENTION_DAYS} days ago" +%Y%m%d)
+          
+          echo "Standard retention cutoff: $STANDARD_CUTOFF"
+          echo "Critical retention cutoff: $CRITICAL_CUTOFF"
+          
+          # List and delete expired backups (keeping critical ones longer)
+          aws s3 ls s3://trustboost-backups/ --recursive | while read line; do
+            DATE=$(echo $line | awk '{print $1}' | tr -d '-')
+            FILE=$(echo $line | awk '{print $4}')
+            
+            if [[ "$FILE" == *"critical"* ]] && [[ "$DATE" < "$CRITICAL_CUTOFF" ]]; then
+              echo "Deleting critical backup: $FILE"
+              aws s3 rm "s3://trustboost-backups/$FILE"
+            elif [[ "$FILE" != *"critical"* ]] && [[ "$DATE" < "$STANDARD_CUTOFF" ]]; then
+              echo "Deleting standard backup: $FILE"
+              aws s3 rm "s3://trustboost-backups/$FILE"
+            fi
+          done
+          
+          echo "✅ Backup cleanup completed"
+
+  # ==========================================
+  # DISASTER RECOVERY TESTING
+  # ==========================================
+  dr-test:
+    name: Disaster Recovery Test
+    runs-on: ubuntu-latest
+    needs: backup-verification
+    if: github.event.inputs.backup_type == 'full' && github.event.inputs.restore_point == 'true'
+    
+    steps:
+      - name: Simulate Disaster Recovery
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          BACKUP_ID: ${{ needs.backup-orchestration.outputs.backup-id }}
+        run: |
+          echo "🧪 Testing disaster recovery procedures..."
+          
+          # Download and verify backup files
+          aws s3 cp "s3://trustboost-backups/database/db-${BACKUP_ID}.sql.gz" ./test-db-backup.sql.gz
+          aws s3 cp "s3://trustboost-backups/code/code-${BACKUP_ID}.tar.gz" ./test-code-backup.tar.gz
+          
+          # Verify file integrity
+          gunzip -t ./test-db-backup.sql.gz
+          tar -tzf ./test-code-backup.tar.gz > /dev/null
+          
+          echo "✅ Disaster recovery test passed"
+
+  # ==========================================
+  # NOTIFICATION & REPORTING
+  # ==========================================
+  backup-report:
+    name: Backup Status Report
+    runs-on: ubuntu-latest
+    needs: [backup-orchestration, database-backup, code-backup, environment-backup, backup-verification]
+    if: always()
+    
+    steps:
+      - name: Generate Backup Report
+        run: |
+          echo "## 🗂️ TrustBoost Phase 4 - Backup Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Backup Information" >> $GITHUB_STEP_SUMMARY
+          echo "- **Backup ID:** ${{ needs.backup-orchestration.outputs.backup-id }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Backup Type:** ${{ needs.backup-orchestration.outputs.backup-type }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Timestamp:** ${{ needs.backup-orchestration.outputs.timestamp }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit SHA:** ${GITHUB_SHA:0:8}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🎯 Component Status" >> $GITHUB_STEP_SUMMARY
+          echo "- **Database:** $(if [[ "${{ needs.database-backup.result }}" == "success" ]]; then echo '✅ Completed'; elif [[ "${{ needs.database-backup.result }}" == "skipped" ]]; then echo '➖ Skipped'; else echo '❌ Failed'; fi)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Code Repository:** $(if [[ "${{ needs.code-backup.result }}" == "success" ]]; then echo '✅ Completed'; elif [[ "${{ needs.code-backup.result }}" == "skipped" ]]; then echo '➖ Skipped'; else echo '❌ Failed'; fi)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** $(if [[ "${{ needs.environment-backup.result }}" == "success" ]]; then echo '✅ Completed'; elif [[ "${{ needs.environment-backup.result }}" == "skipped" ]]; then echo '➖ Skipped'; else echo '❌ Failed'; fi)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Verification:** $(if [[ "${{ needs.backup-verification.result }}" == "success" ]]; then echo '✅ Passed'; else echo '❌ Failed'; fi)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📈 Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Workflow Duration:** $(($(date +%s) - $(date -d '${{ github.event.head_commit.timestamp }}' +%s))) seconds" >> $GITHUB_STEP_SUMMARY
+          echo "- **Retention Period:** Standard: ${BACKUP_RETENTION_DAYS} days, Critical: ${CRITICAL_RETENTION_DAYS} days" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*Generated by TrustBoost Phase 4 Backup & DR System*" >> $GITHUB_STEP_SUMMARY

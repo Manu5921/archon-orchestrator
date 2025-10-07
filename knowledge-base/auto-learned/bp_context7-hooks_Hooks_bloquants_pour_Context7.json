@@ -1,0 +1,20 @@
+{
+  "id": "bp_context7-hooks_1756910656268",
+  "topic": "context7-hooks",
+  "title": "Hooks bloquants pour Context7",
+  "content": {
+    "problem": "Claude ignore les suggestions Context7",
+    "solution": "Hook qui bloque Write/Edit sans validation Context7",
+    "implementation": "claude-hooks-smart-context7.json + .context7_validated state",
+    "commands": [
+      "/mcp context7 resolve-library-id <library>",
+      "/mcp context7 get-library-docs <id> --topic=<feature>"
+    ]
+  },
+  "metadata": {
+    "sessionId": "session_20250903_85dho",
+    "createdAt": "2025-09-03T14:44:16.268Z",
+    "validated": true,
+    "source": "auto-learned"
+  }
+}

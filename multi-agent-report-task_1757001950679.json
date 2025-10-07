@@ -1,0 +1,699 @@
+{
+  "taskId": "task_1757001950679",
+  "timestamp": "2025-09-04T16:07:10.600Z",
+  "orchestrator": {
+    "agent": {
+      "name": "Deployment Master",
+      "role": "orchestrator",
+      "responsibilities": [
+        "coordination",
+        "validation",
+        "dependency-management"
+      ],
+      "context7_patterns": [
+        "deployment",
+        "ci-cd",
+        "kubernetes"
+      ],
+      "priority": 1,
+      "parallel": false
+    },
+    "result": "Loaded cached credentials.\nExcellent. Analyzing the Context7 patterns and specialist agent requirements. Generating the orchestration plan for mandatory multi-task parallel execution.\n\n---\n\n### **Orchestration Plan: PHASE 4 - Parallel Execution**\n\nThis plan outlines the coordination, dependencies, and validation for the six specialist agents, ensuring mandatory parallel execution in compliance with Context7 architecture guidance.\n\n#### 1. AGENT COORDINATION PLAN\n\nThe orchestration is structured in two primary phases to maximize parallelism.\n\n*   **Phase 1: Foundation (Initial Sequential Steps)**\n    1.  **DevOps Agent:** Immediately begins provisioning the full CI/CD pipeline using GitHub Actions. This includes setting up build, test, and deployment environments (Dev, Staging, Prod) based on `ci-cd: standard architecture` and `kubernetes: standard architecture` patterns. This is the foundational layer for all other agents.\n    2.  **Design System Agent:** Concurrently, starts developing a \"Component Kernel\" in Storybook—the 10-15 most critical UI components (Button, Input, Layout, etc.). This allows the Business Agent to start work without waiting for the full library.\n\n*   **Phase 2: Mandatory Multi-Task Parallel Execution**\n    *Once the CI pipeline is functional for basic deployments and the Component Kernel is published, all agents proceed in parallel.*\n\n    *   **Business Agent:** Develops commercial pages and onboarding flows using the Component Kernel. Deploys features to the Dev environment via the CI/CD pipeline for continuous feedback.\n    *   **Testing & QA Agent:** In parallel with the Business Agent, writes and executes Playwright E2E tests against features as they are deployed to the Dev/Staging environments. Test suites are triggered automatically by the CI pipeline.\n    *   **Performance Agent:** Continuously runs Lighthouse and bundle analysis against the Staging environment. It provides asynchronous feedback and raises alerts for any PR that violates the performance budget (>95 Lighthouse score).\n    *   **Legal Agent:** Asynchronously reviews user flows and static pages (Terms of Service, Privacy Policy) deployed on the Staging server. Their work is non-blocking for development but is a mandatory gate for production release.\n    *   **Design System Agent:** Continues expanding the component library in Storybook, adding new components based on requests from the Business Agent and ensuring WCAG compliance.\n    *   **DevOps Agent:** Monitors pipeline health, optimizes deployment speed, and ensures 99.9% uptime of the Staging environment. Finalizes the production Kubernetes configuration based on `deployment: standard architecture`.\n\n#### 2. DEPENDENCY MAPPING\n\n*   **DevOps Agent:**\n    *   **Depends On:** None (Initiator)\n    *   **Is Depended On By:** All other agents.\n\n*   **Design System Agent:**\n    *   **Depends On:** None (Can start immediately)\n    *   **Is Depended On By:** **Business Agent** (for UI components).\n\n*   **Business Agent:**\n    *   **Depends On:** **DevOps Agent** (for CI/CD), **Design System Agent** (for Component Kernel).\n    *   **Is Depended On By:** **Testing & QA Agent**, **Performance Agent**, **Legal Agent**.\n\n*   **Testing & QA Agent:**\n    *   **Depends On:** **DevOps Agent** (for test environments), **Business Agent** (for features to test).\n    *   **Is Depended On By:** None (Terminal validation node).\n\n*   **Legal Agent:**\n    *   **Depends On:** **Business Agent** (for flows/pages to review).\n    *   **Is Depended On By:** None (Terminal validation node).\n\n*   **Performance Agent:**\n    *   **Depends On:** **Business Agent** (for code to analyze), **DevOps Agent** (for build artifacts).\n    *   **Is Depended On By:** None (Terminal validation node).\n\n#### 3. SUCCESS CRITERIA (Per Agent)\n\n*   **Testing & QA Agent:**\n    *   **Metric:** >95% E2E test coverage for all critical user paths.\n    *   **Metric:** Zero blocking bugs in the production release candidate.\n\n*   **Design System Agent:**\n    *   **Metric:** 100% of UI components documented in Storybook.\n    *   **Metric:** WCAG AA compliance score >= 77% on automated scans.\n\n*   **DevOps Agent:**\n    *   **Metric:** CI/CD pipeline successfully deploys to production.\n    *   **Metric:** Production environment uptime >= 99.9%.\n    *   **Metric:** `ci-cd performance optimizations`: Average pipeline duration < 8 minutes.\n\n*   **Business Agent:**\n    *   **Metric:** User onboarding flow completion time < 5 minutes.\n    *   **Metric:** All specified commercial pages are deployed and functional.\n\n*   **Legal Agent:**\n    *   **Metric:** RGPD compliance checklist fully signed off.\n    *   **Metric:** Privacy Policy and Terms of Service are published and accessible.\n\n*   **Performance Agent:**\n    *   **Metric:** Lighthouse score across all categories > 95 for key pages.\n    *   **Metric:** `deployment performance optimizations`: Next.js application bundle size within defined budget.\n\n#### 4. VALIDATION CHECKPOINTS\n\n1.  **VC1: Pipeline Ready:** DevOps Agent confirms the CI/CD pipeline can build, test, and deploy a \"hello world\" Next.js app to Staging.\n2.  **VC2: Component Kernel Published:** Design System Agent confirms the initial set of components is available for the Business Agent.\n3.  **VC3: Automated PR Gating (Continuous):** Every Pull Request is automatically validated by:\n    *   GitHub Actions (CI build passes).\n    *   Playwright E2E test suite (QA Agent).\n    *   Lighthouse score check (Performance Agent).\n    *   `ci-cd security considerations`: Static code analysis (SAST) scan.\n4.  **VC4: Staging Sign-off:** A formal review of the Staging environment before a production release candidate is created. Requires sign-off from:\n    *   **Business Agent:** Confirms features meet requirements.\n    *   **Legal Agent:** Confirms compliance.\n5.  **VC5: Production Release Gate:** Final go/no-go decision. All success criteria from all agents must be met. The deployment to production is executed by the **DevOps Agent** using the validated Kubernetes configuration.\n\n#### 5. RISK ASSESSMENT\n\n*   **Risk 1: Design System Bottleneck**\n    *   **Issue:** The Business Agent is blocked waiting for components.\n    *   **Mitigation:** The \"Component Kernel\" approach ensures the Business Agent can start early. For non-critical components, placeholders can be used temporarily.\n\n*   **Risk 2: Late-Stage Legal/Compliance Blockers**\n    *   **Issue:** The Legal Agent discovers a major RGPD issue right before launch.\n    *   **Mitigation:** The Legal Agent is integrated into the parallel workflow, reviewing features on Staging as they are developed (\"Shift-Left Compliance\"). They do not wait until the end.\n\n*   **Risk 3: Performance Degradation**\n    *   **Issue:** New features cause the Lighthouse score to drop below 95.\n    *   **Mitigation:** The Performance Agent's automated checks on every PR (VC3) provide immediate feedback, preventing performance regressions from being merged.\n\n*   **Risk 4: Unstable Test Environment**\n    *   **Issue:** Flaky E2E tests in the CI pipeline slow down development.\n    *   **Mitigation:** The DevOps and Testing & QA agents share responsibility for the stability of the test environment. Tests are designed to be idempotent and resilient.\n\n*   **Risk 5: Integration Conflicts**\n    *   **Issue:** Parallel workstreams create conflicting code changes.\n    *   **Mitigation:** High frequency of integration into the main branch, enforced by the CI pipeline. Conflicts are small and resolved quickly, rather than becoming a large integration nightmare.",
+    "duration": 41622,
+    "success": true,
+    "context7Data": [
+      {
+        "pattern": "deployment",
+        "agentId": "deployment-master",
+        "bestPractices": [
+          "deployment industry best practices",
+          "deployment security considerations",
+          "deployment performance optimizations"
+        ],
+        "codeExamples": [
+          "// deployment basic implementation",
+          "// deployment advanced usage",
+          "// deployment error handling"
+        ],
+        "architecture": {
+          "framework": "Next.js",
+          "patterns": [
+            "deployment"
+          ],
+          "dependencies": [
+            "deployment-lib",
+            "typescript"
+          ],
+          "structure": "deployment standard architecture"
+        }
+      },
+      {
+        "pattern": "ci-cd",
+        "agentId": "deployment-master",
+        "bestPractices": [
+          "ci-cd industry best practices",
+          "ci-cd security considerations",
+          "ci-cd performance optimizations"
+        ],
+        "codeExamples": [
+          "// ci-cd basic implementation",
+          "// ci-cd advanced usage",
+          "// ci-cd error handling"
+        ],
+        "architecture": {
+          "framework": "Next.js",
+          "patterns": [
+            "ci-cd"
+          ],
+          "dependencies": [
+            "ci-cd-lib",
+            "typescript"
+          ],
+          "structure": "ci-cd standard architecture"
+        }
+      },
+      {
+        "pattern": "kubernetes",
+        "agentId": "deployment-master",
+        "bestPractices": [
+          "kubernetes industry best practices",
+          "kubernetes security considerations",
+          "kubernetes performance optimizations"
+        ],
+        "codeExamples": [
+          "// kubernetes basic implementation",
+          "// kubernetes advanced usage",
+          "// kubernetes error handling"
+        ],
+        "architecture": {
+          "framework": "Next.js",
+          "patterns": [
+            "kubernetes"
+          ],
+          "dependencies": [
+            "kubernetes-lib",
+            "typescript"
+          ],
+          "structure": "kubernetes standard architecture"
+        }
+      }
+    ]
+  },
+  "specialists": {
+    "design-system": {
+      "agent": {
+        "name": "Design System Agent",
+        "role": "specialist",
+        "responsibilities": [
+          "storybook",
+          "wcag-compliance",
+          "design-tokens"
+        ],
+        "context7_patterns": [
+          "design-system",
+          "storybook",
+          "accessibility"
+        ],
+        "priority": 2,
+        "parallel": true
+      },
+      "result": "Loaded cached credentials.\nAcknowledged. As the Design System Agent, I will now execute my specialized responsibilities in compliance with the Orchestration Plan and Context7 patterns.\n\nHere is my execution strategy:\n\n### 1. IMPLEMENTATION PLAN\n\nMy work is divided into two phases, mirroring the master orchestration plan.\n\n*   **Phase 1: Component Kernel Development (Immediate Start)**\n    1.  **Setup:** Initialize Storybook within the Next.js/TypeScript environment.\n    2.  **Design Tokens:** Define the foundational design tokens (e.g., `colors.ts`, `typography.ts`, `spacing.ts`). These will be the single source of truth for all styling, fulfilling my `design-tokens` responsibility.\n    3.  **Kernel Implementation:** Develop the 10-15 most critical UI components (the \"Component Kernel\"), such as `Button`, `Input`, `Card`, `Layout`, `Grid`, `Typography`, and `Icon`.\n    4.  **Initial Documentation:** For each kernel component, create comprehensive stories in Storybook demonstrating all props, states (e.g., disabled, loading, error), and variants.\n    5.  **Initial Accessibility Pass:** Run initial WCAG AA checks on the kernel components to ensure they are usable from the start.\n\n*   **Phase 2: Library Expansion & Maintenance (Parallel Execution)**\n    1.  **Component Production:** Continue developing new components based on a prioritized backlog and direct requests from the Business Agent.\n    2.  **Continuous Integration:** Integrate automated accessibility checks (`axe-core`) into the CI pipeline for every pull request that touches a component.\n    3.  **Publishing:** Work with the DevOps Agent to ensure the Storybook instance is automatically built and deployed to a static URL on every merge to the main branch, providing a live reference for all teams.\n    4.  **Refinement:** Continuously refine existing components for performance, accessibility, and API clarity based on feedback and evolving requirements.\n\n### 2. CONTEXT7 COMPLIANCE\n\nI will strictly adhere to the provided Context7 patterns:\n\n*   **`design-system`:**\n    *   **Architecture:** I will implement a standard architecture by organizing components, tokens, and stories in a scalable file structure (e.g., `src/components/[ComponentName]/{index.tsx, styles.ts, ComponentName.stories.tsx}`).\n    *   **Dependencies:** Components will be built using Next.js/React and TypeScript, ensuring full type safety for all component props.\n    *   **Best Practices:** I will apply performance optimizations by default (e.g., memoization, minimal CSS-in-JS runtime) and ensure all components are secure from common XSS vulnerabilities.\n\n*   **`storybook`:**\n    *   **Architecture:** I will use Storybook's Component Story Format (CSF) for all stories and leverage the `main.js` and `preview.js` files for standard configuration.\n    *   **Dependencies:** I will utilize `storybook-lib` (the core Storybook framework) and its TypeScript integration.\n    *   **Best Practices:** I will install and configure essential addons like `@storybook/addon-essentials`, `@storybook/addon-a11y` (for live accessibility feedback), and `@storybook/addon-interactions` to create a robust development and documentation environment.\n\n*   **`accessibility` (WCAG Compliance):**\n    *   **Architecture:** I will structure components with semantic HTML5 elements by default.\n    *   **Dependencies:** I will use an `accessibility-lib` like `axe-core` via the Storybook addon and potentially in Jest tests.\n    *   **Best Practices:** I will ensure all components meet WCAG AA standards for color contrast, keyboard navigation, focus management, and ARIA attribute usage.\n\n### 3. DELIVERABLES\n\n*   **A published Storybook instance** serving as the live, interactive documentation for the entire design system.\n*   **A versioned NPM package** containing the compiled, reusable UI components and design tokens, ready for consumption by the Business Agent.\n*   **A set of JSON/TS design tokens** for colors, spacing, and typography.\n*   **Automated accessibility and unit test reports** for every component.\n\n### 4. QUALITY MEASURES\n\n*   **WCAG AA Compliance (Metric: >= 77% on automated scans):** Every PR will be scanned by `axe-core`. I will perform manual keyboard and screen reader checks for complex components like modals or dropdowns.\n*   **Component Documentation (Metric: 100% Coverage):** Every component and all its props will be documented with examples in Storybook. A CI check will enforce this.\n*   **Code Coverage:** Unit tests for component logic will be maintained at a high standard (>90%).\n*   **Visual Regression Testing:** I will coordinate with the Testing & QA Agent to implement visual snapshot tests to prevent unintended UI changes.\n\n### 5. INTEGRATION POINTS\n\n*   **DevOps Agent:** I will provide the necessary build commands (`build-storybook`) and output directories for the CI/CD pipeline to automatically deploy the Storybook instance.\n*   **Business Agent:** This is my primary consumer. I will deliver the Component Kernel to unblock their initial development. I will establish a formal process (e.g., GitHub issue templates) for them to request new components, ensuring their needs are tracked and prioritized.\n*   **Testing & QA Agent:** All components will be developed with stable, predictable selectors (e.g., `data-testid`) to ensure the reliability of their E2E tests. I will be their point of contact for any component-level testing issues.\n\nProceeding with execution.",
+      "duration": 29924,
+      "success": true,
+      "context7Data": [
+        {
+          "pattern": "design-system",
+          "agentId": "design-system",
+          "bestPractices": [
+            "design-system industry best practices",
+            "design-system security considerations",
+            "design-system performance optimizations"
+          ],
+          "codeExamples": [
+            "// design-system basic implementation",
+            "// design-system advanced usage",
+            "// design-system error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "design-system"
+            ],
+            "dependencies": [
+              "design-system-lib",
+              "typescript"
+            ],
+            "structure": "design-system standard architecture"
+          }
+        },
+        {
+          "pattern": "storybook",
+          "agentId": "design-system",
+          "bestPractices": [
+            "storybook industry best practices",
+            "storybook security considerations",
+            "storybook performance optimizations"
+          ],
+          "codeExamples": [
+            "// storybook basic implementation",
+            "// storybook advanced usage",
+            "// storybook error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "storybook"
+            ],
+            "dependencies": [
+              "storybook-lib",
+              "typescript"
+            ],
+            "structure": "storybook standard architecture"
+          }
+        },
+        {
+          "pattern": "accessibility",
+          "agentId": "design-system",
+          "bestPractices": [
+            "accessibility industry best practices",
+            "accessibility security considerations",
+            "accessibility performance optimizations"
+          ],
+          "codeExamples": [
+            "// accessibility basic implementation",
+            "// accessibility advanced usage",
+            "// accessibility error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "accessibility"
+            ],
+            "dependencies": [
+              "accessibility-lib",
+              "typescript"
+            ],
+            "structure": "accessibility standard architecture"
+          }
+        }
+      ]
+    },
+    "testing-qa": {
+      "agent": {
+        "name": "Testing & QA Agent",
+        "role": "specialist",
+        "responsibilities": [
+          "e2e-testing",
+          "coverage-analysis",
+          "playwright"
+        ],
+        "context7_patterns": [
+          "testing",
+          "playwright",
+          "jest"
+        ],
+        "priority": 2,
+        "parallel": true
+      },
+      "result": "Loaded cached credentials.\nExcellent. As the Testing & QA Agent, I will now outline my execution plan based on my specialized responsibilities and the orchestrator's guidance.\n\n### 1. IMPLEMENTATION PLAN\n\nMy primary goal is to establish a robust, automated End-to-End (E2E) testing framework that guarantees quality and integrates seamlessly into the CI/CD pipeline.\n\n1.  **Framework Setup:** I will immediately initialize Playwright within the Next.js project. This includes installing the `@playwright/test` dependency and creating a `playwright.config.ts` file configured to run against the Dev and Staging environments.\n2.  **Architecture & Scaffolding:** I will establish a scalable test architecture using the Page Object Model (POM). A `tests/e2e` directory will be created, containing subdirectories for page objects, test specs, and utility functions (e.g., test data generators, authentication fixtures).\n3.  **Parallel Test Development:** In lockstep with the **Business Agent**, as features are deployed to the Dev environment, I will write corresponding E2E tests. Priority will be given to the \"critical user paths\" such as user authentication, the complete onboarding flow, and core business logic.\n4.  **CI/CD Integration:** I will provide the necessary script (e.g., `pnpm test:e2e`) to the **DevOps Agent** for integration into the GitHub Actions pipeline. This will enforce the \"Automated PR Gating\" (VC3), ensuring no code is merged without passing the full E2E suite.\n5.  **Test Maintenance & Resilience:** I will continuously monitor test suite stability, immediately refactoring any \"flaky\" tests to ensure they are idempotent and resilient, as per the risk mitigation strategy (Risk 4).\n\n### 2. CONTEXT7 PATTERN COMPLIANCE\n\nI will adhere strictly to the loaded Context7 patterns to ensure consistency and quality.\n\n*   **`playwright: standard architecture`**: My implementation will use a `playwright.config.ts` and a `tests/e2e` directory. I will heavily leverage Page Object Models (POMs) to create a clean, maintainable, and reusable test codebase.\n*   **`playwright: industry best practices`**: I will write independent tests that can execute in parallel. Assertions will be web-first (e.g., `expect(locator).toBeVisible()`) to avoid brittle waits. Authentication and other repetitive setups will be handled elegantly using Playwright's fixtures.\n*   **`testing: security considerations`**: Test credentials and other secrets will not be hardcoded. I will rely on environment variables provided securely by the **DevOps Agent** within the CI environment.\n*   **`dependencies: playwright-lib, typescript`**: The test suite will be built exclusively with TypeScript and the `@playwright/test` library, managed via pnpm.\n\n### 3. DELIVERABLES\n\nMy concrete outputs for this phase will be:\n\n*   A complete Playwright E2E test suite located in the `tests/e2e` directory of the repository.\n*   A `playwright.config.ts` file optimized for parallel execution in different environments (local, CI).\n*   A `package.json` script (e.g., `\"test:e2e\": \"playwright test\"`) for executing the test suite.\n*   A Test Coverage Matrix, mapping critical user paths to specific test files, to track progress toward the >95% coverage goal.\n*   Bug reports and failure analyses submitted as GitHub Issues for any test failures.\n\n### 4. QUALITY MEASURES\n\nI will measure the success of my work against the following metrics:\n\n*   **E2E Test Coverage:** Achieve and maintain >95% coverage of all defined critical user paths.\n*   **Production Bug Rate:** Ensure \"Zero blocking bugs\" are present in any production release candidate, validating the effectiveness of the test suite as a quality gate.\n*   **Test Suite Stability:** Maintain a pass rate of >98% on the main branch to ensure the CI pipeline is reliable and trusted by the team.\n\n### 5. INTEGRATION POINTS\n\nMy work is highly parallel and requires tight coordination with other agents:\n\n*   **Business Agent:** I am dependent on their feature deployments to the Dev/Staging environments. I will maintain constant communication to understand which user flows are ready for testing and to clarify acceptance criteria.\n*   **DevOps Agent:** I will coordinate closely to:\n    *   Obtain environment URLs and test account credentials (as secure variables).\n    *   Integrate my test execution script into the CI pipeline at the PR gating stage (VC3).\n    *   Jointly troubleshoot any environment-related test instabilities (Risk 4).\n*   **All Other Agents:** My test suite serves as a central quality gate. A passing suite is a mandatory prerequisite for the **Performance** and **Legal** agents to conduct their final reviews and for the **Business Agent** to sign off at VC4.\n\nI am ready to begin execution.",
+      "duration": 32624,
+      "success": true,
+      "context7Data": [
+        {
+          "pattern": "testing",
+          "agentId": "testing-qa",
+          "bestPractices": [
+            "testing industry best practices",
+            "testing security considerations",
+            "testing performance optimizations"
+          ],
+          "codeExamples": [
+            "// testing basic implementation",
+            "// testing advanced usage",
+            "// testing error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "testing"
+            ],
+            "dependencies": [
+              "testing-lib",
+              "typescript"
+            ],
+            "structure": "testing standard architecture"
+          }
+        },
+        {
+          "pattern": "playwright",
+          "agentId": "testing-qa",
+          "bestPractices": [
+            "playwright industry best practices",
+            "playwright security considerations",
+            "playwright performance optimizations"
+          ],
+          "codeExamples": [
+            "// playwright basic implementation",
+            "// playwright advanced usage",
+            "// playwright error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "playwright"
+            ],
+            "dependencies": [
+              "playwright-lib",
+              "typescript"
+            ],
+            "structure": "playwright standard architecture"
+          }
+        },
+        {
+          "pattern": "jest",
+          "agentId": "testing-qa",
+          "bestPractices": [
+            "jest industry best practices",
+            "jest security considerations",
+            "jest performance optimizations"
+          ],
+          "codeExamples": [
+            "// jest basic implementation",
+            "// jest advanced usage",
+            "// jest error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "jest"
+            ],
+            "dependencies": [
+              "jest-lib",
+              "typescript"
+            ],
+            "structure": "jest standard architecture"
+          }
+        }
+      ]
+    },
+    "business": {
+      "agent": {
+        "name": "Business Agent",
+        "role": "specialist",
+        "responsibilities": [
+          "onboarding",
+          "commercial-pages",
+          "user-flow"
+        ],
+        "context7_patterns": [
+          "business-logic",
+          "user-experience",
+          "conversion"
+        ],
+        "priority": 2,
+        "parallel": true
+      },
+      "result": "Loaded cached credentials.\nHere is my execution plan as the Business Agent, in compliance with the Orchestrator's guidance and Context7 patterns.\n\n### 1. IMPLEMENTATION PLAN\n\nMy execution will proceed in parallel sprints, focusing on delivering user-facing value as quickly as possible.\n\n1.  **Sprint 1: Foundation & Commercial Pages**\n    *   **Action:** Sync with the Design System Agent to integrate the initial \"Component Kernel\" (Storybook).\n    *   **Action:** Scaffold and build the primary static commercial pages (`/`, `/pricing`, `/features`) using the kernel components and Next.js App Router (Server Components for performance).\n    *   **Action:** Deploy the first set of pages to the Dev environment via the CI/CD pipeline to enable immediate feedback from other agents.\n\n2.  **Sprint 2: Core Onboarding Flow**\n    *   **Action:** Implement the user registration and authentication flow (email/password and social providers) using server-side validation as per `business-logic security considerations`.\n    *   **Action:** Build the multi-step profile creation process, managing state with a client-side library compliant with `user-experience: standard architecture`.\n    *   **Action:** Deploy the complete onboarding flow to Staging for E2E testing and legal review.\n\n3.  **Sprint 3: Key User-Flows & Iteration**\n    *   **Action:** Develop the initial post-login user experience, such as a dashboard or primary application feature.\n    *   **Action:** Address feedback from QA, Performance, and Legal agents from previous sprints by creating and prioritizing bug-fix/refinement tasks.\n    *   **Action:** Instrument the onboarding flow to capture the \"completion time\" metric using `conversion-lib`.\n\n### 2. CONTEXT7 PATTERN COMPLIANCE\n\nI will strictly adhere to the specified Context7 patterns in all implementations:\n\n*   **`business-logic`:**\n    *   **Architecture:** All business rules (e.g., subscription validation, input processing) will be handled in Next.js Server Actions or dedicated API routes, completely decoupled from the UI, as per `business-logic: standard architecture`.\n    *   **Security:** I will implement server-side validation for all form submissions and user-generated content to mitigate XSS and other injection attacks, following `business-logic security considerations`.\n    *   **Dependencies:** I will use `business-logic-lib` for any complex calculations or data transformations.\n\n*   **`user-experience`:**\n    *   **Architecture:** I will leverage Next.js App Router and Server Components to ensure fast initial page loads. Interactive islands will be created using Client Components for a responsive UI, adhering to `user-experience performance optimizations`.\n    *   **Best Practices:** The onboarding flow will be designed to be intuitive and require minimal steps. Error messages will be clear and helpful.\n    *   **Dependencies:** `user-experience-lib` will be used for managing complex UI state, animations, and modals.\n\n*   **`conversion`:**\n    *   **Architecture:** Clear, concise Calls-to-Action (CTAs) will be placed strategically on all commercial pages.\n    *   **Performance:** Any analytics or A/B testing scripts from `conversion-lib` will be loaded asynchronously or after hydration to avoid blocking the main thread, as mandated by `conversion performance optimizations`.\n    *   **Best Practices:** The sign-up form will be simple, requesting only essential information initially to reduce friction and maximize sign-ups.\n\n### 3. DELIVERABLES\n\nMy concrete outputs will be:\n\n*   **Code:** High-quality, typed, and commented Pull Requests in our Git repository for every feature and fix.\n*   **Live Features:**\n    1.  Functional and responsive commercial pages deployed on the Staging environment.\n    2.  A complete user onboarding and authentication flow.\n    3.  The initial version of the core application user flow.\n*   **Documentation:** Component requests and bug reports filed as GitHub Issues with clear descriptions and acceptance criteria.\n\n### 4. QUALITY MEASURES\n\nI will ensure excellence through a multi-layered quality approach:\n\n*   **Metric-Driven:** My primary success metric is **User onboarding flow completion time < 5 minutes**. I will implement tracking to measure and validate this.\n*   **Automated Gating:** All my PRs must pass the automated validation checkpoints (VC3), including CI builds, QA tests, and performance scores, before they can be merged.\n*   **Code Standards:** I will enforce TypeScript strict mode and adhere to all project linting rules.\n*   **Manual Verification:** I will personally conduct manual testing of my features in the Dev environment before submitting any PR.\n\n### 5. INTEGRATION POINTS\n\nI will coordinate actively with other agents to ensure seamless parallel execution:\n\n*   **DevOps Agent:** I am a primary consumer of the CI/CD pipeline. I will provide immediate feedback on pipeline performance and environment stability.\n*   **Design System Agent:** I will be the first consumer of the \"Component Kernel.\" I will use placeholders for non-critical components to avoid being blocked and will submit new component requests via GitHub Issues with detailed specifications.\n*   **Testing & QA Agent:** I will provide clear \"How to Test\" steps in every PR description. I will be on standby to fix any bugs they identify in my features on the Staging environment.\n*   **Performance Agent:** I will treat the Lighthouse score as a hard requirement. Any PR flagged for performance regression will be my top priority to fix, using techniques like dynamic imports or component refactoring.\n*   **Legal Agent:** I will explicitly tag the Legal Agent for review in PRs or on Staging deployments that involve user data collection (onboarding) or present terms of service.",
+      "duration": 33761,
+      "success": true,
+      "context7Data": [
+        {
+          "pattern": "business-logic",
+          "agentId": "business",
+          "bestPractices": [
+            "business-logic industry best practices",
+            "business-logic security considerations",
+            "business-logic performance optimizations"
+          ],
+          "codeExamples": [
+            "// business-logic basic implementation",
+            "// business-logic advanced usage",
+            "// business-logic error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "business-logic"
+            ],
+            "dependencies": [
+              "business-logic-lib",
+              "typescript"
+            ],
+            "structure": "business-logic standard architecture"
+          }
+        },
+        {
+          "pattern": "user-experience",
+          "agentId": "business",
+          "bestPractices": [
+            "user-experience industry best practices",
+            "user-experience security considerations",
+            "user-experience performance optimizations"
+          ],
+          "codeExamples": [
+            "// user-experience basic implementation",
+            "// user-experience advanced usage",
+            "// user-experience error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "user-experience"
+            ],
+            "dependencies": [
+              "user-experience-lib",
+              "typescript"
+            ],
+            "structure": "user-experience standard architecture"
+          }
+        },
+        {
+          "pattern": "conversion",
+          "agentId": "business",
+          "bestPractices": [
+            "conversion industry best practices",
+            "conversion security considerations",
+            "conversion performance optimizations"
+          ],
+          "codeExamples": [
+            "// conversion basic implementation",
+            "// conversion advanced usage",
+            "// conversion error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "conversion"
+            ],
+            "dependencies": [
+              "conversion-lib",
+              "typescript"
+            ],
+            "structure": "conversion standard architecture"
+          }
+        }
+      ]
+    },
+    "devops": {
+      "agent": {
+        "name": "DevOps Agent",
+        "role": "specialist",
+        "responsibilities": [
+          "ci-cd",
+          "github-actions",
+          "infrastructure"
+        ],
+        "context7_patterns": [
+          "devops",
+          "docker",
+          "github-actions"
+        ],
+        "priority": 2,
+        "parallel": true
+      },
+      "result": "Loaded cached credentials.\n**AGENT: DevOps Agent**\n**STATUS: Acknowledged. Commencing Execution.**\n\nHere is my execution plan as the DevOps Agent, in compliance with the Orchestration Plan and Context7 patterns.\n\n### 1. Implementation Plan\n\nMy execution is divided into two primary phases, aligned with the orchestrator's guidance.\n\n**Phase 1: Foundation (VC1)**\n1.  **Project Initialization & Dockerization:**\n    *   Verify a standard Next.js + TypeScript project structure exists.\n    *   Create a multi-stage `Dockerfile` to build an optimized, production-ready container for the Next.js application. This ensures a consistent build and runtime environment.\n    *   Create a `docker-compose.yml` for local development consistency, enabling other agents to run the application easily.\n2.  **CI/CD Pipeline Scaffolding (`.github/workflows/`):**\n    *   **`ci.yml`:** Develop the core Continuous Integration workflow. This will trigger on every Pull Request and push to `main`.\n        *   Checkout code.\n        *   Setup Node.js and PNPM (as per project conventions).\n        *   Install dependencies with caching enabled to meet the `< 8 min` performance goal.\n        *   Run linting, and unit/integration tests.\n        *   Build the Docker image.\n    *   **`sast-scan.yml`:** Implement a reusable workflow for Static Application Security Testing (SAST) using a tool like CodeQL. This will be a mandatory check in `ci.yml` to satisfy `ci-cd security considerations`.\n3.  **Deployment Pipeline & Environment Setup (VC1):**\n    *   **`deploy-staging.yml`:** Create the Continuous Deployment workflow. This will trigger on merges to the `main` branch.\n    *   Provision the Staging environment (e.g., Kubernetes cluster on a cloud provider).\n    *   Deploy the \"hello world\" Next.js application to the Staging environment to achieve **Validation Checkpoint 1 (VC1)**.\n    *   Configure environment variables and secrets using GitHub Actions encrypted secrets.\n\n**Phase 2: Parallel Execution & Optimization**\n4.  **Automated PR Gating (VC3):**\n    *   I will collaborate with the **Testing & QA Agent** and **Performance Agent** to integrate their automated checks (Playwright E2E tests, Lighthouse scores) as mandatory jobs within the `ci.yml` workflow. A PR will be blocked from merging if these checks fail.\n5.  **Production Environment Finalization:**\n    *   Develop and refine the Kubernetes manifests (`deployment.yml`, `service.yml`, `ingress.yml`) for the production environment, applying `deployment: standard architecture` patterns for high availability and scalability.\n    *   **`deploy-production.yml`:** Create the production deployment workflow, gated by a manual approval step (**VC5**).\n6.  **Monitoring & Optimization:**\n    *   Implement monitoring on the CI/CD pipelines to track duration, success rate, and resource usage.\n    *   Set up uptime monitoring and alerting for the Staging environment to ensure the 99.9% uptime requirement is met.\n    *   Continuously refactor and optimize workflows (e.g., improving layer caching in Docker, refining dependency caching in GitHub Actions) to keep the average pipeline duration under 8 minutes.\n\n### 2. Context7 Compliance\n\n*   **`devops`:**\n    *   **Best Practices:** I will use Infrastructure as Code (IaC) for all environments. Git will be the single source of truth (GitOps). All changes to infrastructure or pipelines will be made via Pull Requests.\n    *   **Security:** SAST scanning will be integrated into the CI pipeline. Secrets will be managed securely using GitHub's encrypted secrets, not stored in code.\n    *   **Performance:** Aggressive caching strategies will be used in both Docker builds and GitHub Actions workflows to meet the sub-8-minute pipeline goal.\n*   **`docker`:**\n    *   **Best Practices:** I will implement multi-stage builds in the `Dockerfile` to create lean, secure production images, separating build-time dependencies from runtime.\n    *   **Security:** The final image will run with a non-root user. I will use a minimal base image (e.g., `node:alpine`) to reduce the attack surface.\n*   **`github-actions`:**\n    *   **Best Practices:** I will create modular, reusable workflows (e.g., for building, testing, deploying) that can be called by other workflows. This improves maintainability and reduces duplication.\n    *   **Architecture:** Workflows will be clearly separated by concern: `ci.yml` for integration, `deploy-*.yml` for deployment.\n    *   **Performance:** I will use caching for dependencies (`pnpm store`) and build artifacts to significantly speed up execution times.\n\n### 3. Deliverables\n\n*   **Configuration Files:**\n    *   `Dockerfile`\n    *   `docker-compose.yml`\n    *   `.github/workflows/ci.yml`\n    *   `.github/workflows/deploy-staging.yml`\n    *   `.github/workflows/deploy-production.yml`\n*   **Infrastructure as Code:**\n    *   Kubernetes manifest files (e.g., `k8s/deployment.yml`, `k8s/service.yml`).\n*   **Documentation:**\n    *   A `README.md` section explaining the CI/CD pipeline, how to trigger deployments, and how to troubleshoot common failures.\n\n### 4. Quality Measures\n\nI will measure the quality and success of my work against the specific metrics defined in the Orchestration Plan:\n*   **CI/CD Pipeline Success:** Monitored via GitHub Actions dashboard. Target: Successful deployment to production at the end of the project.\n*   **Production Uptime:** Measured using an external monitoring service (e.g., UptimeRobot, Prometheus). Target: `> 99.9%`.\n*   **Pipeline Performance:** Measured via the timing of each workflow run in GitHub Actions. Target: `Average duration < 8 minutes`.\n\n### 5. Integration Points\n\nMy role is central to the coordination of all other agents.\n*   **Provides For:** All other agents. The CI/CD pipeline is the backbone of the entire parallel execution phase. I will provide them with stable Dev and Staging environments.\n*   **Integrates With:**\n    *   **Business Agent:** Their code pushes will be the primary trigger for the CI/CD pipeline.\n    *   **Testing & QA Agent:** I will integrate their Playwright test suite directly into my `ci.yml` workflow as a required status check for PRs.\n    *   **Performance Agent:** Their Lighthouse and bundle size checks will also be integrated as mandatory gates in the `ci.yml` workflow.\n    *   **Legal & Business Agents:** I will await their formal sign-off on the Staging environment before enabling the manual trigger for the production deployment (**VC5**).\n\n**Ready to proceed with Phase 1, Step 1.**",
+      "duration": 35118,
+      "success": true,
+      "context7Data": [
+        {
+          "pattern": "devops",
+          "agentId": "devops",
+          "bestPractices": [
+            "devops industry best practices",
+            "devops security considerations",
+            "devops performance optimizations"
+          ],
+          "codeExamples": [
+            "// devops basic implementation",
+            "// devops advanced usage",
+            "// devops error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "devops"
+            ],
+            "dependencies": [
+              "devops-lib",
+              "typescript"
+            ],
+            "structure": "devops standard architecture"
+          }
+        },
+        {
+          "pattern": "docker",
+          "agentId": "devops",
+          "bestPractices": [
+            "docker industry best practices",
+            "docker security considerations",
+            "docker performance optimizations"
+          ],
+          "codeExamples": [
+            "// docker basic implementation",
+            "// docker advanced usage",
+            "// docker error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "docker"
+            ],
+            "dependencies": [
+              "docker-lib",
+              "typescript"
+            ],
+            "structure": "docker standard architecture"
+          }
+        },
+        {
+          "pattern": "github-actions",
+          "agentId": "devops",
+          "bestPractices": [
+            "github-actions industry best practices",
+            "github-actions security considerations",
+            "github-actions performance optimizations"
+          ],
+          "codeExamples": [
+            "// github-actions basic implementation",
+            "// github-actions advanced usage",
+            "// github-actions error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "github-actions"
+            ],
+            "dependencies": [
+              "github-actions-lib",
+              "typescript"
+            ],
+            "structure": "github-actions standard architecture"
+          }
+        }
+      ]
+    },
+    "legal": {
+      "agent": {
+        "name": "Legal Agent",
+        "role": "specialist",
+        "responsibilities": [
+          "rgpd-compliance",
+          "privacy-policy",
+          "terms"
+        ],
+        "context7_patterns": [
+          "legal",
+          "privacy",
+          "compliance"
+        ],
+        "priority": 3,
+        "parallel": true
+      },
+      "result": "Loaded cached credentials.\nAcknowledged. As the Legal Agent, I will now execute my specialized responsibilities in accordance with the PHASE 4 Orchestration Plan. My focus is on ensuring full legal and regulatory compliance for the project, operating in parallel with other specialist agents.\n\nHere is my execution plan:\n\n### 1. IMPLEMENTATION PLAN\n\n1.  **Initial Scaffolding (Immediate):** I will create the foundational legal pages within the Next.js application structure. This involves creating placeholder files for key legal documents.\n    *   `src/app/terms-of-service/page.tsx`\n    *   `src/app/privacy-policy/page.tsx`\n    *   `src/components/legal/CookieConsentBanner.tsx`\n\n2.  **Drafting Legal Content (Parallel):** Using industry-standard templates and RGPD guidelines, I will generate the initial drafts for the core legal documents.\n    *   **Terms of Service:** Define rules of use, user responsibilities, and limitations of liability.\n    *   **Privacy Policy:** Detail data collection, processing, storage, and user rights under RGPD (access, rectification, erasure).\n    *   **Cookie Policy:** Implement the `CookieConsentBanner` component, providing clear options for consent and linking to the detailed policy.\n\n3.  **Continuous Compliance Audit (Parallel):** As the **Business Agent** deploys new user flows and features to the Staging environment, I will conduct an ongoing RGPD compliance audit. My process involves:\n    *   Identifying all points of personal data collection (e.g., registration forms, contact forms).\n    *   Verifying that explicit consent is obtained before data processing.\n    *   Ensuring user flows provide mechanisms for data access and deletion requests.\n\n4.  **Integration and Remediation (Iterative):** I will submit my drafted pages and components as a Pull Request. For any compliance issues found during my audit, I will open GitHub Issues, tagging the relevant agents (e.g., **Business Agent**, **Design System Agent**) to ensure remediation is tracked and implemented before the Staging Sign-off.\n\n### 2. CONTEXT7 COMPLIANCE\n\nI will strictly adhere to the loaded Context7 patterns:\n\n*   **`legal:*`**:\n    *   **Dependencies:** I will use `typescript` for all created components (`.tsx`). I will simulate the use of `legal-lib` to generate standardized text templates for the policies.\n    *   **Architecture:** I will follow the `legal standard architecture` by creating distinct, statically-generated routes for `terms-of-service` and `privacy-policy`, ensuring they are easily accessible and performant.\n*   **`privacy:*`**:\n    *   **Dependencies:** The implementation of the cookie consent mechanism will be based on patterns from `privacy-lib`, ensuring it correctly manages user consent state.\n    *   **Best Practices:** I will apply `privacy security considerations` by ensuring no sensitive data is exposed in the frontend and that consent mechanisms are robust.\n*   **`compliance:*`**:\n    *   **Architecture:** My audit process follows the `compliance standard architecture`, using a structured checklist based on RGPD articles. The output will be a clear, auditable report.\n    *   **Best Practices:** The \"Shift-Left Compliance\" approach described in the orchestration plan is a core `compliance industry best practice` that I will follow.\n\n### 3. DELIVERABLES\n\nMy concrete outputs for this phase will be:\n\n1.  **Source Code:**\n    *   `src/app/terms-of-service/page.tsx`\n    *   `src/app/privacy-policy/page.tsx`\n    *   `src/components/legal/CookieConsentBanner.tsx`\n2.  **Documentation:**\n    *   An `RGPD-Compliance-Audit.md` report, detailing the audit checklist, findings, and the status of each item.\n3.  **Formal Actions:**\n    *   Pull Requests for the legal pages and components.\n    *   GitHub Issues for any identified compliance gaps.\n    *   Formal \"Sign-off\" at the **VC4: Staging Sign-off** checkpoint.\n\n### 4. QUALITY MEASURES\n\nI will ensure excellence through the following measures:\n\n*   **Metric 1 (RGPD Checklist):** 100% of items on the RGPD compliance checklist will be addressed and marked as \"Compliant\" or \"Risk-Accepted\" before my final sign-off.\n*   **Metric 2 (Policy Accessibility):** The Privacy Policy and Terms of Service will be published and accessible from the application's footer, meeting the success criteria.\n*   **Metric 3 (Clarity):** All legal text will be written in clear, concise language, avoiding unnecessary jargon to ensure user comprehension.\n*   **Metric 4 (Code Quality):** All code I produce will adhere to project-wide linting rules and pass all automated CI checks.\n\n### 5. INTEGRATION POINTS\n\nMy work is intrinsically parallel and integrated with other agents:\n\n*   **Dependency on Business Agent:** I will monitor the Staging environment for new pages and user flows deployed by the **Business Agent**, which serve as the primary input for my compliance audit.\n*   **Coordination with Testing & QA Agent:** I will collaborate with the **Testing & QA Agent** by providing them with specific test cases to validate legal and privacy flows (e.g., \"Verify that the cookie banner appears for new users,\" \"Verify that the 'Delete My Account' flow triggers the correct data erasure process\").\n*   **Feedback Loop:** When a compliance issue is found, I will create a GitHub Issue and tag the responsible agent(s). This creates a transparent and actionable feedback loop that does not block unrelated development streams.\n*   **Production Gate (VC5):** I am a mandatory gate for the production release. My final sign-off is contingent on the successful resolution of all critical compliance issues and the fulfillment of all my success criteria.",
+      "duration": 37612,
+      "success": true,
+      "context7Data": [
+        {
+          "pattern": "legal",
+          "agentId": "legal",
+          "bestPractices": [
+            "legal industry best practices",
+            "legal security considerations",
+            "legal performance optimizations"
+          ],
+          "codeExamples": [
+            "// legal basic implementation",
+            "// legal advanced usage",
+            "// legal error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "legal"
+            ],
+            "dependencies": [
+              "legal-lib",
+              "typescript"
+            ],
+            "structure": "legal standard architecture"
+          }
+        },
+        {
+          "pattern": "privacy",
+          "agentId": "legal",
+          "bestPractices": [
+            "privacy industry best practices",
+            "privacy security considerations",
+            "privacy performance optimizations"
+          ],
+          "codeExamples": [
+            "// privacy basic implementation",
+            "// privacy advanced usage",
+            "// privacy error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "privacy"
+            ],
+            "dependencies": [
+              "privacy-lib",
+              "typescript"
+            ],
+            "structure": "privacy standard architecture"
+          }
+        },
+        {
+          "pattern": "compliance",
+          "agentId": "legal",
+          "bestPractices": [
+            "compliance industry best practices",
+            "compliance security considerations",
+            "compliance performance optimizations"
+          ],
+          "codeExamples": [
+            "// compliance basic implementation",
+            "// compliance advanced usage",
+            "// compliance error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "compliance"
+            ],
+            "dependencies": [
+              "compliance-lib",
+              "typescript"
+            ],
+            "structure": "compliance standard architecture"
+          }
+        }
+      ]
+    },
+    "performance": {
+      "agent": {
+        "name": "Performance Agent",
+        "role": "specialist",
+        "responsibilities": [
+          "lighthouse-optimization",
+          "bundle-size",
+          "core-vitals"
+        ],
+        "context7_patterns": [
+          "performance",
+          "lighthouse",
+          "optimization"
+        ],
+        "priority": 3,
+        "parallel": true
+      },
+      "result": "Loaded cached credentials.\nExcellent. Performance Agent activated. Analyzing orchestration plan and Context7 patterns. My execution strategy is prepared.\n\nHere is my specialist execution plan as the Performance Agent.\n\n### 1. IMPLEMENTATION PLAN\n\nMy execution is structured into three phases: Setup, Continuous Monitoring, and Optimization Loop.\n\n1.  **Phase 1: Setup & Baselining (Depends on DevOps VC1)**\n    *   **Action:** Integrate `@next/bundle-analyzer` into the Next.js configuration (`next.config.js`).\n    *   **Action:** Establish performance budgets. I will create a `performance.json` file defining thresholds:\n        *   Lighthouse Scores: > 95 for Performance, Accessibility, Best Practices, SEO.\n        *   Bundle Size: Max initial JS load (e.g., < 150KB), max page route size.\n        *   Core Web Vitals: LCP < 2.5s, INP < 200ms, CLS < 0.1.\n    *   **Action:** Configure Lighthouse CI by adding `lighthouserc.json` to the root. This will target the Staging environment URL provided by the DevOps agent.\n    *   **Action:** Provide a dedicated GitHub Actions workflow file (`performance_check.yml`) to the DevOps agent. This workflow will trigger on every Pull Request.\n\n2.  **Phase 2: Continuous Monitoring & Automated Gating (Continuous, follows Business Agent)**\n    *   For every PR, the `performance_check.yml` workflow will execute automatically.\n    *   **Step 1:** Run `pnpm build` and generate a bundle analysis report. The workflow will compare the output against the `performance.json` budget.\n    *   **Step 2:** Run Lighthouse CI against the preview/staging deployment of the PR.\n    *   **Step 3:** The workflow job will **fail** if any budget is violated, automatically blocking the PR from being merged (VC3 compliance).\n\n3.  **Phase 3: Asynchronous Feedback & Optimization Loop (Continuous)**\n    *   When a PR is blocked, I will post an automated comment containing:\n        *   The Lighthouse report link.\n        *   A summary of the bundle size changes (e.g., `+15KB for /page/new-feature`).\n        *   Specific, actionable recommendations for remediation (e.g., \"Compress `image.png`,\" \"Dynamically import `heavy-library` using `next/dynamic`\").\n\n### 2. CONTEXT7 COMPLIANCE\n\nI will strictly adhere to the loaded patterns:\n\n*   **`performance` Pattern:**\n    *   **Best Practices:** My entire process embodies `performance industry best practices` by automating Lighthouse checks and enforcing performance budgets. Security is addressed by flagging insecure third-party scripts via Lighthouse audits.\n    *   **Architecture:** I am implementing the `performance standard architecture` by embedding performance gates directly into the CI/CD pipeline, making it a mandatory quality check.\n    *   **Dependencies:** I will use `typescript` to script any custom logic and rely on `performance-lib` (interpreted as Lighthouse, `@next/bundle-analyzer`).\n\n*   **`lighthouse` Pattern:**\n    *   **Best Practices:** I will configure Lighthouse to emulate mobile devices and throttled networks, reflecting real-world `lighthouse industry best practices`.\n    *   **Architecture:** The `lighthouse standard architecture` is achieved through the automated `performance_check.yml` GitHub Action, ensuring no code is merged without a passing score.\n\n*   **`optimization` Pattern:**\n    *   **Best Practices:** My automated feedback will provide context-aware `optimization performance optimizations`, such as recommending code-splitting for large components or tree-shaking for bloated dependencies.\n    *   **Architecture:** I establish the `optimization standard architecture` by creating a tight feedback loop: Analysis (CI job) -> Report (PR comment) -> Action (Developer optimization).\n\n### 3. DELIVERABLES\n\nMy concrete outputs will be:\n\n1.  **Configuration Files:** `lighthouserc.json`, `performance.json`.\n2.  **Code Artifacts:** Modifications to `next.config.js` and the `performance_check.yml` GitHub Actions workflow file.\n3.  **Automated Reports:** PR comments containing analysis and actionable feedback for developers.\n4.  **A `PERFORMANCE.md` document** in the repository outlining the budgets and the process.\n\n### 4. QUALITY MEASURES\n\nExcellence will be measured by:\n\n1.  **Primary Metric:** Strict adherence to the success criteria: Lighthouse scores > 95 and bundle sizes within the defined budget for all merged PRs.\n2.  **Regression Prevention:** Zero performance regressions deployed to the `main` branch.\n3.  **Actionability:** The clarity and effectiveness of my automated reports, measured by the speed at which developers can resolve performance-related PR blocks.\n4.  **CI Job Stability:** The performance check workflow will have a >99% reliability rate (non-flaky).\n\n### 5. INTEGRATION POINTS\n\nI will coordinate with other agents as follows:\n\n*   **DevOps Agent:** I will deliver my `performance_check.yml` workflow and configuration files to them for integration into the master CI/CD pipeline. I depend on them for build artifacts and a stable Staging environment URL to run my checks against.\n*   **Business Agent:** I directly consume their work. When their feature branches are deployed to Staging, my process is triggered. My PR-blocking mechanism and feedback comments are my primary communication channel with them.\n*   **Testing & QA Agent:** I will consult their E2E test paths to identify the most critical user journeys. I will configure Lighthouse CI to run on these specific pages/flows to ensure our performance monitoring has maximum impact.\n*   **Design System Agent:** If my analysis traces a performance bottleneck back to a core component (e.g., large icon set, inefficient animation), I will open a ticket with a detailed report for them to optimize the component at its source.\n\nExecution will now commence.",
+      "duration": 38297,
+      "success": true,
+      "context7Data": [
+        {
+          "pattern": "performance",
+          "agentId": "performance",
+          "bestPractices": [
+            "performance industry best practices",
+            "performance security considerations",
+            "performance performance optimizations"
+          ],
+          "codeExamples": [
+            "// performance basic implementation",
+            "// performance advanced usage",
+            "// performance error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "performance"
+            ],
+            "dependencies": [
+              "performance-lib",
+              "typescript"
+            ],
+            "structure": "performance standard architecture"
+          }
+        },
+        {
+          "pattern": "lighthouse",
+          "agentId": "performance",
+          "bestPractices": [
+            "lighthouse industry best practices",
+            "lighthouse security considerations",
+            "lighthouse performance optimizations"
+          ],
+          "codeExamples": [
+            "// lighthouse basic implementation",
+            "// lighthouse advanced usage",
+            "// lighthouse error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "lighthouse"
+            ],
+            "dependencies": [
+              "lighthouse-lib",
+              "typescript"
+            ],
+            "structure": "lighthouse standard architecture"
+          }
+        },
+        {
+          "pattern": "optimization",
+          "agentId": "performance",
+          "bestPractices": [
+            "optimization industry best practices",
+            "optimization security considerations",
+            "optimization performance optimizations"
+          ],
+          "codeExamples": [
+            "// optimization basic implementation",
+            "// optimization advanced usage",
+            "// optimization error handling"
+          ],
+          "architecture": {
+            "framework": "Next.js",
+            "patterns": [
+              "optimization"
+            ],
+            "dependencies": [
+              "optimization-lib",
+              "typescript"
+            ],
+            "structure": "optimization standard architecture"
+          }
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalAgents": 7,
+    "successfulAgents": 7,
+    "failedAgents": 0,
+    "totalDuration": 248958,
+    "context7PatternsLoaded": 21
+  }
+}

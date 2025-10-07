@@ -1,0 +1,28 @@
+{
+  "validationRules": {
+    "architecturePatterns": {
+      "requiredImports": "function validateImports(fileContent) { const requiredImports = ['React', 'useState', 'useEffect']; return requiredImports.every(importName => fileContent.includes(importName)); }",
+      "fileStructure": "function validateFileStructure(filePath) { const validStructure = /src\\/components\\/\\w+\\.tsx$/; return validStructure.test(filePath); }",
+      "componentPatterns": "function validateComponentPatterns(fileContent) { return /function\\s+\\w+\\s*\\(.*\\)\\s*{/.test(fileContent); }",
+      "apiEndpointPatterns": "function validateApiEndpoints(fileContent) { return /fetch\\(\\s*['\"]\\/api\\/.*/.test(fileContent); }"
+    },
+    "commonMistakes": {
+      "wrongTechnologyUsage": "function validateTechnologyUsage(fileContent) { return !fileContent.includes('import sys') && !fileContent.includes('import os'); }",
+      "incorrectDatabasePatterns": "function validateDatabasePatterns(fileContent) { return !fileContent.includes('mongoose') && !fileContent.includes('sqlalchemy'); }",
+      "securityAntipatterns": "function validateSecurityAntipatterns(fileContent) { return !fileContent.includes('eval(') && !fileContent.includes('innerHTML ='); }",
+      "performancePitfalls": "function validatePerformancePitfalls(fileContent) { return !fileContent.includes('setTimeout') && !fileContent.includes('setInterval'); }"
+    },
+    "integrationValidation": {
+      "apiContractValidation": "function validateApiContract(apiResponse) { const expectedKeys = ['status', 'data']; return expectedKeys.every(key => key in apiResponse); }",
+      "databaseSchemaChecks": "function validateDatabaseSchema(schema) { const requiredFields = ['id', 'name', 'email']; return requiredFields.every(field => field in schema); }",
+      "componentInterfaceValidation": "function validateComponentInterface(componentProps) { const requiredProps = ['title', 'onSubmit']; return requiredProps.every(prop => prop in componentProps); }",
+      "securityPatternEnforcement": "function validateSecurityPatterns(fileContent) { return fileContent.includes('Content-Security-Policy') && fileContent.includes('Strict-Transport-Security'); }"
+    },
+    "qualityThresholds": {
+      "complexityLimits": "function validateComplexity(fileContent) { const maxLines = 200; return fileContent.split('\\n').length <= maxLines; }",
+      "performanceThresholds": "function validatePerformance(fileContent) { const maxApiCalls = 5; const apiCallCount = (fileContent.match(/fetch\\(/g) || []).length; return apiCallCount <= maxApiCalls; }",
+      "securityScoreMinimums": "function validateSecurityScore(securityScore) { const minScore = 80; return securityScore >= minScore; }",
+      "architectureCompliancePercentages": "function validateArchitectureCompliance(complianceScore) { const minCompliance = 90; return complianceScore >= minCompliance; }"
+    }
+  }
+}

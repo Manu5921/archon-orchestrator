@@ -1,0 +1,28 @@
+{
+  "id": "bp_context7-hooks-bloquants_1756910716053",
+  "topic": "context7-hooks-bloquants",
+  "title": "Hooks bloquants Context7 opérationnels",
+  "content": {
+    "problem": "Claude ignore les suggestions Context7 dans nouvelles sessions",
+    "solution": "Hooks qui bloquent Write/Edit sans validation Context7 préalable",
+    "files": [
+      "claude-hooks-smart-context7.json",
+      "claude-hooks-validation-required.json",
+      "activate-context7-hooks.sh"
+    ],
+    "implementation": "Hook PreToolUse vérifie .context7_validated, bloque si absent",
+    "commands": [
+      "/mcp context7 resolve-library-id <library>",
+      "/mcp context7 get-library-docs <id> --topic=<feature>",
+      "./activate-context7-hooks.sh"
+    ],
+    "validated": true,
+    "impact": "Force l'utilisation Context7 - élimine code de mauvaise qualité"
+  },
+  "metadata": {
+    "sessionId": "session_20250903_15azri",
+    "createdAt": "2025-09-03T14:45:16.053Z",
+    "validated": true,
+    "source": "auto-learned"
+  }
+}

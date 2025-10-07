@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-09-04T20:36:59.375Z",
+  "scanType": "comprehensive",
+  "duration": 290,
+  "issues": [
+    {
+      "type": "code_pattern",
+      "category": "sqlInjection",
+      "severity": "CRITICAL",
+      "file": "security-test-files/auth-vulnerable.js",
+      "line": 12,
+      "issue": "${username}",
+      "description": "Potential SQL injection vulnerability",
+      "recommendation": "Use parameterized queries or ORM"
+    },
+    {
+      "type": "code_pattern",
+      "category": "authIssues",
+      "severity": "MEDIUM",
+      "file": "security-test-files/auth-vulnerable.js",
+      "line": 17,
+      "issue": "cookie('token', token, { secure: false",
+      "description": "Authentication security concern",
+      "recommendation": "Implement secure authentication practices"
+    }
+  ],
+  "stats": {
+    "filesScanned": 0,
+    "criticalIssues": 1,
+    "highIssues": 0,
+    "mediumIssues": 1,
+    "lowIssues": 0
+  }
+}

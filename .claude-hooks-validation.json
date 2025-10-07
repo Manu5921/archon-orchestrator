@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "Zero Trust Validation Hooks",
+  "description": "Hooks de pré-validation automatique pour éviter les erreurs de build",
+  "version": "1.0.0",
+  "hooks": {
+    "pre-commit": {
+      "enabled": true,
+      "description": "Validation complète avant chaque commit",
+      "script": "./validate.sh --strict",
+      "continueOnError": false,
+      "timeout": 60000
+    },
+    "post-file-save": {
+      "enabled": true,
+      "description": "Build rapide après modification de fichier",
+      "triggers": ["*.js", "*.jsx", "*.ts", "*.tsx"],
+      "script": "pnpm run build 2>&1 | head -20",
+      "continueOnError": true,
+      "debounce": 5000
+    },
+    "pre-feature-complete": {
+      "enabled": true,
+      "description": "Validation Gemini avant de marquer une feature comme terminée",
+      "script": "node gemini-prevalidator.js --quick",
+      "continueOnError": false,
+      "keywords": ["done", "finished", "completed", "terminé", "fini"]
+    },
+    "on-error-detected": {
+      "enabled": true,
+      "description": "Analyse automatique quand une erreur est détectée",
+      "triggers": ["error", "Error", "failed", "Failed", "FAILED"],
+      "script": "echo '❌ ERREUR DÉTECTÉE - Lancer validation complète' && ./validate.sh --verbose",
+      "continueOnError": true
+    },
+    "pre-test-run": {
+      "enabled": true,
+      "description": "Build obligatoire avant les tests",
+      "triggers": ["test", "jest", "playwright"],
+      "script": "pnpm run build || (echo '❌ Build failed - fixing before tests' && exit 1)",
+      "continueOnError": false
+    },
+    "smart-review-trigger": {
+      "enabled": true,
+      "description": "Déclenche une review Gemini sur mots-clés",
+      "keywords": ["review", "check", "validate", "vérifier"],
+      "script": "node test-smart-review-phase1.js",
+      "continueOnError": true,
+      "timeout": 30000
+    }
+  },
+  "globalSettings": {
+    "enableNotifications": true,
+    "logLevel": "info",
+    "preventCommitOnFailure": true,
+    "autoFixSuggestions": true,
+    "geminiValidation": true
+  },
+  "customCommands": {
+    "validate-all": {
+      "description": "Validation complète avec tous les outils",
+      "command": "./validate.sh --strict && node gemini-prevalidator.js && node zero-trust-validator.js"
+    },
+    "quick-check": {
+      "description": "Vérification rapide du build",
+      "command": "pnpm run build 2>&1 | grep -E '(SUCCESS|FAILED|error)'"
+    },
+    "gemini-check": {
+      "description": "Pré-validation avec Gemini",
+      "command": "node gemini-prevalidator.js --feature ${1:-all}"
+    },
+    "fix-and-retry": {
+      "description": "Tente de corriger et relancer le build",
+      "command": "pnpm run lint --fix && pnpm run build"
+    }
+  },
+  "redFlagDetection": {
+    "enabled": true,
+    "patterns": [
+      {
+        "pattern": "build.*workaround",
+        "severity": "critical",
+        "action": "block",
+        "message": "🚨 DÉTECTION: Script de contournement - INTERDIT"
+      },
+      {
+        "pattern": "TODO.*later",
+        "severity": "warning",
+        "action": "warn",
+        "message": "⚠️ TODO détecté - À traiter maintenant"
+      },
+      {
+        "pattern": "any\\s*;",
+        "severity": "warning",
+        "action": "warn",
+        "message": "⚠️ Type 'any' détecté en TypeScript"
+      },
+      {
+        "pattern": "console\\.log",
+        "severity": "info",
+        "action": "notify",
+        "message": "ℹ️ console.log détecté - Retirer en production"
+      }
+    ]
+  },
+  "integrations": {
+    "archonMcp": {
+      "enabled": true,
+      "validateOnSave": true,
+      "geminiReviewThreshold": 7
+    },
+    "githubMcp": {
+      "enabled": true,
+      "blockPushOnFailure": true,
+      "requirePassingTests": true
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id": "err_hooks-non-actifs_1756910716056",
+  "errorType": "hooks-non-actifs",
+  "problem": "Hooks Context7/Validation ignorés",
+  "solution": {
+    "symptoms": [
+      "Claude code sans Context7",
+      "Pas de validation checkpoints"
+    ],
+    "causes": [
+      "Hooks .json non copiés dans projet",
+      "Claude hooks configuration non activée",
+      "État validation files manquants"
+    ],
+    "solution": [
+      "./activate-context7-hooks.sh",
+      "./activate-validation-hooks.sh",
+      "Vérifier .claude-hooks.json présent"
+    ],
+    "prevention": "Scripts activation automatique intégrés dans template"
+  },
+  "context": {
+    "sessionId": "session_20250903_15azri",
+    "discoveredAt": "2025-09-03T14:45:16.056Z",
+    "validated": true
+  }
+}

@@ -1,0 +1,171 @@
+# Docker Compose configuration for Archon Orchestrator
+# Note: version field is obsolete in newer Docker Compose versions
+
+services:
+  # Redis pour la persistance et la communication inter-services
+  redis:
+    image: redis:7-alpine
+    container_name: archon_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - archon_network
+
+  # GitHub MCP Server
+  github-mcp:
+    build:
+      context: ./docker/github-mcp
+      dockerfile: Dockerfile
+    container_name: archon_github_mcp
+    environment:
+      - GITHUB_PAT=${GITHUB_PAT}
+      - MCP_PORT=3000
+    ports:
+      - "8054:3000"
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - archon_network
+
+  # Jules MCP Server
+  jules-mcp:
+    build:
+      context: ./docker/jules-mcp
+      dockerfile: Dockerfile
+    container_name: archon_jules_mcp
+    environment:
+      - JULES_SESSION_MODE=${JULES_SESSION_MODE:-cookies}
+      - JULES_HEADLESS=true
+      - JULES_DEBUG=${JULES_DEBUG:-false}
+      - GOOGLE_AUTH_COOKIES=${GOOGLE_AUTH_COOKIES:-}
+      - MCP_PORT=3001
+    ports:
+      - "8055:3001"
+    volumes:
+      - ./logs:/app/logs
+      - jules_data:/app/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - archon_network
+
+  # Archon Orchestrator Principal
+  archon-orchestrator:
+    build:
+      context: .
+      dockerfile: docker/archon/Dockerfile.simple
+    container_name: archon_main
+    environment:
+      - NODE_ENV=production
+      - MCP_PORT=${MCP_PORT:-3456}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - REDIS_URL=redis://redis:6379
+      - GITHUB_MCP_URL=http://github-mcp:3000
+      - JULES_MCP_URL=http://jules-mcp:3001
+      - GITHUB_PAT=${GITHUB_PAT}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - MAX_CONCURRENT_TASKS=${MAX_CONCURRENT_TASKS:-10}
+      - TASK_TIMEOUT_MS=${TASK_TIMEOUT_MS:-300000}
+      - ENABLE_LEARNING=${ENABLE_LEARNING:-true}
+      - ENABLE_METRICS=${ENABLE_METRICS:-true}
+      - ENABLE_PERSISTENCE=${ENABLE_PERSISTENCE:-true}
+    ports:
+      - "3456:3456"
+      - "8080:8080"  # Web UI
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./.env:/app/.env:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+      github-mcp:
+        condition: service_healthy
+      jules-mcp:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3456/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - archon_network
+
+  # Monitoring avec Prometheus (optionnel)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: archon_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - archon_network
+    profiles:
+      - monitoring
+
+  # Grafana pour les dashboards (optionnel)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: archon_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=archon123
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - archon_network
+    profiles:
+      - monitoring
+
+networks:
+  archon_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  redis_data:
+    driver: local
+  jules_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local

@@ -1,0 +1,19 @@
+{
+  "common_violations": [
+    "Technology stack misalignment",
+    "Missing architecture patterns",
+    "Security compliance gaps",
+    "API contract violations"
+  ],
+  "success_factors": [
+    "Proper technology stack usage",
+    "Consistent design patterns",
+    "Security best practices",
+    "Comprehensive testing"
+  ],
+  "improvement_suggestions": [
+    "Focus on architecture compliance training for development team",
+    "Implement stricter pre-commit hooks for architecture validation"
+  ],
+  "updated_at": "2025-09-01T18:57:26.822Z"
+}

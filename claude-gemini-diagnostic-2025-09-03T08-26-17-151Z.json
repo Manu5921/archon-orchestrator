@@ -1,0 +1,40 @@
+{
+  "environment": {
+    "GEMINI_API_URL": "http://127.0.0.1:7777",
+    "GEMINI_CLI_PATH": "gemini",
+    "GEMINI_API_KEY": "not_set",
+    "PATH_includes_gemini": "unlikely",
+    "cli_accessible": "/opt/homebrew/bin/gemini",
+    "cli_version": "0.1.18"
+  },
+  "bridgeTest": {
+    "success": true,
+    "response": "Loaded cached credentials.\nBRIDGE_WORKING",
+    "mode": "bridge",
+    "latency_ms": 0
+  },
+  "cliTest": {
+    "success": true,
+    "response": "Loaded cached credentials.\nCLI_WORKING",
+    "mode": "cli",
+    "exit_code": 0,
+    "duration_ms": 3630
+  },
+  "orchestratorTest": {
+    "success": true,
+    "mode": "bridge",
+    "response": "Loaded cached credentials.\n**Status**: ORCHESTRATOR_CONNECTION_SUCCESS\n**Capabilities**: I am a large language model from Google, specializing in software engineering tasks. My core capabilities include reading and writing files, listing directories, searching file content with regular expressions, executing shell commands for various tasks (like running tests, builds, or scaffolding), and performing web searches to gather information. I can understand and modify code, adhering to existing project conventions and best practices.\n**Readiness**: I am ready for collaborative work and can integrate into development workflows to assist with coding, testing, and other software engineering tasks.",
+    "duration_ms": 6582,
+    "quality_check": {
+      "contains_success_marker": true,
+      "has_capabilities": true,
+      "sufficient_length": true
+    }
+  },
+  "overall": {
+    "success_rate": "3/3",
+    "percentage": 100,
+    "primary_mode": "bridge",
+    "recommendation": "🎉 Perfect! Claude ↔ Gemini communication is fully operational."
+  }
+}

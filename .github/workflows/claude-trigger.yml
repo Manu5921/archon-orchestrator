@@ -1,0 +1,205 @@
+name: Claude Code Trigger
+
+on:
+  issues:
+    types: [opened, labeled]
+  issue_comment:
+    types: [created]
+
+jobs:
+  validate-and-trigger:
+    # Trigger UNIQUEMENT si:
+    # 1. Label "run-claude" présent, OU
+    # 2. Commentaire commence par "/run claude"
+    if: |
+      (github.event_name == 'issues' && contains(join(github.event.issue.labels.*.name), 'run-claude')) ||
+      (github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/run claude'))
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract Task Range
+        id: parse
+        run: |
+          # Extract task range (ex: T001-T010)
+          BODY="${{ github.event.issue.body || github.event.comment.body }}"
+          RANGE=$(echo "$BODY" | grep -oE 'T[0-9]+-T[0-9]+' | head -1)
+
+          if [ -z "$RANGE" ]; then
+            echo "❌ No task range found (format: T001-T010)"
+            exit 1
+          fi
+
+          echo "range=$RANGE" >> $GITHUB_OUTPUT
+          echo "📋 Detected task range: $RANGE"
+
+      - name: Validate Batch Size
+        id: validate
+        run: |
+          RANGE="${{ steps.parse.outputs.range }}"
+          START=$(echo "$RANGE" | cut -d'-' -f1 | sed 's/T//')
+          END=$(echo "$RANGE" | cut -d'-' -f2 | sed 's/T//')
+          SIZE=$((END - START + 1))
+
+          echo "size=$SIZE" >> $GITHUB_OUTPUT
+          echo "📊 Batch size: $SIZE tasks"
+
+          # Warn si > 12 tasks (trop gros batch)
+          if [ $SIZE -gt 12 ]; then
+            echo "⚠️ WARNING: Batch size ($SIZE) > 12 tasks. Consider splitting."
+            echo "Recommended: 8-12 tasks per batch for optimal CI time"
+          fi
+
+          # Limite max 25 tasks
+          if [ $SIZE -gt 25 ]; then
+            echo "❌ Batch too large ($SIZE > 25). Split into smaller batches."
+            exit 1
+          fi
+
+      - name: React with Eyes Emoji
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.reactions.createForIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              content: 'eyes'
+            });
+
+      - name: Setup Claude Code
+        uses: anthropics/claude-code-action@v2
+        with:
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+          # CRITICAL: Auto-approve all tools (Rule #1 from video)
+          allowed-tools: |
+            - bash
+            - read
+            - write
+            - edit
+            - grep
+            - glob
+            - web_search
+
+          # MCP servers (testés préalablement)
+          mcps: |
+            - name: supabase
+              command: npx
+              args: ["-y", "@modelcontextprotocol/server-supabase"]
+              env:
+                SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+                SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_KEY }}
+            - name: slack
+              command: npx
+              args: ["-y", "@modelcontextprotocol/server-slack"]
+              env:
+                SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Execute Task Batch
+        id: execute
+        run: |
+          RANGE="${{ steps.parse.outputs.range }}"
+
+          # Provide SDK context (Rule #3 from video)
+          curl -sS https://raw.githubusercontent.com/anthropics/agent-sdk/main/README.md \
+            > .github/claude/sdk-context.md
+
+          # Execute avec Claude Code
+          claude-code execute \
+            --context="specs/001-mvp/tasks.md" \
+            --context=".github/claude/sdk-context.md" \
+            --tasks="$RANGE" \
+            --quality-gates="P0,P1,P2" \
+            --branch="feat/$RANGE-auto" \
+            --output="execution-summary.md"
+
+      - name: Quality Gates
+        id: gates
+        run: |
+          # P0: Build (bloquant)
+          echo "🔨 Running P0: Build check..."
+          npm run build || {
+            echo "❌ P0 Build failed"
+            exit 1
+          }
+
+          # P1: Lint (bloquant)
+          echo "🧹 Running P1: Lint check..."
+          npm run lint || {
+            echo "❌ P1 Lint failed"
+            exit 1
+          }
+
+          # P2: Tests (bloquant)
+          echo "🧪 Running P2: Tests..."
+          npm test -- --coverage || {
+            echo "❌ P2 Tests failed"
+            exit 1
+          }
+
+          echo "✅ All mandatory gates passed (P0-P2)"
+
+      - name: Create Pull Request
+        if: success()
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: feat/${{ steps.parse.outputs.range }}-auto
+          title: "feat: Implement ${{ steps.parse.outputs.range }}"
+          body: |
+            Implements #${{ github.event.issue.number }}
+
+            ## 🤖 Auto-Implementation
+
+            **Tasks:** ${{ steps.parse.outputs.range }} (${{ steps.validate.outputs.size }} tasks)
+            **Execution:** Claude Code + GitHub Actions
+
+            ## ✅ Quality Gates
+
+            - ✅ **P0: Build** - passed
+            - ✅ **P1: Lint** - passed
+            - ✅ **P2: Tests** - passed
+
+            ## 📋 Execution Summary
+
+            ${{ steps.execute.outputs.summary }}
+
+            ## 🔍 Review Checklist
+
+            - [ ] Code quality & architecture
+            - [ ] Security (no secrets hardcoded)
+            - [ ] Performance (no obvious bottlenecks)
+            - [ ] Documentation (README/JSDoc updated)
+
+            ---
+
+            **🤖 Generated by Claude Code + GitHub Actions**
+
+            Co-Authored-By: Claude <noreply@anthropic.com>
+          labels: |
+            automated-pr
+            needs-review
+          draft: false
+
+      - name: Notify Slack
+        if: always()
+        run: |
+          STATUS="${{ job.status }}"
+          EMOJI=$([ "$STATUS" = "success" ] && echo "✅" || echo "❌")
+
+          curl -sS -X POST ${{ secrets.SLACK_WEBHOOK }} \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"text\": \"$EMOJI Claude Code execution $STATUS\",
+              \"blocks\": [{
+                \"type\": \"section\",
+                \"text\": {
+                  \"type\": \"mrkdwn\",
+                  \"text\": \"*$EMOJI Batch ${{ steps.parse.outputs.range }}* (${{ steps.validate.outputs.size }} tasks)\n*Status:* $STATUS\n*Issue:* <${{ github.event.issue.html_url }}|#${{ github.event.issue.number }}>\n*Time:* ~${{ job.duration }}s\"
+                }
+              }]
+            }" || echo "Slack notification skipped (no webhook configured)"

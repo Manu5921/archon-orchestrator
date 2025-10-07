@@ -1,0 +1,12 @@
+🚀 ARCHON ORCHESTRATOR - ONE-LINER ACTIVATION
+
+=== COPIER-COLLER CETTE LIGNE UNIQUE ===
+
+🤖 ARCHON AUTO-ACTIVATION: /mcp archon get_session_startup_guide && /mcp archon get_best_practices topic="context7-hooks" && /mcp archon get_workflow_guide workflowName="6-piliers-complet" - SYSTÈME AUTONOME ACTIVÉ (/Users/manu/Documents/DEV/archon-orchestrator)
+
+=== ALTERNATIVE SI MCP PROBLÈME ===
+
+🆘 ARCHON RECOVERY: cd /Users/manu/Documents/DEV/archon-orchestrator && ./quick-activation.sh $(pwd) && echo "✅ Files copied - restart Claude in project dir - then: /mcp archon get_session_startup_guide"
+
+=== EXPLICATION COURTE ===
+L'une de ces deux lignes restaure instantanément l'accès à tout l'écosystème Archon Orchestrator avec ses 6 piliers d'autonomie. Plus jamais d'explications répétitives !

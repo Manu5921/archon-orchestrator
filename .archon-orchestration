@@ -1,0 +1,21 @@
+# Archon Multi-AI Orchestration Enabled
+# Ce fichier active l'orchestration automatique Claude → Gemini → Jules
+
+ORCHESTRATION_ENABLED=true
+GEMINI_BRIDGE_URL=http://localhost:7777
+GITHUB_AUTO_PR=false
+JULES_AUTO_DEPLOY=false
+
+# Configuration review automatique
+AUTO_GEMINI_REVIEW=true
+AUTO_REVIEW_MIN_LINES=5
+AUTO_REVIEW_QUALITY_THRESHOLD=85
+
+# Workflow hybride
+HYBRID_WORKFLOW_ENABLED=true
+CONTEXT7_INTEGRATION=true
+ARCHON_MCP_ENABLED=true
+
+# Logging
+LOG_ORCHESTRATION=true
+LOG_LEVEL=info

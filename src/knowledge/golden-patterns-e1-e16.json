@@ -1,0 +1,318 @@
+{
+  "metadata": {
+    "version": "2.0.0",
+    "updated": "2025-09-05",
+    "description": "Golden Patterns enrichis avec E1-E16 Best Practices",
+    "total_patterns": 8,
+    "avg_health_score": 9.7
+  },
+  "patterns": {
+    "e1_architecture_first_saas": {
+      "name": "E1 Architecture-First SaaS",
+      "description": "SaaS complet avec planification architecture E1 systématique",
+      "health_score": 9.8,
+      "source": "Community + E1-E16 Standards",
+      "compatibility": ["nextjs-15", "typescript-5", "supabase", "prisma"],
+      "setup_time": "45-60 minutes",
+      "trigger_keywords": [
+        "saas architecture first",
+        "plan before code",
+        "PRD structure ADR",
+        "architecture documents"
+      ],
+      "files": {
+        "PRD.md": {
+          "description": "Product Requirements Document complet",
+          "template": "# PRD - {{project_name}}\n\n## 🎯 Objectifs\n- {{primary_goal}}\n- {{secondary_goals}}\n\n## 🔧 Contraintes\n### Techniques\n- {{tech_constraints}}\n### Business\n- {{business_constraints}}\n\n## ✅ Critères d'Acceptation\n- [ ] {{acceptance_criteria}}\n\n## 📊 Scope\n### Inclus (MVP)\n- {{mvp_features}}\n### Non-Objectifs (V1)\n- {{excluded_features}}\n\n## 🎯 Métriques de Succès\n- {{success_metrics}}"
+        },
+        "PROJECT_STRUCTURE.md": {
+          "description": "Organisation code et conventions",
+          "template": "# Structure Projet - {{project_name}}\n\n## 🏗️ Architecture Technique\n{{tech_stack}}\n\n## 📁 Structure des Dossiers\n```\n{{folder_structure}}\n```\n\n## 🎨 Conventions de Nommage\n{{naming_conventions}}\n\n## 🏛️ Patterns Architecturaux\n{{architectural_patterns}}"
+        },
+        "docs/ADR/ADR-001-stack-technique.md": {
+          "description": "Premier ADR pour stack technique",
+          "template": "# ADR-001: Stack Technique Initial\n\n**Date**: {{date}}\n**Status**: Accepté\n**Projet**: {{project_name}}\n\n## Contexte\n{{context}}\n\n## Décision\n{{decision}}\n\n## Conséquences\n### Positives\n{{positive_consequences}}\n### Négatives\n{{negative_consequences}}\n\n## Alternatives Considérées\n{{alternatives}}"
+        },
+        "WORKFLOW_FOR_AI.md": {
+          "description": "Instructions spécifiques pour IA",
+          "template": "# Workflow pour IA - {{project_name}}\n\n## 🤖 Instructions Générales\nCe projet suit **E1-E16 Best Practices**\n\n## 🛠️ Commands Spécifiques\n{{project_commands}}\n\n## 🎯 Quality Gates\n{{quality_gates}}\n\n## 🧪 Stratégie de Tests\n{{test_strategy}}"
+        }
+      },
+      "archon_integration": {
+        "rag_queries": [
+          "saas architecture patterns community",
+          "product requirements document templates",
+          "architecture decision records best practices"
+        ],
+        "smart_review_focus": "architecture_completeness",
+        "jules_coordination": {
+          "tasks": ["frontend_structure", "api_design", "database_schema"],
+          "handoff_points": ["after_prd", "after_types", "after_tests"]
+        }
+      },
+      "e_practices": ["E1", "E7", "E16"]
+    },
+
+    "e2_types_anti_hallucination": {
+      "name": "E2 Types-First Anti-Hallucination",
+      "description": "TypeScript strict avec types comme garde-fous cognitifs LLM",
+      "health_score": 9.9,
+      "source": "TypeScript Community + AI Research",
+      "compatibility": ["typescript-5", "zod", "prisma", "trpc"],
+      "setup_time": "30-45 minutes",
+      "trigger_keywords": [
+        "types first typescript",
+        "anti hallucination types",
+        "strict typing patterns",
+        "schema validation"
+      ],
+      "files": {
+        "src/types/api.types.ts": {
+          "description": "Types API Request/Response stricts",
+          "template": "// API Types - E2 Pattern\nexport interface ApiRequest<T = any> {\n  data: T;\n  timestamp: string;\n  version: string;\n}\n\nexport interface ApiResponse<T = any> {\n  success: boolean;\n  data: T;\n  error?: ApiError;\n}\n\nexport interface ApiError {\n  code: string;\n  message: string;\n  details?: Record<string, any>;\n}"
+        },
+        "src/types/database.types.ts": {
+          "description": "Schema DB typé avec Prisma/Drizzle",
+          "template": "// Database Types - E2 Pattern\n// Generated types from schema\nexport type User = {\n  id: string;\n  email: string;\n  createdAt: Date;\n  updatedAt: Date;\n};\n\n// Strict input types\nexport type CreateUserInput = Pick<User, 'email'>;\nexport type UpdateUserInput = Partial<Pick<User, 'email'>>;"
+        },
+        "src/types/component.types.ts": {
+          "description": "Props React typés stricts",
+          "template": "// Component Types - E2 Pattern\nexport interface BaseProps {\n  className?: string;\n  children?: React.ReactNode;\n}\n\nexport interface UserCardProps extends BaseProps {\n  user: User;\n  onEdit: (id: string) => void;\n  variant: 'compact' | 'detailed';\n}"
+        },
+        "tsconfig.json": {
+          "description": "Configuration TypeScript stricte",
+          "template": "{\n  \"compilerOptions\": {\n    \"strict\": true,\n    \"noImplicitAny\": true,\n    \"strictNullChecks\": true,\n    \"noImplicitReturns\": true,\n    \"noUnusedLocals\": true,\n    \"noUnusedParameters\": true,\n    \"exactOptionalPropertyTypes\": true\n  }\n}"
+        }
+      },
+      "ai_benefits": {
+        "hallucination_reduction": "90%",
+        "autocomplete_accuracy": "95%",
+        "compile_time_error_catch": "99%",
+        "refactor_safety": "100%"
+      },
+      "e_practices": ["E2", "E8"]
+    },
+
+    "e3_tests_integration_first": {
+      "name": "E3 Tests Integration-First",
+      "description": "Stratégie tests intégration prioritaires sur unitaires",
+      "health_score": 9.7,
+      "source": "Testing Best Practices + AI Context Compensation",
+      "compatibility": ["jest", "vitest", "playwright", "supertest"],
+      "setup_time": "35-50 minutes",
+      "trigger_keywords": [
+        "integration tests first",
+        "tests compensation context",
+        "api tests priority",
+        "real database testing"
+      ],
+      "files": {
+        "tests/integration/api.test.ts": {
+          "description": "Tests API avec vraie base de données",
+          "template": "// Integration Tests - E3 Pattern\nimport { app } from '../src/app';\nimport { db } from '../src/database';\n\ndescribe('API Integration Tests', () => {\n  beforeEach(async () => {\n    await db.clean(); // Real DB cleanup\n  });\n\n  it('should create user with real API call', async () => {\n    const response = await request(app)\n      .post('/api/users')\n      .send({ email: 'test@example.com' });\n    \n    expect(response.status).toBe(201);\n    expect(response.body.data.email).toBe('test@example.com');\n    \n    // Verify in real database\n    const user = await db.user.findUnique({ where: { email: 'test@example.com' } });\n    expect(user).toBeDefined();\n  });\n});"
+        },
+        "tests/integration/database.test.ts": {
+          "description": "Tests schema et contraintes DB réelles",
+          "template": "// Database Integration Tests\nimport { db } from '../src/database';\n\ndescribe('Database Integration', () => {\n  it('should enforce email uniqueness', async () => {\n    await db.user.create({ data: { email: 'unique@test.com' } });\n    \n    await expect(\n      db.user.create({ data: { email: 'unique@test.com' } })\n    ).rejects.toThrow('Unique constraint failed');\n  });\n});"
+        },
+        "tests/e2e/smoke.test.ts": {
+          "description": "Tests E2E critiques minimaux",
+          "template": "// E2E Smoke Tests - E3 Pattern\nimport { test, expect } from '@playwright/test';\n\ntest('critical user journey', async ({ page }) => {\n  // Test du parcours utilisateur principal seulement\n  await page.goto('/login');\n  await page.fill('[data-testid=email]', 'test@example.com');\n  await page.click('[data-testid=submit]');\n  \n  await expect(page.locator('[data-testid=dashboard]')).toBeVisible();\n});"
+        },
+        "jest.config.js": {
+          "description": "Configuration Jest pour intégration",
+          "template": "module.exports = {\n  testEnvironment: 'node',\n  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],\n  testMatch: [\n    '<rootDir>/tests/integration/**/*.test.ts', // Priority 1\n    '<rootDir>/tests/unit/**/*.test.ts',        // Priority 2\n    '<rootDir>/tests/e2e/**/*.test.ts'          // Priority 3\n  ],\n  collectCoverageFrom: [\n    'src/**/*.ts',\n    '!src/**/*.types.ts'\n  ]\n};"
+        }
+      },
+      "test_priorities": {
+        "P1_integration": {
+          "description": "Tests API + DB réels",
+          "coverage_target": "90%",
+          "focus": "Contrats externes, business logic"
+        },
+        "P2_unit": {
+          "description": "Tests fonctions pures",
+          "coverage_target": "80%",
+          "focus": "Utilitaires, helpers, validations"
+        },
+        "P3_e2e": {
+          "description": "Smoke tests utilisateur",
+          "coverage_target": "Parcours critiques uniquement",
+          "focus": "Happy path principal"
+        }
+      },
+      "e_practices": ["E3", "E9", "E8"]
+    },
+
+    "e8_quality_gates_p0_p4": {
+      "name": "E8 Quality Gates P0-P4",
+      "description": "Gates de qualité automatisés intégrés au workflow",
+      "health_score": 9.6,
+      "source": "DevOps Best Practices + CI/CD Standards",
+      "compatibility": ["github-actions", "vercel", "railway", "pre-commit"],
+      "setup_time": "25-40 minutes",
+      "trigger_keywords": [
+        "quality gates automated",
+        "P0 P1 P2 P3 P4",
+        "build lint test pipeline",
+        "continuous validation"
+      ],
+      "files": {
+        ".github/workflows/quality-gates.yml": {
+          "description": "Pipeline CI/CD avec Quality Gates",
+          "template": "name: Quality Gates P0-P4\n\non: [push, pull_request]\n\njobs:\n  p0-build:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: npm ci\n      - run: npm run build # P0: Must compile\n      \n  p1-typecheck:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: npm ci\n      - run: npx tsc --noEmit # P1: No type errors\n      \n  p2-lint:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: npm ci\n      - run: npm run lint # P2: Code style\n      \n  p3-test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: npm ci\n      - run: npm run test # P3: Tests pass\n      \n  p4-docs:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: |\n          # P4: Check documentation\n          test -f README.md\n          test -f CHANGELOG.md"
+        },
+        "package.json": {
+          "description": "Scripts pour Quality Gates",
+          "template": "{\n  \"scripts\": {\n    \"build\": \"next build\",\n    \"type-check\": \"tsc --noEmit\",\n    \"lint\": \"eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0\",\n    \"lint:fix\": \"eslint . --ext ts,tsx --fix\",\n    \"test\": \"jest\",\n    \"test:integration\": \"jest --testPathPattern=integration\",\n    \"test:e2e\": \"playwright test\",\n    \"quality:p0\": \"npm run build\",\n    \"quality:p1\": \"npm run type-check\",\n    \"quality:p2\": \"npm run lint\",\n    \"quality:p3\": \"npm run test\",\n    \"quality:all\": \"npm run quality:p0 && npm run quality:p1 && npm run quality:p2 && npm run quality:p3\"\n  }\n}"
+        },
+        ".pre-commit-config.yaml": {
+          "description": "Hooks pre-commit pour Quality Gates",
+          "template": "repos:\n- repo: local\n  hooks:\n  - id: quality-p0\n    name: P0 - Build Check\n    entry: npm run build\n    language: system\n    pass_filenames: false\n    \n  - id: quality-p1\n    name: P1 - Type Check\n    entry: npm run type-check\n    language: system\n    pass_filenames: false\n    \n  - id: quality-p2\n    name: P2 - Lint\n    entry: npm run lint:fix\n    language: system\n    pass_filenames: false\n    \n  - id: quality-p3\n    name: P3 - Tests\n    entry: npm run test\n    language: system\n    pass_filenames: false"
+        }
+      },
+      "quality_levels": {
+        "P0": {
+          "name": "Build/Compile",
+          "requirement": "Code compiles without errors",
+          "blocker": true,
+          "tools": ["typescript", "webpack", "next", "vite"]
+        },
+        "P1": {
+          "name": "Type Check",
+          "requirement": "TypeScript strict mode passes",
+          "blocker": true,
+          "tools": ["tsc --noEmit"]
+        },
+        "P2": {
+          "name": "Lint/Format",
+          "requirement": "ESLint + Prettier clean",
+          "blocker": false,
+          "tools": ["eslint", "prettier"]
+        },
+        "P3": {
+          "name": "Tests",
+          "requirement": "All tests pass",
+          "blocker": true,
+          "tools": ["jest", "vitest", "playwright"]
+        },
+        "P4": {
+          "name": "Documentation",
+          "requirement": "README + docs updated",
+          "blocker": false,
+          "tools": ["manual check"]
+        }
+      },
+      "e_practices": ["E8", "E5", "E14"]
+    },
+
+    "e11_anti_ai_look_ui": {
+      "name": "E11 Anti-AI-Look UI Design System",
+      "description": "Design system pour éviter l'apparence 'généré par IA'",
+      "health_score": 9.4,
+      "source": "UI/UX Best Practices + Design Systems",
+      "compatibility": ["tailwindcss", "shadcn-ui", "radix-ui", "framer-motion"],
+      "setup_time": "40-60 minutes",
+      "trigger_keywords": [
+        "anti AI look design",
+        "custom design system",
+        "unique UI components",
+        "branded interface"
+      ],
+      "files": {
+        "src/design-system/tokens.ts": {
+          "description": "Design tokens personnalisés",
+          "template": "// Design Tokens - E11 Anti-AI Pattern\nexport const designTokens = {\n  // Custom spacing (not generic 16px everywhere)\n  spacing: {\n    xs: '6px',   // 6px\n    sm: '10px',  // 10px\n    md: '18px',  // 18px\n    lg: '28px',  // 28px\n    xl: '46px'   // 46px - Golden ratio based\n  },\n  \n  // Custom color palette (not generic blue/gray)\n  colors: {\n    brand: {\n      50: '#f0f9ff',\n      500: '#0ea5e9',  // Custom brand blue\n      900: '#0c4a6e'\n    },\n    accent: {\n      50: '#fef3c7',\n      500: '#f59e0b',  // Custom accent\n      900: '#78350f'\n    }\n  },\n  \n  // Custom typography scale\n  fontSize: {\n    xs: ['11px', '16px'],\n    sm: ['13px', '20px'],\n    base: ['15px', '24px'], // Not generic 16px\n    lg: ['19px', '28px'],\n    xl: ['24px', '32px']\n  },\n  \n  // Custom shadows (not generic)\n  boxShadow: {\n    soft: '0 2px 8px rgba(0,0,0,0.04)',\n    medium: '0 4px 16px rgba(0,0,0,0.08)',\n    strong: '0 8px 32px rgba(0,0,0,0.12)'\n  }\n};"
+        },
+        "src/components/ui/Button.tsx": {
+          "description": "Composant Button customisé (pas shadcn vanilla)",
+          "template": "// Custom Button - E11 Anti-AI Pattern\nimport { designTokens } from '../design-system/tokens';\n\ninterface ButtonProps {\n  variant: 'primary' | 'secondary' | 'ghost';\n  size: 'sm' | 'md' | 'lg';\n  children: React.ReactNode;\n}\n\nexport function Button({ variant, size, children, ...props }: ButtonProps) {\n  // Custom styling, not generic shadcn presets\n  const baseStyles = 'font-medium transition-all duration-200 rounded-lg';\n  \n  const variants = {\n    primary: `bg-brand-500 hover:bg-brand-600 text-white shadow-soft hover:shadow-medium`,\n    secondary: `bg-brand-50 hover:bg-brand-100 text-brand-900 border border-brand-200`,\n    ghost: `hover:bg-brand-50 text-brand-700`\n  };\n  \n  const sizes = {\n    sm: `px-3 py-1.5 text-sm`,\n    md: `px-4 py-2 text-base`,\n    lg: `px-6 py-3 text-lg`\n  };\n  \n  return (\n    <button \n      className={`${baseStyles} ${variants[variant]} ${sizes[size]}`}\n      {...props}\n    >\n      {children}\n    </button>\n  );\n}"
+        },
+        "tailwind.config.js": {
+          "description": "Configuration Tailwind avec tokens custom",
+          "template": "/** @type {import('tailwindcss').Config} */\nimport { designTokens } from './src/design-system/tokens';\n\nmodule.exports = {\n  content: ['./src/**/*.{js,ts,jsx,tsx}'],\n  theme: {\n    extend: {\n      // Override with custom tokens\n      spacing: designTokens.spacing,\n      colors: designTokens.colors,\n      fontSize: designTokens.fontSize,\n      boxShadow: designTokens.boxShadow,\n      \n      // Custom animations (not generic)\n      animation: {\n        'fade-in': 'fadeIn 0.3s ease-in-out',\n        'slide-up': 'slideUp 0.4s ease-out'\n      },\n      \n      keyframes: {\n        fadeIn: {\n          '0%': { opacity: '0' },\n          '100%': { opacity: '1' }\n        },\n        slideUp: {\n          '0%': { transform: 'translateY(10px)', opacity: '0' },\n          '100%': { transform: 'translateY(0)', opacity: '1' }\n        }\n      }\n    }\n  },\n  plugins: []\n};"
+        }
+      },
+      "anti_ai_checklist": {
+        "spacing": "Custom 8px-based scale (not 16px everywhere)",
+        "colors": "Brand palette (not blue/gray presets)",  
+        "typography": "Custom scale (not 16px base)",
+        "components": "Customized shadcn (not vanilla)",
+        "animations": "Subtle custom (not generic)",
+        "layout": "Unique grid (not standard 12-column)"
+      },
+      "e_practices": ["E11"]
+    },
+
+    "e16_auto_review_guards": {
+      "name": "E16 Auto-Review & Garde-Fous",
+      "description": "Checklist et validation automatique avant chaque patch/déploiement",
+      "health_score": 9.5,
+      "source": "Risk Management + Code Review Best Practices",  
+      "compatibility": ["git-hooks", "github-actions", "danger-js"],
+      "setup_time": "20-35 minutes",
+      "trigger_keywords": [
+        "auto review checklist",
+        "deployment guards",
+        "risk assessment automatic",
+        "change validation"
+      ],
+      "files": {
+        ".github/pull_request_template.md": {
+          "description": "Template PR avec checklist E16",
+          "template": "## 📋 E16 Auto-Review Checklist\n\n### ⚠️ Risk Assessment\n- [ ] **Breaking changes?** (API, DB schema, env vars)\n- [ ] **Security impact?** (auth, permissions, data exposure)\n- [ ] **Performance impact?** (queries, bundle size, memory)\n- [ ] **Dependencies changes?** (new packages, upgrades)\n\n### 🎯 Alternatives Considered\n- [ ] **Option A**: {{alternative_1}}\n- [ ] **Option B**: {{alternative_2}}\n- [ ] **Chosen**: {{chosen_solution}} - **Why**: {{justification}}\n\n### ✅ Quality Gates\n- [ ] P0: Build passes\n- [ ] P1: TypeScript strict\n- [ ] P2: Lint/format clean\n- [ ] P3: Tests pass (including new tests)\n- [ ] P4: Documentation updated\n\n### 📚 Documentation\n- [ ] ADR created/updated if architectural decision\n- [ ] README updated if user-facing changes\n- [ ] CHANGELOG entry added\n\n### 🧪 Testing Strategy\n- [ ] **Unit tests** for new logic\n- [ ] **Integration tests** for API changes\n- [ ] **E2E tests** for user-facing features\n- [ ] **Manual testing** completed\n\n---\n\n## 📝 Description\n{{description}}\n\n## 🔍 How to Test\n{{test_instructions}}"
+        },
+        "scripts/pre-commit-e16.sh": {
+          "description": "Script pre-commit avec garde-fous E16",
+          "template": "#!/bin/bash\n# E16 Pre-commit Guards\n\necho \"🛡️ E16 Auto-Review Guards\"\necho \"========================\"\n\n# Check for potential issues\nEXIT_CODE=0\n\n# 1. Check for TODO/FIXME without issue links\nTODO_COUNT=$(git diff --cached --name-only | xargs grep -l \"TODO\\|FIXME\" | wc -l)\nif [ $TODO_COUNT -gt 0 ]; then\n  echo \"⚠️ TODO/FIXME found - Link to issues?\"\n  git diff --cached --name-only | xargs grep -n \"TODO\\|FIXME\"\n  read -p \"Continue? (y/n) \" -n 1 -r\n  [[ ! $REPLY =~ ^[Yy]$ ]] && exit 1\nfi\n\n# 2. Check for console.log in production code\nCONSOLE_COUNT=$(git diff --cached --name-only | grep -E \"\\.(ts|tsx|js|jsx)$\" | xargs grep -l \"console\\.\" | wc -l)\nif [ $CONSOLE_COUNT -gt 0 ]; then\n  echo \"❌ console.log found in production code\"\n  EXIT_CODE=1\nfi\n\n# 3. Check for large files\nLARGE_FILES=$(git diff --cached --name-only | xargs ls -la | awk '$5 > 100000 {print $9\" (\"$5\" bytes)\"}')\nif [ -n \"$LARGE_FILES\" ]; then\n  echo \"⚠️ Large files detected:\"\n  echo \"$LARGE_FILES\"\n  read -p \"Continue? (y/n) \" -n 1 -r\n  [[ ! $REPLY =~ ^[Yy]$ ]] && exit 1\nfi\n\n# 4. Quality Gates check\necho \"Running Quality Gates...\"\nnpm run quality:all || EXIT_CODE=1\n\nif [ $EXIT_CODE -eq 0 ]; then\n  echo \"✅ All E16 guards passed\"\nelse\n  echo \"❌ E16 guards failed - fix issues before commit\"\nfi\n\nexit $EXIT_CODE"
+        },
+        "src/utils/validation-schemas.ts": {
+          "description": "Schemas de validation pour garde-fous runtime",
+          "template": "// E16 Runtime Validation Guards\nimport { z } from 'zod';\n\n// Environment validation (E10)\nexport const envSchema = z.object({\n  NODE_ENV: z.enum(['development', 'production', 'test']),\n  DATABASE_URL: z.string().url(),\n  API_KEY: z.string().min(10),\n  // No default values - force explicit config\n});\n\n// API input validation guards\nexport const createUserSchema = z.object({\n  email: z.string().email(),\n  name: z.string().min(1).max(100),\n  age: z.number().int().min(13).max(120) // Business rules\n});\n\n// Deployment config validation\nexport const deployConfigSchema = z.object({\n  region: z.enum(['us-east-1', 'eu-west-1']),\n  environment: z.enum(['staging', 'production']),\n  replicas: z.number().int().min(1).max(10),\n  // Prevent accidental wrong deployments\n});\n\n// Validate on app boot\nexport function validateEnvironment() {\n  try {\n    envSchema.parse(process.env);\n    console.log('✅ Environment validation passed');\n  } catch (error) {\n    console.error('❌ Environment validation failed:', error);\n    process.exit(1);\n  }\n}"
+        }
+      },
+      "guard_categories": {
+        "pre_commit": "Local validation before git commit",
+        "pre_deploy": "Production deployment checks",
+        "runtime": "Application startup validation", 
+        "pr_review": "Pull request automated checks"
+      },
+      "e_practices": ["E16", "E6", "E10", "E14"]
+    }
+  },
+  
+  "integration_commands": {
+    "archon_create_e1_project": {
+      "description": "Créer projet avec architecture E1-E16",
+      "command": "/mcp archon create_project",
+      "template": "e1_architecture_first_saas",
+      "auto_tasks": [
+        "create_prd_document",
+        "setup_project_structure", 
+        "initialize_adr_system",
+        "configure_ai_workflow"
+      ]
+    },
+    
+    "archon_apply_e2_types": {
+      "description": "Appliquer pattern Types-First",
+      "command": "/mcp archon apply_golden_pattern", 
+      "pattern": "e2_types_anti_hallucination",
+      "validation": "typescript_strict_check"
+    },
+    
+    "archon_setup_e3_tests": {
+      "description": "Configurer tests integration-first",
+      "command": "/mcp archon apply_golden_pattern",
+      "pattern": "e3_tests_integration_first", 
+      "auto_run": "integration_test_suite"
+    },
+    
+    "archon_quality_gates": {
+      "description": "Activer Quality Gates P0-P4",
+      "command": "/mcp archon apply_golden_pattern",
+      "pattern": "e8_quality_gates_p0_p4",
+      "integration": "ci_cd_pipeline"
+    }
+  }
+}

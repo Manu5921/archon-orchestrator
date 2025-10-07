@@ -1,0 +1,3022 @@
+{
+  "config": {
+    "configFile": "/Users/manu/Documents/DEV/archon-orchestrator/playwright.config.js",
+    "rootDir": "/Users/manu/Documents/DEV/archon-orchestrator/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "test-results/html-report"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results/junit-report.xml"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/manu/Documents/DEV/archon-orchestrator/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "setup",
+        "name": "setup",
+        "testDir": "/Users/manu/Documents/DEV/archon-orchestrator/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/.*\\.setup\\.js/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/manu/Documents/DEV/archon-orchestrator/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium-desktop",
+        "name": "chromium-desktop",
+        "testDir": "/Users/manu/Documents/DEV/archon-orchestrator/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/manu/Documents/DEV/archon-orchestrator/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "firefox-desktop",
+        "name": "firefox-desktop",
+        "testDir": "/Users/manu/Documents/DEV/archon-orchestrator/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/manu/Documents/DEV/archon-orchestrator/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "webkit-desktop",
+        "name": "webkit-desktop",
+        "testDir": "/Users/manu/Documents/DEV/archon-orchestrator/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/manu/Documents/DEV/archon-orchestrator/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chrome-branded",
+        "name": "chrome-branded",
+        "testDir": "/Users/manu/Documents/DEV/archon-orchestrator/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/manu/Documents/DEV/archon-orchestrator/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "edge-branded",
+        "name": "edge-branded",
+        "testDir": "/Users/manu/Documents/DEV/archon-orchestrator/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/manu/Documents/DEV/archon-orchestrator/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "mobile-chrome",
+        "name": "mobile-chrome",
+        "testDir": "/Users/manu/Documents/DEV/archon-orchestrator/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/manu/Documents/DEV/archon-orchestrator/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "mobile-safari",
+        "name": "mobile-safari",
+        "testDir": "/Users/manu/Documents/DEV/archon-orchestrator/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/manu/Documents/DEV/archon-orchestrator/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "tablet-ipad",
+        "name": "tablet-ipad",
+        "testDir": "/Users/manu/Documents/DEV/archon-orchestrator/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/manu/Documents/DEV/archon-orchestrator/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "performance-monitoring",
+        "name": "performance-monitoring",
+        "testDir": "/Users/manu/Documents/DEV/archon-orchestrator/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 5,
+    "webServer": {
+      "command": "npm run start",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000,
+      "stdout": "ignore",
+      "stderr": "pipe"
+    }
+  },
+  "suites": [
+    {
+      "title": "setup/global.setup.js",
+      "file": "setup/global.setup.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "authenticate and setup environment",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "setup",
+              "projectName": "setup",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "6efc619ba320484b9062-ae49a0b07ed545e1f884",
+          "file": "setup/global.setup.js",
+          "line": 18,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "dashboard/dashboard-auth.spec.js",
+      "file": "dashboard/dashboard-auth.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TrustBoost Dashboard - Authentication & Security @desktop @security",
+          "file": "dashboard/dashboard-auth.spec.js",
+          "line": 18,
+          "column": 6,
+          "specs": [
+            {
+              "title": "User authentication flow with security headers @security",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "security",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-def2938d0dabf50f2334",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 29,
+              "column": 3
+            },
+            {
+              "title": "Session management and logout security @security",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "security",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-eeaea70cdccbbb9d6577",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 68,
+              "column": 3
+            },
+            {
+              "title": "Dashboard unauthorized access protection @security",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "security",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-2af12712659a527a337b",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 101,
+              "column": 3
+            },
+            {
+              "title": "CSRF protection validation @security",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "security",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-6a6ce34a8817b7905b09",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 126,
+              "column": 3
+            },
+            {
+              "title": "User authentication flow with security headers @security",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "security",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-a34d70846bf78c467161",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 29,
+              "column": 3
+            },
+            {
+              "title": "Session management and logout security @security",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "security",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-be34d4731ec32ae17f69",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 68,
+              "column": 3
+            },
+            {
+              "title": "Dashboard unauthorized access protection @security",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "security",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-1f10293e26650df5a1f1",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 101,
+              "column": 3
+            },
+            {
+              "title": "CSRF protection validation @security",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "security",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-492c3acd435e15436400",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 126,
+              "column": 3
+            },
+            {
+              "title": "User authentication flow with security headers @security",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "security",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-d2f9876b9009e88dbc23",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 29,
+              "column": 3
+            },
+            {
+              "title": "Session management and logout security @security",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "security",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-88325a1d4412e1faaddd",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 68,
+              "column": 3
+            },
+            {
+              "title": "Dashboard unauthorized access protection @security",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "security",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-44cd66b2d6b13c80a4af",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 101,
+              "column": 3
+            },
+            {
+              "title": "CSRF protection validation @security",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "security",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-a66b9319f05e88f3ad84",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 126,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "TrustBoost Dashboard - Navigation & Performance @desktop @performance",
+          "file": "dashboard/dashboard-auth.spec.js",
+          "line": 157,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Dashboard navigation performance @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-ee69ae2a5fb53c61663f",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 169,
+              "column": 3
+            },
+            {
+              "title": "Dashboard search functionality performance @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-ac70e9e3f580389068fe",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 201,
+              "column": 3
+            },
+            {
+              "title": "Dashboard data loading and pagination @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-402e1f6c5e90059a9afa",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 227,
+              "column": 3
+            },
+            {
+              "title": "Dashboard responsive behavior @responsive",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "responsive"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-6c8414cf841c50deec4d",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 256,
+              "column": 3
+            },
+            {
+              "title": "Dashboard accessibility compliance @accessibility",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "accessibility"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-baaca8b12dcb9c03760c",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 287,
+              "column": 3
+            },
+            {
+              "title": "Dashboard navigation performance @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-5afaa43633b344754c18",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 169,
+              "column": 3
+            },
+            {
+              "title": "Dashboard search functionality performance @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-6518cf38ab19866bb90b",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 201,
+              "column": 3
+            },
+            {
+              "title": "Dashboard data loading and pagination @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-314a0d03440c964e6603",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 227,
+              "column": 3
+            },
+            {
+              "title": "Dashboard responsive behavior @responsive",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "responsive"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-cc3f04d9762e950d392f",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 256,
+              "column": 3
+            },
+            {
+              "title": "Dashboard accessibility compliance @accessibility",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "accessibility"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-df14215d9fd18cca5c76",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 287,
+              "column": 3
+            },
+            {
+              "title": "Dashboard navigation performance @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-5bb203ae92aa92f5989e",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 169,
+              "column": 3
+            },
+            {
+              "title": "Dashboard search functionality performance @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-6a4bd9751239457f78d7",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 201,
+              "column": 3
+            },
+            {
+              "title": "Dashboard data loading and pagination @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-ecd398a8b9c3bcd0c5fd",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 227,
+              "column": 3
+            },
+            {
+              "title": "Dashboard responsive behavior @responsive",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "responsive"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-240e010c415a5880ee19",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 256,
+              "column": 3
+            },
+            {
+              "title": "Dashboard accessibility compliance @accessibility",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "accessibility"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-bc69e33924909dec4450",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 287,
+              "column": 3
+            },
+            {
+              "title": "Dashboard navigation performance @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-branded",
+                  "projectName": "chrome-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-4ce1019287ec47199410",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 169,
+              "column": 3
+            },
+            {
+              "title": "Dashboard search functionality performance @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-branded",
+                  "projectName": "chrome-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-5e5ff056f770a8fc7824",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 201,
+              "column": 3
+            },
+            {
+              "title": "Dashboard data loading and pagination @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-branded",
+                  "projectName": "chrome-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-14cbd4a93a39bb2fceb0",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 227,
+              "column": 3
+            },
+            {
+              "title": "Dashboard responsive behavior @responsive",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "responsive"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-branded",
+                  "projectName": "chrome-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-f294d982235d830391a9",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 256,
+              "column": 3
+            },
+            {
+              "title": "Dashboard accessibility compliance @accessibility",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "accessibility"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-branded",
+                  "projectName": "chrome-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-72ac849cec1655ec07a5",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 287,
+              "column": 3
+            },
+            {
+              "title": "Dashboard responsive behavior @responsive",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "responsive"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile-chrome",
+                  "projectName": "mobile-chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-7af0b5039ed949f609d6",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 256,
+              "column": 3
+            },
+            {
+              "title": "Dashboard responsive behavior @responsive",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "responsive"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile-safari",
+                  "projectName": "mobile-safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-4bde8b60659e28fc0c33",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 256,
+              "column": 3
+            },
+            {
+              "title": "Dashboard responsive behavior @responsive",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "responsive"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet-ipad",
+                  "projectName": "tablet-ipad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-035d8cb543172a19b728",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 256,
+              "column": 3
+            },
+            {
+              "title": "Dashboard navigation performance @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "performance-monitoring",
+                  "projectName": "performance-monitoring",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-e84fe26672b2454aa596",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 169,
+              "column": 3
+            },
+            {
+              "title": "Dashboard search functionality performance @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "performance-monitoring",
+                  "projectName": "performance-monitoring",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-af5c002549d95bd0e2e4",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 201,
+              "column": 3
+            },
+            {
+              "title": "Dashboard data loading and pagination @performance",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "performance-monitoring",
+                  "projectName": "performance-monitoring",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-3218d13238682ea1cefe",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 227,
+              "column": 3
+            },
+            {
+              "title": "Dashboard responsive behavior @responsive",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "responsive"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "performance-monitoring",
+                  "projectName": "performance-monitoring",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-b45ed96df8591f6898ea",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 256,
+              "column": 3
+            },
+            {
+              "title": "Dashboard accessibility compliance @accessibility",
+              "ok": true,
+              "tags": [
+                "desktop",
+                "performance",
+                "accessibility"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "performance-monitoring",
+                  "projectName": "performance-monitoring",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-07de42c33f736776e423",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 287,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "TrustBoost Dashboard - User Permissions @security",
+          "file": "dashboard/dashboard-auth.spec.js",
+          "line": 316,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Admin user permissions validation @security",
+              "ok": true,
+              "tags": [
+                "security",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-b488b68157dd1ca1fd69",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 324,
+              "column": 3
+            },
+            {
+              "title": "Role-based access control @security",
+              "ok": true,
+              "tags": [
+                "security",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0d486230e552b1df8808-0690a1385204a63de4cd",
+              "file": "dashboard/dashboard-auth.spec.js",
+              "line": 350,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "performance/core-web-vitals.spec.js",
+      "file": "performance/core-web-vitals.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals",
+          "file": "performance/core-web-vitals.spec.js",
+          "line": 19,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Homepage Core Web Vitals compliance @performance @vitals @desktop",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "desktop"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-1505eb32151fb5bebc3f",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 28,
+              "column": 3
+            },
+            {
+              "title": "Dashboard Core Web Vitals under load @performance @vitals @desktop",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "desktop"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-c88d280da4f4fd177e54",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 64,
+              "column": 3
+            },
+            {
+              "title": "Widget embed Core Web Vitals impact @performance @vitals",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-d56ec67792a8614cf6b4",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 99,
+              "column": 3
+            },
+            {
+              "title": "Mobile Core Web Vitals performance @performance @vitals @mobile",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "mobile"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-fbd0057f4824f93696f0",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 137,
+              "column": 3
+            },
+            {
+              "title": "Page transitions Web Vitals stability @performance @vitals",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-339d53ed5f5e53401d69",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 179,
+              "column": 3
+            },
+            {
+              "title": "Resource loading optimization validation @performance",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-562b3091d7df418780dc",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 227,
+              "column": 3
+            },
+            {
+              "title": "Memory usage and performance monitoring @performance",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-db899d3a0f5f72e79ac1",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 289,
+              "column": 3
+            },
+            {
+              "title": "Homepage Core Web Vitals compliance @performance @vitals @desktop",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "desktop"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-5ab66d9df6d67bb25fed",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 28,
+              "column": 3
+            },
+            {
+              "title": "Dashboard Core Web Vitals under load @performance @vitals @desktop",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "desktop"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-92def8a7357bb5694ec3",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 64,
+              "column": 3
+            },
+            {
+              "title": "Homepage Core Web Vitals compliance @performance @vitals @desktop",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "desktop"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-16c7c057242ca3f849dc",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 28,
+              "column": 3
+            },
+            {
+              "title": "Dashboard Core Web Vitals under load @performance @vitals @desktop",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "desktop"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-079e8c741b0bb92dc6e8",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 64,
+              "column": 3
+            },
+            {
+              "title": "Homepage Core Web Vitals compliance @performance @vitals @desktop",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "desktop"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-branded",
+                  "projectName": "chrome-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-1c3afc411ca8419f0d9c",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 28,
+              "column": 3
+            },
+            {
+              "title": "Dashboard Core Web Vitals under load @performance @vitals @desktop",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "desktop"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-branded",
+                  "projectName": "chrome-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-d8c145ba1141ed317649",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 64,
+              "column": 3
+            },
+            {
+              "title": "Widget embed Core Web Vitals impact @performance @vitals",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-branded",
+                  "projectName": "chrome-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-97449c24191887782a31",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 99,
+              "column": 3
+            },
+            {
+              "title": "Mobile Core Web Vitals performance @performance @vitals @mobile",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "mobile"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-branded",
+                  "projectName": "chrome-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-464afe76245b1ad7266c",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 137,
+              "column": 3
+            },
+            {
+              "title": "Page transitions Web Vitals stability @performance @vitals",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-branded",
+                  "projectName": "chrome-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-3d7327ff5d4b712c01a3",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 179,
+              "column": 3
+            },
+            {
+              "title": "Resource loading optimization validation @performance",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-branded",
+                  "projectName": "chrome-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-838dc32ed3a745d1209e",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 227,
+              "column": 3
+            },
+            {
+              "title": "Memory usage and performance monitoring @performance",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-branded",
+                  "projectName": "chrome-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-16bbdc14c45628d42c30",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 289,
+              "column": 3
+            },
+            {
+              "title": "Mobile Core Web Vitals performance @performance @vitals @mobile",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "mobile"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile-chrome",
+                  "projectName": "mobile-chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-fb65899a7d59ea065e40",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 137,
+              "column": 3
+            },
+            {
+              "title": "Mobile Core Web Vitals performance @performance @vitals @mobile",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "mobile"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile-safari",
+                  "projectName": "mobile-safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-b770d6d2fde103156c9d",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 137,
+              "column": 3
+            },
+            {
+              "title": "Homepage Core Web Vitals compliance @performance @vitals @desktop",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "desktop"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "performance-monitoring",
+                  "projectName": "performance-monitoring",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-041e2331edf40f4d9713",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 28,
+              "column": 3
+            },
+            {
+              "title": "Dashboard Core Web Vitals under load @performance @vitals @desktop",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "desktop"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "performance-monitoring",
+                  "projectName": "performance-monitoring",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-78e967f9d4a713a98720",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 64,
+              "column": 3
+            },
+            {
+              "title": "Widget embed Core Web Vitals impact @performance @vitals",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "performance-monitoring",
+                  "projectName": "performance-monitoring",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-ec1ec3a45b2fa54a335e",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 99,
+              "column": 3
+            },
+            {
+              "title": "Mobile Core Web Vitals performance @performance @vitals @mobile",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals",
+                "mobile"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "performance-monitoring",
+                  "projectName": "performance-monitoring",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-374ee1a165bdc60ccc30",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 137,
+              "column": 3
+            },
+            {
+              "title": "Page transitions Web Vitals stability @performance @vitals",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance",
+                "vitals"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "performance-monitoring",
+                  "projectName": "performance-monitoring",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-17bf62cc45c5f1ff33e7",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 179,
+              "column": 3
+            },
+            {
+              "title": "Resource loading optimization validation @performance",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "performance-monitoring",
+                  "projectName": "performance-monitoring",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-4482d3e12cda861e8949",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 227,
+              "column": 3
+            },
+            {
+              "title": "Memory usage and performance monitoring @performance",
+              "ok": true,
+              "tags": [
+                "performance",
+                "vitals",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "performance-monitoring",
+                  "projectName": "performance-monitoring",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2cb1393f3018df873b45-f5a84096ae1650dceb02",
+              "file": "performance/core-web-vitals.spec.js",
+              "line": 289,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "security/security-regression.spec.js",
+      "file": "security/security-regression.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Security Regression Tests - Phase 3 Compliance Maintained @security @regression",
+          "file": "security/security-regression.spec.js",
+          "line": 14,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Complete security headers validation (Phase 3 baseline) @security @regression",
+              "ok": true,
+              "tags": [
+                "security",
+                "regression",
+                "security",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "cb37f485bfbd0bc315d5-ecb2ceb3855ac401b25d",
+              "file": "security/security-regression.spec.js",
+              "line": 23,
+              "column": 3
+            },
+            {
+              "title": "Content Security Policy enforcement (Phase 3 level) @security @regression",
+              "ok": true,
+              "tags": [
+                "security",
+                "regression",
+                "security",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "cb37f485bfbd0bc315d5-841452100789341507e1",
+              "file": "security/security-regression.spec.js",
+              "line": 99,
+              "column": 3
+            },
+            {
+              "title": "XSS protection comprehensive testing @security @regression",
+              "ok": true,
+              "tags": [
+                "security",
+                "regression",
+                "security",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "cb37f485bfbd0bc315d5-4048f64aaff3a33472dc",
+              "file": "security/security-regression.spec.js",
+              "line": 148,
+              "column": 3
+            },
+            {
+              "title": "SQL injection protection validation @security @regression",
+              "ok": true,
+              "tags": [
+                "security",
+                "regression",
+                "security",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "cb37f485bfbd0bc315d5-0d801be9b321665cd21f",
+              "file": "security/security-regression.spec.js",
+              "line": 254,
+              "column": 3
+            },
+            {
+              "title": "Authentication security regression @security @regression",
+              "ok": true,
+              "tags": [
+                "security",
+                "regression",
+                "security",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "cb37f485bfbd0bc315d5-4dc7c03705ff665aa76e",
+              "file": "security/security-regression.spec.js",
+              "line": 351,
+              "column": 3
+            },
+            {
+              "title": "Widget embedding security (Phase 3 compliance) @security @regression",
+              "ok": true,
+              "tags": [
+                "security",
+                "regression",
+                "security",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "cb37f485bfbd0bc315d5-3004f2e3c6f5d8ae3622",
+              "file": "security/security-regression.spec.js",
+              "line": 428,
+              "column": 3
+            },
+            {
+              "title": "HTTPS enforcement and TLS validation @security @regression",
+              "ok": true,
+              "tags": [
+                "security",
+                "regression",
+                "security",
+                "regression"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "cb37f485bfbd0bc315d5-26ba654e5fb6c6dff3a8",
+              "file": "security/security-regression.spec.js",
+              "line": 505,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "widget/widget-security.spec.js",
+      "file": "widget/widget-security.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TrustBoost Widget - Security & Performance @security @desktop",
+          "file": "widget/widget-security.spec.js",
+          "line": 18,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Widget loads securely with Phase 3 security headers maintained @security",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-877e5ae3f94c598109b6",
+              "file": "widget/widget-security.spec.js",
+              "line": 33,
+              "column": 3
+            },
+            {
+              "title": "Widget resists XSS attacks (Phase 3 security maintained) @security",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-2db1a80b715d31d42717",
+              "file": "widget/widget-security.spec.js",
+              "line": 54,
+              "column": 3
+            },
+            {
+              "title": "Widget meets Core Web Vitals requirements @performance @vitals",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "performance",
+                "vitals"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-a9859d751d7ebb577e83",
+              "file": "widget/widget-security.spec.js",
+              "line": 77,
+              "column": 3
+            },
+            {
+              "title": "Widget interaction performance under load @performance",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-d9cba3b6a3c62d1be5c1",
+              "file": "widget/widget-security.spec.js",
+              "line": 107,
+              "column": 3
+            },
+            {
+              "title": "Widget cross-frame security (Phase 3 compliance) @security",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-9236fe04bf1fe4e1b997",
+              "file": "widget/widget-security.spec.js",
+              "line": 133,
+              "column": 3
+            },
+            {
+              "title": "Widget data privacy and GDPR compliance @security",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-0c9c3d64caa5016bfeaa",
+              "file": "widget/widget-security.spec.js",
+              "line": 159,
+              "column": 3
+            },
+            {
+              "title": "Widget loads securely with Phase 3 security headers maintained @security",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-986f203f29340b5ab9ed",
+              "file": "widget/widget-security.spec.js",
+              "line": 33,
+              "column": 3
+            },
+            {
+              "title": "Widget resists XSS attacks (Phase 3 security maintained) @security",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-1450dc1a101b8ba4c448",
+              "file": "widget/widget-security.spec.js",
+              "line": 54,
+              "column": 3
+            },
+            {
+              "title": "Widget meets Core Web Vitals requirements @performance @vitals",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "performance",
+                "vitals"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-81a87ffc8ffec3633bec",
+              "file": "widget/widget-security.spec.js",
+              "line": 77,
+              "column": 3
+            },
+            {
+              "title": "Widget interaction performance under load @performance",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-6bc9e0f2da1921eaa312",
+              "file": "widget/widget-security.spec.js",
+              "line": 107,
+              "column": 3
+            },
+            {
+              "title": "Widget cross-frame security (Phase 3 compliance) @security",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-970e440dd784b2576459",
+              "file": "widget/widget-security.spec.js",
+              "line": 133,
+              "column": 3
+            },
+            {
+              "title": "Widget data privacy and GDPR compliance @security",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-028a1e67402eec23e528",
+              "file": "widget/widget-security.spec.js",
+              "line": 159,
+              "column": 3
+            },
+            {
+              "title": "Widget loads securely with Phase 3 security headers maintained @security",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-78ac70da08eaf9958e1c",
+              "file": "widget/widget-security.spec.js",
+              "line": 33,
+              "column": 3
+            },
+            {
+              "title": "Widget resists XSS attacks (Phase 3 security maintained) @security",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-e7368b1924ed701ddbc9",
+              "file": "widget/widget-security.spec.js",
+              "line": 54,
+              "column": 3
+            },
+            {
+              "title": "Widget meets Core Web Vitals requirements @performance @vitals",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "performance",
+                "vitals"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-bd5291710f805e6eed33",
+              "file": "widget/widget-security.spec.js",
+              "line": 77,
+              "column": 3
+            },
+            {
+              "title": "Widget interaction performance under load @performance",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-deb64d80e7084354e72e",
+              "file": "widget/widget-security.spec.js",
+              "line": 107,
+              "column": 3
+            },
+            {
+              "title": "Widget cross-frame security (Phase 3 compliance) @security",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-23222e3b4835415eab79",
+              "file": "widget/widget-security.spec.js",
+              "line": 133,
+              "column": 3
+            },
+            {
+              "title": "Widget data privacy and GDPR compliance @security",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "security"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-7fdf9dff01a3e738f67a",
+              "file": "widget/widget-security.spec.js",
+              "line": 159,
+              "column": 3
+            },
+            {
+              "title": "Widget meets Core Web Vitals requirements @performance @vitals",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "performance",
+                "vitals"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-branded",
+                  "projectName": "chrome-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-deaa85d8e00d73e40e6b",
+              "file": "widget/widget-security.spec.js",
+              "line": 77,
+              "column": 3
+            },
+            {
+              "title": "Widget interaction performance under load @performance",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chrome-branded",
+                  "projectName": "chrome-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-966e5e3cd48e4b3e3d8a",
+              "file": "widget/widget-security.spec.js",
+              "line": 107,
+              "column": 3
+            },
+            {
+              "title": "Widget meets Core Web Vitals requirements @performance @vitals",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "performance",
+                "vitals"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "performance-monitoring",
+                  "projectName": "performance-monitoring",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-c4035606aba76a2681bd",
+              "file": "widget/widget-security.spec.js",
+              "line": 77,
+              "column": 3
+            },
+            {
+              "title": "Widget interaction performance under load @performance",
+              "ok": true,
+              "tags": [
+                "security",
+                "desktop",
+                "performance"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "performance-monitoring",
+                  "projectName": "performance-monitoring",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-27b1dac7eaf2627727d2",
+              "file": "widget/widget-security.spec.js",
+              "line": 107,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "TrustBoost Widget - Cross Browser Compatibility @cross-browser",
+          "file": "widget/widget-security.spec.js",
+          "line": 198,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Widget loads consistently across browsers @cross-browser",
+              "ok": true,
+              "tags": [
+                "cross-browser",
+                "cross-browser"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-0866941ce49107a23410",
+              "file": "widget/widget-security.spec.js",
+              "line": 206,
+              "column": 3
+            },
+            {
+              "title": "Widget styling consistent across browsers @cross-browser",
+              "ok": true,
+              "tags": [
+                "cross-browser",
+                "cross-browser"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-0c2ac909cddef1db56f9",
+              "file": "widget/widget-security.spec.js",
+              "line": 231,
+              "column": 3
+            },
+            {
+              "title": "Widget loads consistently across browsers @cross-browser",
+              "ok": true,
+              "tags": [
+                "cross-browser",
+                "cross-browser"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-682d6827a4818d9bb555",
+              "file": "widget/widget-security.spec.js",
+              "line": 206,
+              "column": 3
+            },
+            {
+              "title": "Widget styling consistent across browsers @cross-browser",
+              "ok": true,
+              "tags": [
+                "cross-browser",
+                "cross-browser"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit-desktop",
+                  "projectName": "webkit-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-0fd9cafa5ba0053c5c0b",
+              "file": "widget/widget-security.spec.js",
+              "line": 231,
+              "column": 3
+            },
+            {
+              "title": "Widget loads consistently across browsers @cross-browser",
+              "ok": true,
+              "tags": [
+                "cross-browser",
+                "cross-browser"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "edge-branded",
+                  "projectName": "edge-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-44e149f22403e9507264",
+              "file": "widget/widget-security.spec.js",
+              "line": 206,
+              "column": 3
+            },
+            {
+              "title": "Widget styling consistent across browsers @cross-browser",
+              "ok": true,
+              "tags": [
+                "cross-browser",
+                "cross-browser"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "edge-branded",
+                  "projectName": "edge-branded",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-51a5b7435574e3441426",
+              "file": "widget/widget-security.spec.js",
+              "line": 231,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "TrustBoost Widget - Mobile Responsive @mobile @responsive",
+          "file": "widget/widget-security.spec.js",
+          "line": 260,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Widget adapts to mobile viewports @mobile @responsive",
+              "ok": true,
+              "tags": [
+                "mobile",
+                "responsive",
+                "mobile",
+                "responsive"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile-chrome",
+                  "projectName": "mobile-chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-b49a5c77f1fe62ccbf13",
+              "file": "widget/widget-security.spec.js",
+              "line": 268,
+              "column": 3
+            },
+            {
+              "title": "Widget touch interactions work on mobile @mobile",
+              "ok": true,
+              "tags": [
+                "mobile",
+                "responsive",
+                "mobile"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile-chrome",
+                  "projectName": "mobile-chrome",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-d1b883ac9bc02c21f5c3",
+              "file": "widget/widget-security.spec.js",
+              "line": 282,
+              "column": 3
+            },
+            {
+              "title": "Widget adapts to mobile viewports @mobile @responsive",
+              "ok": true,
+              "tags": [
+                "mobile",
+                "responsive",
+                "mobile",
+                "responsive"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile-safari",
+                  "projectName": "mobile-safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-d228317dd5c135958a0b",
+              "file": "widget/widget-security.spec.js",
+              "line": 268,
+              "column": 3
+            },
+            {
+              "title": "Widget touch interactions work on mobile @mobile",
+              "ok": true,
+              "tags": [
+                "mobile",
+                "responsive",
+                "mobile"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile-safari",
+                  "projectName": "mobile-safari",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-6012a4bfb79752c0c594",
+              "file": "widget/widget-security.spec.js",
+              "line": 282,
+              "column": 3
+            },
+            {
+              "title": "Widget adapts to mobile viewports @mobile @responsive",
+              "ok": true,
+              "tags": [
+                "mobile",
+                "responsive",
+                "mobile",
+                "responsive"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet-ipad",
+                  "projectName": "tablet-ipad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-0f6a000332206e67b97f",
+              "file": "widget/widget-security.spec.js",
+              "line": 268,
+              "column": 3
+            },
+            {
+              "title": "Widget touch interactions work on mobile @mobile",
+              "ok": true,
+              "tags": [
+                "mobile",
+                "responsive",
+                "mobile"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "tablet-ipad",
+                  "projectName": "tablet-ipad",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "56faca0330fd12a6e688-785a0e2c9805b1f2a4cc",
+              "file": "widget/widget-security.spec.js",
+              "line": 282,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-09-04T16:32:54.638Z",
+    "duration": 114.28000000000003,
+    "expected": 0,
+    "skipped": 111,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

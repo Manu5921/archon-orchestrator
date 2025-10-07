@@ -1,0 +1,40 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"🚨 CONTEXT7 VALIDATION REQUIRED\"; echo \"Before writing code, you MUST:\"; echo \"1. /mcp context7 resolve-library-id <library>\"; echo \"2. /mcp context7 get-library-docs <id> --topic=<feature>\"; echo \"3. Confirm: Type YES to proceed with Context7 patterns validated\"; read -t 30 -p \"Enter YES to continue: \" response; if [[ \"$response\" != \"YES\" ]]; then echo \"❌ BLOCKED: Context7 validation required\"; exit 1; fi; echo \"✅ Context7 validation acknowledged\"'",
+            "timeout": 35
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '✅ Code written. Next: Use /mcp context7 get-library-docs for validation patterns'",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "write.*code|create.*file|implement|add.*feature",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"🎯 DETECTED CODE REQUEST\"; echo \"Required workflow:\"; echo \"1. /mcp context7 resolve-library-id <library>\"; echo \"2. /mcp context7 get-library-docs <id>\"; echo \"3. Then proceed with implementation\"; echo \"Continue with Context7 workflow? (auto-continue in 10s)\"; sleep 10'",
+            "timeout": 12
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "architecturePatterns": {
+    "requiredImports": "function validateRequiredImports(fileContent) { const requiredImports = ['react', 'next', 'express', 'supabase', 'pg']; requiredImports.forEach(importName => { if (!fileContent.includes(importName)) { throw new Error(`Missing required import: ${importName}`); } }); }",
+    "fileStructureConventions": "function validateFileStructure(filePath) { const validStructure = /^(components|pages|api|utils|styles|hooks)\\/.*\\.tsx?$/; if (!validStructure.test(filePath)) { throw new Error(`Invalid file structure: ${filePath}`); } }",
+    "componentPatterns": "function validateComponentPatterns(componentCode) { if (!componentCode.includes('function') && !componentCode.includes('class')) { throw new Error('Components must be defined using function or class syntax.'); } }",
+    "apiEndpointPatterns": "function validateApiEndpointPatterns(endpointPath) { if (!endpointPath.startsWith('/api/')) { throw new Error('API endpoints must be under the /api/ path.'); } }"
+  },
+  "commonMistakes": {
+    "technologyUsage": "function validateTechnologyUsage(fileContent) { if (fileContent.includes('import') && fileContent.includes('python')) { throw new Error('Python code detected in a Node.js project.'); } }",
+    "databasePatterns": "function validateDatabasePatterns(query) { if (!query.includes('SELECT') && !query.includes('INSERT') && !query.includes('UPDATE') && !query.includes('DELETE')) { throw new Error('Invalid database query pattern.'); } }",
+    "securityAntipatterns": "function validateSecurityAntipatterns(code) { if (code.includes('eval(') || code.includes('innerHTML')) { throw new Error('Detected potential security antipatterns.'); } }",
+    "performancePitfalls": "function validatePerformancePitfalls(code) { if (code.includes('setTimeout') && code.includes('while')) { throw new Error('Detected potential performance pitfalls with setTimeout in loops.'); } }"
+  },
+  "integrationValidation": {
+    "apiContractValidation": "function validateApiContract(response) { if (!response.hasOwnProperty('status') || !response.hasOwnProperty('data')) { throw new Error('API response does not match the expected contract.'); } }",
+    "databaseSchemaChecks": "function validateDatabaseSchema(schema) { const requiredTables = ['users', 'products', 'orders']; requiredTables.forEach(table => { if (!schema.includes(table)) { throw new Error(`Missing required table: ${table}`); } }); }",
+    "componentInterfaceValidation": "function validateComponentInterface(component) { if (!component.props || typeof component.props !== 'object') { throw new Error('Component interface must include props as an object.'); } }",
+    "securityPatternEnforcement": "function validateSecurityPatternEnforcement(code) { if (!code.includes('helmet') && !code.includes('cors')) { throw new Error('Security patterns like helmet and cors are missing.'); } }"
+  },
+  "qualityThresholds": {
+    "complexityLimits": "function validateComplexityLimits(code) { const maxComplexity = 10; const complexity = calculateComplexity(code); if (complexity > maxComplexity) { throw new Error(`Code complexity exceeds limit: ${complexity}`); } }",
+    "performanceThresholds": "function validatePerformanceThresholds(responseTime) { const maxResponseTime = 200; if (responseTime > maxResponseTime) { throw new Error(`Response time exceeds performance threshold: ${responseTime}ms`); } }",
+    "securityScoreMinimums": "function validateSecurityScoreMinimums(securityScore) { const minSecurityScore = 80; if (securityScore < minSecurityScore) { throw new Error(`Security score below minimum threshold: ${securityScore}`); } }",
+    "architectureCompliancePercentages": "function validateArchitectureCompliancePercentages(compliancePercentage) { const minCompliance = 90; if (compliancePercentage < minCompliance) { throw new Error(`Architecture compliance below minimum percentage: ${compliancePercentage}%`); } }"
+  }
+}

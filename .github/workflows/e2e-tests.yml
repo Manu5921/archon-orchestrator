@@ -1,0 +1,386 @@
+name: 'TrustBoost Phase 4 E2E Testing Pipeline'
+
+on:
+  push:
+    branches: [ main, develop, 'feature/*', 'phase-4/*' ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Tests quotidiens à 02:00 UTC
+    - cron: '0 2 * * *'
+
+env:
+  NODE_VERSION: '18.x'
+  TEST_ADMIN_EMAIL: ${{ secrets.TEST_ADMIN_EMAIL }}
+  TEST_ADMIN_PASSWORD: ${{ secrets.TEST_ADMIN_PASSWORD }}
+  CI: true
+
+jobs:
+  # Job 1: Setup et validation environnement
+  setup-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: |
+        npm ci --prefer-offline --no-audit
+        npx playwright install --with-deps
+        
+    - name: Validate test configuration
+      run: |
+        npx playwright test --list
+        echo "✅ Test suite validation completed"
+        
+    - name: Set browser matrix
+      id: set-matrix
+      run: |
+        echo 'matrix={
+          "browser": [
+            "chromium-desktop", 
+            "firefox-desktop", 
+            "webkit-desktop",
+            "mobile-chrome",
+            "mobile-safari"
+          ]
+        }' >> $GITHUB_OUTPUT
+
+  # Job 2: Tests E2E par navigateur (parallélisation maximale)
+  e2e-tests:
+    needs: setup-validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup-validation.outputs.matrix) }}
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: |
+        npm ci --prefer-offline --no-audit
+        npx playwright install --with-deps
+        
+    - name: Start application server
+      run: |
+        npm run start &
+        sleep 10
+        curl -f http://localhost:3000/health || exit 1
+        echo "✅ Application server started and healthy"
+      
+    - name: Run E2E tests for ${{ matrix.browser }}
+      run: |
+        npx playwright test \
+          --project=${{ matrix.browser }} \
+          --reporter=html,junit,json \
+          --output-dir=test-results-${{ matrix.browser }} \
+          --workers=1
+      env:
+        PLAYWRIGHT_HTML_REPORT: test-results-${{ matrix.browser }}/html-report
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.browser }}
+        path: |
+          test-results-${{ matrix.browser }}/
+          *.xml
+        retention-days: 7
+        
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: coverage-${{ matrix.browser }}
+        path: coverage/
+        retention-days: 7
+
+  # Job 3: Tests de performance spécialisés
+  performance-tests:
+    needs: setup-validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: |
+        npm ci --prefer-offline --no-audit
+        npx playwright install chromium --with-deps
+        
+    - name: Start application server
+      run: |
+        npm run start &
+        sleep 10
+        curl -f http://localhost:3000/health || exit 1
+        
+    - name: Run Performance Tests (Core Web Vitals)
+      run: |
+        npx playwright test tests/e2e/performance/ \
+          --project=performance-monitoring \
+          --reporter=json \
+          --output-dir=performance-results
+      env:
+        PLAYWRIGHT_JSON_OUTPUT_NAME: performance-results.json
+        
+    - name: Validate Core Web Vitals thresholds
+      run: |
+        node -e "
+        const results = require('./performance-results.json');
+        const failures = results.suites.flatMap(s => s.specs)
+          .filter(spec => spec.tests.some(t => t.results.some(r => r.status === 'failed')));
+        
+        if (failures.length > 0) {
+          console.error('❌ Performance tests failed:', failures.map(f => f.title));
+          process.exit(1);
+        }
+        
+        console.log('✅ All Core Web Vitals within Phase 4 requirements');
+        "
+        
+    - name: Upload performance results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: performance-results
+        path: performance-results/
+        retention-days: 30 # Garder plus longtemps pour trend analysis
+
+  # Job 4: Tests de sécurité (régression Phase 3)
+  security-tests:
+    needs: setup-validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: |
+        npm ci --prefer-offline --no-audit
+        npx playwright install chromium firefox --with-deps
+        
+    - name: Start application server
+      run: |
+        npm run start &
+        sleep 10
+        curl -f http://localhost:3000/health || exit 1
+        
+    - name: Run Security Regression Tests
+      run: |
+        npx playwright test tests/e2e/security/ \
+          --project=chromium-desktop \
+          --reporter=junit \
+          --output-dir=security-results
+      env:
+        SECURITY_TEST_MODE: 'strict'
+        
+    - name: Validate security compliance
+      run: |
+        if [ -f "security-results/junit-report.xml" ]; then
+          failures=$(grep -c 'failure\|error' security-results/junit-report.xml || true)
+          if [ "$failures" -gt 0 ]; then
+            echo "❌ Security regression detected: $failures failures"
+            exit 1
+          fi
+        fi
+        echo "✅ Security compliance maintained from Phase 3"
+        
+    - name: Upload security results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-results
+        path: security-results/
+        retention-days: 90 # Compliance records
+
+  # Job 5: Agrégation des résultats et rapport final
+  test-report:
+    needs: [e2e-tests, performance-tests, security-tests]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download all test artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: all-results/
+        
+    - name: Generate comprehensive test report
+      run: |
+        mkdir -p final-report
+        
+        echo "# TrustBoost Phase 4 E2E Test Report" > final-report/README.md
+        echo "Generated: $(date -u)" >> final-report/README.md
+        echo "" >> final-report/README.md
+        
+        # Compter les résultats par catégorie
+        TOTAL_TESTS=0
+        PASSED_TESTS=0
+        FAILED_TESTS=0
+        
+        # Browser tests
+        echo "## Cross-Browser Testing Results" >> final-report/README.md
+        for browser_dir in all-results/test-results-*; do
+          if [ -d "$browser_dir" ]; then
+            browser=$(basename "$browser_dir" | sed 's/test-results-//')
+            if [ -f "$browser_dir/results.json" ]; then
+              passed=$(jq '.stats.passed // 0' "$browser_dir/results.json" 2>/dev/null || echo "0")
+              failed=$(jq '.stats.failed // 0' "$browser_dir/results.json" 2>/dev/null || echo "0")
+              echo "- **$browser**: $passed passed, $failed failed" >> final-report/README.md
+              TOTAL_TESTS=$((TOTAL_TESTS + passed + failed))
+              PASSED_TESTS=$((PASSED_TESTS + passed))
+              FAILED_TESTS=$((FAILED_TESTS + failed))
+            fi
+          fi
+        done
+        
+        # Performance tests
+        echo "" >> final-report/README.md
+        echo "## Performance Testing (Core Web Vitals)" >> final-report/README.md
+        if [ -f "all-results/performance-results/performance-results.json" ]; then
+          perf_passed=$(jq '[.suites[].specs[].tests[].results[]] | map(select(.status == "passed")) | length' all-results/performance-results/performance-results.json 2>/dev/null || echo "0")
+          perf_failed=$(jq '[.suites[].specs[].tests[].results[]] | map(select(.status == "failed")) | length' all-results/performance-results/performance-results.json 2>/dev/null || echo "0")
+          echo "- **Core Web Vitals**: $perf_passed passed, $perf_failed failed" >> final-report/README.md
+          TOTAL_TESTS=$((TOTAL_TESTS + perf_passed + perf_failed))
+          PASSED_TESTS=$((PASSED_TESTS + perf_passed))
+          FAILED_TESTS=$((FAILED_TESTS + perf_failed))
+        fi
+        
+        # Security tests
+        echo "" >> final-report/README.md
+        echo "## Security Testing (Phase 3 Regression)" >> final-report/README.md
+        if [ -f "all-results/security-results/junit-report.xml" ]; then
+          sec_total=$(grep -c '<testcase' all-results/security-results/junit-report.xml || echo "0")
+          sec_failed=$(grep -c '<failure\|<error' all-results/security-results/junit-report.xml || echo "0")
+          sec_passed=$((sec_total - sec_failed))
+          echo "- **Security Regression**: $sec_passed passed, $sec_failed failed" >> final-report/README.md
+          TOTAL_TESTS=$((TOTAL_TESTS + sec_total))
+          PASSED_TESTS=$((PASSED_TESTS + sec_passed))
+          FAILED_TESTS=$((FAILED_TESTS + sec_failed))
+        fi
+        
+        # Summary
+        echo "" >> final-report/README.md
+        echo "## Summary" >> final-report/README.md
+        echo "- **Total Tests**: $TOTAL_TESTS" >> final-report/README.md
+        echo "- **Passed**: $PASSED_TESTS" >> final-report/README.md
+        echo "- **Failed**: $FAILED_TESTS" >> final-report/README.md
+        
+        if [ $TOTAL_TESTS -gt 0 ]; then
+          PASS_RATE=$(( (PASSED_TESTS * 100) / TOTAL_TESTS ))
+          echo "- **Pass Rate**: ${PASS_RATE}%" >> final-report/README.md
+          
+          if [ $PASS_RATE -ge 95 ]; then
+            echo "- **Status**: ✅ PHASE 4 QUALITY GATE PASSED" >> final-report/README.md
+          else
+            echo "- **Status**: ❌ PHASE 4 QUALITY GATE FAILED" >> final-report/README.md
+            exit 1
+          fi
+        fi
+        
+        echo "Generated comprehensive test report"
+        cat final-report/README.md
+        
+    - name: Upload final report
+      uses: actions/upload-artifact@v4
+      with:
+        name: final-test-report
+        path: final-report/
+        retention-days: 90
+        
+    - name: Comment PR with results (if PR)
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request'
+      with:
+        script: |
+          const fs = require('fs');
+          if (fs.existsSync('final-report/README.md')) {
+            const report = fs.readFileSync('final-report/README.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🚀 Phase 4 TrustBoost E2E Test Results\n\n${report}`
+            });
+          }
+
+  # Job 6: Déploiement conditionnel (si tous tests passent)
+  conditional-deploy:
+    needs: [test-report]
+    runs-on: ubuntu-latest
+    if: success() && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Notify deployment readiness
+      run: |
+        echo "🚀 All Phase 4 E2E tests passed successfully!"
+        echo "✅ Core Web Vitals within requirements"
+        echo "✅ Security compliance maintained from Phase 3" 
+        echo "✅ Cross-browser compatibility validated"
+        echo "Ready for deployment to production"
+        
+    - name: Trigger deployment workflow
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.actions.createWorkflowDispatch({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'deploy.yml',
+            ref: 'main',
+            inputs: {
+              environment: 'production',
+              tests_passed: 'true',
+              phase: '4'
+            }
+          });
+          
+    - name: Create deployment tag
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        TAG="phase4-e2e-$(date +%Y%m%d-%H%M%S)"
+        git tag -a "$TAG" -m "Phase 4 E2E validated deployment $TAG"
+        git push origin "$TAG"
+        echo "Created deployment tag: $TAG"

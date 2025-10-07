@@ -1,0 +1,469 @@
+/**
+ * Unit Tests for MCP Server
+ * Tests WebSocket communication and MCP protocol compliance
+ */
+
+import { describe, test, expect, jest, beforeEach, afterEach } from '@jest/globals';
+import WebSocket from 'ws';
+import { MCPServer, startMCPServer } from '../../src/mcp/server.js';
+
+// Mock WebSocket Server
+jest.unstable_mockModule('ws', () => ({
+  default: jest.fn(),
+  WebSocketServer: jest.fn().mockImplementation(() => ({
+    on: jest.fn(),
+    close: jest.fn()
+  }))
+}));
+
+// Mock logger
+jest.unstable_mockModule('../../src/utils/logger.js', () => ({
+  logger: global.createMockLogger()
+}));
+
+// Mock MCP Tools
+jest.unstable_mockModule('../../src/mcp/tools.js', () => ({
+  MCPTools: jest.fn().mockImplementation(() => ({
+    getToolsList: jest.fn().mockReturnValue([
+      {
+        name: 'test-tool',
+        description: 'Test tool for unit testing',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            input: { type: 'string' }
+          }
+        }
+      }
+    ]),
+    executeTool: jest.fn().mockResolvedValue({
+      content: [{ type: 'text', text: 'Tool executed successfully' }]
+    })
+  }))
+}));
+
+describe('MCPServer', () => {
+  let mcpServer;
+  let mockOrchestrator;
+  let mockWss;
+  let mockWebSocket;
+
+  beforeEach(() => {
+    mockOrchestrator = global.createMockOrchestrator();
+    
+    // Setup mock WebSocket
+    mockWebSocket = {
+      send: jest.fn(),
+      on: jest.fn(),
+      close: jest.fn(),
+      readyState: WebSocket.OPEN
+    };
+
+    // Setup mock WebSocket Server
+    mockWss = {
+      on: jest.fn(),
+      close: jest.fn()
+    };
+
+    // Mock WebSocketServer constructor
+    const { WebSocketServer } = jest.requireMock('ws');
+    WebSocketServer.mockReturnValue(mockWss);
+
+    mcpServer = new MCPServer(Math.floor(Math.random() * 10000) + 40000, mockOrchestrator);
+  });
+
+  afterEach(async () => {
+    if (mcpServer && mcpServer.wss) {
+      await mcpServer.close();
+    }
+    jest.clearAllMocks();
+  });
+
+  describe('Constructor', () => {
+    test('should initialize with correct port and orchestrator', () => {
+      expect(typeof mcpServer.port).toBe('number');
+      expect(mcpServer.port).toBeGreaterThan(40000);
+      expect(mcpServer.orchestrator).toBe(mockOrchestrator);
+      expect(mcpServer.clients).toBeInstanceOf(Map);
+      expect(mcpServer.clients.size).toBe(0);
+    });
+
+    test('should initialize tools with orchestrator', () => {
+      expect(mcpServer.tools).toBeDefined();
+    });
+  });
+
+  describe('start', () => {
+    test('should create WebSocket server on specified port', async () => {
+      await mcpServer.start();
+
+      const { WebSocketServer } = jest.requireMock('ws');
+      expect(WebSocketServer).toHaveBeenCalledWith({ port: mcpServer.port });
+      expect(mockWss.on).toHaveBeenCalledWith('connection', expect.any(Function));
+    });
+
+    test('should set up connection handler', async () => {
+      await mcpServer.start();
+
+      expect(mockWss.on).toHaveBeenCalledWith('connection', expect.any(Function));
+      const connectionHandler = mockWss.on.mock.calls[0][1];
+      expect(typeof connectionHandler).toBe('function');
+    });
+  });
+
+  describe('Client Connection Handling', () => {
+    let connectionHandler;
+
+    beforeEach(async () => {
+      await mcpServer.start();
+      connectionHandler = mockWss.on.mock.calls.find(call => call[0] === 'connection')[1];
+    });
+
+    test('should handle new client connections', () => {
+      connectionHandler(mockWebSocket);
+
+      expect(mcpServer.clients.size).toBe(1);
+      expect(mockWebSocket.on).toHaveBeenCalledWith('message', expect.any(Function));
+      expect(mockWebSocket.on).toHaveBeenCalledWith('close', expect.any(Function));
+    });
+
+    test('should assign unique client IDs', () => {
+      connectionHandler(mockWebSocket);
+      const clientId1 = Array.from(mcpServer.clients.keys())[0];
+      
+      const mockWebSocket2 = { ...mockWebSocket, on: jest.fn() };
+      connectionHandler(mockWebSocket2);
+      const clientId2 = Array.from(mcpServer.clients.keys())[1];
+
+      expect(clientId1).not.toBe(clientId2);
+      expect(mcpServer.clients.size).toBe(2);
+    });
+
+    test('should remove client on disconnect', () => {
+      connectionHandler(mockWebSocket);
+      expect(mcpServer.clients.size).toBe(1);
+
+      // Simulate close event
+      const closeHandler = mockWebSocket.on.mock.calls.find(call => call[0] === 'close')[1];
+      closeHandler();
+
+      expect(mcpServer.clients.size).toBe(0);
+    });
+  });
+
+  describe('Message Handling', () => {
+    let messageHandler;
+
+    beforeEach(async () => {
+      await mcpServer.start();
+      const connectionHandler = mockWss.on.mock.calls.find(call => call[0] === 'connection')[1];
+      connectionHandler(mockWebSocket);
+      messageHandler = mockWebSocket.on.mock.calls.find(call => call[0] === 'message')[1];
+    });
+
+    test('should handle initialize message', async () => {
+      const initMessage = {
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'initialize',
+        params: {
+          protocolVersion: '2024-11-05',
+          capabilities: {},
+          clientInfo: { name: 'Test Client', version: '1.0.0' }
+        }
+      };
+
+      await messageHandler(Buffer.from(JSON.stringify(initMessage)));
+
+      expect(mockWebSocket.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          result: {
+            protocolVersion: '2024-11-05',
+            capabilities: {
+              tools: { listChanged: true },
+              resources: { subscribe: true, listChanged: true },
+              logging: {}
+            },
+            serverInfo: {
+              name: 'Orchestra MCP Server',
+              version: '1.0.0'
+            }
+          }
+        })
+      );
+    });
+
+    test('should handle tools/list message', async () => {
+      const toolsListMessage = {
+        jsonrpc: '2.0',
+        id: 2,
+        method: 'tools/list',
+        params: {}
+      };
+
+      await messageHandler(Buffer.from(JSON.stringify(toolsListMessage)));
+
+      expect(mockWebSocket.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          id: 2,
+          result: {
+            tools: [
+              {
+                name: 'test-tool',
+                description: 'Test tool for unit testing',
+                inputSchema: {
+                  type: 'object',
+                  properties: {
+                    input: { type: 'string' }
+                  }
+                }
+              }
+            ]
+          }
+        })
+      );
+    });
+
+    test('should handle tools/call message', async () => {
+      const toolsCallMessage = {
+        jsonrpc: '2.0',
+        id: 3,
+        method: 'tools/call',
+        params: {
+          name: 'test-tool',
+          arguments: { input: 'test input' }
+        }
+      };
+
+      await messageHandler(Buffer.from(JSON.stringify(toolsCallMessage)));
+
+      expect(mcpServer.tools.executeTool).toHaveBeenCalledWith('test-tool', { input: 'test input' });
+      expect(mockWebSocket.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          id: 3,
+          result: {
+            content: [{ type: 'text', text: 'Tool executed successfully' }]
+          }
+        })
+      );
+    });
+
+    test('should handle resources/list message', async () => {
+      const resourcesListMessage = {
+        jsonrpc: '2.0',
+        id: 4,
+        method: 'resources/list',
+        params: {}
+      };
+
+      await messageHandler(Buffer.from(JSON.stringify(resourcesListMessage)));
+
+      expect(mockOrchestrator.getResources).toHaveBeenCalled();
+      expect(mockWebSocket.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          id: 4,
+          result: {
+            resources: []
+          }
+        })
+      );
+    });
+
+    test('should handle logging/levels message', async () => {
+      const loggingLevelsMessage = {
+        jsonrpc: '2.0',
+        id: 5,
+        method: 'logging/levels',
+        params: {}
+      };
+
+      await messageHandler(Buffer.from(JSON.stringify(loggingLevelsMessage)));
+
+      expect(mockWebSocket.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          id: 5,
+          result: {
+            levels: ['debug', 'info', 'warn', 'error']
+          }
+        })
+      );
+    });
+
+    test('should handle unknown method', async () => {
+      const unknownMessage = {
+        jsonrpc: '2.0',
+        id: 6,
+        method: 'unknown/method',
+        params: {}
+      };
+
+      await messageHandler(Buffer.from(JSON.stringify(unknownMessage)));
+
+      expect(mockWebSocket.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          id: 6,
+          error: {
+            code: -32601,
+            message: 'Method not found: unknown/method'
+          }
+        })
+      );
+    });
+
+    test('should handle malformed JSON', async () => {
+      await messageHandler(Buffer.from('invalid json'));
+
+      expect(mockWebSocket.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          error: {
+            code: -32700,
+            message: 'Parse error'
+          }
+        })
+      );
+    });
+  });
+
+  describe('Error Handling', () => {
+    let messageHandler;
+
+    beforeEach(async () => {
+      await mcpServer.start();
+      const connectionHandler = mockWss.on.mock.calls.find(call => call[0] === 'connection')[1];
+      connectionHandler(mockWebSocket);
+      messageHandler = mockWebSocket.on.mock.calls.find(call => call[0] === 'message')[1];
+    });
+
+    test('should handle tool execution errors', async () => {
+      mcpServer.tools.executeTool.mockRejectedValue(new Error('Tool execution failed'));
+
+      const toolsCallMessage = {
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/call',
+        params: {
+          name: 'failing-tool',
+          arguments: {}
+        }
+      };
+
+      // Should not throw
+      await expect(messageHandler(Buffer.from(JSON.stringify(toolsCallMessage)))).resolves.not.toThrow();
+    });
+
+    test('should handle orchestrator resource errors', async () => {
+      mockOrchestrator.getResources.mockRejectedValue(new Error('Resource fetch failed'));
+
+      const resourcesMessage = {
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'resources/list',
+        params: {}
+      };
+
+      // Should not throw
+      await expect(messageHandler(Buffer.from(JSON.stringify(resourcesMessage)))).resolves.not.toThrow();
+    });
+  });
+
+  describe('Performance Tests', () => {
+    test('should handle multiple concurrent connections', async () => {
+      await mcpServer.start();
+      const connectionHandler = mockWss.on.mock.calls.find(call => call[0] === 'connection')[1];
+
+      // Simulate 100 concurrent connections
+      const mockClients = [];
+      for (let i = 0; i < 100; i++) {
+        const mockClient = { ...mockWebSocket, on: jest.fn() };
+        mockClients.push(mockClient);
+        connectionHandler(mockClient);
+      }
+
+      expect(mcpServer.clients.size).toBe(100);
+
+      // Disconnect all clients
+      mockClients.forEach((client, index) => {
+        const closeHandler = client.on.mock.calls.find(call => call[0] === 'close')[1];
+        closeHandler();
+      });
+
+      expect(mcpServer.clients.size).toBe(0);
+    });
+
+    test('should handle rapid message processing', async () => {
+      await mcpServer.start();
+      const connectionHandler = mockWss.on.mock.calls.find(call => call[0] === 'connection')[1];
+      connectionHandler(mockWebSocket);
+      const messageHandler = mockWebSocket.on.mock.calls.find(call => call[0] === 'message')[1];
+
+      const messages = [];
+      for (let i = 0; i < 100; i++) {
+        messages.push({
+          jsonrpc: '2.0',
+          id: i,
+          method: 'tools/list',
+          params: {}
+        });
+      }
+
+      // Process all messages rapidly
+      const start = Date.now();
+      await Promise.all(
+        messages.map(msg => messageHandler(Buffer.from(JSON.stringify(msg))))
+      );
+      const duration = Date.now() - start;
+
+      expect(duration).toBeLessThan(1000); // Should complete in less than 1 second
+      expect(mockWebSocket.send).toHaveBeenCalledTimes(100);
+    });
+  });
+
+  describe('Memory Management', () => {
+    test('should clean up client connections properly', async () => {
+      await mcpServer.start();
+      const connectionHandler = mockWss.on.mock.calls.find(call => call[0] === 'connection')[1];
+
+      // Create many connections
+      for (let i = 0; i < 1000; i++) {
+        const mockClient = { ...mockWebSocket, on: jest.fn() };
+        connectionHandler(mockClient);
+        
+        // Immediately close the connection
+        const closeHandler = mockClient.on.mock.calls.find(call => call[0] === 'close')[1];
+        closeHandler();
+      }
+
+      expect(mcpServer.clients.size).toBe(0);
+    });
+  });
+});
+
+describe('startMCPServer', () => {
+  test('should create and start MCP server', async () => {
+    const mockOrchestrator = global.createMockOrchestrator();
+    const testPort = Math.floor(Math.random() * 10000) + 40000;
+    
+    const server = await startMCPServer(testPort, mockOrchestrator);
+    
+    expect(server).toBeInstanceOf(MCPServer);
+    expect(server.port).toBe(testPort);
+    expect(server.orchestrator).toBe(mockOrchestrator);
+  });
+
+  test('should handle different port numbers', async () => {
+    const mockOrchestrator = global.createMockOrchestrator();
+    const testPort = Math.floor(Math.random() * 10000) + 50000;
+    
+    const server = await startMCPServer(testPort, mockOrchestrator);
+    
+    expect(server.port).toBe(testPort);
+  });
+});

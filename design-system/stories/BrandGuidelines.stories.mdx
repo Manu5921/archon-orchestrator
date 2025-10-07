@@ -1,0 +1,245 @@
+import { Meta, ColorPalette, ColorItem } from '@storybook/blocks';
+
+<Meta title="Brand Guidelines/TrustBoost Identity" />
+
+# TrustBoost Brand Guidelines
+
+Bienvenue dans les guidelines de la marque TrustBoost. Ce guide définit l'identité visuelle, 
+les principes de design et les bonnes pratiques pour maintenir une cohérence sur tous les points de contact.
+
+## Vision & Valeurs
+
+### Vision
+TrustBoost inspire confiance dans les interactions numériques en fournissant des outils et 
+expériences qui renforcent la sécurité, la transparence et la fiabilité.
+
+### Valeurs Fondamentales
+- **🛡️ Sécurité** - Protection et confidentialité avant tout
+- **🤝 Confiance** - Relations transparentes et fiables
+- **⚡ Performance** - Efficacité et rapidité d'exécution
+- **♿ Accessibilité** - Inclusion et égalité d'accès
+- **🔧 Innovation** - Solutions techniques avancées
+
+## Palette de Couleurs
+
+### Couleurs Primaires
+
+La couleur bleue TrustBoost (#0ea5e9) représente la confiance, la technologie et la fiabilité. 
+Elle est utilisée pour les éléments interactifs principaux et la navigation.
+
+<ColorPalette>
+  <ColorItem
+    title="Primary Blue"
+    subtitle="Couleur principale TrustBoost"
+    colors={[
+      { name: 'primary-50', value: '#f0f9ff' },
+      { name: 'primary-100', value: '#e0f2fe' },
+      { name: 'primary-200', value: '#bae6fd' },
+      { name: 'primary-300', value: '#7dd3fc' },
+      { name: 'primary-400', value: '#38bdf8' },
+      { name: 'primary-500', value: '#0ea5e9' },
+      { name: 'primary-600', value: '#0284c7' },
+      { name: 'primary-700', value: '#0369a1' },
+      { name: 'primary-800', value: '#075985' },
+      { name: 'primary-900', value: '#0c4a6e' },
+    ]}
+  />
+</ColorPalette>
+
+### Couleurs Secondaires
+
+Le vert Trust (#22c55e) symbolise la validation, la réussite et les états positifs.
+Utilisé pour les confirmations, succès et éléments de confiance.
+
+<ColorPalette>
+  <ColorItem
+    title="Trust Green"
+    subtitle="Couleur de confiance et succès"
+    colors={[
+      { name: 'trust-50', value: '#f0fdf4' },
+      { name: 'trust-100', value: '#dcfce7' },
+      { name: 'trust-200', value: '#bbf7d0' },
+      { name: 'trust-300', value: '#86efac' },
+      { name: 'trust-400', value: '#4ade80' },
+      { name: 'trust-500', value: '#22c55e' },
+      { name: 'trust-600', value: '#16a34a' },
+      { name: 'trust-700', value: '#15803d' },
+      { name: 'trust-800', value: '#166534' },
+      { name: 'trust-900', value: '#14532d' },
+    ]}
+  />
+</ColorPalette>
+
+### Couleurs d'État
+
+<ColorPalette>
+  <ColorItem
+    title="Warning Orange"
+    subtitle="Avertissements et attention"
+    colors={[
+      { name: 'warning-100', value: '#fef3c7' },
+      { name: 'warning-500', value: '#f59e0b' },
+      { name: 'warning-700', value: '#b45309' },
+    ]}
+  />
+  <ColorItem
+    title="Error Red"
+    subtitle="Erreurs et actions destructives"
+    colors={[
+      { name: 'error-100', value: '#fee2e2' },
+      { name: 'error-500', value: '#ef4444' },
+      { name: 'error-700', value: '#b91c1c' },
+    ]}
+  />
+</ColorPalette>
+
+### Couleurs Neutres
+
+<ColorPalette>
+  <ColorItem
+    title="Neutral Gray"
+    subtitle="Interface et texte"
+    colors={[
+      { name: 'neutral-0', value: '#ffffff' },
+      { name: 'neutral-50', value: '#fafafa' },
+      { name: 'neutral-100', value: '#f5f5f5' },
+      { name: 'neutral-200', value: '#e5e5e5' },
+      { name: 'neutral-300', value: '#d4d4d4' },
+      { name: 'neutral-400', value: '#a3a3a3' },
+      { name: 'neutral-500', value: '#737373' },
+      { name: 'neutral-600', value: '#525252' },
+      { name: 'neutral-700', value: '#404040' },
+      { name: 'neutral-800', value: '#262626' },
+      { name: 'neutral-900', value: '#171717' },
+    ]}
+  />
+</ColorPalette>
+
+## Typographie
+
+### Hiérarchie Typographique
+
+La typographie TrustBoost utilise deux familles principales :
+
+- **Display Font**: Satoshi - Pour les titres et éléments de branding
+- **Body Font**: Inter - Pour le contenu et l'interface utilisateur
+- **Mono Font**: JetBrains Mono - Pour le code et données techniques
+
+### Échelle Typographique
+
+| Style | Font | Size | Weight | Line Height | Usage |
+|-------|------|------|--------|-------------|-------|
+| Heading 1 | Satoshi | 2.25rem (36px) | Bold | 2.5rem | Titres principaux |
+| Heading 2 | Satoshi | 1.875rem (30px) | Semibold | 2.25rem | Titres de section |
+| Heading 3 | Satoshi | 1.5rem (24px) | Semibold | 2rem | Sous-titres |
+| Body Large | Inter | 1.125rem (18px) | Normal | 1.75rem | Texte important |
+| Body Base | Inter | 1rem (16px) | Normal | 1.5rem | Texte standard |
+| Body Small | Inter | 0.875rem (14px) | Normal | 1.25rem | Texte secondaire |
+| Caption | Inter | 0.75rem (12px) | Normal | 1rem | Métadonnées |
+
+## Iconographie
+
+### Principes
+- Utilisation d'icônes simples et universelles (Radix Icons)
+- Cohérence dans le style et la taille
+- Signification claire et intuitive
+- Support des modes sombre/clair
+
+### Tailles Standard
+- **XS**: 14px - Icônes inline dans le texte
+- **SM**: 16px - Icônes de boutons et navigation
+- **MD**: 20px - Icônes d'interface standard
+- **LG**: 24px - Icônes d'actions importantes
+- **XL**: 32px - Icônes de présentation
+
+## Espacement & Layout
+
+### Système d'Espacement
+
+TrustBoost utilise une échelle d'espacement basée sur 4px (0.25rem) pour maintenir 
+un rythme vertical et horizontal cohérent.
+
+**Échelle**: 4px, 8px, 12px, 16px, 20px, 24px, 32px, 48px, 64px, 96px...
+
+### Grille & Responsive
+
+- **Mobile First** - Design optimisé pour mobile puis étendu
+- **Breakpoints**:
+  - Mobile: 375px+
+  - Tablet: 768px+
+  - Desktop: 1024px+
+  - Large: 1440px+
+  - XL: 1920px+
+
+## Composants UI
+
+### Boutons
+
+Les boutons suivent une hiérarchie claire :
+- **Primary** - Action principale (1 par vue)
+- **Secondary** - Actions secondaires
+- **Outline** - Actions alternatives
+- **Ghost** - Actions subtiles
+- **Danger** - Actions destructives
+
+### Cartes
+
+Structure modulaire avec :
+- **Header** - Titre et métadonnées
+- **Content** - Contenu principal
+- **Footer** - Actions et informations complémentaires
+
+## Accessibilité
+
+### Standards WCAG AA
+
+TrustBoost respecte les guidelines WCAG 2.1 niveau AA :
+
+- ✅ **Contraste** - Minimum 4.5:1 pour le texte normal, 3:1 pour le texte large
+- ✅ **Navigation clavier** - Tous les éléments interactifs accessible au clavier
+- ✅ **Focus management** - Indicateurs de focus visibles et logiques
+- ✅ **États ARIA** - Attributs appropriés pour les technologies assistives
+- ✅ **Tailles touch** - Minimum 44px pour les cibles tactiles
+
+### Tests Recommandés
+
+1. **Navigation clavier** - Tab, Shift+Tab, Entrée, Espace
+2. **Lecteur d'écran** - Test avec NVDA, JAWS ou VoiceOver
+3. **Contraste** - Vérification automatique dans Storybook
+4. **Zoom** - Test jusqu'à 200% sans perte de fonctionnalité
+
+## Logo & Branding
+
+### Usage du Logo
+
+*[Instructions à venir selon les assets disponibles]*
+
+### Ton de Voix
+
+- **Professionnel** mais accessible
+- **Clair** et direct
+- **Rassurant** et fiable
+- **Technique** quand approprié
+- **Inclusif** et bienveillant
+
+## Guidelines d'Implementation
+
+### Do's ✅
+
+- Utiliser les design tokens pour la cohérence
+- Tester l'accessibilité à chaque composant
+- Maintenir la hiérarchie visuelle
+- Documenter les cas d'usage
+- Respecter les espacements définis
+
+### Don'ts ❌
+
+- Créer des couleurs en dehors de la palette
+- Ignorer les états focus/hover
+- Utiliser des tailles de police arbitraires
+- Négliger le responsive design
+- Oublier les alternatives textuelles pour les icônes
+
+---
+
+*Ces guidelines évoluent avec le produit. Contribuez aux améliorations via l'équipe Design System.*

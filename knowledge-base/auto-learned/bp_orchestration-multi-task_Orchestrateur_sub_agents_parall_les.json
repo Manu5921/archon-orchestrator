@@ -1,0 +1,35 @@
+{
+  "id": "bp_orchestration-multi-task_1756910716054",
+  "topic": "orchestration-multi-task",
+  "title": "Orchestrateur sub-agents parallèles",
+  "content": {
+    "problem": "Pas de coordination multi-agents, travail séquentiel inefficace",
+    "solution": "Orchestrateur avec sub-agents spécialisés et exécution parallèle",
+    "files": [
+      "src/orchestrator/multi-task-orchestrator.cjs",
+      "test-orchestrator.cjs"
+    ],
+    "agents": [
+      "frontend",
+      "backend",
+      "database",
+      "payments",
+      "testing",
+      "devops"
+    ],
+    "phases": [
+      "Phase 1: Frontend + Backend + Database + DevOps (parallèle)",
+      "Phase 2: Payments (dépend backend)",
+      "Phase 3: Testing (dépend de tout)"
+    ],
+    "coordination": "Points de coordination entre phases + validation dépendances",
+    "duration": "45-60 minutes vs plusieurs heures séquentiel",
+    "impact": "Parallélisation révolutionnaire du développement"
+  },
+  "metadata": {
+    "sessionId": "session_20250903_15azri",
+    "createdAt": "2025-09-03T14:45:16.054Z",
+    "validated": true,
+    "source": "auto-learned"
+  }
+}

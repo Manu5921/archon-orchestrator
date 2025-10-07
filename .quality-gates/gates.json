@@ -1,0 +1,74 @@
+{
+  "design-specialist": {
+    "P0": [
+      {
+        "name": "tokens schema valid",
+        "cmd": "pnpm tokens:validate",
+        "expect_exit": 0,
+        "timeout": 10,
+        "blocking": true,
+        "error_msg": "Design tokens failed schema validation. Fix tokens.json structure."
+      },
+      {
+        "name": "a11y audit clean",
+        "cmd": "pnpm ui:test --audit=a11y",
+        "expect_exit": 0,
+        "timeout": 60,
+        "blocking": true,
+        "error_msg": "Accessibility violations detected. Fix WCAG 2.2 AA compliance issues."
+      }
+    ],
+    "P1": [
+      {
+        "name": "visual diff <= 1%",
+        "cmd": "pnpm ui:test --visual --threshold=1",
+        "expect_exit": 0,
+        "timeout": 120,
+        "blocking": false,
+        "error_msg": "Visual regression >1% detected. Review component changes."
+      }
+    ]
+  },
+  "testing-specialist": {
+    "P0": [
+      {
+        "name": "tests passing",
+        "cmd": "pnpm test",
+        "expect_exit": 0,
+        "timeout": 300,
+        "blocking": true,
+        "error_msg": "Test suite failing. Fix failing tests before handoff."
+      }
+    ],
+    "P1": [
+      {
+        "name": "coverage >= 90%",
+        "cmd": "pnpm test:coverage --min=90",
+        "expect_exit": 0,
+        "timeout": 300,
+        "blocking": false,
+        "error_msg": "Coverage below 90%. Add missing tests."
+      }
+    ]
+  },
+  "deployment-specialist": {
+    "P0": [
+      {
+        "name": "build succeeds",
+        "cmd": "pnpm build",
+        "expect_exit": 0,
+        "timeout": 180,
+        "blocking": true,
+        "error_msg": "Build failed. Fix compilation errors."
+      },
+      {
+        "name": "env vars valid",
+        "cmd": "./scripts/validate-env.sh",
+        "expect_exit": 0,
+        "timeout": 5,
+        "blocking": true,
+        "error_msg": "Environment configuration invalid. Check .env variables."
+      }
+    ]
+  }
+}

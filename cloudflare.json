@@ -1,0 +1,400 @@
+{
+  "name": "TrustBoost Phase 4 CDN Configuration",
+  "description": "Optimized Cloudflare configuration for TrustBoost Phase 4 production deployment",
+  "zone_settings": {
+    "always_online": "on",
+    "always_use_https": "on",
+    "automatic_https_rewrites": "on",
+    "brotli": "on",
+    "browser_cache_ttl": 31536000,
+    "browser_check": "on",
+    "cache_level": "aggressive",
+    "challenge_ttl": 1800,
+    "development_mode": "off",
+    "edge_cache_ttl": 7200,
+    "email_obfuscation": "on",
+    "hotlink_protection": "on",
+    "ip_geolocation": "on",
+    "ipv6": "on",
+    "minify": {
+      "css": "on",
+      "html": "on",
+      "js": "on"
+    },
+    "mirage": "on",
+    "mobile_redirect": {
+      "status": "off"
+    },
+    "opportunistic_encryption": "on",
+    "origin_error_page_pass_thru": "off",
+    "polish": "lossless",
+    "prefetch_preload": "on",
+    "response_buffering": "on",
+    "rocket_loader": "on",
+    "security_header": {
+      "strict_transport_security": {
+        "enabled": true,
+        "max_age": 31536000,
+        "include_subdomains": true,
+        "preload": true
+      }
+    },
+    "security_level": "medium",
+    "server_side_exclude": "on",
+    "ssl": "strict",
+    "tls_1_3": "on",
+    "true_client_ip_header": "on",
+    "waf": "on",
+    "webp": "on"
+  },
+  "page_rules": [
+    {
+      "targets": [
+        {
+          "target": "url",
+          "constraint": {
+            "operator": "matches",
+            "value": "*.trustboost-phase4.com/api/*"
+          }
+        }
+      ],
+      "actions": [
+        {
+          "id": "cache_level",
+          "value": "bypass"
+        },
+        {
+          "id": "browser_cache_ttl",
+          "value": 0
+        }
+      ],
+      "priority": 1,
+      "status": "active"
+    },
+    {
+      "targets": [
+        {
+          "target": "url",
+          "constraint": {
+            "operator": "matches",
+            "value": "*.trustboost-phase4.com/_next/static/*"
+          }
+        }
+      ],
+      "actions": [
+        {
+          "id": "cache_level",
+          "value": "cache_everything"
+        },
+        {
+          "id": "browser_cache_ttl",
+          "value": 31536000
+        },
+        {
+          "id": "edge_cache_ttl",
+          "value": 31536000
+        }
+      ],
+      "priority": 2,
+      "status": "active"
+    },
+    {
+      "targets": [
+        {
+          "target": "url",
+          "constraint": {
+            "operator": "matches",
+            "value": "*.trustboost-phase4.com/*.{jpg,jpeg,png,gif,ico,svg,webp,avif}"
+          }
+        }
+      ],
+      "actions": [
+        {
+          "id": "cache_level",
+          "value": "cache_everything"
+        },
+        {
+          "id": "browser_cache_ttl",
+          "value": 31536000
+        },
+        {
+          "id": "edge_cache_ttl",
+          "value": 31536000
+        }
+      ],
+      "priority": 3,
+      "status": "active"
+    },
+    {
+      "targets": [
+        {
+          "target": "url",
+          "constraint": {
+            "operator": "matches",
+            "value": "*.trustboost-phase4.com/*.{css,js,woff,woff2,ttf,eot}"
+          }
+        }
+      ],
+      "actions": [
+        {
+          "id": "cache_level",
+          "value": "cache_everything"
+        },
+        {
+          "id": "browser_cache_ttl",
+          "value": 31536000
+        },
+        {
+          "id": "edge_cache_ttl",
+          "value": 31536000
+        }
+      ],
+      "priority": 4,
+      "status": "active"
+    }
+  ],
+  "cache_rules": [
+    {
+      "description": "Cache static Next.js assets",
+      "expression": "(http.request.uri.path contains \"/_next/static/\")",
+      "action": "cache",
+      "action_parameters": {
+        "cache": {
+          "eligible_origins": ["origin"],
+          "ttl_by_status": [
+            {
+              "status_code_range": {
+                "from": 200,
+                "to": 299
+              },
+              "ttl": 31536000
+            }
+          ]
+        }
+      },
+      "enabled": true
+    },
+    {
+      "description": "Bypass cache for API routes",
+      "expression": "(http.request.uri.path contains \"/api/\")",
+      "action": "bypass_cache",
+      "enabled": true
+    },
+    {
+      "description": "Cache HTML pages with revalidation",
+      "expression": "(http.request.uri.path matches \"^/.*$\" and http.request.uri.path does not contain \"/api/\" and http.request.uri.path does not contain \"/_next/\")",
+      "action": "cache",
+      "action_parameters": {
+        "cache": {
+          "eligible_origins": ["origin"],
+          "ttl_by_status": [
+            {
+              "status_code_range": {
+                "from": 200,
+                "to": 299
+              },
+              "ttl": 3600
+            }
+          ],
+          "serve_stale": {
+            "disable_stale_while_updating": false
+          }
+        }
+      },
+      "enabled": true
+    }
+  ],
+  "transform_rules": [
+    {
+      "description": "Add security headers",
+      "expression": "true",
+      "action": "rewrite",
+      "action_parameters": {
+        "headers": {
+          "X-Content-Type-Options": {
+            "operation": "set",
+            "value": "nosniff"
+          },
+          "X-Frame-Options": {
+            "operation": "set",
+            "value": "SAMEORIGIN"
+          },
+          "X-XSS-Protection": {
+            "operation": "set",
+            "value": "1; mode=block"
+          },
+          "Referrer-Policy": {
+            "operation": "set",
+            "value": "strict-origin-when-cross-origin"
+          },
+          "Permissions-Policy": {
+            "operation": "set",
+            "value": "camera=(), microphone=(), geolocation=()"
+          }
+        }
+      },
+      "enabled": true
+    }
+  ],
+  "rate_limiting_rules": [
+    {
+      "description": "Rate limit API endpoints",
+      "expression": "(http.request.uri.path contains \"/api/\")",
+      "action": "challenge",
+      "action_parameters": {
+        "response": {
+          "status_code": 429,
+          "content_type": "application/json",
+          "content": "{\"error\": \"Rate limit exceeded\", \"retry_after\": 60}"
+        }
+      },
+      "ratelimit": {
+        "characteristics": ["ip.src"],
+        "period": 60,
+        "requests_per_period": 100
+      },
+      "enabled": true
+    },
+    {
+      "description": "Rate limit auth endpoints",
+      "expression": "(http.request.uri.path contains \"/api/auth/\")",
+      "action": "block",
+      "ratelimit": {
+        "characteristics": ["ip.src"],
+        "period": 300,
+        "requests_per_period": 10
+      },
+      "enabled": true
+    }
+  ],
+  "firewall_rules": [
+    {
+      "description": "Block malicious requests",
+      "expression": "(http.user_agent contains \"bot\" and not http.user_agent contains \"Googlebot\" and not http.user_agent contains \"Bingbot\")",
+      "action": "challenge",
+      "enabled": true
+    },
+    {
+      "description": "Allow known good bots",
+      "expression": "(http.user_agent contains \"Googlebot\" or http.user_agent contains \"Bingbot\" or http.user_agent contains \"facebookexternalhit\")",
+      "action": "allow",
+      "enabled": true
+    },
+    {
+      "description": "Block common attack patterns",
+      "expression": "(http.request.uri.query contains \"<script\" or http.request.uri.query contains \"javascript:\" or http.request.uri.query contains \"../\")",
+      "action": "block",
+      "enabled": true
+    }
+  ],
+  "origin_rules": [
+    {
+      "description": "Origin override for production",
+      "expression": "true",
+      "action": "route",
+      "action_parameters": {
+        "origin": {
+          "host": "trustboost-phase4.vercel.app",
+          "port": 443
+        },
+        "host_header": "trustboost-phase4.vercel.app",
+        "sni": "trustboost-phase4.vercel.app"
+      },
+      "enabled": true
+    }
+  ],
+  "workers": {
+    "analytics": {
+      "script": "// TrustBoost Phase 4 - Analytics Worker\naddEventListener('fetch', event => {\n  event.respondWith(handleRequest(event.request))\n})\n\nasync function handleRequest(request) {\n  // Add analytics headers\n  const response = await fetch(request)\n  \n  if (response.headers.get('content-type')?.includes('text/html')) {\n    // Track page views\n    const analytics = {\n      timestamp: Date.now(),\n      url: request.url,\n      userAgent: request.headers.get('user-agent'),\n      country: request.cf?.country,\n      colo: request.cf?.colo\n    }\n    \n    // Send to analytics endpoint (async)\n    event.waitUntil(\n      fetch('https://trustboost-phase4.vercel.app/api/analytics', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify(analytics)\n      })\n    )\n  }\n  \n  return response\n}",
+      "routes": ["*.trustboost-phase4.com/*"],
+      "enabled": true
+    },
+    "security": {
+      "script": "// TrustBoost Phase 4 - Security Worker\naddEventListener('fetch', event => {\n  event.respondWith(handleSecurity(event.request))\n})\n\nasync function handleSecurity(request) {\n  const url = new URL(request.url)\n  \n  // Block suspicious patterns\n  if (url.pathname.includes('..') || url.search.includes('<script')) {\n    return new Response('Blocked', { status: 403 })\n  }\n  \n  // Add security headers to response\n  const response = await fetch(request)\n  const newResponse = new Response(response.body, response)\n  \n  newResponse.headers.set('X-Security-Worker', 'enabled')\n  newResponse.headers.set('X-Request-ID', crypto.randomUUID())\n  \n  return newResponse\n}",
+      "routes": ["*.trustboost-phase4.com/api/*"],
+      "enabled": true
+    }
+  },
+  "dns_records": [
+    {
+      "type": "CNAME",
+      "name": "trustboost-phase4",
+      "content": "cname.vercel-dns.com",
+      "ttl": 1,
+      "proxied": true
+    },
+    {
+      "type": "CNAME",
+      "name": "www.trustboost-phase4",
+      "content": "cname.vercel-dns.com",
+      "ttl": 1,
+      "proxied": true
+    },
+    {
+      "type": "CNAME",
+      "name": "staging.trustboost-phase4",
+      "content": "cname.vercel-dns.com",
+      "ttl": 1,
+      "proxied": true
+    }
+  ],
+  "load_balancing": {
+    "enabled": true,
+    "pools": [
+      {
+        "name": "primary-pool",
+        "description": "Primary Vercel deployment",
+        "enabled": true,
+        "minimum_origins": 1,
+        "monitor": "https://trustboost-phase4.vercel.app/api/health",
+        "origins": [
+          {
+            "name": "vercel-primary",
+            "address": "trustboost-phase4.vercel.app",
+            "enabled": true,
+            "weight": 1
+          }
+        ]
+      }
+    ],
+    "fallback_pool": "primary-pool",
+    "default_pools": ["primary-pool"],
+    "region_pools": {
+      "ENAM": ["primary-pool"],
+      "WNAM": ["primary-pool"],
+      "EU": ["primary-pool"],
+      "AS": ["primary-pool"]
+    },
+    "session_affinity": "cookie",
+    "session_affinity_ttl": 1800,
+    "steering_policy": "geo"
+  },
+  "bot_management": {
+    "enabled": true,
+    "fight_mode": false,
+    "using_latest_model": true,
+    "suppress_session_score": false,
+    "auto_update_model": true,
+    "optimize_wordpress": false
+  },
+  "analytics": {
+    "enabled": true,
+    "log_retention": 30
+  },
+  "custom_hostname_ssl": {
+    "method": "http",
+    "type": "dv",
+    "settings": {
+      "http2": "on",
+      "http3": "on",
+      "min_tls_version": "1.2",
+      "tls_1_3": "on",
+      "ciphers": [
+        "ECDHE-RSA-AES128-GCM-SHA256",
+        "ECDHE-RSA-AES256-GCM-SHA384",
+        "ECDHE-RSA-AES128-SHA256",
+        "ECDHE-RSA-AES256-SHA384"
+      ]
+    }
+  }
+}

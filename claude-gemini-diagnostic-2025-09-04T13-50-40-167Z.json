@@ -1,0 +1,39 @@
+{
+  "environment": {
+    "GEMINI_API_URL": "not_set",
+    "GEMINI_CLI_PATH": "gemini",
+    "GEMINI_API_KEY": "not_set",
+    "PATH_includes_gemini": "unlikely",
+    "cli_accessible": "/opt/homebrew/bin/gemini",
+    "cli_version": "0.1.18"
+  },
+  "bridgeTest": {
+    "success": false,
+    "reason": "not_configured",
+    "recommendation": "Set GEMINI_API_URL environment variable"
+  },
+  "cliTest": {
+    "success": true,
+    "response": "Loaded cached credentials.\nCLI_WORKING",
+    "mode": "cli",
+    "exit_code": 0,
+    "duration_ms": 4176
+  },
+  "orchestratorTest": {
+    "success": true,
+    "mode": "cli-prompt",
+    "response": "Loaded cached credentials.\n**Status:** ORCHESTRATOR_CONNECTION_SUCCESS\n\n**Capabilities Summary:** I am Gemini, a large language model from Google. I can understand and process natural language, write and execute Python code, interact with the file system (read, write, list, search), and run shell commands. My core competencies are geared towards software engineering tasks, including code generation, bug fixing, refactoring, and project analysis, while adhering to established coding conventions and safety standards.\n\n**Readiness:** I am operational and ready to engage in collaborative work. Awaiting instructions.",
+    "duration_ms": 8799,
+    "quality_check": {
+      "contains_success_marker": true,
+      "has_capabilities": true,
+      "sufficient_length": true
+    }
+  },
+  "overall": {
+    "success_rate": "2/3",
+    "percentage": 67,
+    "primary_mode": "cli-prompt",
+    "recommendation": "⚠️ Partial success. At least one mode is working - system can function with fallbacks."
+  }
+}

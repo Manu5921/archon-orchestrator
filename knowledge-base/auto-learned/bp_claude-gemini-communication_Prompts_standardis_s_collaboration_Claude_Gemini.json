@@ -1,0 +1,29 @@
+{
+  "id": "bp_claude-gemini-communication_1756910716054",
+  "topic": "claude-gemini-communication",
+  "title": "Prompts standardisés collaboration Claude-Gemini",
+  "content": {
+    "problem": "Communication Claude-Gemini manuelle et inconsistante",
+    "solution": "Templates standardisés + workflow bidirectionnel structuré",
+    "files": [
+      "claude-gemini-initial-prompt.md",
+      "generate-collaboration-prompts.cjs",
+      "TrustBoost-collaboration-prompts.md"
+    ],
+    "workflow": [
+      "Générer prompts avec generate-collaboration-prompts.cjs",
+      "Copy prompt Claude vers Claude Code",
+      "Copy prompt Gemini vers Gemini",
+      "Claude propose architecture → Gemini évalue → Itération"
+    ],
+    "criteria": "Gemini évalue sur 4 critères: Innovation, Faisabilité, Scalabilité, Risques",
+    "threshold": "Score global >85/100 pour approbation",
+    "impact": "Communication industrielle vs artisanale"
+  },
+  "metadata": {
+    "sessionId": "session_20250903_15azri",
+    "createdAt": "2025-09-03T14:45:16.054Z",
+    "validated": true,
+    "source": "auto-learned"
+  }
+}

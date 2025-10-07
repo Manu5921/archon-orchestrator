@@ -1,0 +1,32 @@
+{
+  "id": "err_mcp-non-configure_1756910716056",
+  "errorType": "mcp-non-configure",
+  "problem": "MCP servers non accessibles nouvelles sessions",
+  "solution": {
+    "symptoms": [
+      "/mcp command not found",
+      "Connection refused errors"
+    ],
+    "causes": [
+      "Fichiers .mcp.json absents du nouveau projet",
+      "Services archon non démarrés",
+      "Mauvaise configuration paths"
+    ],
+    "solution": [
+      "Copier .mcp.json vers nouveau projet",
+      "Vérifier services: ./docker-start.sh up",
+      "Test: /mcp archon health_check"
+    ],
+    "prevention": "Template automatique avec tous fichiers requis",
+    "files": [
+      ".mcp.json",
+      "CLAUDE.md",
+      ".claude-hooks.json"
+    ]
+  },
+  "context": {
+    "sessionId": "session_20250903_15azri",
+    "discoveredAt": "2025-09-03T14:45:16.056Z",
+    "validated": true
+  }
+}

@@ -1,0 +1,66 @@
+# Docker Compose configuration for quick testing
+# Simplified version for rapid testing
+
+services:
+  # Redis pour la persistance et la communication inter-services
+  redis:
+    image: redis:7-alpine
+    container_name: archon_redis_test
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    networks:
+      - archon_network
+
+  # Test simple de notre environment
+  archon-test:
+    image: node:18-alpine
+    container_name: archon_test
+    working_dir: /app
+    environment:
+      - NODE_ENV=test
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./:/app
+      - ./logs:/app/logs
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: |
+      sh -c '
+        echo "🧪 Test Archon Environment"
+        echo "✅ Node.js version: $$(node --version)"
+        echo "✅ npm version: $$(npm --version)"
+        echo "✅ Working directory: $$(pwd)"
+        echo "✅ Files available:"
+        ls -la
+        echo ""
+        echo "🔍 Testing jules-hybrid-deploy.js..."
+        node jules-hybrid-deploy.js --help || echo "❌ jules-hybrid-deploy.js needs work"
+        echo ""
+        echo "📊 Testing Redis connection..."
+        apk add --no-cache redis && redis-cli -h redis ping
+        echo ""
+        echo "🎉 Basic environment test complete!"
+        tail -f /dev/null
+      '
+    networks:
+      - archon_network
+
+networks:
+  archon_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+
+volumes:
+  redis_data:
+    driver: local

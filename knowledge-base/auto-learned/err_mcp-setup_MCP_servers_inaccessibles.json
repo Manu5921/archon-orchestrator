@@ -1,0 +1,23 @@
+{
+  "id": "err_mcp-setup_1756910656269",
+  "errorType": "mcp-setup",
+  "problem": "MCP servers inaccessibles",
+  "solution": {
+    "symptoms": [
+      "Command /mcp not found",
+      "Connection refused"
+    ],
+    "solution": "Vérifier .mcp.json dans projet + services archon running",
+    "files": [
+      ".mcp.json",
+      "CLAUDE.md",
+      ".claude-hooks.json"
+    ],
+    "verification": "/mcp archon health_check"
+  },
+  "context": {
+    "sessionId": "session_20250903_85dho",
+    "discoveredAt": "2025-09-03T14:44:16.269Z",
+    "validated": true
+  }
+}

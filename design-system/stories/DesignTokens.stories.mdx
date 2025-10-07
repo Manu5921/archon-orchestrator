@@ -1,0 +1,284 @@
+import { Meta, ColorPalette, ColorItem, Typeset } from '@storybook/blocks';
+import { tokens } from '../src/tokens';
+
+<Meta title="Design Tokens/Overview" />
+
+# Design Tokens TrustBoost
+
+Les design tokens sont les valeurs atomiques qui définissent l'identité visuelle de TrustBoost.
+Ils garantissent la cohérence à travers toutes les plateformes et composants.
+
+## Principe des Design Tokens
+
+Les design tokens suivent une approche **CSS-first** inspirée des patterns Context7 :
+
+```css
+@theme {
+  /* Polices */
+  --font-display: "Satoshi", "Inter", "system-ui", "sans-serif";
+  --font-body: "Inter", "system-ui", "sans-serif";
+  
+  /* Breakpoint personnalisé */
+  --breakpoint-3xl: 120rem;
+  
+  /* Couleurs OKLCH pour la cohérence perceptuelle */
+  --color-primary-500: oklch(0.56 0.20 220);
+  
+  /* Animations fluides */
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+}
+```
+
+## Échelle Typographique
+
+La typographie utilise une échelle modulaire optimisée pour la lisibilité et la hiérarchie.
+
+<Typeset
+  fontSizes={[
+    '0.75rem', // xs - 12px
+    '0.875rem', // sm - 14px  
+    '1rem', // base - 16px
+    '1.125rem', // lg - 18px
+    '1.25rem', // xl - 20px
+    '1.5rem', // 2xl - 24px
+    '1.875rem', // 3xl - 30px
+    '2.25rem', // 4xl - 36px
+  ]}
+  fontWeight={400}
+  sampleText="Design Systems accelerate teams"
+  fontFamily="Inter, system-ui, sans-serif"
+/>
+
+### Hiérarchie des Titres
+
+<div className="space-y-4 py-6">
+  <h1 className="text-4xl font-display font-bold text-neutral-900">
+    Heading 1 - Satoshi Bold 36px
+  </h1>
+  <h2 className="text-3xl font-display font-semibold text-neutral-800">
+    Heading 2 - Satoshi Semibold 30px
+  </h2>
+  <h3 className="text-2xl font-display font-semibold text-neutral-700">
+    Heading 3 - Satoshi Semibold 24px
+  </h3>
+  <h4 className="text-xl font-display font-semibold text-neutral-600">
+    Heading 4 - Satoshi Semibold 20px
+  </h4>
+</div>
+
+## Espacement
+
+Système d'espacement basé sur une échelle de 4px (0.25rem) pour un rythme visuel cohérent.
+
+<div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6">
+  {[
+    { size: '4px', class: 'w-1 h-8', label: '1' },
+    { size: '8px', class: 'w-2 h-8', label: '2' },
+    { size: '12px', class: 'w-3 h-8', label: '3' },
+    { size: '16px', class: 'w-4 h-8', label: '4' },
+    { size: '20px', class: 'w-5 h-8', label: '5' },
+    { size: '24px', class: 'w-6 h-8', label: '6' },
+    { size: '32px', class: 'w-8 h-8', label: '8' },
+    { size: '48px', class: 'w-12 h-8', label: '12' },
+    { size: '64px', class: 'w-16 h-8', label: '16' },
+    { size: '96px', class: 'w-24 h-8', label: '24' },
+    { size: '72px (18)', class: 'w-18 h-8', label: '18*' },
+    { size: '176px (88)', class: 'w-88 h-8', label: '88*' },
+  ].map(({ size, class: className, label }) => (
+    <div key={size} className="flex items-center gap-2">
+      <div className={`${className} bg-primary-500 rounded`}></div>
+      <span className="text-sm">
+        <code>{label}</code> ({size})
+      </span>
+    </div>
+  ))}
+</div>
+
+<small>* Valeurs personnalisées basées sur les patterns Context7</small>
+
+## Border Radius
+
+Système de coins arrondis pour différents niveaux de familiarité.
+
+<div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6">
+  {[
+    { name: 'none', value: '0px', class: 'rounded-none' },
+    { name: 'sm', value: '2px', class: 'rounded-sm' },
+    { name: 'base', value: '4px', class: 'rounded' },
+    { name: 'md', value: '6px', class: 'rounded-md' },
+    { name: 'lg', value: '8px', class: 'rounded-lg' },
+    { name: 'xl', value: '12px', class: 'rounded-xl' },
+    { name: '2xl', value: '16px', class: 'rounded-2xl' },
+    { name: 'full', value: '9999px', class: 'rounded-full' },
+  ].map(({ name, value, class: className }) => (
+    <div key={name} className="text-center">
+      <div className={`w-16 h-16 bg-primary-500 ${className} mx-auto mb-2`}></div>
+      <div className="text-sm">
+        <div className="font-medium">{name}</div>
+        <div className="text-neutral-500">{value}</div>
+      </div>
+    </div>
+  ))}
+</div>
+
+## Ombres
+
+Système d'ombres pour créer de la profondeur et de la hiérarchie.
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-6">
+  {[
+    { name: 'sm', class: 'shadow-sm', description: 'Éléments subtils' },
+    { name: 'md', class: 'shadow-md', description: 'Cartes et boutons' },
+    { name: 'lg', class: 'shadow-lg', description: 'Modales et overlays' },
+    { name: 'xl', class: 'shadow-xl', description: 'Éléments flottants' },
+  ].map(({ name, class: className, description }) => (
+    <div key={name} className="text-center">
+      <div className={`w-24 h-16 bg-white ${className} mx-auto mb-3 rounded-lg`}></div>
+      <div className="text-sm">
+        <div className="font-medium">shadow-{name}</div>
+        <div className="text-neutral-500">{description}</div>
+      </div>
+    </div>
+  ))}
+</div>
+
+## Transitions
+
+Courbes d'animation basées sur les patterns Context7 pour des interactions fluides.
+
+<div className="space-y-6 py-6">
+  <div>
+    <h4 className="font-semibold mb-3">Fluid - cubic-bezier(0.3, 0, 0, 1)</h4>
+    <div className="w-16 h-16 bg-primary-500 rounded-lg transition-transform duration-1000 ease-fluid hover:translate-x-20 cursor-pointer">
+      <span className="sr-only">Hover pour voir l'animation fluid</span>
+    </div>
+    <p className="text-sm text-neutral-600 mt-2">Animation naturelle et organique</p>
+  </div>
+  
+  <div>
+    <h4 className="font-semibold mb-3">Snappy - cubic-bezier(0.2, 0, 0, 1)</h4>
+    <div className="w-16 h-16 bg-trust-500 rounded-lg transition-transform duration-500 ease-snappy hover:translate-x-20 cursor-pointer">
+      <span className="sr-only">Hover pour voir l'animation snappy</span>
+    </div>
+    <p className="text-sm text-neutral-600 mt-2">Animation rapide et réactive</p>
+  </div>
+</div>
+
+## Breakpoints Responsive
+
+Approche mobile-first avec breakpoints adaptés aux devices modernes.
+
+<div className="overflow-x-auto py-6">
+  <table className="w-full border-collapse">
+    <thead>
+      <tr className="border-b border-neutral-200">
+        <th className="text-left py-2 font-semibold">Breakpoint</th>
+        <th className="text-left py-2 font-semibold">Min Width</th>
+        <th className="text-left py-2 font-semibold">Usage</th>
+      </tr>
+    </thead>
+    <tbody className="text-sm">
+      <tr className="border-b border-neutral-100">
+        <td className="py-2"><code>xs</code></td>
+        <td className="py-2">475px</td>
+        <td className="py-2">Large mobile phones</td>
+      </tr>
+      <tr className="border-b border-neutral-100">
+        <td className="py-2"><code>sm</code></td>
+        <td className="py-2">640px</td>
+        <td className="py-2">Tablets portrait</td>
+      </tr>
+      <tr className="border-b border-neutral-100">
+        <td className="py-2"><code>md</code></td>
+        <td className="py-2">768px</td>
+        <td className="py-2">Tablets landscape</td>
+      </tr>
+      <tr className="border-b border-neutral-100">
+        <td className="py-2"><code>lg</code></td>
+        <td className="py-2">1024px</td>
+        <td className="py-2">Desktop small</td>
+      </tr>
+      <tr className="border-b border-neutral-100">
+        <td className="py-2"><code>xl</code></td>
+        <td className="py-2">1280px</td>
+        <td className="py-2">Desktop large</td>
+      </tr>
+      <tr className="border-b border-neutral-100">
+        <td className="py-2"><code>2xl</code></td>
+        <td className="py-2">1536px</td>
+        <td className="py-2">Desktop extra large</td>
+      </tr>
+      <tr className="border-b border-neutral-100 bg-primary-50">
+        <td className="py-2"><code>3xl</code> *</td>
+        <td className="py-2">1920px</td>
+        <td className="py-2">Desktop ultra wide (Pattern Context7)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+## Z-Index Scale
+
+Hiérarchie des couches pour une gestion cohérente de la profondeur.
+
+<div className="space-y-2 py-6 text-sm">
+  {[
+    { name: 'base', value: 1, description: 'Éléments de base' },
+    { name: 'docked', value: 10, description: 'Navigation fixe' },
+    { name: 'dropdown', value: 1000, description: 'Menus déroulants' },
+    { name: 'sticky', value: 1100, description: 'Éléments collants' },
+    { name: 'overlay', value: 1300, description: 'Overlays de fond' },
+    { name: 'modal', value: 1400, description: 'Modales' },
+    { name: 'popover', value: 1500, description: 'Popovers' },
+    { name: 'toast', value: 1700, description: 'Notifications' },
+    { name: 'tooltip', value: 1800, description: 'Tooltips' },
+  ].map(({ name, value, description }) => (
+    <div key={name} className="flex items-center justify-between p-2 border border-neutral-200 rounded">
+      <span className="font-medium">{name}</span>
+      <span className="font-mono text-neutral-600">{value}</span>
+      <span className="text-neutral-500">{description}</span>
+    </div>
+  ))}
+</div>
+
+## Usage en CSS
+
+### Variables CSS Natives
+
+```css
+:root {
+  /* Pattern Context7 - Design tokens */
+  --font-display: "Satoshi", "Inter", "system-ui", "sans-serif";
+  --breakpoint-3xl: 120rem;
+  --color-primary-500: oklch(0.56 0.20 220);
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+}
+```
+
+### Utilisation avec Tailwind
+
+```tsx
+// Classes utilitaires
+<div className="bg-primary-500 text-white rounded-lg p-6 shadow-md">
+
+// Variables CSS arbitraires
+<div className="bg-[var(--color-primary-500)] rounded-[12px]">
+
+// Breakpoints personnalisés  
+<div className="grid-cols-2 3xl:grid-cols-6">
+```
+
+### JavaScript/TypeScript
+
+```tsx
+import { tokens, getColor, getSpacing } from '@trustboost/design-system';
+
+// Accès direct aux tokens
+const primaryColor = tokens.colors.primary[500];
+const mediumSpacing = tokens.spacing[4];
+
+// Avec utilitaires
+const warningColor = getColor('warning', 500);
+const largeSpacing = getSpacing(8);
+```

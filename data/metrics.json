@@ -1,0 +1,110 @@
+{
+  "agents": {
+    "claude": {
+      "tasks_assigned": 3,
+      "tasks_completed": 1,
+      "tasks_failed": 0,
+      "total_duration_ms": 1500,
+      "success_rate": 100,
+      "avg_response_time": 1500,
+      "last_used": "2025-08-29T05:32:08.817Z"
+    },
+    "gemini": {
+      "tasks_assigned": 1,
+      "tasks_completed": 0,
+      "tasks_failed": 0,
+      "total_duration_ms": 0,
+      "success_rate": 0,
+      "avg_response_time": 0,
+      "last_used": "2025-08-29T05:25:39.430Z"
+    },
+    "archon": {
+      "tasks_assigned": 1,
+      "tasks_completed": 0,
+      "tasks_failed": 0,
+      "total_duration_ms": 0,
+      "success_rate": 0,
+      "avg_response_time": 0,
+      "last_used": "2025-08-29T05:25:39.430Z"
+    },
+    "archon_mcp": {
+      "tasks_assigned": 0,
+      "tasks_completed": 0,
+      "tasks_failed": 1,
+      "total_duration_ms": 1,
+      "success_rate": 0,
+      "avg_response_time": 0,
+      "last_used": null
+    }
+  },
+  "routing": {
+    "decisions": [
+      {
+        "primary_agent": "claude",
+        "fallback_agents": [
+          "archon",
+          "gemini"
+        ],
+        "confidence": 85,
+        "task_type": "debugging",
+        "complexity": "medium",
+        "reasoning": "Claude excels at precise debugging and error fixing",
+        "timestamp": "2025-08-29T05:25:39.430Z"
+      },
+      {
+        "primary_agent": "gemini",
+        "fallback_agents": [
+          "archon",
+          "claude"
+        ],
+        "confidence": 80,
+        "task_type": "exploration",
+        "complexity": "low",
+        "reasoning": "Gemini rapidly explores multiple approaches in parallel",
+        "timestamp": "2025-08-29T05:25:39.430Z"
+      },
+      {
+        "primary_agent": "archon",
+        "fallback_agents": [
+          "claude",
+          "gemini"
+        ],
+        "confidence": 95,
+        "task_type": "architecture",
+        "complexity": "high",
+        "reasoning": "Archon analyzes and designs system architecture comprehensively",
+        "timestamp": "2025-08-29T05:25:39.430Z"
+      },
+      {
+        "primary_agent": "claude",
+        "fallback_agents": [
+          "archon",
+          "gemini"
+        ],
+        "confidence": 85,
+        "task_type": "debugging",
+        "complexity": "high",
+        "reasoning": "Claude excels at precise debugging and error fixing",
+        "timestamp": "2025-08-29T05:25:48.560Z"
+      },
+      {
+        "primary_agent": "claude",
+        "fallback_agents": [
+          "archon",
+          "gemini"
+        ],
+        "confidence": 85,
+        "task_type": "debugging",
+        "complexity": "medium",
+        "reasoning": "Claude excels at precise debugging and error fixing",
+        "timestamp": "2025-08-29T05:32:08.817Z"
+      }
+    ],
+    "handoffs": []
+  },
+  "tasks": {
+    "total": 2,
+    "successful": 1,
+    "failed": 1
+  }
+}

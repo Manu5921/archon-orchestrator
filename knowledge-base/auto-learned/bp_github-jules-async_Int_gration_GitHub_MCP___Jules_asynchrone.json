@@ -1,0 +1,35 @@
+{
+  "id": "bp_github-jules-async_1756910716054",
+  "topic": "github-jules-async",
+  "title": "Intégration GitHub MCP + Jules asynchrone",
+  "content": {
+    "problem": "Setup manuel repo + Jules synchrone inefficace",
+    "solution": "Création rapide repo + Issues GitHub pour Jules async",
+    "files": [
+      "src/integrations/github-jules-integration.cjs",
+      "test-github-jules.cjs",
+      "setup-git.sh",
+      "jules-config.json"
+    ],
+    "workflow": [
+      "Création repo GitHub via MCP (30s)",
+      "Setup Git local automatique",
+      "Conversion tâches orchestration → GitHub Issues",
+      "Auto-assignment Jules en arrière-plan",
+      "Monitoring async PRs"
+    ],
+    "benefits": [
+      "Repo disponible immédiatement",
+      "Jules travaille pendant que Claude continue",
+      "Parallélisation Claude + Jules",
+      "GitHub comme coordination hub"
+    ],
+    "impact": "Double la vitesse de développement"
+  },
+  "metadata": {
+    "sessionId": "session_20250903_15azri",
+    "createdAt": "2025-09-03T14:45:16.054Z",
+    "validated": true,
+    "source": "auto-learned"
+  }
+}

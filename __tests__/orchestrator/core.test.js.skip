@@ -1,0 +1,547 @@
+/**
+ * Unit Tests for OrchestratorCore
+ * Comprehensive tests for the main orchestration logic
+ */
+
+import { describe, test, expect, jest, beforeEach, afterEach } from '@jest/globals';
+import { OrchestratorCore } from '../../src/orchestrator/core.js';
+
+// Mock all dependencies
+jest.unstable_mockModule('../../src/orchestrator/router.js', () => ({
+  Router: jest.fn().mockImplementation(() => ({
+    route: jest.fn().mockResolvedValue({
+      primary_agent: 'test-agent',
+      fallback_agents: ['backup-agent'],
+      confidence: 85,
+      reasoning: 'Test routing decision'
+    }),
+    initialize: jest.fn().mockResolvedValue(),
+    learn: jest.fn().mockResolvedValue(),
+    save: jest.fn().mockResolvedValue()
+  }))
+}));
+
+jest.unstable_mockModule('../../src/orchestrator/context-manager.js', () => ({
+  ContextManager: jest.fn().mockImplementation(() => ({
+    store: jest.fn().mockResolvedValue(),
+    get: jest.fn().mockResolvedValue({}),
+    clear: jest.fn().mockResolvedValue()
+  }))
+}));
+
+jest.unstable_mockModule('../../src/orchestrator/metrics.js', () => ({
+  MetricsCollector: jest.fn().mockImplementation(() => ({
+    recordTaskResult: jest.fn(),
+    recordRoutingDecision: jest.fn(),
+    recordHandoff: jest.fn(),
+    getStats: jest.fn().mockResolvedValue({}),
+    getSuccessRate: jest.fn().mockResolvedValue(0.95),
+    save: jest.fn().mockResolvedValue()
+  }))
+}));
+
+jest.unstable_mockModule('../../src/utils/logger.js', () => ({
+  logger: global.createMockLogger()
+}));
+
+jest.unstable_mockModule('../../src/utils/logging.js', () => ({
+  log: jest.fn().mockReturnValue(jest.fn())
+}));
+
+jest.unstable_mockModule('../../src/agents/registry.js', () => ({
+  getCapabilities: jest.fn().mockResolvedValue({
+    agents: { gemini: true, claude: true, archon: true },
+    versions: {},
+    endpoints: {}
+  }),
+  parseAgentsEnv: jest.fn().mockReturnValue([])
+}));
+
+jest.unstable_mockModule('../../src/agents/gemini-bridge.js', () => ({
+  startGeminiBridge: jest.fn().mockResolvedValue({ url: 'http://localhost:3001' })
+}));
+
+// Mock agent connectors
+const mockAgentConnector = (name) => jest.fn().mockImplementation(() => ({
+  name,
+  execute: jest.fn().mockResolvedValue({ success: true, result: `${name} result`, duration_ms: 100 }),
+  healthCheck: jest.fn().mockResolvedValue({ healthy: true, message: 'OK' }),
+  close: jest.fn().mockResolvedValue(),
+  exportContext: jest.fn().mockResolvedValue({ context: 'exported' }),
+  importContext: jest.fn().mockResolvedValue(),
+  syncContext: jest.fn().mockResolvedValue({ success: true })
+}));
+
+jest.unstable_mockModule('../../src/agents/gemini-mcp-connector.js', () => ({
+  GeminiMCPConnector: mockAgentConnector('gemini')
+}));
+
+jest.unstable_mockModule('../../src/agents/claude-mcp-connector.js', () => ({
+  ClaudeMCPConnector: mockAgentConnector('claude')
+}));
+
+jest.unstable_mockModule('../../src/agents/archon-connector.js', () => ({
+  ArchonConnector: mockAgentConnector('archon')
+}));
+
+jest.unstable_mockModule('../../src/agents/archon-mcp-connector.js', () => ({
+  ArchonMCPConnector: jest.fn().mockImplementation(() => ({
+    name: 'archon_mcp',
+    connect: jest.fn().mockResolvedValue(),
+    execute: jest.fn().mockResolvedValue({ success: true, result: 'archon_mcp result', duration_ms: 150 }),
+    healthCheck: jest.fn().mockResolvedValue({ healthy: true, message: 'OK' }),
+    close: jest.fn().mockResolvedValue(),
+    exportContext: jest.fn().mockResolvedValue({ context: 'exported' }),
+    importContext: jest.fn().mockResolvedValue(),
+    syncContext: jest.fn().mockResolvedValue({ success: true })
+  }))
+}));
+
+jest.unstable_mockModule('../../src/agents/archon-http-connector.js', () => ({
+  ArchonHTTPConnector: mockAgentConnector('archon_http')
+}));
+
+describe('OrchestratorCore', () => {
+  let orchestrator;
+  let mockAgent;
+
+  beforeEach(() => {
+    orchestrator = new OrchestratorCore();
+    mockAgent = global.createMockAgent('test-agent');
+    
+    // Reset environment
+    delete process.env.USE_MOCK_AGENTS;
+    delete process.env.GEMINI_API_URL;
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('Constructor', () => {
+    test('should initialize with empty state', () => {
+      expect(orchestrator.agents).toBeInstanceOf(Map);
+      expect(orchestrator.agents.size).toBe(0);
+      expect(orchestrator.activeTasks).toBeInstanceOf(Map);
+      expect(orchestrator.activeTasks.size).toBe(0);
+    });
+
+    test('should initialize core components', () => {
+      expect(orchestrator.router).toBeDefined();
+      expect(orchestrator.contextManager).toBeDefined();
+      expect(orchestrator.metrics).toBeDefined();
+    });
+  });
+
+  describe('executeOrchestratedTask', () => {
+    beforeEach(() => {
+      orchestrator.agents.set('test-agent', mockAgent);
+      orchestrator.agents.set('backup-agent', global.createMockAgent('backup-agent'));
+    });
+
+    test('should execute task with primary agent successfully', async () => {
+      const result = await orchestrator.executeOrchestratedTask(
+        'task-123',
+        'test-task',
+        'execute',
+        ['test command'],
+        { complexity: 'low' }
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.agent).toBe('test-agent');
+      expect(result.result).toBeDefined();
+      expect(mockAgent.execute).toHaveBeenCalledWith('task-123', 'execute', ['test command']);
+    });
+
+    test('should fallback to backup agent when primary fails', async () => {
+      const failingAgent = global.createMockAgent('failing-agent');
+      failingAgent.execute.mockRejectedValue(new Error('Primary agent failed'));
+      orchestrator.agents.set('test-agent', failingAgent);
+
+      const result = await orchestrator.executeOrchestratedTask(
+        'task-123',
+        'test-task',
+        'execute',
+        ['test command']
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.agent).toBe('backup-agent');
+    });
+
+    test('should return error when all agents fail', async () => {
+      const failingAgent1 = global.createMockAgent('failing-agent-1');
+      const failingAgent2 = global.createMockAgent('failing-agent-2');
+      failingAgent1.execute.mockRejectedValue(new Error('Agent 1 failed'));
+      failingAgent2.execute.mockRejectedValue(new Error('Agent 2 failed'));
+      
+      orchestrator.agents.set('test-agent', failingAgent1);
+      orchestrator.agents.set('backup-agent', failingAgent2);
+
+      const result = await orchestrator.executeOrchestratedTask(
+        'task-123',
+        'test-task',
+        'execute',
+        ['test command']
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('All attempts failed');
+    });
+
+    test('should skip unhealthy agents', async () => {
+      const unhealthyAgent = global.createMockAgent('unhealthy-agent');
+      unhealthyAgent.healthCheck.mockResolvedValue({ healthy: false, message: 'Not healthy' });
+      
+      orchestrator.agents.set('test-agent', unhealthyAgent);
+
+      const result = await orchestrator.executeOrchestratedTask(
+        'task-123',
+        'test-task',
+        'execute',
+        ['test command']
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.agent).toBe('backup-agent');
+      expect(unhealthyAgent.execute).not.toHaveBeenCalled();
+    });
+
+    test('should record metrics for successful tasks', async () => {
+      await orchestrator.executeOrchestratedTask(
+        'task-123',
+        'test-task',
+        'execute',
+        ['test command']
+      );
+
+      expect(orchestrator.metrics.recordTaskResult).toHaveBeenCalledWith('test-agent', true, expect.any(Number));
+    });
+
+    test('should record metrics for failed tasks', async () => {
+      const failingAgent = global.createMockAgent('failing-agent');
+      failingAgent.execute.mockResolvedValue({ success: false, error: 'Task failed' });
+      orchestrator.agents.set('test-agent', failingAgent);
+      orchestrator.agents.delete('backup-agent'); // Remove backup to force failure
+
+      await orchestrator.executeOrchestratedTask(
+        'task-123',
+        'test-task',
+        'execute',
+        ['test command']
+      );
+
+      expect(orchestrator.metrics.recordTaskResult).toHaveBeenCalledWith('test-agent', false, expect.any(Number));
+    });
+  });
+
+  describe('initialize', () => {
+    test('should initialize with mock agents when USE_MOCK_AGENTS is true', async () => {
+      process.env.USE_MOCK_AGENTS = 'true';
+      
+      await orchestrator.initialize();
+
+      expect(orchestrator.agents.size).toBeGreaterThan(0);
+      expect(orchestrator.agents.has('gemini')).toBe(true);
+      expect(orchestrator.agents.has('claude')).toBe(true);
+      expect(orchestrator.agents.has('archon')).toBe(true);
+      expect(orchestrator.agents.has('archon_mcp')).toBe(true);
+    });
+
+    test('should initialize router with available agents', async () => {
+      process.env.USE_MOCK_AGENTS = 'true';
+      
+      await orchestrator.initialize();
+
+      expect(orchestrator.router.initialize).toHaveBeenCalledWith(
+        expect.arrayContaining(['gemini', 'claude', 'archon', 'archon_mcp'])
+      );
+    });
+
+    test('should set global capabilities', async () => {
+      await orchestrator.initialize();
+
+      expect(global.__orchestrator_capabilities).toBeDefined();
+      expect(orchestrator.capabilities).toBeDefined();
+      expect(orchestrator.capabilities.agents).toBeDefined();
+    });
+  });
+
+  describe('routeTask', () => {
+    beforeEach(async () => {
+      process.env.USE_MOCK_AGENTS = 'true';
+      await orchestrator.initialize();
+    });
+
+    test('should route task and return task ID', async () => {
+      const result = await orchestrator.routeTask({
+        task_description: 'Test task',
+        task_type: 'analysis',
+        complexity: 'medium'
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.task_id).toMatch(/^task_\d+_[a-z0-9]+$/);
+      expect(result.routing_decision).toBeDefined();
+      expect(result.routing_decision.primary_agent).toBe('test-agent');
+    });
+
+    test('should store active task', async () => {
+      const result = await orchestrator.routeTask({
+        task_description: 'Test task',
+        task_type: 'analysis'
+      });
+
+      expect(orchestrator.activeTasks.has(result.task_id)).toBe(true);
+      const task = orchestrator.activeTasks.get(result.task_id);
+      expect(task.assigned_agent).toBe('test-agent');
+      expect(task.created_at).toBeDefined();
+    });
+  });
+
+  describe('handoffTask', () => {
+    let taskId;
+    let fromAgent, toAgent;
+
+    beforeEach(async () => {
+      process.env.USE_MOCK_AGENTS = 'true';
+      await orchestrator.initialize();
+      
+      fromAgent = global.createMockAgent('from-agent');
+      toAgent = global.createMockAgent('to-agent');
+      orchestrator.agents.set('from-agent', fromAgent);
+      orchestrator.agents.set('to-agent', toAgent);
+
+      // Create an active task
+      taskId = 'test-task-123';
+      orchestrator.activeTasks.set(taskId, {
+        task_description: 'Test task',
+        assigned_agent: 'from-agent',
+        created_at: new Date().toISOString()
+      });
+    });
+
+    test('should successfully handoff task between agents', async () => {
+      const result = await orchestrator.handoffTask({
+        from_agent: 'from-agent',
+        to_agent: 'to-agent',
+        task_id: taskId,
+        reason: 'Better suited for target agent',
+        context: { additional: 'context' }
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.context_transferred).toBeGreaterThan(0);
+      expect(fromAgent.exportContext).toHaveBeenCalledWith(taskId);
+      expect(toAgent.importContext).toHaveBeenCalledWith(taskId, expect.any(Object));
+    });
+
+    test('should update task assignment after handoff', async () => {
+      await orchestrator.handoffTask({
+        from_agent: 'from-agent',
+        to_agent: 'to-agent',
+        task_id: taskId,
+        reason: 'Test handoff'
+      });
+
+      const task = orchestrator.activeTasks.get(taskId);
+      expect(task.assigned_agent).toBe('to-agent');
+      expect(task.handoff_history).toHaveLength(1);
+      expect(task.handoff_history[0].from).toBe('from-agent');
+      expect(task.handoff_history[0].to).toBe('to-agent');
+      expect(task.handoff_history[0].reason).toBe('Test handoff');
+    });
+
+    test('should fail handoff for non-existent task', async () => {
+      const result = await orchestrator.handoffTask({
+        from_agent: 'from-agent',
+        to_agent: 'to-agent',
+        task_id: 'non-existent-task',
+        reason: 'Test'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Task non-existent-task not found');
+    });
+
+    test('should fail handoff for non-existent agents', async () => {
+      const result = await orchestrator.handoffTask({
+        from_agent: 'non-existent-agent',
+        to_agent: 'to-agent',
+        task_id: taskId,
+        reason: 'Test'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('One or both agents not available');
+    });
+  });
+
+  describe('syncContext', () => {
+    beforeEach(async () => {
+      process.env.USE_MOCK_AGENTS = 'true';
+      await orchestrator.initialize();
+    });
+
+    test('should sync context to specified agents', async () => {
+      const result = await orchestrator.syncContext({
+        agents: ['gemini', 'claude'],
+        context_type: 'session',
+        data: { session_id: '123', user: 'test-user' }
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.synced_agents).toBe(2);
+      expect(result.total_agents).toBe(2);
+      expect(result.context_size).toBeGreaterThan(0);
+    });
+
+    test('should store context in context manager', async () => {
+      const data = { test: 'data' };
+      
+      await orchestrator.syncContext({
+        agents: ['gemini'],
+        context_type: 'test',
+        data
+      });
+
+      expect(orchestrator.contextManager.store).toHaveBeenCalledWith('test', data);
+    });
+  });
+
+  describe('getPerformanceStats', () => {
+    beforeEach(async () => {
+      process.env.USE_MOCK_AGENTS = 'true';
+      await orchestrator.initialize();
+    });
+
+    test('should return performance statistics', async () => {
+      const result = await orchestrator.getPerformanceStats({
+        agent: 'gemini',
+        metric_type: 'success_rate',
+        time_range: '1h'
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.stats).toBeDefined();
+      expect(result.generated_at).toBeDefined();
+      expect(orchestrator.metrics.getStats).toHaveBeenCalledWith('gemini', 'success_rate', '1h');
+    });
+
+    test('should handle default parameters', async () => {
+      const result = await orchestrator.getPerformanceStats({});
+
+      expect(result.success).toBe(true);
+      expect(orchestrator.metrics.getStats).toHaveBeenCalledWith(undefined, 'all', '24h');
+    });
+  });
+
+  describe('learnPattern', () => {
+    beforeEach(async () => {
+      process.env.USE_MOCK_AGENTS = 'true';
+      await orchestrator.initialize();
+    });
+
+    test('should update router learning and metrics', async () => {
+      const result = await orchestrator.learnPattern({
+        task_type: 'analysis',
+        agent_used: 'gemini',
+        success: true,
+        duration_ms: 1500,
+        complexity: 'medium',
+        feedback: 'Good performance'
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.current_success_rate).toBe(0.95);
+      expect(orchestrator.router.learn).toHaveBeenCalledWith({
+        task_type: 'analysis',
+        agent_used: 'gemini',
+        success: true,
+        duration_ms: 1500,
+        complexity: 'medium',
+        feedback: 'Good performance'
+      });
+      expect(orchestrator.metrics.recordTaskResult).toHaveBeenCalledWith('gemini', true, 1500);
+    });
+  });
+
+  describe('getResources', () => {
+    test('should return available resources', async () => {
+      const resources = await orchestrator.getResources();
+
+      expect(Array.isArray(resources)).toBe(true);
+      expect(resources.length).toBeGreaterThan(0);
+      
+      resources.forEach(resource => {
+        expect(resource).toHaveProperty('uri');
+        expect(resource).toHaveProperty('name');
+        expect(resource).toHaveProperty('mimeType');
+      });
+    });
+  });
+
+  describe('shutdown', () => {
+    beforeEach(async () => {
+      process.env.USE_MOCK_AGENTS = 'true';
+      await orchestrator.initialize();
+    });
+
+    test('should close all agent connections', async () => {
+      await orchestrator.shutdown();
+
+      for (const [name, agent] of orchestrator.agents) {
+        expect(agent.close).toHaveBeenCalled();
+      }
+    });
+
+    test('should save metrics and router state', async () => {
+      await orchestrator.shutdown();
+
+      expect(orchestrator.metrics.save).toHaveBeenCalled();
+      expect(orchestrator.router.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('Error Handling', () => {
+    test('should handle agent initialization errors gracefully', async () => {
+      // This test verifies the actual behavior without mocks
+      process.env.USE_MOCK_AGENTS = 'false';
+      
+      // Should not throw, but may log warnings
+      await expect(orchestrator.initialize()).resolves.not.toThrow();
+    });
+
+    test('should handle routing errors gracefully', async () => {
+      orchestrator.router.route.mockRejectedValue(new Error('Routing failed'));
+
+      await expect(
+        orchestrator.routeTask({ task_description: 'test', task_type: 'test' })
+      ).rejects.toThrow('Routing failed');
+    });
+  });
+
+  describe('Memory Management', () => {
+    test('should not leak memory with multiple task operations', async () => {
+      process.env.USE_MOCK_AGENTS = 'true';
+      await orchestrator.initialize();
+
+      // Create many tasks
+      const taskIds = [];
+      for (let i = 0; i < 100; i++) {
+        const result = await orchestrator.routeTask({
+          task_description: `Task ${i}`,
+          task_type: 'test'
+        });
+        taskIds.push(result.task_id);
+      }
+
+      expect(orchestrator.activeTasks.size).toBe(100);
+
+      // Clear tasks
+      orchestrator.activeTasks.clear();
+      expect(orchestrator.activeTasks.size).toBe(0);
+    });
+  });
+});

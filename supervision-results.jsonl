@@ -1,0 +1,9 @@
+{"timestamp":"2025-09-01T18:56:34.289Z","agent":"database","approved":true,"riskScore":0.5,"escalated":false,"duration":83,"tokensCost":0}
+{"timestamp":"2025-09-01T18:56:35.819Z","agent":"frontend","approved":true,"riskScore":0.5,"escalated":false,"duration":26,"tokensCost":0}
+{"timestamp":"2025-09-01T18:56:36.304Z","agent":"backend","approved":true,"riskScore":0.5,"escalated":false,"duration":13,"tokensCost":0}
+{"timestamp":"2025-09-01T18:56:37.829Z","agent":"security","approved":true,"riskScore":0.5,"escalated":false,"duration":23,"tokensCost":0}
+{"timestamp":"2025-09-01T18:56:37.843Z","agent":"integration","approved":true,"riskScore":0.5,"escalated":false,"duration":13,"tokensCost":0}
+{"timestamp":"2025-09-01T18:56:57.702Z","agent":"database","approved":true,"riskScore":0.5,"escalated":false,"duration":43,"tokensCost":0}
+{"timestamp":"2025-09-01T18:56:59.239Z","agent":"frontend","approved":true,"riskScore":0.5,"escalated":false,"duration":33,"tokensCost":0}
+{"timestamp":"2025-09-01T18:56:59.721Z","agent":"backend","approved":true,"riskScore":0.5,"escalated":false,"duration":16,"tokensCost":0}
+{"timestamp":"2025-09-01T18:56:59.732Z","agent":"integration","approved":true,"riskScore":0.5,"escalated":false,"duration":11,"tokensCost":0}

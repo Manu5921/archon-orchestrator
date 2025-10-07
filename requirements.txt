@@ -1,0 +1,42 @@
+# Triple-Agent Orchestra Plugin Dependencies
+
+# Core async and web libraries
+asyncio
+aiohttp>=3.8.0
+websockets>=11.0.0
+
+# Data validation and serialization  
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# Configuration and utilities
+pyyaml>=6.0
+python-dotenv>=1.0.0
+
+# Logging and monitoring
+winston>=1.0.0  # If available for Python
+structlog>=23.0.0
+prometheus-client>=0.17.0
+
+# Optional: Enhanced CLI interaction
+click>=8.0.0
+rich>=13.0.0  # For beautiful CLI output
+typer>=0.9.0  # Alternative CLI framework
+
+# Development and testing (optional)
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.10.0
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.5.0
+
+# Archon-specific (if needed)
+# fastapi>=0.104.0
+# uvicorn>=0.24.0
+# qdrant-client>=1.6.0
+
+# AI/ML libraries (if extending functionality)
+# openai>=1.3.0
+# anthropic>=0.7.0
+# google-generativeai>=0.3.0

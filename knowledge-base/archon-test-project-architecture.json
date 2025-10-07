@@ -1,0 +1,44 @@
+{
+  "repository": "archon-test-project",
+  "created": "2025-09-01T18:57:26.818Z",
+  "compliance_history": [
+    {
+      "timestamp": "2025-09-01T18:57:26.818Z",
+      "commit": "abc123",
+      "branch": "feature/jules-integration",
+      "pr_number": "15",
+      "compliance": {
+        "score": "82.5",
+        "violations": "1",
+        "status": "PASSED"
+      },
+      "jules_analysis": {
+        "overall_score": "79.3",
+        "security_score": "76.0",
+        "blocking_issues": "0",
+        "status": "PASSED_WITH_WARNINGS"
+      }
+    }
+  ],
+  "violation_patterns": {
+    "frequency": 1,
+    "common_issues": [
+      "Technology stack misalignment",
+      "Missing architecture patterns",
+      "Security compliance gaps",
+      "API contract violations"
+    ],
+    "trends": "insufficient_data"
+  },
+  "success_patterns": {
+    "frequency": 0,
+    "high_score_factors": [
+      "Proper technology stack usage",
+      "Consistent design patterns",
+      "Security best practices",
+      "Comprehensive testing"
+    ],
+    "improvement_trajectory": "insufficient_data"
+  },
+  "updated": "2025-09-01T18:57:26.818Z"
+}

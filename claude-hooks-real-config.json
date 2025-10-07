@@ -1,0 +1,40 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '🎯 REMINDER: Consider using Context7 MCP (/mcp context7 resolve-library-id) for better code quality patterns'",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit", 
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '📊 Code written. Consider Context7 validation: /mcp context7 get-library-docs for optimization patterns'",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command", 
+            "command": "if echo '$CLAUDE_USER_INPUT' | grep -q 'write.*code\\|create.*file\\|implement'; then echo '🎯 Context7 Reminder: Use /mcp context7 for battle-tested patterns'; fi",
+            "timeout": 2
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "bp_rag-auto-learning_1756910716055",
+  "topic": "rag-auto-learning",
+  "title": "Système auto-apprentissage persistent",
+  "content": {
+    "problem": "Réexpliquer les mêmes solutions à chaque nouvelle session",
+    "solution": "Capture automatique + redistribution intelligente des apprentissages",
+    "files": [
+      "rag-learning-system.cjs",
+      "src/mcp/rag-learning-tools.cjs",
+      "test-rag-learning.cjs",
+      "knowledge-base/auto-learned/"
+    ],
+    "capture": [
+      "Best practices validées par session",
+      "Erreurs communes et leurs solutions",
+      "Workflows opérationnels étape par étape",
+      "Patterns de succès projet par projet"
+    ],
+    "redistribution": [
+      "/mcp archon get_session_startup_guide",
+      "/mcp archon get_best_practices topic=\"...\"",
+      "/mcp archon get_workflow_guide workflowName=\"...\"",
+      "/mcp archon get_common_errors errorType=\"...\""
+    ],
+    "revolution": "Transformation d'un outil manuel vers système auto-apprenant",
+    "impact": "Élimination 90% explications répétitives"
+  },
+  "metadata": {
+    "sessionId": "session_20250903_15azri",
+    "createdAt": "2025-09-03T14:45:16.055Z",
+    "validated": true,
+    "source": "auto-learned"
+  }
+}

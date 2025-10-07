@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "generated_at": "ISO-8601-timestamp",
+    "agent_name": "agent-specialist",
+    "task": "Brief task description"
+  },
+  "project": {
+    "name": "project-name",
+    "git_branch": "main",
+    "phase": "design | implementation | testing | deployment"
+  },
+  "context": {
+    "previous_decisions": [
+      "ADR-001: Architecture decision 1",
+      "ADR-002: Architecture decision 2"
+    ],
+    "modified_files": [
+      "src/components/Button.tsx",
+      "src/utils/format.ts"
+    ],
+    "quality_standards": [
+      "E1",
+      "E5",
+      "E10",
+      "E16"
+    ]
+  },
+  "artifacts": {
+    "design_tokens": ".design/tokens.json",
+    "tasks": "tasks.md",
+    "constitution": "constitution.md",
+    "spec": ".specify/specs/001/spec.md",
+    "agents": [
+      ".claude/agents/design-specialist.md",
+      ".claude/agents/testing-specialist.md"
+    ]
+  },
+  "dependencies": {
+    "dependencies": {
+      "next": "14.0.0",
+      "react": "18.0.0"
+    },
+    "devDependencies": {
+      "typescript": "5.0.0",
+      "vitest": "1.0.0"
+    }
+  },
+  "instructions": {
+    "read_first": [
+      "constitution.md",
+      "tasks.md",
+      ".design/tokens.json"
+    ],
+    "constraints": [
+      "Follow quality standards defined in context.quality_standards",
+      "Respect project dependencies versions",
+      "Maintain consistency with artifacts.design_tokens"
+    ]
+  }
+}

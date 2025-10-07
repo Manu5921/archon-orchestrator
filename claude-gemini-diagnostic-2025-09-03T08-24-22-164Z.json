@@ -1,0 +1,39 @@
+{
+  "environment": {
+    "GEMINI_API_URL": "not_set",
+    "GEMINI_CLI_PATH": "gemini",
+    "GEMINI_API_KEY": "not_set",
+    "PATH_includes_gemini": "unlikely",
+    "cli_accessible": "/opt/homebrew/bin/gemini",
+    "cli_version": "0.1.18"
+  },
+  "bridgeTest": {
+    "success": false,
+    "reason": "not_configured",
+    "recommendation": "Set GEMINI_API_URL environment variable"
+  },
+  "cliTest": {
+    "success": true,
+    "response": "Loaded cached credentials.\nCLI_WORKING",
+    "mode": "cli",
+    "exit_code": 0,
+    "duration_ms": 6081
+  },
+  "orchestratorTest": {
+    "success": true,
+    "mode": "cli-prompt",
+    "response": "Loaded cached credentials.\nStatus: ORCHESTRATOR_CONNECTION_SUCCESS\nCapabilities: I am a large language model from Google, specializing in software engineering tasks. My core capabilities include reading and writing files, searching file content, listing directories, executing shell commands, and performing web searches. I am designed to understand project context, adhere to existing conventions, and assist with tasks like bug fixing, feature implementation, refactoring, and testing.\nReadiness: I am fully operational and ready for collaborative work within the Archon Orchestrator system.",
+    "duration_ms": 7680,
+    "quality_check": {
+      "contains_success_marker": true,
+      "has_capabilities": true,
+      "sufficient_length": true
+    }
+  },
+  "overall": {
+    "success_rate": "2/3",
+    "percentage": 67,
+    "primary_mode": "cli-prompt",
+    "recommendation": "⚠️ Partial success. At least one mode is working - system can function with fallbacks."
+  }
+}

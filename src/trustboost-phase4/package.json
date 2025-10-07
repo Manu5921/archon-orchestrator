@@ -1,0 +1,66 @@
+{
+  "name": "trustboost-phase4-performance",
+  "version": "1.0.0",
+  "description": "AGENT 6: Performance & Optimization Engineer - TrustBoost Phase 4 Performance Suite",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "lighthouse:ci": "lhci autorun --config=config/lighthouserc.js",
+    "lighthouse:desktop": "LIGHTHOUSE_MOBILE=false lhci autorun --config=config/lighthouserc.js",
+    "lighthouse:mobile": "LIGHTHOUSE_MOBILE=true lhci autorun --config=config/lighthouserc.js",
+    "performance:audit": "node scripts/run-audit.js",
+    "performance:monitor": "node scripts/start-monitoring.js",
+    "bundle:analyze": "node scripts/analyze-bundle.js",
+    "bundle:optimize": "node scripts/optimize-bundle.js",
+    "cache:warm": "node scripts/warm-cache.js",
+    "reports:weekly": "node scripts/generate-weekly-report.js",
+    "dev:dashboard": "node scripts/dev-dashboard.js"
+  },
+  "keywords": [
+    "performance",
+    "web-vitals",
+    "lighthouse",
+    "optimization", 
+    "monitoring",
+    "trustboost",
+    "phase4"
+  ],
+  "author": "AGENT 6: Performance & Optimization Engineer",
+  "license": "MIT",
+  "dependencies": {
+    "lru-cache": "^10.1.0",
+    "ws": "^8.15.0"
+  },
+  "devDependencies": {
+    "@lhci/cli": "^0.12.0",
+    "@types/node": "^20.10.0",
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/trustboost/phase4-performance"
+  },
+  "config": {
+    "lighthouse": {
+      "target": 95,
+      "budget": "20KB"
+    },
+    "webVitals": {
+      "FCP": 2000,
+      "LCP": 2500,
+      "FID": 100,
+      "CLS": 0.1,
+      "TTFB": 600
+    },
+    "database": {
+      "p99Target": 50
+    },
+    "cache": {
+      "hitRatioTarget": 0.9
+    }
+  }
+}

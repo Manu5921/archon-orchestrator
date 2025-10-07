@@ -1,0 +1,498 @@
+<testsuites id="" name="" tests="111" failures="0" skipped="111" errors="0" time="0.11428000000000003">
+<testsuite name="setup/global.setup.js" timestamp="2025-09-04T16:32:54.751Z" hostname="setup" tests="1" failures="0" skipped="1" time="0" errors="0">
+<testcase name="authenticate and setup environment" classname="setup/global.setup.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard/dashboard-auth.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="chromium-desktop" tests="11" failures="0" skipped="11" time="0" errors="0">
+<testcase name="TrustBoost Dashboard - Authentication &amp; Security @desktop @security › User authentication flow with security headers @security" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Authentication &amp; Security @desktop @security › Session management and logout security @security" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Authentication &amp; Security @desktop @security › Dashboard unauthorized access protection @security" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Authentication &amp; Security @desktop @security › CSRF protection validation @security" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard navigation performance @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard search functionality performance @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard data loading and pagination @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard responsive behavior @responsive" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard accessibility compliance @accessibility" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - User Permissions @security › Admin user permissions validation @security" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - User Permissions @security › Role-based access control @security" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="performance/core-web-vitals.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="chromium-desktop" tests="7" failures="0" skipped="7" time="0" errors="0">
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Homepage Core Web Vitals compliance @performance @vitals @desktop" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Dashboard Core Web Vitals under load @performance @vitals @desktop" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Widget embed Core Web Vitals impact @performance @vitals" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Mobile Core Web Vitals performance @performance @vitals @mobile" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Page transitions Web Vitals stability @performance @vitals" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Resource loading optimization validation @performance" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Memory usage and performance monitoring @performance" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="security/security-regression.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="chromium-desktop" tests="7" failures="0" skipped="7" time="0" errors="0">
+<testcase name="Security Regression Tests - Phase 3 Compliance Maintained @security @regression › Complete security headers validation (Phase 3 baseline) @security @regression" classname="security/security-regression.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Security Regression Tests - Phase 3 Compliance Maintained @security @regression › Content Security Policy enforcement (Phase 3 level) @security @regression" classname="security/security-regression.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Security Regression Tests - Phase 3 Compliance Maintained @security @regression › XSS protection comprehensive testing @security @regression" classname="security/security-regression.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Security Regression Tests - Phase 3 Compliance Maintained @security @regression › SQL injection protection validation @security @regression" classname="security/security-regression.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Security Regression Tests - Phase 3 Compliance Maintained @security @regression › Authentication security regression @security @regression" classname="security/security-regression.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Security Regression Tests - Phase 3 Compliance Maintained @security @regression › Widget embedding security (Phase 3 compliance) @security @regression" classname="security/security-regression.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Security Regression Tests - Phase 3 Compliance Maintained @security @regression › HTTPS enforcement and TLS validation @security @regression" classname="security/security-regression.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="widget/widget-security.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="chromium-desktop" tests="6" failures="0" skipped="6" time="0" errors="0">
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget loads securely with Phase 3 security headers maintained @security" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget resists XSS attacks (Phase 3 security maintained) @security" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget meets Core Web Vitals requirements @performance @vitals" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget interaction performance under load @performance" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget cross-frame security (Phase 3 compliance) @security" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget data privacy and GDPR compliance @security" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard/dashboard-auth.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="firefox-desktop" tests="9" failures="0" skipped="9" time="0" errors="0">
+<testcase name="TrustBoost Dashboard - Authentication &amp; Security @desktop @security › User authentication flow with security headers @security" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Authentication &amp; Security @desktop @security › Session management and logout security @security" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Authentication &amp; Security @desktop @security › Dashboard unauthorized access protection @security" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Authentication &amp; Security @desktop @security › CSRF protection validation @security" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard navigation performance @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard search functionality performance @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard data loading and pagination @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard responsive behavior @responsive" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard accessibility compliance @accessibility" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="performance/core-web-vitals.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="firefox-desktop" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Homepage Core Web Vitals compliance @performance @vitals @desktop" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Dashboard Core Web Vitals under load @performance @vitals @desktop" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="widget/widget-security.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="firefox-desktop" tests="8" failures="0" skipped="8" time="0" errors="0">
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget loads securely with Phase 3 security headers maintained @security" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget resists XSS attacks (Phase 3 security maintained) @security" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget meets Core Web Vitals requirements @performance @vitals" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget interaction performance under load @performance" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget cross-frame security (Phase 3 compliance) @security" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget data privacy and GDPR compliance @security" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Cross Browser Compatibility @cross-browser › Widget loads consistently across browsers @cross-browser" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Cross Browser Compatibility @cross-browser › Widget styling consistent across browsers @cross-browser" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard/dashboard-auth.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="webkit-desktop" tests="9" failures="0" skipped="9" time="0" errors="0">
+<testcase name="TrustBoost Dashboard - Authentication &amp; Security @desktop @security › User authentication flow with security headers @security" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Authentication &amp; Security @desktop @security › Session management and logout security @security" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Authentication &amp; Security @desktop @security › Dashboard unauthorized access protection @security" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Authentication &amp; Security @desktop @security › CSRF protection validation @security" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard navigation performance @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard search functionality performance @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard data loading and pagination @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard responsive behavior @responsive" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard accessibility compliance @accessibility" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="performance/core-web-vitals.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="webkit-desktop" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Homepage Core Web Vitals compliance @performance @vitals @desktop" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Dashboard Core Web Vitals under load @performance @vitals @desktop" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="widget/widget-security.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="webkit-desktop" tests="8" failures="0" skipped="8" time="0" errors="0">
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget loads securely with Phase 3 security headers maintained @security" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget resists XSS attacks (Phase 3 security maintained) @security" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget meets Core Web Vitals requirements @performance @vitals" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget interaction performance under load @performance" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget cross-frame security (Phase 3 compliance) @security" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget data privacy and GDPR compliance @security" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Cross Browser Compatibility @cross-browser › Widget loads consistently across browsers @cross-browser" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Cross Browser Compatibility @cross-browser › Widget styling consistent across browsers @cross-browser" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard/dashboard-auth.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="chrome-branded" tests="5" failures="0" skipped="5" time="0" errors="0">
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard navigation performance @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard search functionality performance @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard data loading and pagination @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard responsive behavior @responsive" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard accessibility compliance @accessibility" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="performance/core-web-vitals.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="chrome-branded" tests="7" failures="0" skipped="7" time="0" errors="0">
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Homepage Core Web Vitals compliance @performance @vitals @desktop" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Dashboard Core Web Vitals under load @performance @vitals @desktop" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Widget embed Core Web Vitals impact @performance @vitals" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Mobile Core Web Vitals performance @performance @vitals @mobile" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Page transitions Web Vitals stability @performance @vitals" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Resource loading optimization validation @performance" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Memory usage and performance monitoring @performance" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="widget/widget-security.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="chrome-branded" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget meets Core Web Vitals requirements @performance @vitals" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget interaction performance under load @performance" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="widget/widget-security.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="edge-branded" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="TrustBoost Widget - Cross Browser Compatibility @cross-browser › Widget loads consistently across browsers @cross-browser" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Cross Browser Compatibility @cross-browser › Widget styling consistent across browsers @cross-browser" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard/dashboard-auth.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="mobile-chrome" tests="1" failures="0" skipped="1" time="0" errors="0">
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard responsive behavior @responsive" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="performance/core-web-vitals.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="mobile-chrome" tests="1" failures="0" skipped="1" time="0" errors="0">
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Mobile Core Web Vitals performance @performance @vitals @mobile" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="widget/widget-security.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="mobile-chrome" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="TrustBoost Widget - Mobile Responsive @mobile @responsive › Widget adapts to mobile viewports @mobile @responsive" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Mobile Responsive @mobile @responsive › Widget touch interactions work on mobile @mobile" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard/dashboard-auth.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="mobile-safari" tests="1" failures="0" skipped="1" time="0" errors="0">
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard responsive behavior @responsive" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="performance/core-web-vitals.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="mobile-safari" tests="1" failures="0" skipped="1" time="0" errors="0">
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Mobile Core Web Vitals performance @performance @vitals @mobile" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="widget/widget-security.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="mobile-safari" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="TrustBoost Widget - Mobile Responsive @mobile @responsive › Widget adapts to mobile viewports @mobile @responsive" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Mobile Responsive @mobile @responsive › Widget touch interactions work on mobile @mobile" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard/dashboard-auth.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="tablet-ipad" tests="1" failures="0" skipped="1" time="0" errors="0">
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard responsive behavior @responsive" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="widget/widget-security.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="tablet-ipad" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="TrustBoost Widget - Mobile Responsive @mobile @responsive › Widget adapts to mobile viewports @mobile @responsive" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Mobile Responsive @mobile @responsive › Widget touch interactions work on mobile @mobile" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="dashboard/dashboard-auth.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="performance-monitoring" tests="5" failures="0" skipped="5" time="0" errors="0">
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard navigation performance @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard search functionality performance @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard data loading and pagination @performance" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard responsive behavior @responsive" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Dashboard - Navigation &amp; Performance @desktop @performance › Dashboard accessibility compliance @accessibility" classname="dashboard/dashboard-auth.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="performance/core-web-vitals.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="performance-monitoring" tests="7" failures="0" skipped="7" time="0" errors="0">
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Homepage Core Web Vitals compliance @performance @vitals @desktop" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Dashboard Core Web Vitals under load @performance @vitals @desktop" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Widget embed Core Web Vitals impact @performance @vitals" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Mobile Core Web Vitals performance @performance @vitals @mobile" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Page transitions Web Vitals stability @performance @vitals" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Resource loading optimization validation @performance" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Core Web Vitals - Phase 4 TrustBoost Requirements @performance @vitals › Memory usage and performance monitoring @performance" classname="performance/core-web-vitals.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="widget/widget-security.spec.js" timestamp="2025-09-04T16:32:54.751Z" hostname="performance-monitoring" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget meets Core Web Vitals requirements @performance @vitals" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="TrustBoost Widget - Security &amp; Performance @security @desktop › Widget interaction performance under load @performance" classname="widget/widget-security.spec.js" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+</testsuites>

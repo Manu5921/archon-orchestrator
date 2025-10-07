@@ -1,0 +1,143 @@
+{
+  "patterns": {
+    "debugging": {
+      "primary": "claude",
+      "fallback": [
+        "archon",
+        "gemini"
+      ],
+      "confidence": 85
+    },
+    "exploration": {
+      "primary": "gemini",
+      "fallback": [
+        "archon",
+        "claude"
+      ],
+      "confidence": 80
+    },
+    "implementation": {
+      "primary": "claude",
+      "fallback": [
+        "gemini",
+        "archon"
+      ],
+      "confidence": 90
+    },
+    "architecture": {
+      "primary": "archon",
+      "fallback": [
+        "claude",
+        "gemini"
+      ],
+      "confidence": 95
+    },
+    "optimization": {
+      "primary": "claude",
+      "fallback": [
+        "archon",
+        "gemini"
+      ],
+      "confidence": 85
+    },
+    "analysis": {
+      "primary": "archon",
+      "fallback": [
+        "claude",
+        "gemini"
+      ],
+      "confidence": 90
+    },
+    "prototyping": {
+      "primary": "gemini",
+      "fallback": [
+        "claude",
+        "archon"
+      ],
+      "confidence": 85
+    }
+  },
+  "learningData": [
+    {
+      "task_type": "debugging",
+      "agent_used": "claude",
+      "success": true,
+      "duration_ms": 1500,
+      "complexity": "medium",
+      "feedback": "Task completed successfully",
+      "timestamp": "2025-08-29T05:25:39.430Z"
+    }
+  ],
+  "history": [
+    {
+      "primary_agent": "claude",
+      "fallback_agents": [
+        "archon",
+        "gemini"
+      ],
+      "confidence": 85,
+      "task_type": "debugging",
+      "complexity": "medium",
+      "reasoning": "Claude excels at precise debugging and error fixing",
+      "timestamp": "2025-08-29T05:25:39.430Z"
+    },
+    {
+      "primary_agent": "gemini",
+      "fallback_agents": [
+        "archon",
+        "claude"
+      ],
+      "confidence": 80,
+      "task_type": "exploration",
+      "complexity": "low",
+      "reasoning": "Gemini rapidly explores multiple approaches in parallel",
+      "timestamp": "2025-08-29T05:25:39.430Z"
+    },
+    {
+      "primary_agent": "archon",
+      "fallback_agents": [
+        "claude",
+        "gemini"
+      ],
+      "confidence": 95,
+      "task_type": "architecture",
+      "complexity": "high",
+      "reasoning": "Archon analyzes and designs system architecture comprehensively",
+      "timestamp": "2025-08-29T05:25:39.430Z"
+    },
+    {
+      "primary_agent": "claude",
+      "fallback_agents": [
+        "archon",
+        "gemini"
+      ],
+      "confidence": 85,
+      "task_type": "debugging",
+      "complexity": "high",
+      "reasoning": "Claude excels at precise debugging and error fixing",
+      "timestamp": "2025-08-29T05:25:48.560Z"
+    },
+    {
+      "primary_agent": "claude",
+      "fallback_agents": [
+        "archon",
+        "gemini"
+      ],
+      "confidence": 85,
+      "task_type": "debugging",
+      "complexity": "medium",
+      "reasoning": "Claude excels at precise debugging and error fixing",
+      "timestamp": "2025-08-29T05:32:08.816Z"
+    },
+    {
+      "primary_agent": "archon_mcp",
+      "fallback_agents": [],
+      "confidence": 70,
+      "task_type": "exploration",
+      "complexity": "high",
+      "reasoning": "archon_mcp selected based on task characteristics and complexity level high",
+      "timestamp": "2025-08-29T09:31:13.422Z"
+    }
+  ],
+  "saved_at": "2025-09-04T18:16:08.097Z"
+}

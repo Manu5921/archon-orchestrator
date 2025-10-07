@@ -1,0 +1,374 @@
+import { Meta, Canvas } from '@storybook/blocks';
+import { Button } from '../src/components/Button';
+import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '../src/components/Card';
+
+<Meta title="Brand Guidelines/Commercial Kit" />
+
+# Kit Commercial TrustBoost
+
+Le kit commercial TrustBoost fournit tous les éléments visuels et templates nécessaires 
+pour maintenir une cohérence de marque sur tous les points de contact commerciaux.
+
+## 🎨 Éléments de Marque
+
+### Logo TrustBoost
+
+*[Logos à intégrer selon les assets disponibles]*
+
+**Variations disponibles :**
+- Logo horizontal (usage principal)
+- Logo vertical (espaces restreints)
+- Symbole seul (favicon, apps)
+- Versions monochrome (applications spécifiques)
+
+**Tailles minimales :**
+- Logo horizontal : 120px de largeur minimum
+- Logo vertical : 80px de largeur minimum  
+- Symbole seul : 32px minimum
+
+### Couleurs de Marque
+
+<div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-6">
+  <div className="text-center">
+    <div className="w-full h-16 bg-primary-500 rounded-lg mb-2"></div>
+    <div className="text-sm font-semibold">Primary Blue</div>
+    <div className="text-xs text-neutral-600">#0ea5e9</div>
+  </div>
+  <div className="text-center">
+    <div className="w-full h-16 bg-trust-500 rounded-lg mb-2"></div>
+    <div className="text-sm font-semibold">Trust Green</div>
+    <div className="text-xs text-neutral-600">#22c55e</div>
+  </div>
+  <div className="text-center">
+    <div className="w-full h-16 bg-neutral-900 rounded-lg mb-2"></div>
+    <div className="text-sm font-semibold">Deep Black</div>
+    <div className="text-xs text-neutral-600">#171717</div>
+  </div>
+  <div className="text-center">
+    <div className="w-full h-16 bg-neutral-0 border border-neutral-200 rounded-lg mb-2"></div>
+    <div className="text-sm font-semibold">Pure White</div>
+    <div className="text-xs text-neutral-600">#ffffff</div>
+  </div>
+</div>
+
+## 📧 Templates Email
+
+### Email de Bienvenue
+
+<Card className="max-w-2xl">
+  <CardContent className="p-0">
+    <div className="bg-primary-500 text-white p-6 text-center">
+      <h1 className="text-2xl font-bold mb-2">Bienvenue chez TrustBoost</h1>
+      <p className="opacity-90">Votre partenaire de confiance pour la sécurité numérique</p>
+    </div>
+    <div className="p-6">
+      <p className="mb-4">Bonjour [Prénom],</p>
+      <p className="mb-4">
+        Nous sommes ravis de vous accueillir dans la communauté TrustBoost ! 
+        Notre mission est de vous offrir les outils les plus fiables pour 
+        sécuriser vos interactions numériques.
+      </p>
+      <p className="mb-6">
+        Pour commencer, voici quelques ressources qui pourraient vous intéresser :
+      </p>
+      <div className="space-y-2 mb-6">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-trust-500 rounded-full"></div>
+          <span>Guide de démarrage rapide</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-trust-500 rounded-full"></div>
+          <span>Documentation technique</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-trust-500 rounded-full"></div>
+          <span>Support client 24/7</span>
+        </div>
+      </div>
+      <div className="text-center">
+        <Button className="mb-4">Accéder à mon compte</Button>
+      </div>
+      <p className="text-sm text-neutral-600">
+        Si vous avez des questions, n'hésitez pas à nous contacter à 
+        <a href="mailto:support@trustboost.io" className="text-primary-600">support@trustboost.io</a>
+      </p>
+    </div>
+    <div className="bg-neutral-50 p-4 text-center text-sm text-neutral-600">
+      <p>© 2024 TrustBoost. Tous droits réservés.</p>
+      <p className="mt-1">
+        <a href="#" className="text-primary-600">Se désabonner</a> | 
+        <a href="#" className="text-primary-600 ml-1">Préférences</a>
+      </p>
+    </div>
+  </CardContent>
+</Card>
+
+### Email Transactionnel
+
+<Card className="max-w-2xl mt-6">
+  <CardContent className="p-0">
+    <div className="bg-trust-500 text-white p-4 text-center">
+      <h2 className="text-lg font-semibold">Transaction Confirmée</h2>
+    </div>
+    <div className="p-6">
+      <p className="mb-4">Bonjour [Prénom],</p>
+      <p className="mb-4">
+        Votre transaction a été traitée avec succès. Voici les détails :
+      </p>
+      <div className="bg-neutral-50 p-4 rounded-lg mb-4">
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <span className="font-medium">Référence :</span>
+            <div>#TB-2024-001234</div>
+          </div>
+          <div>
+            <span className="font-medium">Montant :</span>
+            <div className="font-semibold">€129.99</div>
+          </div>
+          <div>
+            <span className="font-medium">Date :</span>
+            <div>04 Sept 2024, 14:30</div>
+          </div>
+          <div>
+            <span className="font-medium">Statut :</span>
+            <div className="text-trust-600 font-medium">✓ Confirmé</div>
+          </div>
+        </div>
+      </div>
+      <div className="text-center">
+        <Button variant="outline">Voir les détails</Button>
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
+## 🌐 Templates Web
+
+### Page Landing
+
+<Card className="max-w-4xl mt-6">
+  <CardContent className="p-0">
+    <div className="bg-gradient-to-r from-primary-500 to-trust-500 text-white p-8 text-center">
+      <h1 className="text-4xl font-bold mb-4">
+        La Sécurité Numérique Simplifiée
+      </h1>
+      <p className="text-xl opacity-90 mb-6 max-w-2xl mx-auto">
+        TrustBoost offre des solutions de sécurité innovantes qui s'adaptent 
+        à vos besoins, sans compromis sur la simplicité d'usage.
+      </p>
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button size="lg" className="bg-white text-primary-600 hover:bg-neutral-100">
+          Essai gratuit 14 jours
+        </Button>
+        <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary-600">
+          Voir la démo
+        </Button>
+      </div>
+    </div>
+    
+    <div className="p-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl">🛡️</span>
+          </div>
+          <h3 className="text-lg font-semibold mb-2">Sécurité Avancée</h3>
+          <p className="text-neutral-600 text-sm">
+            Chiffrement de niveau militaire et protection multicouche
+          </p>
+        </div>
+        <div className="text-center">
+          <div className="w-16 h-16 bg-trust-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl">⚡</span>
+          </div>
+          <h3 className="text-lg font-semibold mb-2">Performance</h3>
+          <p className="text-neutral-600 text-sm">
+            Vitesse optimale sans compromis sur la sécurité
+          </p>
+        </div>
+        <div className="text-center">
+          <div className="w-16 h-16 bg-warning-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl">🤝</span>
+          </div>
+          <h3 className="text-lg font-semibold mb-2">Confiance</h3>
+          <p className="text-neutral-600 text-sm">
+            Transparence totale et support client exceptionnel
+          </p>
+        </div>
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
+### Pricing Table
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+  <Card>
+    <CardHeader className="text-center">
+      <CardTitle>Starter</CardTitle>
+      <CardDescription>Pour les particuliers</CardDescription>
+      <div className="text-3xl font-bold text-primary-600 mt-4">
+        €9<span className="text-lg font-normal text-neutral-600">/mois</span>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <ul className="space-y-2 text-sm">
+        <li className="flex items-center gap-2">
+          <span className="text-trust-500">✓</span>
+          Protection de base
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="text-trust-500">✓</span>
+          Support email
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="text-trust-500">✓</span>
+          1 utilisateur
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="text-neutral-300">✗</span>
+          <span className="text-neutral-500">Fonctions avancées</span>
+        </li>
+      </ul>
+    </CardContent>
+    <CardFooter>
+      <Button variant="outline" fullWidth>Choisir Starter</Button>
+    </CardFooter>
+  </Card>
+
+  <Card className="border-primary-500 border-2 relative">
+    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+      <span className="bg-primary-500 text-white px-4 py-1 rounded-full text-sm font-medium">
+        Populaire
+      </span>
+    </div>
+    <CardHeader className="text-center">
+      <CardTitle>Professional</CardTitle>
+      <CardDescription>Pour les équipes</CardDescription>
+      <div className="text-3xl font-bold text-primary-600 mt-4">
+        €29<span className="text-lg font-normal text-neutral-600">/mois</span>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <ul className="space-y-2 text-sm">
+        <li className="flex items-center gap-2">
+          <span className="text-trust-500">✓</span>
+          Protection avancée
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="text-trust-500">✓</span>
+          Support prioritaire
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="text-trust-500">✓</span>
+          Jusqu'à 10 utilisateurs
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="text-trust-500">✓</span>
+          Analytics avancés
+        </li>
+      </ul>
+    </CardContent>
+    <CardFooter>
+      <Button fullWidth>Choisir Professional</Button>
+    </CardFooter>
+  </Card>
+
+  <Card>
+    <CardHeader className="text-center">
+      <CardTitle>Enterprise</CardTitle>
+      <CardDescription>Pour les grandes organisations</CardDescription>
+      <div className="text-3xl font-bold text-primary-600 mt-4">
+        Sur mesure
+      </div>
+    </CardHeader>
+    <CardContent>
+      <ul className="space-y-2 text-sm">
+        <li className="flex items-center gap-2">
+          <span className="text-trust-500">✓</span>
+          Protection enterprise
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="text-trust-500">✓</span>
+          Support dédié 24/7
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="text-trust-500">✓</span>
+          Utilisateurs illimités
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="text-trust-500">✓</span>
+          Intégrations sur mesure
+        </li>
+      </ul>
+    </CardContent>
+    <CardFooter>
+      <Button variant="outline" fullWidth>Nous contacter</Button>
+    </CardFooter>
+  </Card>
+</div>
+
+## 📱 Templates Mobiles
+
+### Notification Push
+
+<Card className="max-w-sm mx-auto mt-8">
+  <CardContent className="p-4">
+    <div className="flex items-start gap-3">
+      <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white text-sm font-bold">
+        TB
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between">
+          <span className="font-semibold text-sm">TrustBoost</span>
+          <span className="text-xs text-neutral-500">maintenant</span>
+        </div>
+        <p className="text-sm text-neutral-700 mt-1">
+          Votre compte a été sécurisé avec succès. 
+          Toutes vos données sont maintenant protégées.
+        </p>
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
+## 🎯 Guidelines d'Usage
+
+### Do's ✅
+
+- **Cohérence** - Utilisez les couleurs et polices définies
+- **Hiérarchie** - Respectez les tailles et espacements
+- **Accessibilité** - Maintenez les contrastes minimum
+- **Responsive** - Adaptez aux différentes tailles d'écran
+- **Performance** - Optimisez les images et médias
+
+### Don'ts ❌
+
+- **Couleurs arbitraires** - Ne créez pas de nouvelles couleurs
+- **Logos déformés** - Respectez les proportions originales  
+- **Texte illisible** - Ne sacrifiez pas la lisibilité
+- **Surutilisation** - Ne surchargez pas visuellement
+- **Incohérence** - Ne mélangez pas les styles
+
+## 📥 Assets Téléchargeables
+
+*[Section à compléter avec les liens de téléchargement des assets]*
+
+### Package Logo
+- Formats : SVG, PNG, EPS
+- Tailles : Multiple résolutions
+- Variations : Couleur, monochrome, inverse
+
+### Templates
+- Emails : HTML + images
+- Web : Composants React + CSS
+- Print : PDF haute résolution
+
+### Guidelines
+- PDF complet des guidelines
+- Palette de couleurs (ASE, SCSS)
+- Polices de caractères (WOFF2, OTF)
+
+---
+
+*Ce kit commercial évolue avec la marque. Pour des demandes spécifiques ou des assets personnalisés, contactez l'équipe Brand Design.*

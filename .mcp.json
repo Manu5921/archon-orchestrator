@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "archon": {
+      "name": "archon",
+      "transport": "http", 
+      "url": "http://localhost:8051/mcp"
+    },
+    "context7": {
+      "name": "context7",
+      "transport": "sse",
+      "url": "mcp+sse://context7.ai"
+    }
+  }
+}

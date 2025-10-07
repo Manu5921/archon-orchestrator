@@ -1,0 +1,13 @@
+{
+  "id": "code_1756445139430",
+  "type": "code",
+  "data": {
+    "file": "test.js",
+    "changes": [
+      "Added error handling",
+      "Optimized performance"
+    ]
+  },
+  "created_at": "2025-08-29T05:25:39.430Z",
+  "size_bytes": 77
+}

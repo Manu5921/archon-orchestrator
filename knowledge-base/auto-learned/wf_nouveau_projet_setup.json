@@ -1,0 +1,24 @@
+{
+  "id": "wf_nouveau-projet-setup_1756910656269",
+  "name": "nouveau-projet-setup",
+  "steps": [
+    "Copier CLAUDE-TEMPLATE-FUTURS-PROJETS.md vers CLAUDE.md",
+    "Copier .mcp.json vers projet",
+    "Copier claude-hooks-smart-context7.json vers .claude-hooks.json",
+    "Exécuter ./activate-context7-hooks.sh",
+    "Tester /mcp archon health_check",
+    "Tester /mcp context7 resolve-library-id Next.js"
+  ],
+  "requirements": [
+    "Archon MCP running (port 8051)",
+    "Context7 MCP accessible",
+    "Claude Code en working directory projet"
+  ],
+  "validationCriteria": [],
+  "metadata": {
+    "sessionId": "session_20250903_85dho",
+    "createdAt": "2025-09-03T14:44:16.269Z",
+    "tested": true,
+    "successRate": "100%"
+  }
+}

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lighthouse CI test page for performance and accessibility validation">
+    <title>Lighthouse CI Test - Archon Orchestrator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        
+        h1 {
+            color: #1a252f;
+            border-bottom: 3px solid #2980b9;
+            padding-bottom: 10px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            min-width: 44px;
+            min-height: 44px;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        button:focus {
+            outline: 3px solid #80bdff;
+            outline-offset: 2px;
+        }
+        
+        .accessibility-demo {
+            margin: 30px 0;
+        }
+        
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: 600;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            min-height: 44px;
+            box-sizing: border-box;
+        }
+        
+        input[type="text"]:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #28a745;
+            margin-right: 8px;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>
+            <span class="status-indicator" aria-hidden="true"></span>
+            Lighthouse CI Test Page
+        </h1>
+    </header>
+    
+    <main>
+        <section class="card">
+            <h2>Performance Test Elements</h2>
+            <p>This page contains optimized elements to test Lighthouse performance metrics:</p>
+            <ul>
+                <li>Minimal, efficient CSS</li>
+                <li>Semantic HTML structure</li>
+                <li>Accessible color contrasts</li>
+                <li>Properly sized touch targets</li>
+            </ul>
+        </section>
+        
+        <section class="card accessibility-demo">
+            <h2>Accessibility Compliance Demo</h2>
+            
+            <form>
+                <label for="test-input">
+                    Sample Input (Required):
+                </label>
+                <input 
+                    type="text" 
+                    id="test-input" 
+                    name="test-input" 
+                    required 
+                    aria-describedby="input-help"
+                    placeholder="Enter some text..."
+                />
+                <p id="input-help">
+                    This input demonstrates proper labeling and focus management.
+                </p>
+                
+                <button type="submit" aria-describedby="button-help">
+                    Submit Test Form
+                </button>
+                <p id="button-help">
+                    This button meets minimum touch target size (44px) and has proper focus indicators.
+                </p>
+            </form>
+        </section>
+        
+        <section class="card">
+            <h2>SEO and Best Practices</h2>
+            <p>This page demonstrates:</p>
+            <ul>
+                <li>Semantic HTML5 structure</li>
+                <li>Proper meta tags and title</li>
+                <li>Accessible images with alt text</li>
+                <li>WCAG AA compliant color contrast</li>
+                <li>Mobile-responsive design</li>
+            </ul>
+            
+            <!-- Example image with proper alt text -->
+            <img 
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%23e9ecef'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23495057'%3ETest Image%3C/text%3E%3C/svg%3E"
+                alt="Test image placeholder demonstrating proper alt text usage"
+                width="200"
+                height="100"
+            />
+        </section>
+    </main>
+    
+    <footer>
+        <p>
+            <small>
+                Lighthouse CI Test Page - 
+                <time datetime="2025-01-04">January 2025</time>
+            </small>
+        </p>
+    </footer>
+    
+    <script>
+        // Minimal JavaScript for interactivity test
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = document.getElementById('test-input');
+            if (input.value.trim()) {
+                alert('Form submitted successfully! Input: ' + input.value);
+                input.value = '';
+            } else {
+                alert('Please enter some text in the required field.');
+                input.focus();
+            }
+        });
+        
+        // Performance: Mark when page is ready
+        if (window.performance && performance.mark) {
+            performance.mark('lighthouse-test-ready');
+        }
+    </script>
+</body>
+</html>

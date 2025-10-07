@@ -1,0 +1,60 @@
+{
+  "executiveSummary": {
+    "totalIssues": 2,
+    "criticalIssues": 1,
+    "riskLevel": "HIGH",
+    "scanDuration": 290,
+    "recommendation": "Immediate attention required for critical issues"
+  },
+  "detailedFindings": {
+    "sqlInjection": [
+      {
+        "type": "code_pattern",
+        "category": "sqlInjection",
+        "severity": "CRITICAL",
+        "file": "security-test-files/auth-vulnerable.js",
+        "line": 12,
+        "issue": "${username}",
+        "description": "Potential SQL injection vulnerability",
+        "recommendation": "Use parameterized queries or ORM"
+      }
+    ],
+    "authIssues": [
+      {
+        "type": "code_pattern",
+        "category": "authIssues",
+        "severity": "MEDIUM",
+        "file": "security-test-files/auth-vulnerable.js",
+        "line": 17,
+        "issue": "cookie('token', token, { secure: false",
+        "description": "Authentication security concern",
+        "recommendation": "Implement secure authentication practices"
+      }
+    ]
+  },
+  "recommendations": [
+    {
+      "priority": "CRITICAL",
+      "recommendation": "Use parameterized queries or ORM",
+      "file": "security-test-files/auth-vulnerable.js"
+    },
+    {
+      "priority": "MEDIUM",
+      "recommendation": "Implement secure authentication practices",
+      "file": "security-test-files/auth-vulnerable.js"
+    }
+  ],
+  "riskAssessment": "CRITICAL",
+  "complianceStatus": {
+    "owasp": true,
+    "gdpr": true,
+    "sox": true
+  },
+  "actionPlan": {
+    "immediate": [
+      "Fix security-test-files/auth-vulnerable.js: Use parameterized queries or ORM"
+    ],
+    "thisWeek": [],
+    "thisMonth": []
+  }
+}

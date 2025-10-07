@@ -1,0 +1,118 @@
+name: 🚀 Implement Task Batch
+description: Auto-implement a batch of tasks with Claude Code
+title: "Implement: T${from}-T${to} - ${description}"
+labels: ["run-claude", "implementation"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🎯 Implementation Request
+        Cette issue déclenchera Claude Code pour implémenter un batch de tasks automatiquement.
+
+  - type: input
+    id: task-range
+    attributes:
+      label: Task Range
+      description: "Plage de tasks à implémenter (ex: T001-T010)"
+      placeholder: "T001-T010"
+    validations:
+      required: true
+
+  - type: input
+    id: description
+    attributes:
+      label: Batch Description
+      description: "Description courte du batch (ex: Infra Setup, Auth Backend)"
+      placeholder: "Infra Setup"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: "Lien vers specs + contexte additionnel"
+      value: |
+        **Specs:** `specs/001-mvp/tasks.md`
+        **Design tokens:** `design-tokens.json` (si UI)
+        **Architecture:** `specs/001-mvp/plan.md`
+    validations:
+      required: true
+
+  - type: dropdown
+    id: framework
+    attributes:
+      label: Framework/Stack
+      description: "Stack technique principal"
+      options:
+        - Next.js 14 (App Router)
+        - Next.js 14 (Pages Router)
+        - React (Vite)
+        - Node.js (Express)
+        - Python (FastAPI)
+        - Other (specify in context)
+      default: 0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: mcps
+    attributes:
+      label: MCP Servers Required
+      description: "Sélectionner les MCP servers nécessaires"
+      options:
+        - label: "Supabase (auth + database)"
+        - label: "Slack (notifications)"
+        - label: "GitHub (repo operations)"
+        - label: "Filesystem (local files)"
+
+  - type: checkboxes
+    id: gates
+    attributes:
+      label: Quality Gates
+      description: "Gates à enforcer (minimum P0-P2)"
+      options:
+        - label: "P0: Build (obligatoire)"
+          required: true
+        - label: "P1: Lint (obligatoire)"
+          required: true
+        - label: "P2: Unit tests (obligatoire)"
+          required: true
+        - label: "P3: E2E tests (optionnel)"
+        - label: "P4: Lighthouse ≥90 (optionnel)"
+
+  - type: dropdown
+    id: deploy-env
+    attributes:
+      label: Deploy Environment
+      description: "Environnement cible après merge"
+      options:
+        - Preview only (Vercel/Netlify)
+        - Staging (auto-deploy)
+        - Production (manual approval)
+      default: 0
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Instructions
+      description: "Instructions spécifiques pour Claude (optionnel)"
+      placeholder: |
+        - Utiliser design-tokens.json pour couleurs/spacing
+        - Tests Playwright pour formulaires
+        - Documentation JSDoc minimale
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ## 🤖 Automation
+        Une fois l'issue créée:
+        1. Claude Code détectera le label `run-claude`
+        2. Exécutera les tasks ${from}-${to} automatiquement
+        3. Créera une PR avec le code + tests
+        4. Notifiera Slack quand terminé (si MCP configuré)
+
+        **Durée estimée:** 1-3h selon complexité batch

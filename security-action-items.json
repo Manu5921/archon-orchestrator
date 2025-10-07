@@ -1,0 +1,13 @@
+[
+  {
+    "id": "security_1757018219666_3vkmmn82a",
+    "type": "security_fix",
+    "priority": "critical",
+    "title": "Security Fix: sqlInjection",
+    "description": "Potential SQL injection vulnerability",
+    "file": "security-test-files/auth-vulnerable.js",
+    "recommendation": "Use parameterized queries or ORM",
+    "estimatedEffort": "2-4 hours",
+    "assignee": "Claude"
+  }
+]

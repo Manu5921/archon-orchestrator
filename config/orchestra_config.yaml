@@ -1,0 +1,307 @@
+# Triple-Agent Orchestra Configuration for Archon Integration
+
+# Plugin Information
+plugin:
+  name: "triple-agent-orchestra"
+  version: "1.0.0"
+  description: "Orchestrates Archon + Gemini CLI + Claude Code via intelligent routing"
+  author: "Triple-Agent Orchestra Team"
+  
+# MCP Integration Settings
+mcp:
+  # Archon MCP server connection
+  archon_server:
+    host: "localhost"
+    port: 8000  # Default Archon MCP port
+    protocol: "ws"
+    timeout: 30
+  
+  # Tools to register with Archon
+  tools:
+    - "orchestra:route_task"
+    - "orchestra:agent_handoff" 
+    - "orchestra:sync_context"
+    - "orchestra:performance_stats"
+    - "orchestra:pattern_learning"
+  
+  # Tool execution limits
+  limits:
+    max_concurrent_tasks: 5
+    task_timeout: 300  # 5 minutes
+    max_context_size: 10485760  # 10MB
+
+# Agent Configuration
+agents:
+  archon:
+    enabled: true
+    connection_type: "internal"  # Built into Archon
+    capabilities:
+      - "knowledge_synthesis"
+      - "pattern_recognition" 
+      - "context_management"
+      - "rag_search"
+      - "architectural_analysis"
+    performance:
+      baseline_success_rate: 0.95
+      baseline_response_time: 2000  # ms
+      max_concurrent_tasks: 3
+    
+  gemini:
+    enabled: true
+    connection_type: "cli"
+    cli_path: "gemini"  # Should be in PATH
+    model: "gemini-1.5-pro"
+    api_key_env: "GEMINI_API_KEY"
+    capabilities:
+      - "rapid_iteration"
+      - "exploratory_coding"
+      - "creative_solutions"
+      - "parallel_processing"
+      - "proof_of_concept"
+      - "multi_attempt_solving"
+    performance:
+      baseline_success_rate: 0.85
+      baseline_response_time: 800  # ms
+      max_concurrent_tasks: 5
+    settings:
+      max_tokens: 8192
+      temperature: 0.7
+      timeout: 300
+      rapid_iteration_attempts: 3
+    
+  claude:
+    enabled: true
+    connection_type: "cli"
+    cli_path: "claude"  # Should be in PATH
+    model: "claude-3-5-sonnet-20241022"
+    api_key_env: "ANTHROPIC_API_KEY"
+    capabilities:
+      - "precision_fixes"
+      - "code_quality"
+      - "detailed_planning"
+      - "error_analysis"
+      - "best_practices"
+      - "architectural_review"
+      - "code_review"
+      - "refactoring"
+    performance:
+      baseline_success_rate: 0.95
+      baseline_response_time: 1500  # ms
+      max_concurrent_tasks: 2
+    settings:
+      max_tokens: 8192
+      temperature: 0.0  # Claude works better with lower temperature
+      timeout: 300
+      tools_allowed:
+        - "read"
+        - "edit"
+        - "write"
+        - "bash"
+        - "grep"
+
+# Routing Intelligence Configuration
+routing:
+  # Task complexity routing preferences
+  complexity_routing:
+    low:
+      preferred_agents: ["gemini"]
+      fallback_agents: ["claude", "archon"]
+      confidence_threshold: 0.6
+    medium:
+      preferred_agents: ["claude"]
+      fallback_agents: ["gemini", "archon"] 
+      confidence_threshold: 0.7
+    high:
+      preferred_agents: ["archon", "claude"]
+      fallback_agents: ["gemini"]
+      confidence_threshold: 0.8
+  
+  # Task type routing patterns (learned and updated dynamically)
+  task_patterns:
+    syntax_error:
+      preferred: "claude"
+      confidence: 0.9
+    runtime_error:
+      preferred: "claude" 
+      confidence: 0.85
+    logic_error:
+      preferred: "claude"
+      confidence: 0.8
+    api_exploration:
+      preferred: "gemini"
+      confidence: 0.9
+    proof_of_concept:
+      preferred: "gemini"
+      confidence: 0.85
+    rapid_prototyping:
+      preferred: "gemini"
+      confidence: 0.9
+    architecture_review:
+      preferred: "archon"
+      confidence: 0.9
+    pattern_analysis:
+      preferred: "archon"
+      confidence: 0.95
+    knowledge_synthesis:
+      preferred: "archon"
+      confidence: 0.95
+    refactoring:
+      preferred: "claude"
+      fallback: "archon"
+      confidence: 0.8
+    new_feature:
+      preferred: "gemini"
+      fallback: "claude"
+      confidence: 0.75
+    debugging_complex:
+      preferred: "archon"
+      fallback: "claude"
+      confidence: 0.85
+  
+  # Failure patterns to avoid
+  failure_patterns:
+    infinite_loop:
+      avoid: "gemini"
+      prefer: "claude"
+    permission_error:
+      avoid: "claude"
+      prefer: "gemini"
+    dependency_hell:
+      prefer: "archon"
+    architectural_debt:
+      prefer: "archon"
+      fallback: "claude"
+  
+  # Scoring weights for routing decisions
+  scoring:
+    capability_match_weight: 0.4
+    performance_history_weight: 0.3
+    current_load_weight: 0.2
+    context_relevance_weight: 0.1
+  
+  # Ensemble routing for complex tasks
+  ensemble:
+    enabled: true
+    trigger_conditions:
+      - complexity: "high"
+      - confidence_below: 0.8
+      - previous_failures: 2
+    strategies:
+      - "primary_with_fallback"
+      - "parallel_execution"
+      - "sequential_refinement"
+
+# Learning and Adaptation
+learning:
+  # Performance tracking
+  performance_tracking:
+    enabled: true
+    window_size: 100  # Last N tasks for rolling statistics
+    update_frequency: 10  # Update stats every N tasks
+    
+  # Pattern learning
+  pattern_learning:
+    enabled: true
+    min_pattern_confidence: 0.7
+    learning_rate: 0.1
+    pattern_decay_rate: 0.05  # Older patterns lose weight over time
+    
+  # Failure analysis
+  failure_analysis:
+    enabled: true
+    failure_retention_hours: 24
+    failure_pattern_threshold: 3  # N failures to establish pattern
+    
+# Logging and Monitoring
+logging:
+  level: "INFO"
+  format: "json"
+  file: "orchestra.log"
+  max_size: "10MB"
+  backup_count: 5
+  
+  # Component-specific logging
+  components:
+    routing: "INFO"
+    gemini_bridge: "INFO" 
+    claude_bridge: "INFO"
+    mcp_tools: "INFO"
+    performance: "DEBUG"
+    
+monitoring:
+  # Health check intervals
+  health_check_interval: 60  # seconds
+  
+  # Metrics collection
+  metrics:
+    enabled: true
+    export_interval: 300  # seconds
+    retention_days: 30
+    
+  # Alerting thresholds
+  alerts:
+    high_failure_rate: 0.3  # Alert if failure rate > 30%
+    high_response_time: 5000  # Alert if response time > 5s
+    agent_offline_timeout: 120  # Alert if agent offline > 2min
+
+# Security Settings
+security:
+  # Allowed commands for Gemini/Claude CLI execution
+  allowed_commands:
+    - "node"
+    - "python"
+    - "pip"
+    - "npm"
+    - "git"
+    - "cat"
+    - "ls"
+    - "grep"
+    - "find"
+  
+  # Forbidden patterns in tasks
+  forbidden_patterns:
+    - "rm -rf"
+    - "format"
+    - "delete"
+    - "sudo"
+    - "chmod 777"
+  
+  # File access restrictions
+  file_access:
+    read_only_paths:
+      - "/etc"
+      - "/usr"
+      - "/var"
+    writable_paths:
+      - "."  # Current project directory
+      - "/tmp"
+      - "/var/tmp"
+
+# Development and Debug Settings
+debug:
+  enabled: false
+  verbose_routing: false
+  save_all_prompts: false
+  simulate_failures: false
+  mock_agent_responses: false
+  
+# Plugin Installation Settings
+installation:
+  # Auto-install dependencies
+  auto_install: true
+  
+  # Required Python packages
+  python_dependencies:
+    - "asyncio"
+    - "aiohttp"
+    - "pydantic"
+    - "pyyaml"
+    - "websockets"
+    
+  # CLI validation on startup
+  validate_clis:
+    gemini: true
+    claude: true
+    
+  # Integration test on install
+  run_integration_test: true

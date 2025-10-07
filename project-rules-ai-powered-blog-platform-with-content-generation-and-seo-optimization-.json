@@ -1,0 +1,26 @@
+{
+  "architecturePatterns": {
+    "requiredImports": "function validateImports(fileContent) { const requiredImports = ['React', 'Next', 'Supabase']; return requiredImports.every(importName => fileContent.includes(importName)); }",
+    "fileStructureConventions": "function validateFileStructure(filePath) { const regex = /^src\\/(components|pages|api)\\//; return regex.test(filePath); }",
+    "componentPatterns": "function validateComponentPattern(componentCode) { const functionalComponentPattern = /function\\s+[A-Z][a-zA-Z0-9]*\\s*\\(/; return functionalComponentPattern.test(componentCode); }",
+    "apiEndpointPatterns": "function validateApiEndpointPattern(apiCode) { const pattern = /export\\s+default\\s+function\\s+handler\\s*\\(/; return pattern.test(apiCode); }"
+  },
+  "commonMistakes": {
+    "wrongTechnologyUsage": "function validateTechnologyUsage(fileContent) { return !fileContent.includes('import\\s+.*\\s+from\\s+\"python\"'); }",
+    "incorrectDatabasePatterns": "function validateDatabasePatterns(query) { return query.includes('SELECT') && query.includes('FROM'); }",
+    "securityAntipatterns": "function validateSecurityAntipatterns(code) { return !code.includes('eval(') && !code.includes('innerHTML ='); }",
+    "performancePitfalls": "function validatePerformancePitfalls(code) { return !code.includes('setTimeout') && !code.includes('setInterval'); }"
+  },
+  "integrationValidationRules": {
+    "apiContractValidation": "function validateApiContract(apiResponse) { const expectedKeys = ['status', 'data', 'error']; return expectedKeys.every(key => key in apiResponse); }",
+    "databaseSchemaChecks": "function validateDatabaseSchema(schema) { const requiredTables = ['posts', 'users', 'comments']; return requiredTables.every(table => schema.includes(table)); }",
+    "componentInterfaceValidation": "function validateComponentInterface(componentProps) { const requiredProps = ['title', 'content', 'author']; return requiredProps.every(prop => prop in componentProps); }",
+    "securityPatternEnforcement": "function validateSecurityPatterns(code) { return code.includes('Content-Security-Policy') && code.includes('X-Content-Type-Options'); }"
+  },
+  "qualityThresholds": {
+    "complexityLimits": "function validateComplexity(code) { const maxComplexity = 10; const complexity = (code.match(/if|for|while|switch/g) || []).length; return complexity <= maxComplexity; }",
+    "performanceThresholds": "function validatePerformance(responseTime) { const maxResponseTime = 200; return responseTime <= maxResponseTime; }",
+    "securityScoreMinimums": "function validateSecurityScore(securityScore) { const minSecurityScore = 80; return securityScore >= minSecurityScore; }",
+    "architectureCompliancePercentages": "function validateArchitectureCompliance(compliancePercentage) { const minCompliance = 90; return compliancePercentage >= minCompliance; }"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "bp_validation-obligatoire_1756910716055",
+  "topic": "validation-obligatoire",
+  "title": "Checkpoints validation Gemini obligatoires",
+  "content": {
+    "problem": "Claude peut coder indéfiniment sans validation qualité",
+    "solution": "Hooks bloquants + système checkpoints tous les 5 changements",
+    "files": [
+      "claude-hooks-validation-required.json",
+      "validation-checkpoint-system.cjs",
+      "activate-validation-hooks.sh",
+      "check-validation.sh"
+    ],
+    "mechanism": [
+      "Compteur .session-work.log track changements",
+      "Checkpoint à 5 changements → BLOCK Write/Edit",
+      "Prompt automatique pour Gemini validation",
+      "Score >85/100 requis pour continuer",
+      "Reset compteur après validation"
+    ],
+    "validation_criteria": [
+      "Innovation & Créativité (25%)",
+      "Performance & Efficacité (25%)",
+      "Sécurité & Best Practices (25%)",
+      "Scalabilité & Future-proofing (25%)"
+    ],
+    "impact": "Élimine le code de mauvaise qualité, force reviews régulières"
+  },
+  "metadata": {
+    "sessionId": "session_20250903_15azri",
+    "createdAt": "2025-09-03T14:45:16.055Z",
+    "validated": true,
+    "source": "auto-learned"
+  }
+}

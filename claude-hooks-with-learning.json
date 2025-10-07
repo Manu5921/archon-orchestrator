@@ -1,0 +1,62 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"🎯 CONTEXT7 CHECK\"; if [[ ! -f \".context7_validated\" ]]; then echo \"❌ Context7 not validated for this session\"; echo \"REQUIRED: /mcp context7 resolve-library-id <library>\"; echo \"REQUIRED: /mcp context7 get-library-docs <id>\"; echo \"Then create .context7_validated file to proceed\"; exit 1; else echo \"✅ Context7 validation found - proceeding\"; fi'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "context7",
+        "hooks": [
+          {
+            "type": "command", 
+            "command": "touch .context7_validated && echo '✅ Context7 validation recorded - Write/Edit now unlocked'",
+            "timeout": 2
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"📊 Code written. Logging success pattern...\"; echo \"$(date): $(pwd): Code written with Context7 validation\" >> .session-success.log'",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "write.*code|create.*file|implement|add.*feature",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '🎯 CODE REQUEST DETECTED - Context7 validation will be required before Write/Edit'",
+            "timeout": 2
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if [[ -f \".session-success.log\" && $(wc -l < .session-success.log) -gt 0 ]]; then echo \"📊 Saving session learnings...\"; node /Users/manu/Documents/DEV/archon-orchestrator/rag-learning-system.cjs save-current-session 2>/dev/null || echo \"Learning save attempted\"; fi'",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
