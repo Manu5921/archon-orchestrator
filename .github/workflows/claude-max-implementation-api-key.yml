@@ -1,0 +1,644 @@
+# 🤖 Claude Max Implementation + Jules Security Guardian
+#
+# VERSION: API Key (pour OAuth Google - pas de session tokens dans Keychain)
+#
+# Workflow complet pour implementation Claude Code via GitHub Actions
+# + Security scan Jules en parallèle
+#
+# TRIGGER:
+# - Issue avec label 'run-claude'
+# - Comment '/run claude' sur issue
+#
+# SECRETS REQUIS (GitHub repo settings):
+# - ANTHROPIC_API_KEY: API Key Anthropic Console (https://console.anthropic.com/settings/keys)
+# - JULES_API_KEY: API key Jules AI Pro
+#
+# USAGE:
+# 1. Créer issue avec body: "Task range: T001-T010"
+# 2. Ajouter label: run-claude
+# 3. Workflow démarre automatiquement
+# 4. Review PRs créées (features + security)
+
+name: Claude Max Implementation + Jules Security (API Key)
+
+on:
+  issues:
+    types: [opened, labeled]
+  issue_comment:
+    types: [created]
+  workflow_dispatch:  # Manual trigger
+
+env:
+  NODE_VERSION: '20'
+  JULES_TIMEOUT: 30m
+
+jobs:
+  # =========================================================================
+  # JOB 1: CLAUDE CODE IMPLEMENTATION (FEATURES)
+  # =========================================================================
+  claude-implementation:
+    name: Claude Code Implementation
+    runs-on: ubuntu-latest
+    timeout-minutes: 300  # 5 heures max
+
+    # Trigger: Issue avec label 'run-claude' OU comment '/run claude'
+    if: |
+      (github.event_name == 'issues' && contains(join(github.event.issue.labels.*.name), 'run-claude')) ||
+      (github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/run claude'))
+
+    steps:
+      # === CHECKOUT CODE ===
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better context
+
+      # === SETUP NODE.JS ===
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      # === PARSE TASK RANGE FROM ISSUE ===
+      - name: Parse Task Range
+        id: parse
+        run: |
+          echo "📋 Parsing task range from issue..."
+
+          # Get issue body
+          BODY="${{ github.event.issue.body }}"
+
+          # Extract task range (format: T001-T010)
+          RANGE=$(echo "$BODY" | grep -oE 'T[0-9]+-T[0-9]+' | head -1)
+
+          if [ -z "$RANGE" ]; then
+            echo "❌ ERROR: No task range found in issue body"
+            echo "Expected format: 'Task range: T001-T010'"
+            exit 1
+          fi
+
+          echo "range=$RANGE" >> $GITHUB_OUTPUT
+          echo "✅ Task range detected: $RANGE"
+
+          # Extract start/end task numbers
+          START=$(echo "$RANGE" | cut -d'-' -f1 | sed 's/T//')
+          END=$(echo "$RANGE" | cut -d'-' -f2 | sed 's/T//')
+          SIZE=$((END - START + 1))
+
+          echo "📦 Batch size: $SIZE tasks"
+
+          # Warn if batch too large
+          if [ $SIZE -gt 12 ]; then
+            echo "⚠️  WARNING: Batch size ($SIZE) > 12 tasks"
+            echo "Recommended: 8-12 tasks per batch for optimal performance"
+          fi
+
+          if [ $SIZE -gt 25 ]; then
+            echo "❌ ERROR: Batch too large ($SIZE > 25 tasks)"
+            echo "Please split into smaller batches (<25 tasks each)"
+            exit 1
+          fi
+
+      # === INSTALL DEPENDENCIES ===
+      - name: Install Dependencies
+        run: |
+          echo "📦 Installing project dependencies..."
+
+          if [ -f "package.json" ]; then
+            npm ci --production=false
+            echo "✅ Dependencies installed"
+          else
+            echo "⚠️  No package.json found, skipping npm install"
+          fi
+
+      # === INSTALL CLAUDE CODE CLI ===
+      - name: Install Claude Code CLI
+        run: |
+          echo "🤖 Installing Claude Code CLI..."
+
+          # Install Claude Code CLI globally
+          npm install -g @anthropic-ai/claude-code
+
+          # Verify installation
+          claude-code --version || echo "⚠️  Claude CLI version check failed"
+
+          echo "✅ Claude Code CLI installed"
+
+      # === BOOTSTRAP AGENTS (si pas déjà fait) ===
+      - name: Bootstrap Sub-Agents
+        if: "!contains(github.event.issue.body, 'skip-bootstrap')"
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          echo "🔧 Bootstrapping sub-agents..."
+
+          # Check if agents already exist
+          if [ -d ".claude/agents" ] && [ -n "$(ls -A .claude/agents 2>/dev/null)" ]; then
+            echo "✅ Agents already exist (.claude/agents/), skipping bootstrap"
+            ls -la .claude/agents/
+          else
+            echo "📝 Generating sub-agents from tasks.md..."
+
+            # Run bootstrap command
+            claude-code /bootstrap \
+              --context=.specify/specs/001-mvp/tasks.md
+
+            echo "✅ Bootstrap complete"
+
+            # List generated agents
+            echo "📋 Generated agents:"
+            ls -la .claude/agents/
+          fi
+
+      # === DESIGN TOKENS GENERATION (T002) ===
+      - name: Design Tokens Generation (T002)
+        if: contains(steps.parse.outputs.range, 'T002') || contains(steps.parse.outputs.range, 'T001')
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          echo "🎨 Generating design tokens (T002)..."
+
+          # Check if design tokens already exist
+          if [ -f "src/design/design-tokens.json" ]; then
+            echo "✅ Design tokens already exist, skipping T002"
+          else
+            # Run T002 specifically (design-specialist)
+            claude-code /implement T002 \
+              --context=.specify/memory/constitution.md \
+              --context=.specify/specs/001-mvp/spec.md \
+              --agent=design-specialist
+
+            echo "✅ Design tokens generated"
+
+            # Validate JSON syntax
+            if [ -f "src/design/design-tokens.json" ]; then
+              cat src/design/design-tokens.json | jq '.' > /dev/null
+              echo "✅ design-tokens.json is valid JSON"
+            fi
+          fi
+
+      # === MAIN IMPLEMENTATION (CLAUDE CODE) ===
+      - name: Run Claude Code Implementation
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          echo "🤖 Starting Claude Code implementation..."
+          echo "📋 Task range: ${{ steps.parse.outputs.range }}"
+
+          # Run implementation with full context
+          claude-code /implement ${{ steps.parse.outputs.range }} \
+            --context=.specify/memory/constitution.md \
+            --context=.specify/specs/001-mvp/spec.md \
+            --context=.specify/specs/001-mvp/plan.md \
+            --context=.specify/specs/001-mvp/tasks.md \
+            --agents=.claude/agents/
+
+          echo "✅ Implementation complete"
+
+      # === QUALITY GATES (P0-P2) ===
+      - name: Quality Gates
+        run: |
+          echo "🔍 Running quality gates..."
+
+          # P0: Build (MANDATORY)
+          if [ -f "package.json" ]; then
+            echo "🏗️  P0: Build..."
+
+            # Install dependencies if not already done
+            if [ ! -d "node_modules" ]; then
+              npm install
+            fi
+
+            # Run build
+            npm run build || {
+              echo "❌ P0 FAILED: Build failed"
+              exit 1
+            }
+
+            echo "✅ P0: Build passed"
+          else
+            echo "⚠️  No package.json, skipping build"
+          fi
+
+          # P1: Lint (MANDATORY)
+          if grep -q '"lint"' package.json 2>/dev/null; then
+            echo "🔍 P1: Lint..."
+
+            npm run lint || {
+              echo "❌ P1 FAILED: Lint failed"
+              exit 1
+            }
+
+            echo "✅ P1: Lint passed"
+          else
+            echo "⚠️  No lint script, skipping"
+          fi
+
+          # P2: Tests (MANDATORY)
+          if grep -q '"test"' package.json 2>/dev/null; then
+            echo "🧪 P2: Tests..."
+
+            npm test || {
+              echo "❌ P2 FAILED: Tests failed"
+              exit 1
+            }
+
+            echo "✅ P2: Tests passed"
+          else
+            echo "⚠️  No test script, skipping"
+          fi
+
+          echo "✅ All quality gates passed"
+
+      # === CREATE PULL REQUEST (FEATURES) ===
+      - name: Create Feature Pull Request
+        id: create-pr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            feat: implement ${{ steps.parse.outputs.range }}
+
+            Implements #${{ github.event.issue.number }}
+
+            🤖 Generated by Claude Code (API Key)
+            Co-Authored-By: Claude <noreply@anthropic.com>
+          branch: feature/${{ steps.parse.outputs.range }}
+          title: "feat: Implement ${{ steps.parse.outputs.range }}"
+          body: |
+            ## 🚀 Implementation Complete
+
+            **Task range:** `${{ steps.parse.outputs.range }}`
+            **Issue:** #${{ github.event.issue.number }}
+            **Workflow:** [Run #${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            ### ✅ Quality Gates
+
+            - [x] **P0: Build** - Passed ✅
+            - [x] **P1: Lint** - Passed ✅
+            - [x] **P2: Tests** - Passed ✅
+
+            ### 📝 Implementation Details
+
+            See commit history for detailed changes.
+
+            ### 🔍 Review Checklist
+
+            - [ ] Code follows project conventions
+            - [ ] Design tokens used correctly (if applicable)
+            - [ ] Tests cover new functionality
+            - [ ] No console.log or debug code
+            - [ ] Dependencies tracking respected
+
+            ---
+
+            🤖 **Generated by Claude Code + GitHub Actions (API Key)**
+            📱 **Review on mobile:** [GitHub App](https://github.com/mobile)
+          labels: |
+            enhancement
+            claude-generated
+          assignees: ${{ github.event.issue.user.login }}
+
+      # === OUTPUT PR INFO ===
+      - name: Output PR Info
+        if: steps.create-pr.outputs.pull-request-number
+        run: |
+          echo "✅ Pull Request created successfully"
+          echo "🔗 PR #${{ steps.create-pr.outputs.pull-request-number }}"
+          echo "🌐 URL: ${{ steps.create-pr.outputs.pull-request-url }}"
+
+      # === COMMENT ON ISSUE ===
+      - name: Comment on Issue
+        if: steps.create-pr.outputs.pull-request-number
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              body: `✅ **Implementation complete!**\n\n**Pull Request:** #${{ steps.create-pr.outputs.pull-request-number }}\n**Task range:** \`${{ steps.parse.outputs.range }}\`\n\n📱 Review on mobile: [GitHub App](https://github.com/mobile)\n\n🤖 Generated by Claude Code + GitHub Actions (API Key)`
+            })
+
+  # =========================================================================
+  # JOB 2: JULES SECURITY SCAN (PARALLEL)
+  # =========================================================================
+  jules-security:
+    name: Jules Security Guardian
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    # Run in parallel with claude-implementation
+    if: |
+      (github.event_name == 'issues' && contains(join(github.event.issue.labels.*.name), 'run-claude')) ||
+      (github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/run claude')) ||
+      github.event_name == 'workflow_dispatch'
+
+    steps:
+      # === CHECKOUT CODE ===
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # === SETUP NODE.JS ===
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # === INSTALL JULES CLI ===
+      - name: Install Jules CLI
+        run: |
+          echo "🔒 Installing Jules CLI..."
+          npm install -g @google/jules-cli
+
+          # Verify installation
+          jules --version || echo "⚠️  Jules version check failed"
+
+          echo "✅ Jules CLI installed"
+
+      # === VERIFY SECURITY CHECKLIST EXISTS ===
+      - name: Verify Security Checklist
+        run: |
+          echo "📋 Checking security checklist..."
+
+          if [ ! -f ".github/security-checklist.md" ]; then
+            echo "❌ ERROR: .github/security-checklist.md not found"
+            echo "Please create security checklist (see docs/JULES-SECURITY-GUARDIAN-SETUP.md)"
+            exit 1
+          fi
+
+          echo "✅ Security checklist found"
+
+      # === TRIGGER JULES SECURITY SCAN ===
+      - name: Trigger Jules Security Scan
+        id: jules-scan
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+        run: |
+          echo "🔒 Starting Jules Security Guardian..."
+          echo "📊 Scan scope: OWASP Top 10 + Dependencies + RGPD"
+
+          # Create unique branch name
+          BRANCH_NAME="security/auto-scan-$(date +%Y%m%d-%H%M%S)"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+          # Submit security scan job
+          jules submit \
+            --task="Security audit: OWASP Top 10 + npm dependencies + RGPD compliance" \
+            --checklist=.github/security-checklist.md \
+            --auto-fix \
+            --branch="$BRANCH_NAME" \
+            --output=security-report.json \
+            --async
+
+          echo "✅ Jules scan job submitted"
+          echo "⏳ Branch: $BRANCH_NAME"
+
+      # === WAIT FOR JULES COMPLETION ===
+      - name: Wait for Jules Completion
+        run: |
+          echo "⏳ Waiting for Jules scan completion (max ${{ env.JULES_TIMEOUT }})..."
+
+          START_TIME=$(date +%s)
+
+          jules wait --timeout=${{ env.JULES_TIMEOUT }}
+
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - START_TIME))
+
+          echo "✅ Jules scan completed in ${DURATION}s"
+
+      # === PARSE SECURITY REPORT ===
+      - name: Parse Security Report
+        id: report
+        run: |
+          echo "📊 Parsing security report..."
+
+          if [ ! -f security-report.json ]; then
+            echo "❌ Error: security-report.json not found"
+            echo "issues=0" >> $GITHUB_OUTPUT
+            echo "critical=0" >> $GITHUB_OUTPUT
+            echo "fixed=0" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          # Extract metrics using jq
+          ISSUES=$(jq -r '.issues_found // 0' security-report.json)
+          CRITICAL=$(jq -r '.critical_count // 0' security-report.json)
+          HIGH=$(jq -r '.high_count // 0' security-report.json)
+          FIXED=$(jq -r '.issues_fixed // 0' security-report.json)
+          MANUAL=$(jq -r '.manual_review_needed | length' security-report.json)
+
+          echo "issues=$ISSUES" >> $GITHUB_OUTPUT
+          echo "critical=$CRITICAL" >> $GITHUB_OUTPUT
+          echo "high=$HIGH" >> $GITHUB_OUTPUT
+          echo "fixed=$FIXED" >> $GITHUB_OUTPUT
+          echo "manual=$MANUAL" >> $GITHUB_OUTPUT
+
+          # Display summary
+          echo "📈 Security Scan Summary:"
+          echo "   Total issues found: $ISSUES"
+          echo "   Critical severity: $CRITICAL"
+          echo "   High severity: $HIGH"
+          echo "   Auto-fixed: $FIXED"
+          echo "   Manual review needed: $MANUAL"
+
+          # Pretty print full report
+          echo ""
+          echo "📄 Full Report:"
+          cat security-report.json | jq '.'
+
+      # === CREATE PULL REQUEST (SECURITY) ===
+      - name: Create Security Pull Request
+        if: steps.report.outputs.issues > 0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUES=${{ steps.report.outputs.issues }}
+          CRITICAL=${{ steps.report.outputs.critical }}
+          HIGH=${{ steps.report.outputs.high }}
+          FIXED=${{ steps.report.outputs.fixed }}
+          MANUAL=${{ steps.report.outputs.manual }}
+          BRANCH="${{ steps.jules-scan.outputs.branch_name }}"
+
+          echo "📝 Creating Security Pull Request..."
+
+          # Determine emoji and priority based on severity
+          if [ "$CRITICAL" -gt 0 ]; then
+            EMOJI="🚨"
+            PRIORITY="CRITICAL"
+          elif [ "$HIGH" -gt 0 ]; then
+            EMOJI="⚠️"
+            PRIORITY="HIGH"
+          else
+            EMOJI="🔒"
+            PRIORITY="MEDIUM"
+          fi
+
+          # Create PR body
+          cat > pr-body.md <<EOF
+          ## $EMOJI Security Scan Results ($PRIORITY Priority)
+
+          **Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          **Scanner:** Jules Security Guardian
+          **Branch:** \`$BRANCH\`
+
+          ### 📊 Summary
+
+          | Metric | Count |
+          |--------|-------|
+          | **Issues found** | $ISSUES |
+          | **Critical** | $CRITICAL |
+          | **High** | $HIGH |
+          | **Auto-fixed** | $FIXED |
+          | **Manual review needed** | $MANUAL |
+
+          ### 🔍 Issues Details
+
+          <details>
+          <summary>Click to expand full security report</summary>
+
+          \`\`\`json
+          $(cat security-report.json | jq '.')
+          \`\`\`
+
+          </details>
+
+          ### ✅ Auto-Fixed Issues
+
+          $(cat security-report.json | jq -r '.fixes_applied[]? | "- " + .')
+
+          ### ⚠️ Manual Review Required
+
+          $(cat security-report.json | jq -r '.manual_review_needed[]? | "- [ ] **\\(.issue)** (\\(.severity)): \\(.description)"')
+
+          ### 📋 OWASP Top 10 Compliance
+
+          $(cat security-report.json | jq -r '.compliance.owasp_top_10 | to_entries[] | "- \\(.key): \\(.value)"')
+
+          ### 🇪🇺 RGPD Compliance
+
+          $(cat security-report.json | jq -r '.compliance.rgpd | to_entries[] | "- \\(.key): \\(.value)"')
+
+          ### 🚀 Next Steps
+
+          1. Review manual items above
+          2. Approve auto-fixes if acceptable
+          3. Create follow-up issues for manual items
+          4. Merge this PR to apply fixes
+
+          ---
+
+          🤖 Generated by [Jules Security Guardian](https://jules.google)
+          🔗 Workflow: [\`claude-max-implementation-api-key.yml\`](${{ github.server_url }}/${{ github.repository }}/blob/main/.github/workflows/claude-max-implementation-api-key.yml)
+          EOF
+
+          # Create PR using GitHub CLI
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "$EMOJI Security: $ISSUES issues detected ($CRITICAL critical, $HIGH high)" \
+            --body-file pr-body.md \
+            --label "security" \
+            --label "automated" \
+            --label "jules"
+
+          echo "✅ Pull Request created successfully"
+
+          # Get PR URL
+          PR_URL=$(gh pr view "$BRANCH" --json url -q .url)
+          echo "🔗 PR URL: $PR_URL"
+          echo "pr_url=$PR_URL" >> $GITHUB_OUTPUT
+
+      # === CREATE GITHUB ISSUES (MANUAL ITEMS) ===
+      - name: Create GitHub Issues for Manual Items
+        if: steps.report.outputs.manual > 0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "📝 Creating GitHub issues for manual review items..."
+
+          # Extract manual items and create issues
+          cat security-report.json | jq -r '.manual_review_needed[]? | @json' | while read -r item; do
+
+            ISSUE_TITLE=$(echo "$item" | jq -r '.issue')
+            SEVERITY=$(echo "$item" | jq -r '.severity')
+            DESCRIPTION=$(echo "$item" | jq -r '.description')
+            RECOMMENDATION=$(echo "$item" | jq -r '.recommendation')
+            FILE=$(echo "$item" | jq -r '.file')
+
+            # Create issue body
+            cat > issue-body.md <<EOF
+          ## 🔒 Security Issue: $ISSUE_TITLE
+
+          **Severity:** $SEVERITY
+          **Detected by:** Jules Security Guardian
+          **File:** \`$FILE\`
+
+          ### Description
+
+          $DESCRIPTION
+
+          ### Recommendation
+
+          $RECOMMENDATION
+
+          ### Context
+
+          This issue was detected during automated security scan.
+          See full report: [Security PR](${{ steps.create-pr.outputs.pr_url }})
+
+          ---
+
+          🤖 Auto-created by Jules Security Guardian
+          EOF
+
+            # Determine label based on severity
+            LABEL="security"
+            if [ "$SEVERITY" = "Critical" ]; then
+              LABEL="$LABEL,priority-high"
+            elif [ "$SEVERITY" = "High" ]; then
+              LABEL="$LABEL,priority-medium"
+            fi
+
+            # Create issue
+            gh issue create \
+              --title "🔒 Security: $ISSUE_TITLE ($SEVERITY)" \
+              --body-file issue-body.md \
+              --label "$LABEL"
+
+            echo "✅ Issue created: $ISSUE_TITLE"
+          done
+
+      # === UPLOAD SECURITY REPORT ===
+      - name: Upload Security Report Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-report-${{ github.run_number }}
+          path: |
+            security-report.json
+            pr-body.md
+          retention-days: 90
+          if-no-files-found: warn
+
+      # === FAIL IF CRITICAL ISSUES ===
+      - name: Fail if Critical Issues
+        if: steps.report.outputs.critical > 0
+        run: |
+          CRITICAL=${{ steps.report.outputs.critical }}
+          echo "❌ FAILURE: $CRITICAL critical security issues detected"
+          echo "🔒 Review and fix critical issues before merging"
+          exit 1
+
+      # === SUCCESS SUMMARY ===
+      - name: Success Summary
+        if: success() && steps.report.outputs.issues == 0
+        run: |
+          echo "✅ SUCCESS: No security issues detected"
+          echo "🎉 Repository security posture is healthy"
+          echo "🔒 OWASP Top 10 compliant"
+          echo "🇪🇺 RGPD compliant"

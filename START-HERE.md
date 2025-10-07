@@ -1,30 +1,44 @@
 # 🚀 ARCHON ORCHESTRATOR - START HERE
 
-**Version:** 4.0 (Solopreneur Vision)
-**Date:** 2025-10-06
+**Version:** 5.0 (Workflow V3 - Claude Max + Jules Security)
+**Date:** 2025-10-07
 **Model:** Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
-**Mission:** Workflow solo productif pour vibe coding
+**Mission:** Workflow multi-client productif (8-10 clients/semaine)
 
 ---
 
-## ⚡ POUR LES SESSIONS CLAUDE CODE
+## 🎯 NOUVEAU: WORKFLOW COMPLET V3
 
-**Ce projet définit LE workflow solopreneur à suivre pour créer nouveaux projets rapidement.**
+### 📖 **SOURCE DE VÉRITÉ (LIRE EN PREMIER)**
+👉 **[docs/WORKFLOW-COMPLETE-V3.md](./docs/WORKFLOW-COMPLETE-V3.md)** 👈 **(85KB - RIEN NE MANQUE)**
 
-### 📖 **WORKFLOW SOLOPRENEUR (Source de Vérité)**
-👉 **[docs/WORKFLOW-SOLOPRENEUR-VISION.md](./docs/WORKFLOW-SOLOPRENEUR-VISION.md)** 👈
+**Contient TOUT:**
+- ✅ **5 Piliers complets:** Spec-Kit + Bootstrap + Design Tokens + Implementation + Jules Security
+- ✅ **2 Options execution:** Full Local (Mac Mini) + GitHub Actions (Claude Max session tokens)
+- ✅ **Workflow mobile:** Déclenchement Android + Review mobile + Timeline complète
+- ✅ **Context7 patterns:** Saving + Reuse + ROI 64% temps gagné
+- ✅ **Cost & ROI:** €118/mois → 32-60 clients/mois → €64K-€120K/mois revenue
+- ✅ **Setup complet:** Keychain credentials + GitHub Secrets + Workflows
+- ✅ **Troubleshooting:** 7 problèmes courants + solutions
 
-**Contient :**
-- ✅ **Vision cristalline** - Spec-Kit + Sub-Agents (3-4) + Context7
-- ✅ **Phase 1:** Spec-Kit (30 min) - /specify → /plan → /tasks
-- ✅ **Phase 2:** Bootstrap (1-2 min) - Génère 3-4 agents automatiquement
-- ✅ **Phase 3:** Implementation (3-4h) - Sub-agents chaining auto
-- 🚫 **Ce qu'on abandonne** - Fleet agents, Scout parallèle, Dedicated device
-- ✅ **Ce qu'on garde** - Meta-agent, 3-4 agents max, context simple
+**📱 Workflow mobile-first:** Planning Mac 30 min → Issue Android 2 min → Cloud execution 3-4h → Review mobile 15 min
 
-**Objectif:** Ship 1 MVP/semaine avec qualité (vs 1 MVP/mois manuel)
+**🔴 LIRE ABSOLUMENT AVANT DE COMMENCER**
 
-**🔴 LIRE EN PREMIER POUR COMPRENDRE LA VISION COMPLÈTE**
+---
+
+## 📚 DOCUMENTATION COMPLÉMENTAIRE
+
+**Workflows spécialisés:**
+- **[GITHUB-ACTIONS-OAUTH-SETUP.md](./docs/GITHUB-ACTIONS-OAUTH-SETUP.md)** - ✅ **Setup GitHub Actions + OAuth (mobile-first)**
+- **[WORKFLOW-CLAUDE-FIRST-JULES-SECURITY.md](./docs/WORKFLOW-CLAUDE-FIRST-JULES-SECURITY.md)** - Focus multi-client + timelines
+- **[WORKFLOW-SOLOPRENEUR-VISION.md](./docs/WORKFLOW-SOLOPRENEUR-VISION.md)** - Vision workflow solo (référence historique)
+
+**Setup & Configuration:**
+- **[JULES-SECURITY-GUARDIAN-SETUP.md](./docs/JULES-SECURITY-GUARDIAN-SETUP.md)** - Jules CLI + API key setup
+- **[MULTI-CLIENT-SETUP-GUIDE.md](./docs/MULTI-CLIENT-SETUP-GUIDE.md)** - Multi-client (8-10/semaine)
+
+**Objectif:** Ship 2-3 clients/jour avec qualité production
 
 ---
 
@@ -45,7 +59,7 @@
 
 ## 🎯 QUICK START NOUVEAU PROJET
 
-### Workflow Complet (3-4h total)
+### Option 1: Workflow Solo Standard (3-4h)
 
 ```bash
 # PHASE 1: Spec-Kit (30 min)
@@ -81,24 +95,85 @@ cd myproject
 
 ---
 
+### Option 2: Workflow Mobile-First (Claude Max OAuth + GitHub Actions) 🆕
+
+**Pour multi-clients avec déclenchement/review mobile**
+
+```bash
+# PHASE 1: Setup One-Time (15 min)
+# Générer OAuth token dans Claude Desktop
+/install-github-app  # → Copier token
+
+# Setup templates
+cd ~/Documents/DEV/clients
+mkdir _templates/
+cp ~/Documents/DEV/archon-orchestrator/.github/workflows/claude-max-implementation.yml _templates/
+
+# PHASE 2: Nouveau Client (30 min planning + 3-4h cloud)
+cd ~/Documents/DEV/clients
+./new-client.sh my-project  # Automated setup
+
+# Planning (Mac - 30 min)
+cd my-project
+/speckit.constitution
+/speckit.specify
+/speckit.plan
+/speckit.tasks
+git add . && git commit -m "docs: planning" && git push
+
+# PHASE 3: Déclenchement (Mobile Android - 2 min)
+# GitHub app → Issues → New Issue
+# Title: Implement T001-T010
+# Body: Task range: T001-T010
+# Labels: run-claude
+# Submit → GitHub Actions démarre
+
+# PHASE 4: Review (Mobile Android - 15 min après 3-4h)
+# Notification PR → Review → Approve → Merge
+```
+
+**Capacité:** 3-4 clients simultanés, 8-10 clients/semaine | **Coût:** €100/mois (Claude Max)
+
+**Guide complet:** [docs/GITHUB-ACTIONS-OAUTH-SETUP.md](./docs/GITHUB-ACTIONS-OAUTH-SETUP.md)
+
+---
+
 ## 📚 DOCUMENTATION COMPLÈTE
 
-### Guides Essentiels
+### 🔴 Source de Vérité V3
 
-1. **[WORKFLOW-SOLOPRENEUR-VISION.md](./docs/WORKFLOW-SOLOPRENEUR-VISION.md)** - SOURCE DE VÉRITÉ workflow solo
-2. **[DESIGN-SYSTEM-SOLO-SIMPLIFIED.md](./docs/DESIGN-SYSTEM-SOLO-SIMPLIFIED.md)** - Design tokens integration
-3. **[CLAUDE-CODE-CAPACITES-REFERENCE.md](./CLAUDE-CODE-CAPACITES-REFERENCE.md)** - Capacités prouvées Claude Code
-4. **[README.md](./README.md)** - Overview projet Archon Orchestrator
+1. **[WORKFLOW-COMPLETE-V3.md](./docs/WORKFLOW-COMPLETE-V3.md)** - ✅ **SOURCE DE VÉRITÉ** (85KB - RIEN NE MANQUE)
+2. **[INDEX-FILES-V3.md](./INDEX-FILES-V3.md)** - Index fichiers valides projet (navigation rapide)
+3. **[CLAUDE.md](./CLAUDE.md)** - Instructions session Claude Code
+4. **[README.md](./README.md)** - Overview projet
+5. **[CLAUDE-CODE-CAPACITES-REFERENCE.md](./CLAUDE-CODE-CAPACITES-REFERENCE.md)** - Capacités Sonnet 4.5
 
-### Documentation Technique
+### Workflows Multi-Client
 
-- **[docs/AGENTIC-PATTERNS.md](./docs/AGENTIC-PATTERNS.md)** - GATHER → ACTION → VERIFY pattern
-- **[docs/SUB-AGENTS-MASTERY.md](./docs/SUB-AGENTS-MASTERY.md)** - Sub-agents orchestration complète
-- **[docs/ZERO-TRUST.md](./docs/ZERO-TRUST.md)** - Quality gates P0-P4 (Build, Lint, Tests)
-- **[docs/TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md)** - Debug + solutions
+- **[docs/WORKFLOW-CLAUDE-FIRST-JULES-SECURITY.md](./docs/WORKFLOW-CLAUDE-FIRST-JULES-SECURITY.md)** - Focus multi-client + timelines
+- **[docs/JULES-SECURITY-GUARDIAN-SETUP.md](./docs/JULES-SECURITY-GUARDIAN-SETUP.md)** - Setup Jules CLI + API key
+- **[docs/MULTI-CLIENT-SETUP-GUIDE.md](./docs/MULTI-CLIENT-SETUP-GUIDE.md)** - Setup 8-10 clients/semaine
+- **[.github/workflows/claude-max-implementation.yml](./.github/workflows/claude-max-implementation.yml)** - ✅ **WORKFLOW PRINCIPAL**
+- **[.github/security-checklist.md](./.github/security-checklist.md)** - Checklist OWASP + RGPD + CVE
+
+### Patterns & Best Practices
+
+- **[docs/SUB-AGENTS-MASTERY.md](./docs/SUB-AGENTS-MASTERY.md)** - Bootstrap + sub-agents orchestration
+- **[docs/DESIGN-SYSTEM-SOLO-SIMPLIFIED.md](./docs/DESIGN-SYSTEM-SOLO-SIMPLIFIED.md)** - Design tokens (T002)
+- **[docs/AGENTIC-PATTERNS.md](./docs/AGENTIC-PATTERNS.md)** - GATHER → ACTION → VERIFY
+- **[docs/ZERO-TRUST.md](./docs/ZERO-TRUST.md)** - Quality gates P0-P4
 - **[docs/GOLDEN-PATTERNS.md](./docs/GOLDEN-PATTERNS.md)** - Patterns battle-tested
+- **[docs/TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md)** - Debug + solutions
+
+### Références Techniques
+
+- **[docs/ARCHITECTURE-COMPLIANCE-V2.md](./docs/ARCHITECTURE-COMPLIANCE-V2.md)** - Architecture compliance
 - **[docs/DOCKER-GUIDE.md](./docs/DOCKER-GUIDE.md)** - Docker deployment (si besoin)
-- **[docs/ARCHITECTURE-COMPLIANCE-V2.md](./docs/ARCHITECTURE-COMPLIANCE-V2.md)** - Architecture validation
+- **[docs/WORKFLOW-SOLOPRENEUR-VISION.md](./docs/WORKFLOW-SOLOPRENEUR-VISION.md)** - Référence historique workflow solo
+
+### Fichiers Archivés
+
+- **[archive-obsolete-2025-10-07-v3/ARCHIVAGE-RAISONS-V3.md](./archive-obsolete-2025-10-07-v3/ARCHIVAGE-RAISONS-V3.md)** - 121 fichiers archivés (raisons + liste)
 
 ---
 
@@ -196,7 +271,10 @@ Avant de commencer nouveau projet:
 
 | Je veux... | Lire... |
 |------------|---------|
-| Comprendre workflow solo | [WORKFLOW-SOLOPRENEUR-VISION.md](./docs/WORKFLOW-SOLOPRENEUR-VISION.md) |
+| **Workflow solo (1 projet)** | [WORKFLOW-SOLOPRENEUR-VISION.md](./docs/WORKFLOW-SOLOPRENEUR-VISION.md) |
+| **Workflow multi-client (8-10/semaine)** 🆕 | [WORKFLOW-CLAUDE-FIRST-JULES-SECURITY.md](./docs/WORKFLOW-CLAUDE-FIRST-JULES-SECURITY.md) |
+| **Setup Jules Security Guardian** 🆕 | [JULES-SECURITY-GUARDIAN-SETUP.md](./docs/JULES-SECURITY-GUARDIAN-SETUP.md) |
+| **Setup multi-client agency** 🆕 | [MULTI-CLIENT-SETUP-GUIDE.md](./docs/MULTI-CLIENT-SETUP-GUIDE.md) |
 | Intégrer design tokens | [DESIGN-SYSTEM-SOLO-SIMPLIFIED.md](./docs/DESIGN-SYSTEM-SOLO-SIMPLIFIED.md) |
 | Capacités Claude Code | [CLAUDE-CODE-CAPACITES-REFERENCE.md](./CLAUDE-CODE-CAPACITES-REFERENCE.md) |
 | Patterns agentic | [AGENTIC-PATTERNS.md](./docs/AGENTIC-PATTERNS.md) |

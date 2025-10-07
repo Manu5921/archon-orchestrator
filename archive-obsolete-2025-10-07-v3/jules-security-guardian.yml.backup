@@ -1,0 +1,358 @@
+name: Jules Security Guardian
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2am UTC
+  workflow_dispatch:     # Manual trigger
+
+env:
+  JULES_TIMEOUT: 30m
+  NODE_VERSION: '20'
+
+jobs:
+  security-scan:
+    name: Security Scan (Jules)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better analysis
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: |
+          npm ci --production=false
+          npm install -g @google/jules-cli
+
+      - name: Verify Jules Installation
+        run: |
+          echo "🔧 Verifying Jules CLI installation..."
+          jules --version
+          echo "✅ Jules CLI installed successfully"
+
+      - name: Trigger Jules Security Scan
+        id: jules-scan
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+        run: |
+          echo "🔒 Starting Jules Security Guardian..."
+          echo "📊 Scan scope: OWASP Top 10 + Dependencies + RGPD"
+
+          # Create unique branch name
+          BRANCH_NAME="security/auto-scan-$(date +%Y%m%d-%H%M%S)"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+          # Submit security scan job
+          jules submit \
+            --task="Security audit: OWASP Top 10 + npm dependencies + RGPD compliance" \
+            --checklist=.github/security-checklist.md \
+            --auto-fix \
+            --branch="$BRANCH_NAME" \
+            --output=security-report.json \
+            --async
+
+          echo "✅ Jules scan job submitted"
+          echo "⏳ Branch: $BRANCH_NAME"
+
+      - name: Wait for Jules Completion
+        run: |
+          echo "⏳ Waiting for Jules scan completion (max ${{ env.JULES_TIMEOUT }})..."
+
+          START_TIME=$(date +%s)
+          jules wait --timeout=${{ env.JULES_TIMEOUT }}
+          END_TIME=$(date +%s)
+
+          DURATION=$((END_TIME - START_TIME))
+          echo "✅ Jules scan completed in ${DURATION}s"
+
+      - name: Parse Security Report
+        id: report
+        run: |
+          echo "📊 Parsing security report..."
+
+          if [ ! -f security-report.json ]; then
+            echo "❌ Error: security-report.json not found"
+            echo "issues=0" >> $GITHUB_OUTPUT
+            echo "critical=0" >> $GITHUB_OUTPUT
+            echo "fixed=0" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          # Extract metrics using jq
+          ISSUES=$(jq -r '.issues_found // 0' security-report.json)
+          CRITICAL=$(jq -r '.critical_count // 0' security-report.json)
+          HIGH=$(jq -r '.high_count // 0' security-report.json)
+          FIXED=$(jq -r '.issues_fixed // 0' security-report.json)
+          MANUAL=$(jq -r '.manual_review_needed | length' security-report.json)
+
+          echo "issues=$ISSUES" >> $GITHUB_OUTPUT
+          echo "critical=$CRITICAL" >> $GITHUB_OUTPUT
+          echo "high=$HIGH" >> $GITHUB_OUTPUT
+          echo "fixed=$FIXED" >> $GITHUB_OUTPUT
+          echo "manual=$MANUAL" >> $GITHUB_OUTPUT
+
+          # Display summary
+          echo "📈 Security Scan Summary:"
+          echo "   Total issues found: $ISSUES"
+          echo "   Critical severity: $CRITICAL"
+          echo "   High severity: $HIGH"
+          echo "   Auto-fixed: $FIXED"
+          echo "   Manual review needed: $MANUAL"
+
+          # Pretty print report
+          echo ""
+          echo "📄 Full Report:"
+          cat security-report.json | jq '.'
+
+      - name: Create Pull Request
+        if: steps.report.outputs.issues > 0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUES=${{ steps.report.outputs.issues }}
+          CRITICAL=${{ steps.report.outputs.critical }}
+          HIGH=${{ steps.report.outputs.high }}
+          FIXED=${{ steps.report.outputs.fixed }}
+          MANUAL=${{ steps.report.outputs.manual }}
+          BRANCH="${{ steps.jules-scan.outputs.branch_name }}"
+
+          echo "📝 Creating Pull Request..."
+
+          # Determine emoji based on severity
+          if [ "$CRITICAL" -gt 0 ]; then
+            EMOJI="🚨"
+            PRIORITY="CRITICAL"
+          elif [ "$HIGH" -gt 0 ]; then
+            EMOJI="⚠️"
+            PRIORITY="HIGH"
+          else
+            EMOJI="🔒"
+            PRIORITY="MEDIUM"
+          fi
+
+          # Create PR body
+          cat > pr-body.md <<EOF
+          ## $EMOJI Security Scan Results ($PRIORITY Priority)
+
+          **Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          **Scanner:** Jules Security Guardian
+          **Branch:** \`$BRANCH\`
+
+          ### 📊 Summary
+
+          | Metric | Count |
+          |--------|-------|
+          | **Issues found** | $ISSUES |
+          | **Critical** | $CRITICAL |
+          | **High** | $HIGH |
+          | **Auto-fixed** | $FIXED |
+          | **Manual review needed** | $MANUAL |
+
+          ### 🔍 Issues Details
+
+          <details>
+          <summary>Click to expand full security report</summary>
+
+          \`\`\`json
+          $(cat security-report.json | jq '.')
+          \`\`\`
+
+          </details>
+
+          ### ✅ Auto-Fixed Issues
+
+          $(cat security-report.json | jq -r '.fixes_applied[]? | "- " + .')
+
+          ### ⚠️ Manual Review Required
+
+          $(cat security-report.json | jq -r '.manual_review_needed[]? | "- [ ] **\(.issue)** (\(.severity)): \(.description)"')
+
+          ### 📋 OWASP Top 10 Compliance
+
+          $(cat security-report.json | jq -r '.compliance.owasp_top_10 | to_entries[] | "- \(.key): \(.value)"')
+
+          ### 🇪🇺 RGPD Compliance
+
+          $(cat security-report.json | jq -r '.compliance.rgpd | to_entries[] | "- \(.key): \(.value)"')
+
+          ### 🚀 Next Steps
+
+          1. Review manual items above
+          2. Approve auto-fixes if acceptable
+          3. Create follow-up issues for manual items
+          4. Merge this PR to apply fixes
+
+          ---
+
+          🤖 Generated by [Jules Security Guardian](https://jules.google)
+          🔗 Workflow: [\`jules-security-guardian.yml\`](${{ github.server_url }}/${{ github.repository }}/blob/main/.github/workflows/jules-security-guardian.yml)
+          EOF
+
+          # Create PR using GitHub CLI
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "$EMOJI Security: $ISSUES issues detected ($CRITICAL critical, $HIGH high)" \
+            --body-file pr-body.md \
+            --label "security" \
+            --label "automated" \
+            --label "jules"
+
+          echo "✅ Pull Request created successfully"
+
+          # Get PR URL
+          PR_URL=$(gh pr view "$BRANCH" --json url -q .url)
+          echo "🔗 PR URL: $PR_URL"
+          echo "pr_url=$PR_URL" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Issues for Manual Items
+        if: steps.report.outputs.manual > 0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "📝 Creating GitHub issues for manual review items..."
+
+          # Extract manual items and create issues
+          cat security-report.json | jq -r '.manual_review_needed[]? |
+            @json' | while read -r item; do
+
+            ISSUE_TITLE=$(echo "$item" | jq -r '.issue')
+            SEVERITY=$(echo "$item" | jq -r '.severity')
+            DESCRIPTION=$(echo "$item" | jq -r '.description')
+            RECOMMENDATION=$(echo "$item" | jq -r '.recommendation')
+            FILE=$(echo "$item" | jq -r '.file')
+
+            # Create issue body
+            cat > issue-body.md <<EOF
+          ## 🔒 Security Issue: $ISSUE_TITLE
+
+          **Severity:** $SEVERITY
+          **Detected by:** Jules Security Guardian
+          **File:** \`$FILE\`
+
+          ### Description
+
+          $DESCRIPTION
+
+          ### Recommendation
+
+          $RECOMMENDATION
+
+          ### Context
+
+          This issue was detected during automated security scan.
+          See full report: [Security PR](${{ steps.create-pr.outputs.pr_url }})
+
+          ---
+
+          🤖 Auto-created by Jules Security Guardian
+          EOF
+
+            # Determine label based on severity
+            LABEL="security"
+            if [ "$SEVERITY" = "Critical" ]; then
+              LABEL="$LABEL,priority-high"
+            elif [ "$SEVERITY" = "High" ]; then
+              LABEL="$LABEL,priority-medium"
+            fi
+
+            # Create issue
+            gh issue create \
+              --title "🔒 Security: $ISSUE_TITLE ($SEVERITY)" \
+              --body-file issue-body.md \
+              --label "$LABEL"
+
+            echo "✅ Issue created: $ISSUE_TITLE"
+          done
+
+      - name: Notify Slack (Critical Issues)
+        if: steps.report.outputs.critical > 0 && secrets.SLACK_WEBHOOK != ''
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          CRITICAL=${{ steps.report.outputs.critical }}
+          HIGH=${{ steps.report.outputs.high }}
+          REPO="${{ github.repository }}"
+          BRANCH="${{ github.ref_name }}"
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          echo "🚨 Sending Slack notification for critical issues..."
+
+          curl -X POST $SLACK_WEBHOOK \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"text\": \"🚨 CRITICAL SECURITY ALERT\",
+              \"attachments\": [
+                {
+                  \"color\": \"danger\",
+                  \"title\": \"$CRITICAL critical security issues detected\",
+                  \"title_link\": \"$RUN_URL\",
+                  \"fields\": [
+                    {
+                      \"title\": \"Repository\",
+                      \"value\": \"$REPO\",
+                      \"short\": true
+                    },
+                    {
+                      \"title\": \"Branch\",
+                      \"value\": \"$BRANCH\",
+                      \"short\": true
+                    },
+                    {
+                      \"title\": \"Critical Issues\",
+                      \"value\": \"$CRITICAL\",
+                      \"short\": true
+                    },
+                    {
+                      \"title\": \"High Issues\",
+                      \"value\": \"$HIGH\",
+                      \"short\": true
+                    }
+                  ],
+                  \"footer\": \"Jules Security Guardian\",
+                  \"footer_icon\": \"https://jules.google/favicon.ico\",
+                  \"ts\": $(date +%s)
+                }
+              ]
+            }"
+
+          echo "✅ Slack notification sent"
+
+      - name: Upload Security Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-report-${{ github.run_number }}
+          path: |
+            security-report.json
+            pr-body.md
+          retention-days: 90
+          if-no-files-found: warn
+
+      - name: Fail if Critical Issues
+        if: steps.report.outputs.critical > 0
+        run: |
+          CRITICAL=${{ steps.report.outputs.critical }}
+          echo "❌ FAILURE: $CRITICAL critical security issues detected"
+          echo "🔒 Review and fix critical issues before merging"
+          exit 1
+
+      - name: Success Summary
+        if: success() && steps.report.outputs.issues == 0
+        run: |
+          echo "✅ SUCCESS: No security issues detected"
+          echo "🎉 Repository security posture is healthy"
+          echo "🔒 OWASP Top 10 compliant"
+          echo "🇪🇺 RGPD compliant"

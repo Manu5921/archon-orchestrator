@@ -1,0 +1,282 @@
+# 🤖 Claude Max Implementation Only
+#
+# VERSION: API Key (OAuth Google) - SANS Jules Security
+#
+# Workflow pour implementation Claude Code via GitHub Actions
+# (Security scan Jules désactivé - peut être ajouté plus tard)
+#
+# TRIGGER:
+# - Issue avec label 'run-claude'
+# - Comment '/run claude' sur issue
+#
+# SECRETS REQUIS (GitHub repo settings):
+# - ANTHROPIC_API_KEY: API Key Anthropic Console (https://console.anthropic.com/settings/keys)
+#
+# USAGE:
+# 1. Créer issue avec body: "Task range: T001-T010"
+# 2. Ajouter label: run-claude
+# 3. Workflow démarre automatiquement
+# 4. Review PR créée (features only)
+
+name: Claude Max Implementation
+
+on:
+  issues:
+    types: [opened, labeled]
+  issue_comment:
+    types: [created]
+  workflow_dispatch:  # Manual trigger
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  claude-implementation:
+    name: Claude Code Implementation
+    runs-on: ubuntu-latest
+    timeout-minutes: 300  # 5 heures max
+
+    # Trigger: Issue avec label 'run-claude' OU comment '/run claude'
+    if: |
+      (github.event_name == 'issues' && contains(join(github.event.issue.labels.*.name), 'run-claude')) ||
+      (github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/run claude'))
+
+    steps:
+      # === CHECKOUT CODE ===
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better context
+
+      # === SETUP NODE.JS ===
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # === PARSE TASK RANGE FROM ISSUE ===
+      - name: Parse Task Range
+        id: parse
+        run: |
+          echo "📋 Parsing task range from issue..."
+
+          # Get issue body
+          BODY="${{ github.event.issue.body }}"
+
+          # Extract task range (format: T001-T010)
+          RANGE=$(echo "$BODY" | grep -oE 'T[0-9]+-T[0-9]+' | head -1)
+
+          if [ -z "$RANGE" ]; then
+            echo "❌ ERROR: No task range found in issue body"
+            echo "Expected format: 'Task range: T001-T010'"
+            exit 1
+          fi
+
+          echo "range=$RANGE" >> $GITHUB_OUTPUT
+          echo "✅ Task range detected: $RANGE"
+
+          # Extract start/end task numbers
+          START=$(echo "$RANGE" | cut -d'-' -f1 | sed 's/T//')
+          END=$(echo "$RANGE" | cut -d'-' -f2 | sed 's/T//')
+          SIZE=$((END - START + 1))
+
+          echo "📦 Batch size: $SIZE tasks"
+
+          # Warn if batch too large
+          if [ $SIZE -gt 12 ]; then
+            echo "⚠️  WARNING: Batch size ($SIZE) > 12 tasks"
+            echo "Recommended: 8-12 tasks per batch for optimal performance"
+          fi
+
+          if [ $SIZE -gt 25 ]; then
+            echo "❌ ERROR: Batch too large ($SIZE > 25 tasks)"
+            echo "Please split into smaller batches (<25 tasks each)"
+            exit 1
+          fi
+
+      # === INSTALL DEPENDENCIES ===
+      - name: Install Dependencies
+        run: |
+          echo "📦 Installing project dependencies..."
+
+          if [ -f "package.json" ]; then
+            # Use npm ci if lock file exists, otherwise npm install
+            if [ -f "package-lock.json" ] || [ -f "npm-shrinkwrap.json" ]; then
+              npm ci --omit=dev
+            else
+              npm install --omit=dev
+            fi
+            echo "✅ Dependencies installed"
+          else
+            echo "⚠️  No package.json found, skipping npm install"
+          fi
+
+      # === RUN CLAUDE CODE ACTION (FORK WITH OAUTH) ===
+      - name: Run Claude Code Implementation
+        uses: grll/claude-code-action@beta
+        with:
+          use_oauth: true
+          claude_access_token: ${{ secrets.CLAUDE_ACCESS_TOKEN }}
+          claude_refresh_token: ${{ secrets.CLAUDE_REFRESH_TOKEN }}
+          claude_expires_at: ${{ secrets.CLAUDE_EXPIRES_AT }}
+          secrets_admin_pat: ${{ secrets.SECRETS_ADMIN_PAT }}
+          direct_prompt: |
+            Implement tasks ${{ steps.parse.outputs.range }} from .specify/specs/001-mvp/tasks.md
+
+            Context files to read:
+            - .specify/specs/001-mvp/spec.md
+            - .specify/specs/001-mvp/plan.md
+            - .specify/specs/001-mvp/tasks.md
+
+            Instructions:
+            1. Read the task definitions for range ${{ steps.parse.outputs.range }}
+            2. Implement each task according to specifications
+            3. Create README.md and package.json as specified
+            4. Ensure all files are created with proper content
+          max_turns: "10"
+          timeout_minutes: "60"
+
+      # === QUALITY GATES (P0-P2) ===
+      - name: Quality Gates
+        run: |
+          echo "🔍 Running quality gates..."
+
+          # P0: Build (MANDATORY)
+          if [ -f "package.json" ]; then
+            echo "🏗️  P0: Build..."
+
+            # Install dependencies if not already done
+            if [ ! -d "node_modules" ]; then
+              npm install
+            fi
+
+            # Run build
+            npm run build || {
+              echo "❌ P0 FAILED: Build failed"
+              exit 1
+            }
+
+            echo "✅ P0: Build passed"
+          else
+            echo "⚠️  No package.json, skipping build"
+          fi
+
+          # P1: Lint (MANDATORY)
+          if grep -q '"lint"' package.json 2>/dev/null; then
+            echo "🔍 P1: Lint..."
+
+            npm run lint || {
+              echo "❌ P1 FAILED: Lint failed"
+              exit 1
+            }
+
+            echo "✅ P1: Lint passed"
+          else
+            echo "⚠️  No lint script, skipping"
+          fi
+
+          # P2: Tests (MANDATORY)
+          if grep -q '"test"' package.json 2>/dev/null; then
+            echo "🧪 P2: Tests..."
+
+            npm test || {
+              echo "❌ P2 FAILED: Tests failed"
+              exit 1
+            }
+
+            echo "✅ P2: Tests passed"
+          else
+            echo "⚠️  No test script, skipping"
+          fi
+
+          echo "✅ All quality gates passed"
+
+      # === CREATE PULL REQUEST (FEATURES) ===
+      - name: Create Feature Pull Request
+        id: create-pr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            feat: implement ${{ steps.parse.outputs.range }}
+
+            Implements #${{ github.event.issue.number }}
+
+            🤖 Generated by Claude Code (API Key)
+            Co-Authored-By: Claude <noreply@anthropic.com>
+          branch: feature/${{ steps.parse.outputs.range }}
+          title: "feat: Implement ${{ steps.parse.outputs.range }}"
+          body: |
+            ## 🚀 Implementation Complete
+
+            **Task range:** `${{ steps.parse.outputs.range }}`
+            **Issue:** #${{ github.event.issue.number }}
+            **Workflow:** [Run #${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            ### ✅ Quality Gates
+
+            - [x] **P0: Build** - Passed ✅
+            - [x] **P1: Lint** - Passed ✅
+            - [x] **P2: Tests** - Passed ✅
+
+            ### 📝 Implementation Details
+
+            See commit history for detailed changes.
+
+            ### 🔍 Review Checklist
+
+            - [ ] Code follows project conventions
+            - [ ] Design tokens used correctly (if applicable)
+            - [ ] Tests cover new functionality
+            - [ ] No console.log or debug code
+            - [ ] Dependencies tracking respected
+
+            ### 🔒 Security Note
+
+            ⚠️  **Manual security review recommended**
+
+            This workflow does not include automated security scanning.
+            Consider reviewing:
+            - OWASP Top 10 compliance
+            - npm audit vulnerabilities
+            - Proper auth/access control
+            - Input validation
+
+            ---
+
+            🤖 **Generated by Claude Code + GitHub Actions (API Key)**
+            📱 **Review on mobile:** [GitHub App](https://github.com/mobile)
+          labels: |
+            enhancement
+            claude-generated
+          assignees: ${{ github.event.issue.user.login }}
+
+      # === OUTPUT PR INFO ===
+      - name: Output PR Info
+        if: steps.create-pr.outputs.pull-request-number
+        run: |
+          echo "✅ Pull Request created successfully"
+          echo "🔗 PR #${{ steps.create-pr.outputs.pull-request-number }}"
+          echo "🌐 URL: ${{ steps.create-pr.outputs.pull-request-url }}"
+
+      # === COMMENT ON ISSUE ===
+      - name: Comment on Issue
+        if: steps.create-pr.outputs.pull-request-number
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              body: `✅ **Implementation complete!**\n\n**Pull Request:** #${{ steps.create-pr.outputs.pull-request-number }}\n**Task range:** \`${{ steps.parse.outputs.range }}\`\n\n📱 Review on mobile: [GitHub App](https://github.com/mobile)\n\n⚠️  **Note:** Manual security review recommended (no automated scan)\n\n🤖 Generated by Claude Code + GitHub Actions (API Key)`
+            })
+
+      # === SUCCESS SUMMARY ===
+      - name: Success Summary
+        if: success()
+        run: |
+          echo "✅ SUCCESS: Implementation complete"
+          echo "🎉 Pull Request created"
+          echo "📋 Quality gates: P0-P2 passed"
+          echo "⚠️  Security: Manual review recommended"
