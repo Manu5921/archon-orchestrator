@@ -673,9 +673,10 @@ git push
 
 ### Documentation Projet
 
-- **START-HERE.md** - Overview workflow complet
-- **GITHUB-ACTIONS-OAUTH-SETUP.md** - Setup workflow mobile-first
-- **WORKFLOW-COMPLETE-V3.md** - Source de vérité (85KB - RIEN NE MANQUE)
+- **START-HERE.md** - Point d'entrée unique
+- **WORKFLOW-FINAL-V4-MULTI-DEVICE.md** - Source de vérité V4 (Mac 24/7 + mobile monitoring)
+- **INDEX-FILES-V4.md** - Navigation rapide documentation
+- **GITHUB-ACTIONS-OAUTH-SETUP.md** - Setup GitHub Actions détaillé
 - **RETOUR-EXPERIENCE-REVIEWRESCUE-2025-10-08.md** - Apprentissages session test
 
 ### Workflows Prêts à l'Emploi

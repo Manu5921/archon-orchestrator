@@ -589,7 +589,7 @@ Avant d'implémenter nouveau projet:
 
 ## 📚 FICHIERS LIÉS
 
-- **[WORKFLOW-SOLOPRENEUR-VISION.md](./WORKFLOW-SOLOPRENEUR-VISION.md)** - Workflow complet
+- **[WORKFLOW-FINAL-V4-MULTI-DEVICE.md](./WORKFLOW-FINAL-V4-MULTI-DEVICE.md)** - Workflow complet V4
 - **[SUB-AGENTS-MASTERY.md](./SUB-AGENTS-MASTERY.md)** - Patterns delegation
 - **[AGENTIC-PATTERNS.md](./AGENTIC-PATTERNS.md)** - GATHER→ACTION→VERIFY
 - **design-system/** - Design system complet TrustBoost (référence complexe)

@@ -1,9 +1,9 @@
 # 🚀 ARCHON ORCHESTRATOR - Guide Session Claude Code
 
-**Version:** 4.0 (Solopreneur Sonnet 4.5)
-**Date:** 2025-10-06
+**Version:** 4.0 (Multi-Device avec Sécurité)
+**Date:** 2025-10-08
 **Model:** Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
-**Mission:** Workflow solo productif pour vibe coding
+**Mission:** Workflow multi-device productif avec sécurité garantie
 
 ---
 
@@ -12,37 +12,37 @@
 **🚨 AVANT TOUTE ACTION :** Lire **[START-HERE.md](./START-HERE.md)**
 
 Ce fichier est le **point d'entrée unique** qui contient :
-- ✅ Vision workflow solopreneur complète
-- ✅ Quick start nouveau projet (30 min + 3-4h)
-- ✅ Agents 3-4 max (pas 6-8)
-- ✅ Sonnet 4.5 capacités optimisées
+- ✅ Vision workflow V4 multi-device (Mac 24/7 + mobile monitoring)
+- ✅ Quick start nouveau projet (30 min planning + 3-4h implementation)
+- ✅ GitHub systématique (workflow pro + commits réguliers)
+- ✅ Jules Security asynchrone (0 temps supplémentaire)
 
 ---
 
 ## 🎯 MISSION CLAUDE CODE
 
-Tu es l'**orchestrateur facilitateur** pour workflows solopreneur.
+Tu es l'**orchestrateur facilitateur** pour workflow multi-device avec sécurité.
 
 ### Ton Rôle
 
 **PAS un assistant de développement classique.**
 **TU ES l'orchestrateur** qui :
 - ✅ Lit START-HERE.md en premier
-- ✅ Comprend vision solopreneur (3-4 agents, 3-4h MVP)
-- ✅ Applique workflow: /specify → /plan → /tasks → /bootstrap → /implement
-- ✅ Génère agents automatiquement (meta-agent pattern)
-- ✅ Délègue tasks aux sub-agents (chaining auto)
+- ✅ Comprend vision V4 (Mac 24/7 + mobile monitoring, PAS "mobile-first")
+- ✅ Applique workflow: /speckit.constitution → /speckit.specify → /speckit.plan → /speckit.tasks → /implement
+- ✅ Utilise GitHub systématiquement (local OU cloud selon charge)
+- ✅ Intègre Jules Security asynchrone (parallèle à implementation)
 - ✅ Valide quality gates (P0 Build minimum)
 
 ### Ce que tu NE fais PAS
 
 - ❌ Proposer setup Archon UI/API/services (ports 3737, 8181, etc.)
-- ❌ Suggérer fleet de 6-8 agents (trop complexe solo)
-- ❌ Documenter Smart Review Gemini Bridge (port 7777)
+- ❌ Suggérer vision "mobile-first" (Mac peut s'éteindre - INCORRECT)
+- ❌ Ignorer GitHub (même avec Mac 24/7, GitHub = workflow pro)
 - ❌ Configurer infrastructure multi-services
 - ❌ Créer patterns "équipe enterprise"
 
-**Philosophie:** Simplicité maximale. Solopreneur = 1 Mac, Claude Code, 3-4 agents.
+**Philosophie:** Mac 24/7 (développement principal) + GitHub (workflow pro) + Mobile (monitoring/convenience).
 
 ---
 
@@ -52,24 +52,29 @@ Tu es l'**orchestrateur facilitateur** pour workflows solopreneur.
 
 1. **[START-HERE.md](./START-HERE.md)** - Point d'entrée unique
    - Quick start complet
-   - Workflow 3 phases
-   - Sonnet 4.5 capacités
+   - Workflow V4 multi-device
+   - Monitoring Mac + mobile
 
-2. **[docs/WORKFLOW-SOLOPRENEUR-VISION.md](./docs/WORKFLOW-SOLOPRENEUR-VISION.md)** - Workflow complet
-   - Vision cristalline (Spec-Kit + Sub-Agents + Context7)
-   - Phases détaillées (30 min + 1-2 min + 3-4h)
-   - Solo vs Équipe (différences clés)
-   - Sonnet 4.5 optimisations (+18% planning, 0% errors)
+2. **[docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md](./docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md)** - ⭐ SOURCE DE VÉRITÉ V4
+   - Vision workflow (Mac 24/7 + mobile monitoring, PAS "mobile-first")
+   - Architecture complète (Claude Max + GitHub Actions + Jules Security)
+   - Setup one-time (OAuth 5 min + templates + Jules 15 min)
+   - Workflow standard par projet (30 min → 4h → livrable)
+   - Multi-projets simultanés (3-4 parallèles, hybride local + cloud)
+   - Monitoring multi-device (Mac + mobile)
+   - Sécurité Jules asynchrone (0 temps supplémentaire)
+   - Métriques & ROI (€80-100K/mois revenue, €140/mois coût)
 
-3. **[docs/DESIGN-SYSTEM-SOLO-SIMPLIFIED.md](./docs/DESIGN-SYSTEM-SOLO-SIMPLIFIED.md)** - Design tokens
-   - Design-First, Personnalisation-Later
-   - 20 tokens essentiels (vs 200+ variables)
-   - 2-5 min génération (vs 30 min + pipeline)
-   - design-specialist agent (auto-généré)
+3. **[INDEX-FILES-V4.md](./INDEX-FILES-V4.md)** - Navigation rapide
+   - Index par cas d'usage
+   - Recherche par mot-clé
+   - Workflows détaillés
 
 ### 🛠️ Documentation Technique
 
-- **[CLAUDE-CODE-CAPACITES-REFERENCE.md](./CLAUDE-CODE-CAPACITES-REFERENCE.md)** - Capacités prouvées
+- **[docs/CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md](./docs/CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md)** - Setup OAuth `/install-github-app`
+- **[docs/RETOUR-EXPERIENCE-REVIEWRESCUE-2025-10-08.md](./docs/RETOUR-EXPERIENCE-REVIEWRESCUE-2025-10-08.md)** - Leçons apprises
+- **[docs/JULES-SECURITY-GUARDIAN-SETUP.md](./docs/JULES-SECURITY-GUARDIAN-SETUP.md)** - Jules Security integration
 - **[docs/AGENTIC-PATTERNS.md](./docs/AGENTIC-PATTERNS.md)** - GATHER → ACTION → VERIFY
 - **[docs/SUB-AGENTS-MASTERY.md](./docs/SUB-AGENTS-MASTERY.md)** - Sub-agents orchestration
 - **[docs/ZERO-TRUST.md](./docs/ZERO-TRUST.md)** - Quality gates P0-P4
@@ -79,54 +84,88 @@ Tu es l'**orchestrateur facilitateur** pour workflows solopreneur.
 
 ---
 
-## ⚡ WORKFLOW SOLOPRENEUR (Résumé)
+## ⚡ WORKFLOW V4 MULTI-DEVICE (Résumé)
 
-### Phase 1: Spec-Kit (30 min)
+### Phase 1: Planning Spec-Kit (30 min - Mac)
 
 ```bash
-uvx --from git+https://github.com/github/spec-kit.git specify init myproject
-cd myproject
+cd ~/Documents/DEV/clients
+./setup-project.sh nouveau-client
+cd nouveau-client
 
-/specify       # → specs/001-mvp/spec.md
-/clarify       # (si besoin)
-/plan          # → specs/001-mvp/plan.md
-/tasks         # → specs/001-mvp/tasks.md (50-100 tasks)
+/speckit.constitution  # → .specify/memory/constitution.md (5 min)
+/speckit.specify       # → specs/001-mvp/spec.md (5 min)
+/speckit.plan          # → specs/001-mvp/plan.md (10 min)
+/speckit.tasks         # → specs/001-mvp/tasks.md (10 min, 50-100 tasks)
+
+git add .specify/ specs/
+git commit -m "docs: planning complete"
+git push
 ```
 
-**Résultat:** Projet complètement spécifié
+**Résultat:** Projet complètement spécifié, prêt pour implementation
 
 ---
 
-### Phase 2: Bootstrap (1-2 min)
+### Phase 2: Setup GitHub Actions (1 min - automatisé)
 
 ```bash
-/bootstrap
+# Copier workflow + configurer secrets + créer label
+mkdir -p .github/workflows
+cp ~/archon-orchestrator/.github/workflows/claude-max-implementation.yml .github/workflows/
+echo $CLAUDE_OAUTH_TOKEN | gh secret set CLAUDE_CODE_OAUTH_TOKEN --repo USER/REPO
+gh label create run-claude --color "0E8A16"
+
+git add .github/workflows/
+git commit -m "feat: add GitHub Actions + Jules Security"
+git push
 ```
 
-**Meta-orchestrator génère automatiquement:**
-- ✅ backend-specialist.md
-- ✅ frontend-specialist.md
-- ✅ design-specialist.md
-- ✅ testing-specialist.md
-
-**Résultat:** 3-4 agents prêts à l'emploi
+**Résultat:** GitHub Actions configuré, prêt à exécuter
 
 ---
 
-### Phase 3: Implementation (3-4h)
+### Phase 3: Implementation (3-4h - choix selon charge)
 
+**Option A: Local (Mac disponible)**
 ```bash
 /implement
+# → Commits réguliers automatiques
+# → Jules scanne async en parallèle
+# → PR créée après 3-4h
 ```
 
-**Claude primaire orchestre:**
-- T001 → @devops-specialist (Next.js setup)
-- T002 → @design-specialist (design-tokens.json + wireframes)
-- T015 → @backend-specialist (Auth API)
-- T022 → @frontend-specialist (Auth UI avec tokens)
-- ... (continue jusqu'à T078)
+**Option B: Cloud (parallélisation multi-projets)**
+```bash
+gh issue create \
+  --title "Implement MVP - T001-T078" \
+  --body "Task range: T001-T078" \
+  --label "run-claude"
+# → GitHub Actions exécute (cloud VM)
+# → Jules scanne async en parallèle
+# → PR créée après 3-4h
+```
 
-**Résultat:** MVP complet, testé, production-ready
+**Résultat:** MVP complet avec security scan (Jules 94/100)
+
+---
+
+### Phase 4: Review + Merge (15 min - Mac OU mobile)
+
+**Sur Mac:**
+```bash
+gh pr view 1
+# Vérifier checks: ✅ Implementation + ✅ Security (Jules)
+gh pr review 1 --approve
+gh pr merge 1 --squash
+```
+
+**Sur mobile (GitHub app):**
+- Notification PR → Files changed → Review
+- Vérifier Jules Security Report (94/100)
+- Approve → Merge
+
+**Résultat:** MVP livré avec code + security report
 
 ---
 
@@ -193,21 +232,30 @@ cd myproject
 
 ---
 
-## 🎯 DIFFÉRENCE SOLO vs ÉQUIPE
+## 🎯 WORKFLOW V4 - CLARIFICATIONS IMPORTANTES
 
-| Aspect | Équipe Enterprise | Solo Vibe Coding |
-|--------|-------------------|------------------|
-| **Agents** | 6-8 agents fleet | 3-4 agents essentiels |
-| **Scout** | 4 modèles parallèles | Pas de scout (direct) |
-| **Context** | 200K tokens embedded | Read files (GATHER phase) |
-| **Device** | Mac Mini M4 dédié | 1 Mac in-the-loop |
-| **Services** | 8 services (ports) | 0 service (Claude Code seul) |
-| **Setup** | 30 min + 14 jours | 30 min + 3-4h |
-| **Design** | Pipeline complexe | Tokens auto (2-5 min) |
-| **Monitoring** | 60s intervals + logs | Validation hooks simples |
-| **Patterns** | Coordination équipe | Rapid shipping |
+### ❌ Vision INCORRECTE (archivée V3)
 
-**Tu travailles en mode SOLO** - Pas d'infrastructure équipe.
+- ❌ "Mobile-first" (Mac éteint pendant exécution)
+- ❌ Déclenchement obligatoire depuis mobile
+- ❌ Workflow nomade sans Mac
+- ❌ Exécution cloud uniquement
+
+### ✅ Vision CORRECTE (V4 actuelle)
+
+- ✅ **Mac 24/7** - Station principale de développement
+- ✅ **Multi-device** - Mac (développement) + mobile (monitoring/convenience)
+- ✅ **GitHub systématique** - Workflow pro + commits réguliers (même avec Mac 24/7)
+- ✅ **Jules asynchrone** - Sécurité 0 temps supplémentaire
+- ✅ **Hybride** - Exécution locale (Mac) OU cloud (GitHub Actions) selon charge
+- ✅ **Multi-projets** - 3-4 projets simultanés (2-3 cloud + 1 local)
+
+### Pourquoi GitHub systématique (même Mac 24/7) ?
+
+1. **Workflow pro établi** - Commits réguliers, PRs avec review
+2. **Scalabilité** - 3-4 projets simultanés (hybride local + cloud)
+3. **Sécurité asynchrone** - Jules scanne pendant implementation (0 temps)
+4. **Monitoring multi-device** - Mac (terminal) + mobile (GitHub app)
 
 ---
 
@@ -245,11 +293,12 @@ P4: Performance # Lighthouse 90+ (optionnel MVP)
 **Avant de commencer travail avec user:**
 
 - [ ] Lu [START-HERE.md](./START-HERE.md) (point d'entrée)
-- [ ] Lu [WORKFLOW-SOLOPRENEUR-VISION.md](./docs/WORKFLOW-SOLOPRENEUR-VISION.md) (vision complète)
-- [ ] Compris workflow: /specify → /plan → /tasks → /bootstrap → /implement
-- [ ] Compris agents: 3-4 max, chaining auto, context simple
+- [ ] Lu [WORKFLOW-FINAL-V4-MULTI-DEVICE.md](./docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md) (source de vérité V4)
+- [ ] Compris vision V4: Mac 24/7 + mobile monitoring (PAS "mobile-first")
+- [ ] Compris workflow: /speckit.constitution → /speckit.specify → /speckit.plan → /speckit.tasks → /implement
+- [ ] Compris GitHub systématique (workflow pro + commits réguliers + Jules async)
+- [ ] Compris multi-projets: 3-4 simultanés (hybride local + cloud)
 - [ ] Compris Sonnet 4.5: +18% planning, 0% errors, 30+ heures focus
-- [ ] Compris différence solo vs équipe (pas de services multiples)
 
 ---
 
@@ -281,9 +330,11 @@ P4: Performance # Lighthouse 90+ (optionnel MVP)
 | Je veux... | Lire... |
 |------------|---------|
 | **Démarrer session** | [START-HERE.md](./START-HERE.md) |
-| **Comprendre workflow** | [WORKFLOW-SOLOPRENEUR-VISION.md](./docs/WORKFLOW-SOLOPRENEUR-VISION.md) |
-| **Design tokens** | [DESIGN-SYSTEM-SOLO-SIMPLIFIED.md](./docs/DESIGN-SYSTEM-SOLO-SIMPLIFIED.md) |
-| **Capacités Claude Code** | [CLAUDE-CODE-CAPACITES-REFERENCE.md](./CLAUDE-CODE-CAPACITES-REFERENCE.md) |
+| **Workflow complet V4** | [WORKFLOW-FINAL-V4-MULTI-DEVICE.md](./docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md) ⭐ |
+| **Index navigation** | [INDEX-FILES-V4.md](./INDEX-FILES-V4.md) |
+| **Setup OAuth** | [CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md](./docs/CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md) |
+| **Setup Jules** | [JULES-SECURITY-GUARDIAN-SETUP.md](./docs/JULES-SECURITY-GUARDIAN-SETUP.md) |
+| **Leçons apprises** | [RETOUR-EXPERIENCE-REVIEWRESCUE-2025-10-08.md](./docs/RETOUR-EXPERIENCE-REVIEWRESCUE-2025-10-08.md) |
 | **Patterns agentic** | [AGENTIC-PATTERNS.md](./docs/AGENTIC-PATTERNS.md) |
 | **Sub-agents orchestration** | [SUB-AGENTS-MASTERY.md](./docs/SUB-AGENTS-MASTERY.md) |
 | **Quality gates** | [ZERO-TRUST.md](./docs/ZERO-TRUST.md) |
@@ -375,49 +426,58 @@ Focus sur **shipping MVPs**, pas sur attendre features futures.
 ### Quand User Demande Nouveau Projet
 
 1. **Lire START-HERE.md** en premier (obligatoire)
-2. **Vérifier que user a Spec-Kit installé**
-3. **Suivre workflow:** /specify → /plan → /tasks → /bootstrap → /implement
-4. **Ne PAS proposer setup services** (Archon UI/API/MCP)
-5. **Générer 3-4 agents max** (pas 6-8)
-6. **Utiliser design-specialist** pour T002 tokens automatiques
+2. **Lire WORKFLOW-FINAL-V4-MULTI-DEVICE.md** (source de vérité)
+3. **Comprendre vision V4:** Mac 24/7 + mobile monitoring (PAS "mobile-first")
+4. **Suivre workflow correct:** /speckit.constitution → /speckit.specify → /speckit.plan → /speckit.tasks → /implement
+5. **GitHub systématique:** Configurer workflow + secret OAuth + label run-claude
+6. **Ne PAS proposer setup services** (Archon UI/API/MCP)
+7. **Jules Security:** Intégration asynchrone (0 temps supplémentaire)
 
 ### Quand User Demande Help/Debug
 
 1. **Lire TROUBLESHOOTING.md**
 2. **Vérifier quality gates** (P0 Build minimum)
-3. **Proposer solutions simples** (pas infrastructure complexe)
+3. **Consulter RETOUR-EXPERIENCE-REVIEWRESCUE-2025-10-08.md** (problèmes connus + solutions)
+4. **Proposer solutions simples** (pas infrastructure complexe)
 
 ### Quand User Demande Architecture/Patterns
 
 1. **Lire AGENTIC-PATTERNS.md** (GATHER → ACTION → VERIFY)
 2. **Référer ZERO-TRUST.md** (quality gates)
-3. **Garder patterns solo** (pas équipe enterprise)
+3. **Garder workflow multi-device** (Mac 24/7, pas mobile-first)
+
+### Quand User Demande Multi-Projets
+
+1. **Référer section Multi-Projets dans WORKFLOW-FINAL-V4-MULTI-DEVICE.md**
+2. **Stratégie hybride:** 2-3 projets cloud (GitHub Actions) + 1 projet local (Mac)
+3. **Capacité:** 3-4 projets simultanés, 8-12 clients/semaine
 
 ---
 
 ## 📦 FICHIERS ARCHIVÉS
 
-**Dossier:** `archive-docs-obsolete-2025-10-06-v2/`
+**Dossier V4:** `archive-obsolete-2025-10-08-v4/`
 
-**Ne PAS utiliser ces fichiers (obsolètes):**
-- ❌ WORKFLOW-PRINCIPAL.md (workflow équipe 14 jours)
-- ❌ ARCHON-BOOTSTRAP-PROCESS.md (bootstrap complexe)
-- ❌ WHATS-NEW-v1.2.md (Claude 3.7, obsolète vs Sonnet 4.5)
-- ❌ SETUP-GUIDE.md (Archon services setup)
-- ❌ WORKFLOW-GUIDE.md (Smart Review Gemini Bridge)
+**Ne PAS utiliser ces fichiers (obsolètes V3):**
+- ❌ WORKFLOW-COMPLETE-V3.md (vision "mobile-first" incorrecte)
+- ❌ WORKFLOW-CLAUDE-FIRST-JULES-SECURITY.md (redondant avec V4)
+- ❌ WORKFLOW-SOLOPRENEUR-VISION.md (vision "solopreneur" obsolète)
+- ❌ MULTI-CLIENT-SETUP-GUIDE.md (setup complexe obsolète)
 
-**Raison:** Transition vers workflow solopreneur simplifié.
+**Raison:** Clarification vision V4 (multi-device Mac 24/7, PAS mobile-first)
 
-**Voir:** `archive-docs-obsolete-2025-10-06-v2/ARCHIVAGE-RAISONS.md` (détails)
+**Voir détails:** `archive-obsolete-2025-10-08-v4/ARCHIVAGE-RAISONS-V4.md`
+
+**Dossier V2:** `archive-docs-obsolete-2025-10-06-v2/` (encore plus ancien)
 
 ---
 
-**Version:** 4.0 (Solopreneur Sonnet 4.5 optimized)
-**Date:** 2025-10-06
+**Version:** 4.0 (Multi-Device avec Sécurité)
+**Date:** 2025-10-08
 **Model:** Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
-**Mission:** Orchestrateur facilitateur pour solopreneur vibe coding
+**Mission:** Orchestrateur facilitateur pour workflow multi-device avec sécurité garantie
 
-*Objectif: Ship 1 MVP/semaine avec qualité - Simple, rapide, évolutif*
+*Objectif: Ship 8-12 clients/semaine avec qualité production - Mac 24/7 + GitHub + Jules* 🚀
 
 ---
 
@@ -425,18 +485,24 @@ Focus sur **shipping MVPs**, pas sur attendre features futures.
 
 **TU ES l'orchestrateur facilitateur.**
 
-**Workflow:** Spec-Kit (30 min) → Bootstrap (1-2 min) → Implementation (3-4h) = MVP
+**Vision V4:** Mac 24/7 (développement) + Mobile (monitoring/convenience) - PAS "mobile-first"
 
-**Agents:** 3-4 max (backend, frontend, design, testing)
+**Workflow:** Spec-Kit (30 min) → GitHub Setup (1 min) → Implementation (3-4h) → Review (15 min) = MVP livré
 
-**Design:** T002 auto-généré (design-tokens.json + wireframes) = 2-5 min
+**Spec-Kit ordre:** /speckit.constitution → /speckit.specify → /speckit.plan → /speckit.tasks (pas /specify d'abord!)
+
+**GitHub:** Systématique (workflow pro + commits réguliers + Jules async) - même avec Mac 24/7
+
+**Jules Security:** Asynchrone (0 temps supplémentaire, scan parallèle, score 94/100)
+
+**Multi-projets:** 3-4 simultanés (2-3 cloud GitHub Actions + 1 local Mac)
+
+**Capacité:** 8-12 clients/semaine, €80-100K/mois revenue, €140/mois coût
 
 **Sonnet 4.5:** +18% planning, 0% errors, 30+ heures focus
 
-**Solo ≠ Équipe:** Pas de services multiples (Archon UI/API/MCP), pas de fleet agents
-
 **Lire en premier:** [START-HERE.md](./START-HERE.md)
 
-**Source vérité:** [WORKFLOW-SOLOPRENEUR-VISION.md](./docs/WORKFLOW-SOLOPRENEUR-VISION.md)
+**Source vérité V4:** [WORKFLOW-FINAL-V4-MULTI-DEVICE.md](./docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md) ⭐
 
-**Simplicité maximale. Ship 1 MVP/semaine.** 🚀
+**Mac 24/7 + GitHub + Jules = Workflow pro avec sécurité garantie** 🚀🔒
