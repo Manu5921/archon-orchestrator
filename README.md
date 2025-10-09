@@ -39,23 +39,20 @@ git commit -m "feat: add GitHub Actions + Jules Security"
 git push
 
 # 2b. Setup MCP (Optionnel - 10 sec)
-# ONE-TIME: Config MCP dans Claude Desktop → Settings → MCP
-claude mcp add-from-claude-desktop --scope project  # Import Context7, Supabase, etc.
+# ONE-TIME: Config dans Claude Desktop → Settings → MCP
+#   - Context7 (patterns), Supabase (DB)
+#   - ESLint (quality), Semgrep (security)
+claude mcp add-from-claude-desktop --scope project
 
-# 3. Implementation (3-4h - choix selon charge)
-
-# Option A: Local (Mac disponible)
+# 3. Implementation (Mac LOCAL - 3-4h) ⭐ TOUJOURS EN LOCAL
 /implement
-# → Commits réguliers, Jules scanne async
+# → Sub-agents génèrent code (local Mac)
+# → ESLint check inline (quality)
+# → Semgrep scan (security)
+# → Commits réguliers + push GitHub (backup)
+# → Jules scanne async (GitHub Actions)
 
-# Option B: Cloud (parallélisation)
-gh issue create \
-  --title "Implement MVP - T001-T078" \
-  --body "Task range: T001-T078" \
-  --label "run-claude"
-# → GitHub Actions exécute (cloud VM)
-# → Jules scanne async
-# → PR créée après 3-4h
+# Fallback cloud (rare <5%): gh issue create --label run-claude
 
 # 4. Review + Merge (Mac OU mobile - 15 min)
 gh pr view 1

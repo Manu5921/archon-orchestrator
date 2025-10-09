@@ -243,20 +243,35 @@ gh secret set JULES_API_KEY --body "$JULES_API_KEY" --org Manu5921
 
 ### **4. MCP Setup (Optionnel - 10 sec)**
 
-**MCP Servers pour Productivité :**
+**MCP Servers Recommandés :**
 
-| MCP | Use Case | Priorité |
-|-----|----------|----------|
-| **Context7** | Knowledge base & patterns memory | P1 |
-| **Supabase** | Database inspector & debugging | P1 |
+| MCP | Use Case | Priorité | Impact |
+|-----|----------|----------|--------|
+| **Context7** | Knowledge base & patterns memory | P1 | -95% temps recherche |
+| **Supabase** | Database inspector & debugging | P1 | -80% temps DB debug |
+| **ESLint** | Code quality & lint errors | P1 | -90% erreurs lint finales |
+| **Semgrep** | OWASP security scan | P1 | -95% vulnérabilités |
 
 **Setup ONE-TIME (Claude Desktop) :**
 
 ```
 Claude Desktop → Settings → MCP → Add Server
-→ Context7 (API key)
-→ Supabase (URL + keys)
-→ Linear (optionnel)
+
+1. Context7 (patterns memory)
+   → command: npx -y @context7/mcp-server
+   → env: CONTEXT7_API_KEY
+
+2. Supabase (DB inspector)
+   → command: npx -y @supabase/mcp-server
+   → env: SUPABASE_URL, SUPABASE_ANON_KEY
+
+3. ESLint (code quality) ⭐ RECOMMANDÉ
+   → command: npx -y @eslint/mcp-server
+   → env: (none)
+
+4. Semgrep (security) ⭐ RECOMMANDÉ
+   → command: npx -y @semgrep/mcp
+   → env: SEMGREP_RULES=p/owasp-top-10
 ```
 
 **Chaque nouveau projet (1 commande) :**
@@ -264,13 +279,22 @@ Claude Desktop → Settings → MCP → Add Server
 ```bash
 cd ~/Documents/DEV/clients/nouveau-client
 claude mcp add-from-claude-desktop --scope project
-claude mcp list  # Vérifier
+claude mcp list  # Vérifier: context7, supabase, eslint, semgrep
 ```
 
-**Résultat :**
-- ✅ Context7 : Recherche patterns & best practices projets précédents (-95% temps)
-- ✅ Supabase : Query DB, debug schemas, migrations (-80% temps)
-- ✅ Config centralisée dans Claude Desktop (source de vérité)
+**Résultat Productivité:**
+- ✅ Context7 : Patterns réutilisables (-95% temps recherche)
+- ✅ Supabase : DB queries & debug (-80% temps)
+
+**Résultat Quality-First:**
+- ✅ ESLint : Détection erreurs inline (-90% erreurs finales)
+- ✅ Semgrep : Bloque vulnérabilités OWASP (-95% failles)
+- ✅ Code clean dès commit (moins corrections post-PR)
+
+**Workflow Quality:**
+- Sub-agents appellent ESLint après chaque fichier
+- Sub-agents appellent Semgrep en fin de batch
+- Commits = code déjà testé & sécurisé
 
 **Documentation complète :** [MCP-SETUP-GUIDE.md](./MCP-SETUP-GUIDE.md)
 
@@ -313,45 +337,92 @@ git push
 
 ---
 
-### **Phase 2: Implementation (Mac OU Cloud - 3-4h)**
+### **Phase 2: Setup GitHub (Mac - 2 min) - Best Practices**
 
-**Option A - Exécution Locale (Mac disponible) :**
-
-```bash
-cd ~/Documents/DEV/clients/nouveau-client
-
-# Implementation locale avec commits réguliers
-/implement
-
-# Claude travaille localement :
-# → Commits auto toutes les 10-15 tasks
-# → Push auto vers GitHub
-# → PRs créées automatiquement
-# → Jules scanne en background (webhook GitHub)
-```
-
-**Option B - Exécution Cloud (Parallélisation) :**
+**Objectif:** Backup + Jules Security + Workflow Pro (PAS pour implementation cloud)
 
 ```bash
 cd ~/Documents/DEV/clients/nouveau-client
 
-# Déclencher GitHub Actions
-gh issue create \
-  --title "Implement MVP - T001-T078" \
-  --body "Task range: T001-T078" \
-  --label "run-claude" \
-  --repo Manu5921/nouveau-client
+# 1. Init repo GitHub
+git init
+gh repo create Manu5921/nouveau-client --public --source=. --remote=origin
 
-# GitHub Actions démarre :
-# → Claude Max exécute (cloud VM)
-# → Commits réguliers
-# → Jules scanne (async)
-# → PR créée après 3-4h
+# 2. Setup GitHub Actions (Jules Security async)
+mkdir -p .github/workflows
+cp ~/archon-orchestrator/.github/workflows/claude-max-implementation.yml .github/workflows/
+echo $CLAUDE_OAUTH_TOKEN | gh secret set CLAUDE_CODE_OAUTH_TOKEN
+gh label create run-claude --color "0E8A16"
+
+# 3. Push initial
+git add .
+git commit -m "feat: initial setup + GitHub Actions"
+git push -u origin main
 ```
+
+**Résultat:**
+- ✅ Code backup sur GitHub (sécurité si crash Mac)
+- ✅ Jules Security configuré (scan async parallèle)
+- ✅ Workflow pro ready (PRs + review)
+- ✅ Notifications mobile (monitoring)
 
 ---
 
-### **Phase 3: Review + Merge (Mac OU Mobile - 15 min)**
+### **Phase 3: Implementation (Mac LOCAL - 3-4h)**
+
+**⚠️ IMPORTANT:** Implementation TOUJOURS en local Mac (99% cas), PAS GitHub Actions cloud
+
+```bash
+cd ~/Documents/DEV/clients/nouveau-client
+
+# Implementation LOCALE avec quality inline
+/implement
+
+# Pendant implementation (LOCAL Mac):
+# → Sub-agents génèrent code
+# → Commits réguliers automatiques
+# → Push continu vers GitHub (backup)
+# → PRs créées automatiquement
+
+# Parallèle (GITHUB Actions):
+# → Jules Security scan (async background)
+# → Résultat disponible dans PR après 10-15 min
+```
+
+**Timeline:**
+- Implementation locale: 3-4h (Mac)
+- Commits réguliers: toutes les 30 min (backup continu)
+- Jules scan: parallèle (0 temps supplémentaire)
+
+**Résultat:**
+- ✅ Code généré localement (rapide, Context7 disponible)
+- ✅ Backup continu GitHub (sécurité)
+- ✅ Jules report async (sécurité validée)
+
+---
+
+### **Fallback Exceptionnel: GitHub Actions Cloud (<5% cas)**
+
+**⚠️ Utiliser SEULEMENT si:**
+- Mac crash/indisponible (urgence)
+- Multi-projets ultra-urgents (rare)
+
+```bash
+# Déclencher GitHub Actions (FALLBACK rare)
+gh issue create \
+  --title "Implement feature X" \
+  --body "Task range: T010-T025" \
+  --label "run-claude"
+
+# GitHub Actions exécute (cloud VM)
+# → Continue depuis autre device
+```
+
+**Sinon:** TOUJOURS `/implement` en local Mac (workflow standard)
+
+---
+
+### **Phase 4: Review + Merge (Mac OU Mobile - 15 min)**
 
 **Sur Mac (principal) :**
 ```bash

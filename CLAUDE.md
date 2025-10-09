@@ -46,6 +46,140 @@ Tu es l'**orchestrateur facilitateur** pour workflow multi-device avec sécurit�
 
 ---
 
+## 🚨 ANTI-HALLUCINATION - WORKFLOW VALIDÉ
+
+### ⚠️ RÈGLE CRITIQUE (À RESPECTER TOUJOURS)
+
+**AVANT toute proposition modification workflow:**
+
+1. **Lire sources de vérité:**
+   - ⭐ WORKFLOW-FINAL-V4-MULTI-DEVICE.md (workflow complet validé)
+   - START-HERE.md (point d'entrée)
+   - CLAUDE.md (cette page - instructions)
+
+2. **Vérifier cohérence:**
+   - Proposition = compatible workflow existant ?
+   - Simplification OU complexification ?
+   - ROI évident OU sur-ingénierie ?
+
+3. **Référencer explicitement:**
+   - Citer section fichier concernée
+   - Montrer AVANT/APRÈS clair
+   - Justifier changement (pourquoi?)
+
+4. **Demander validation AVANT implémenter:**
+   - Expliquer proposition user
+   - Attendre OK explicite
+   - PAS implémenter sans accord
+
+### ❌ INTERDIT (Anti-Patterns)
+
+**1. "Option A/B" si workflow déjà décidé**
+```
+❌ FAUX:
+"Implementation: Option A (local) OU Option B (cloud)?"
+
+✅ CORRECT:
+"Implementation = local Mac (voir WORKFLOW-FINAL-V4 Phase 3)"
+Workflow validé = PAS proposer alternatives
+```
+
+**2. Réinventer roue**
+```
+❌ FAUX:
+"Je propose créer script custom 200+ lignes"
+
+✅ CORRECT:
+"Commande native existe: claude mcp add-from-claude-desktop"
+Si workflow marche = garder simple
+```
+
+**3. Complexifier sans justification**
+```
+❌ FAUX:
+"Ajouter SonarQube + Mutation testing + K8s?"
+
+✅ CORRECT:
+"Workflow V4 = simple débutant-friendly
+Ajouter outil = justifier 10× value (ESLint+Semgrep OK car quality-first validé)"
+```
+
+**4. Oublier contexte validé**
+```
+❌ FAUX:
+"GitHub Actions pour implementation principale?"
+
+✅ CORRECT:
+"Workflow V4 = Mac local 24/7 (développement)
+GitHub = backup + best practices + Jules async (PAS développement cloud)"
+```
+
+### ✅ BON EXEMPLE (Process Correct)
+
+```
+User: "Ajouter Linear MCP?"
+
+Claude:
+1. ✅ Je lis WORKFLOW-FINAL-V4-MULTI-DEVICE.md
+2. ✅ Je vois: "Linear = P2 optionnel (à évaluer)"
+3. ✅ Je cite: "Section 4. MCP Setup - Linear (optionnel)"
+4. ✅ Je propose: "Tester sur 1 projet, mesurer ROI avant adoption"
+5. ✅ J'attends validation user
+```
+
+### ❌ MAUVAIS EXEMPLE (À ÉVITER)
+
+```
+User: "Améliorer workflow?"
+
+Claude (FAUX):
+"Je propose 3 options:
+A. Infrastructure Kubernetes
+B. Microservices architecture
+C. CI/CD pipeline complexe"
+
+Problèmes:
+❌ Pas lu workflow validé (simplicité = priorité)
+❌ Sur-complexification (solopreneur = simple)
+❌ Pas référencé fichiers existants
+❌ Pas demandé validation
+```
+
+### 📚 Sources Vérité (Ordre Priorité)
+
+1. ⭐ **WORKFLOW-FINAL-V4-MULTI-DEVICE.md** (source absolue)
+2. **START-HERE.md** (point entrée)
+3. **CLAUDE.md** (instructions)
+4. **MCP-SETUP-GUIDE.md** (MCP validé)
+5. **INDEX-FILES-V4.md** (navigation)
+
+**Si contradiction:**
+- WORKFLOW-FINAL-V4-MULTI-DEVICE.md = priorité absolue
+- Signaler contradiction user
+- Demander clarification
+- PAS continuer si incohérence
+
+### 🎯 Workflow V4 Validé (Rappel)
+
+**Phase 1: Planning**
+- Local Mac (Spec-Kit: /constitution → /specify → /clarify → /plan → /tasks)
+
+**Phase 2: Setup GitHub**
+- Backup + Best practices (PAS pour implementation cloud)
+
+**Phase 3: Implementation**
+- **LOCAL Mac 24/7** (développement principal)
+- GitHub Actions = fallback rare (<5% cas urgence)
+
+**Phase 4: Quality**
+- ESLint + Semgrep inline (MCP validé)
+- Jules Security async (GitHub Actions)
+
+**Phase 5: PR + Review**
+- Mac OU mobile (flexibilité)
+
+---
+
 ## 📚 DOCUMENTATION COMPLÈTE
 
 ### 🎯 Sources de Vérité (LIRE EN PRIORITÉ)
