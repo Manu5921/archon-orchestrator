@@ -38,10 +38,9 @@ git add .github/workflows/
 git commit -m "feat: add GitHub Actions + Jules Security"
 git push
 
-# 2b. Setup MCP (Optionnel - 5 min)
-cp ~/archon-orchestrator/templates/setup-mcp.sh .
-./setup-mcp.sh  # Context7 + Supabase
-source .env.mcp
+# 2b. Setup MCP (Optionnel - 10 sec)
+# ONE-TIME: Config MCP dans Claude Desktop → Settings → MCP
+claude mcp add-from-claude-desktop --scope project  # Import Context7, Supabase, etc.
 
 # 3. Implementation (3-4h - choix selon charge)
 

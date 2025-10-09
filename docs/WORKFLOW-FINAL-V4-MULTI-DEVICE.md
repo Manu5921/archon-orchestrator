@@ -241,7 +241,7 @@ gh secret set JULES_API_KEY --body "$JULES_API_KEY" --org Manu5921
 
 ---
 
-### **4. MCP Setup (Optionnel - 5 min)**
+### **4. MCP Setup (Optionnel - 10 sec)**
 
 **MCP Servers pour Productivité :**
 
@@ -250,30 +250,27 @@ gh secret set JULES_API_KEY --body "$JULES_API_KEY" --org Manu5921
 | **Context7** | Knowledge base & patterns memory | P1 |
 | **Supabase** | Database inspector & debugging | P1 |
 
-**Setup automatique :**
+**Setup ONE-TIME (Claude Desktop) :**
+
+```
+Claude Desktop → Settings → MCP → Add Server
+→ Context7 (API key)
+→ Supabase (URL + keys)
+→ Linear (optionnel)
+```
+
+**Chaque nouveau projet (1 commande) :**
 
 ```bash
-# 1. Copier script dans nouveau projet
 cd ~/Documents/DEV/clients/nouveau-client
-cp ~/archon-orchestrator/templates/setup-mcp.sh .
-
-# 2. Exécuter setup interactif
-./setup-mcp.sh
-# → Configure Context7 (API key)
-# → Configure Supabase (URL + keys)
-# → Génère .env.mcp template
-
-# 3. Éditer .env.mcp et sourcer
-vim .env.mcp  # Remplir vraies valeurs
-source .env.mcp
-
-# 4. Vérifier MCP actifs
-claude mcp list
+claude mcp add-from-claude-desktop --scope project
+claude mcp list  # Vérifier
 ```
 
 **Résultat :**
-- ✅ Context7 : Recherche patterns & best practices projets précédents
-- ✅ Supabase : Query DB, debug schemas, migrations
+- ✅ Context7 : Recherche patterns & best practices projets précédents (-95% temps)
+- ✅ Supabase : Query DB, debug schemas, migrations (-80% temps)
+- ✅ Config centralisée dans Claude Desktop (source de vérité)
 
 **Documentation complète :** [MCP-SETUP-GUIDE.md](./MCP-SETUP-GUIDE.md)
 

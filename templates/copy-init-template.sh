@@ -39,21 +39,15 @@ case $TEMPLATE_TYPE in
             echo "✅ Smart Review services copiés"
         fi
 
-        # Copier template MCP
-        if [ -f "$TEMPLATE_DIR/setup-mcp.sh" ]; then
-            cp "$TEMPLATE_DIR/setup-mcp.sh" "$PROJECT_PATH/"
-            chmod +x "$PROJECT_PATH/setup-mcp.sh"
-            echo "✅ MCP setup script copié"
-        fi
-
         echo ""
         echo "🎉 Smart Review Workflow Phase 1 Template copié avec succès !"
         echo "🎯 Next steps:"
         echo "   cd $PROJECT_PATH"
-        echo "   ./setup-mcp.sh  # Configure MCP servers (Context7 + Supabase)"
+        echo "   claude mcp add-from-claude-desktop --scope project  # Import MCP (10 sec)"
         echo "   open SMART-REVIEW-INIT.md  # Suivre le guide Smart Review"
         echo "   node test-smart-review-phase1.js  # Test Phase 1"
         echo ""
+        echo "💡 MCP ONE-TIME: Config dans Claude Desktop → Settings → MCP"
         echo "🧠 Smart Review avec context intelligent prêt en ~5 minutes !"
         ;;
         
@@ -62,20 +56,14 @@ case $TEMPLATE_TYPE in
         cp "$TEMPLATE_DIR/PROJECT-INIT.md" "$PROJECT_PATH/"
         cp "$TEMPLATE_DIR/ARCHITECTURE-TEMPLATE.md" "$PROJECT_PATH/"
 
-        # Copier template MCP (également pour legacy)
-        if [ -f "$TEMPLATE_DIR/setup-mcp.sh" ]; then
-            cp "$TEMPLATE_DIR/setup-mcp.sh" "$PROJECT_PATH/"
-            chmod +x "$PROJECT_PATH/setup-mcp.sh"
-            echo "✅ MCP setup script copié"
-        fi
-
         echo ""
         echo "✅ Legacy Template copié avec succès !"
         echo "🎯 Next steps:"
         echo "   cd $PROJECT_PATH"
-        echo "   ./setup-mcp.sh  # Configure MCP servers (Context7 + Supabase)"
+        echo "   claude mcp add-from-claude-desktop --scope project  # Import MCP (10 sec)"
         echo "   open PROJECT-INIT.md  # Suivre le guide Archon V3"
         echo ""
+        echo "💡 MCP ONE-TIME: Config dans Claude Desktop → Settings → MCP"
         echo "🚀 Projet legacy prêt avec Archon V3 en ~5 minutes !"
         ;;
         
