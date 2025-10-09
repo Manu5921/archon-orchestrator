@@ -472,6 +472,7 @@ P4: Performance # Lighthouse 90+ (optionnel MVP)
 | **Patterns agentic** | [AGENTIC-PATTERNS.md](./docs/AGENTIC-PATTERNS.md) |
 | **Sub-agents orchestration** | [SUB-AGENTS-MASTERY.md](./docs/SUB-AGENTS-MASTERY.md) |
 | **Quality gates** | [ZERO-TRUST.md](./docs/ZERO-TRUST.md) |
+| **Context management** | [CONTEXT-MANAGEMENT-BEST-PRACTICES.md](./docs/CONTEXT-MANAGEMENT-BEST-PRACTICES.md) |
 | **Debug problème** | [TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md) |
 
 ---

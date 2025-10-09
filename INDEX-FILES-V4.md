@@ -85,6 +85,7 @@
 |---------|-------|
 | **[TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md)** | Debug solutions, problèmes courants |
 | **[DOCKER-GUIDE.md](./docs/DOCKER-GUIDE.md)** | Docker deployment (si besoin) |
+| **[CONTEXT-MANAGEMENT-BEST-PRACTICES.md](./docs/CONTEXT-MANAGEMENT-BEST-PRACTICES.md)** | Gestion context 200K tokens, checkpoints, nettoyage |
 
 ---
 
