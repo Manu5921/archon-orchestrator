@@ -241,6 +241,44 @@ gh secret set JULES_API_KEY --body "$JULES_API_KEY" --org Manu5921
 
 ---
 
+### **4. MCP Setup (Optionnel - 5 min)**
+
+**MCP Servers pour Productivité :**
+
+| MCP | Use Case | Priorité |
+|-----|----------|----------|
+| **Context7** | Knowledge base & patterns memory | P1 |
+| **Supabase** | Database inspector & debugging | P1 |
+
+**Setup automatique :**
+
+```bash
+# 1. Copier script dans nouveau projet
+cd ~/Documents/DEV/clients/nouveau-client
+cp ~/archon-orchestrator/templates/setup-mcp.sh .
+
+# 2. Exécuter setup interactif
+./setup-mcp.sh
+# → Configure Context7 (API key)
+# → Configure Supabase (URL + keys)
+# → Génère .env.mcp template
+
+# 3. Éditer .env.mcp et sourcer
+vim .env.mcp  # Remplir vraies valeurs
+source .env.mcp
+
+# 4. Vérifier MCP actifs
+claude mcp list
+```
+
+**Résultat :**
+- ✅ Context7 : Recherche patterns & best practices projets précédents
+- ✅ Supabase : Query DB, debug schemas, migrations
+
+**Documentation complète :** [MCP-SETUP-GUIDE.md](./MCP-SETUP-GUIDE.md)
+
+---
+
 ## 📋 WORKFLOW STANDARD PAR PROJET
 
 ### **Phase 1: Planning (Mac - 30 min)**

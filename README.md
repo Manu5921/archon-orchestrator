@@ -38,6 +38,11 @@ git add .github/workflows/
 git commit -m "feat: add GitHub Actions + Jules Security"
 git push
 
+# 2b. Setup MCP (Optionnel - 5 min)
+cp ~/archon-orchestrator/templates/setup-mcp.sh .
+./setup-mcp.sh  # Context7 + Supabase
+source .env.mcp
+
 # 3. Implementation (3-4h - choix selon charge)
 
 # Option A: Local (Mac disponible)
@@ -271,6 +276,7 @@ cp ~/archon-orchestrator/.github/workflows/* ~/Documents/DEV/clients/_templates/
 **Voir guides:**
 - [CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md](./docs/CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md)
 - [JULES-SECURITY-GUARDIAN-SETUP.md](./docs/JULES-SECURITY-GUARDIAN-SETUP.md)
+- [MCP-SETUP-GUIDE.md](./docs/MCP-SETUP-GUIDE.md) - Context7 + Supabase (optionnel)
 
 ---
 

@@ -45,6 +45,7 @@
 | **[CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md](./docs/CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md)** | Setup OAuth token réutilisable | 5 min (one-time) |
 | **[GITHUB-ACTIONS-OAUTH-SETUP.md](./docs/GITHUB-ACTIONS-OAUTH-SETUP.md)** | Configuration GitHub Actions | 10 min |
 | **[JULES-SECURITY-GUARDIAN-SETUP.md](./docs/JULES-SECURITY-GUARDIAN-SETUP.md)** | Integration Jules sécurité | 15 min |
+| **[MCP-SETUP-GUIDE.md](./docs/MCP-SETUP-GUIDE.md)** | Setup MCP Context7 + Supabase | 5 min |
 
 ---
 

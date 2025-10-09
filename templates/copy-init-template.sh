@@ -29,7 +29,7 @@ case $TEMPLATE_TYPE in
         echo "🧠 Copying Smart Review Workflow Phase 1 template..."
         cp "$TEMPLATE_DIR/SMART-REVIEW-INIT.md" "$PROJECT_PATH/"
         cp "$TEMPLATE_DIR/ARCHITECTURE-TEMPLATE.md" "$PROJECT_PATH/"
-        
+
         # Copier les services Smart Review
         ARCHON_ORCHESTRATOR="/Users/manu/Documents/DEV/archon-orchestrator"
         if [ -f "$ARCHON_ORCHESTRATOR/src/services/context-service.js" ]; then
@@ -38,11 +38,19 @@ case $TEMPLATE_TYPE in
             cp "$ARCHON_ORCHESTRATOR/test-smart-review-phase1.js" "$PROJECT_PATH/"
             echo "✅ Smart Review services copiés"
         fi
-        
+
+        # Copier template MCP
+        if [ -f "$TEMPLATE_DIR/setup-mcp.sh" ]; then
+            cp "$TEMPLATE_DIR/setup-mcp.sh" "$PROJECT_PATH/"
+            chmod +x "$PROJECT_PATH/setup-mcp.sh"
+            echo "✅ MCP setup script copié"
+        fi
+
         echo ""
         echo "🎉 Smart Review Workflow Phase 1 Template copié avec succès !"
         echo "🎯 Next steps:"
         echo "   cd $PROJECT_PATH"
+        echo "   ./setup-mcp.sh  # Configure MCP servers (Context7 + Supabase)"
         echo "   open SMART-REVIEW-INIT.md  # Suivre le guide Smart Review"
         echo "   node test-smart-review-phase1.js  # Test Phase 1"
         echo ""
@@ -53,11 +61,19 @@ case $TEMPLATE_TYPE in
         echo "📋 Copying Legacy Archon V3 template..."
         cp "$TEMPLATE_DIR/PROJECT-INIT.md" "$PROJECT_PATH/"
         cp "$TEMPLATE_DIR/ARCHITECTURE-TEMPLATE.md" "$PROJECT_PATH/"
-        
+
+        # Copier template MCP (également pour legacy)
+        if [ -f "$TEMPLATE_DIR/setup-mcp.sh" ]; then
+            cp "$TEMPLATE_DIR/setup-mcp.sh" "$PROJECT_PATH/"
+            chmod +x "$PROJECT_PATH/setup-mcp.sh"
+            echo "✅ MCP setup script copié"
+        fi
+
         echo ""
         echo "✅ Legacy Template copié avec succès !"
         echo "🎯 Next steps:"
         echo "   cd $PROJECT_PATH"
+        echo "   ./setup-mcp.sh  # Configure MCP servers (Context7 + Supabase)"
         echo "   open PROJECT-INIT.md  # Suivre le guide Archon V3"
         echo ""
         echo "🚀 Projet legacy prêt avec Archon V3 en ~5 minutes !"
