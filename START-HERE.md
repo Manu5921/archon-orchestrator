@@ -119,13 +119,16 @@ cd ~/Documents/DEV/clients
 ./setup-project.sh nouveau-client
 cd nouveau-client
 
-/speckit.constitution  # → .specify/memory/constitution.md
-/speckit.specify       # → specs/001-mvp/spec.md
-/speckit.plan          # → specs/001-mvp/plan.md
-/speckit.tasks         # → specs/001-mvp/tasks.md
+/speckit.constitution  # → .specify/memory/constitution.md (5 min)
+/speckit.specify       # → specs/001-mvp/spec.md (5 min)
+/speckit.clarify       # → Q&A iteration si ambiguïtés (5 min)
+/speckit.design        # → design-tokens.json + wireframes/ + components-list.md (5 min) 🆕
+/speckit.plan          # → specs/001-mvp/plan.md (5 min)
+/speckit.tasks         # → specs/001-mvp/tasks.md (5 min, 50-100 tasks)
+/speckit.agents        # → Génère prompt orchestration optimisé (2 min) 🆕
 
-git add .specify/ specs/
-git commit -m "docs: planning complete"
+git add .specify/ specs/ design/
+git commit -m "docs: planning complete with design system"
 git push
 
 # PHASE 2: Setup GitHub (1 min - automatisé)
@@ -142,12 +145,16 @@ git push
 
 # Option A: Local (Mac disponible)
 /implement
+# Copier/coller le prompt généré par /speckit.agents
+# → Sub-agents orchestrés automatiquement
+# → MCP Context7 juste-in-time
+# → ESLint checkpoints
 # → Commits réguliers, Jules scanne async
 
 # Option B: Cloud (parallélisation)
 gh issue create \
   --title "Implement MVP - T001-T078" \
-  --body "Task range: T001-T078" \
+  --body "$(cat prompt-orchestration.md)" \
   --label "run-claude"
 # → GitHub Actions exécute (cloud VM)
 # → Jules scanne async
@@ -378,9 +385,14 @@ archive-obsolete-2025-10-08-v4/
 
 ---
 
-**Version:** 4.0 (Production-Ready)
-**Date:** 2025-10-08
+**Version:** 4.1 (Spec-Kit Enhanced - Workflow Autonome)
+**Date:** 2025-10-10
 **Status:** ✅ Workflow validé et documenté
 **Capacité:** 8-12 clients/semaine, €80-100K/mois revenue
+
+**🆕 Nouveautés V4.1:**
+- `/speckit.design` - Design system automatique (tokens + wireframes + components)
+- `/speckit.agents` - Orchestration prompt généré automatiquement
+- **Workflow 100% autonome** - Pas de guidance manuelle nécessaire
 
 *Objectif: Multi-device (Mac 24/7 + mobile monitoring) avec sécurité garantie* 🚀🔒

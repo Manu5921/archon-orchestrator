@@ -159,16 +159,27 @@ Problèmes:
 - Demander clarification
 - PAS continuer si incohérence
 
-### 🎯 Workflow V4 Validé (Rappel)
+### 🎯 Workflow V4.1 Validé (Rappel - Autonome)
 
-**Phase 1: Planning**
-- Local Mac (Spec-Kit: /constitution → /specify → /clarify → /plan → /tasks)
+**Phase 1: Planning Spec-Kit (30 min - 100% Autonome) 🆕**
+- Local Mac (Spec-Kit autonome):
+  - /constitution → constitution.md (5 min)
+  - /specify → spec.md (5 min)
+  - /clarify → Q&A iteration (5 min)
+  - /design → design-tokens.json + wireframes/ + components-list.md (5 min) 🆕
+  - /plan → plan.md (5 min)
+  - /tasks → tasks.md (5 min)
+  - /agents → prompt orchestration optimisé (2 min) 🆕
 
 **Phase 2: Setup GitHub**
 - Backup + Best practices (PAS pour implementation cloud)
 
 **Phase 3: Implementation**
 - **LOCAL Mac 24/7** (développement principal)
+- Copier/coller prompt généré par /speckit.agents 🆕
+- Sub-agents orchestrés automatiquement
+- MCP Context7 juste-in-time
+- ESLint inline
 - GitHub Actions = fallback rare (<5% cas urgence)
 
 **Phase 4: Quality**
@@ -218,9 +229,9 @@ Problèmes:
 
 ---
 
-## ⚡ WORKFLOW V4 MULTI-DEVICE (Résumé)
+## ⚡ WORKFLOW V4.1 MULTI-DEVICE (Résumé - Autonome)
 
-### Phase 1: Planning Spec-Kit (30 min - Mac)
+### Phase 1: Planning Spec-Kit (30 min - Mac - 100% Autonome) 🆕
 
 ```bash
 cd ~/Documents/DEV/clients
@@ -229,15 +240,18 @@ cd nouveau-client
 
 /speckit.constitution  # → .specify/memory/constitution.md (5 min)
 /speckit.specify       # → specs/001-mvp/spec.md (5 min)
-/speckit.plan          # → specs/001-mvp/plan.md (10 min)
-/speckit.tasks         # → specs/001-mvp/tasks.md (10 min, 50-100 tasks)
+/speckit.clarify       # → Q&A iteration si ambiguïtés (5 min)
+/speckit.design        # → design-tokens.json + wireframes/ + components-list.md (5 min) 🆕
+/speckit.plan          # → specs/001-mvp/plan.md (5 min)
+/speckit.tasks         # → specs/001-mvp/tasks.md (5 min, 50-100 tasks)
+/speckit.agents        # → prompt orchestration optimisé (2 min) 🆕
 
-git add .specify/ specs/
-git commit -m "docs: planning complete"
+git add .specify/ specs/ design/
+git commit -m "docs: planning complete with design system and agents orchestration"
 git push
 ```
 
-**Résultat:** Projet complètement spécifié, prêt pour implementation
+**Résultat:** Projet complètement spécifié + design system + orchestration prompt, prêt pour implementation
 
 ---
 
@@ -261,9 +275,13 @@ git push
 
 ### Phase 3: Implementation (3-4h - choix selon charge)
 
-**Option A: Local (Mac disponible)**
+**Option A: Local (Mac disponible) 🆕**
 ```bash
 /implement
+# [COLLER LE PROMPT GÉNÉRÉ PAR /SPECKIT.AGENTS]
+# → Sub-agents orchestrés automatiquement (backend → frontend → testing)
+# → MCP Context7 juste-in-time (Next.js, Supabase, shadcn/ui docs)
+# → ESLint checkpoints inline (code clean dès génération)
 # → Commits réguliers automatiques
 # → Jules scanne async en parallèle
 # → PR créée après 3-4h
@@ -273,14 +291,14 @@ git push
 ```bash
 gh issue create \
   --title "Implement MVP - T001-T078" \
-  --body "Task range: T001-T078" \
+  --body "$(cat prompt-orchestration.md)" \
   --label "run-claude"
 # → GitHub Actions exécute (cloud VM)
 # → Jules scanne async en parallèle
 # → PR créée après 3-4h
 ```
 
-**Résultat:** MVP complet avec security scan (Jules 94/100)
+**Résultat:** MVP complet avec security scan (Jules 94/100) + orchestration optimale
 
 ---
 
@@ -607,10 +625,15 @@ Focus sur **shipping MVPs**, pas sur attendre features futures.
 
 ---
 
-**Version:** 4.0 (Multi-Device avec Sécurité)
-**Date:** 2025-10-08
+**Version:** 4.1 (Spec-Kit Enhanced - Workflow Autonome)
+**Date:** 2025-10-10
 **Model:** Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
 **Mission:** Orchestrateur facilitateur pour workflow multi-device avec sécurité garantie
+
+**🆕 Nouveautés V4.1:**
+- `/speckit.design` - Design system automatique (tokens + wireframes + components)
+- `/speckit.agents` - Orchestration prompt généré automatiquement
+- **Workflow 100% autonome** - Aucune guidance manuelle nécessaire
 
 *Objectif: Ship 8-12 clients/semaine avec qualité production - Mac 24/7 + GitHub + Jules* 🚀
 
@@ -620,11 +643,12 @@ Focus sur **shipping MVPs**, pas sur attendre features futures.
 
 **TU ES l'orchestrateur facilitateur.**
 
-**Vision V4:** Mac 24/7 (développement) + Mobile (monitoring/convenience) - PAS "mobile-first"
+**Vision V4.1:** Mac 24/7 (développement) + Mobile (monitoring/convenience) - PAS "mobile-first"
 
-**Workflow:** Spec-Kit (30 min) → GitHub Setup (1 min) → Implementation (3-4h) → Review (15 min) = MVP livré
+**Workflow:** Spec-Kit autonome (30 min) → GitHub Setup (1 min) → Implementation orchestrée (3-4h) → Review (15 min) = MVP livré
 
-**Spec-Kit ordre:** /speckit.constitution → /speckit.specify → /speckit.plan → /speckit.tasks (pas /specify d'abord!)
+**Spec-Kit ordre complet (V4.1) 🆕:**
+/speckit.constitution → /speckit.specify → /speckit.clarify → **/speckit.design** → /speckit.plan → /speckit.tasks → **/speckit.agents**
 
 **GitHub:** Systématique (workflow pro + commits réguliers + Jules async) - même avec Mac 24/7
 

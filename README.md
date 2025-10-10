@@ -2,10 +2,15 @@
 
 **Workflow multi-device productif avec Claude Max + Jules Security + GitHub Actions**
 
-**Version:** 4.0 (Multi-Device avec Sécurité)
-**Date:** 2025-10-08
+**Version:** 4.1 (Spec-Kit Enhanced - Workflow Autonome)
+**Date:** 2025-10-10
 **Model:** Claude Sonnet 4.5 (SOTA coding - 49% SWE-bench, 0% error rate)
 **Capacité:** 8-12 clients/semaine | €80K-€100K/mois revenue
+
+**🆕 V4.1 - Nouveautés:**
+- `/speckit.design` - Design system automatique (tokens + wireframes + components)
+- `/speckit.agents` - Orchestration prompt généré automatiquement
+- **Workflow 100% autonome** - Aucune guidance manuelle nécessaire
 
 ---
 
@@ -19,13 +24,16 @@ cd ~/Documents/DEV/clients
 ./setup-project.sh nouveau-client
 cd nouveau-client/
 
-/speckit.constitution  # → .specify/memory/constitution.md
-/speckit.specify       # → specs/001-mvp/spec.md
-/speckit.plan          # → specs/001-mvp/plan.md
-/speckit.tasks         # → specs/001-mvp/tasks.md
+/speckit.constitution  # → .specify/memory/constitution.md (5 min)
+/speckit.specify       # → specs/001-mvp/spec.md (5 min)
+/speckit.clarify       # → Q&A iteration si ambiguïtés (5 min)
+/speckit.design        # → design-tokens.json + wireframes/ + components-list.md (5 min) 🆕
+/speckit.plan          # → specs/001-mvp/plan.md (5 min)
+/speckit.tasks         # → specs/001-mvp/tasks.md (5 min, 50-100 tasks)
+/speckit.agents        # → Prompt orchestration optimisé (2 min) 🆕
 
-git add .specify/ specs/
-git commit -m "docs: planning complete"
+git add .specify/ specs/ design/
+git commit -m "docs: planning complete with design system"
 git push
 
 # 2. Setup GitHub Actions (1 min)
@@ -46,13 +54,14 @@ claude mcp add-from-claude-desktop --scope project
 
 # 3. Implementation (Mac LOCAL - 3-4h) ⭐ TOUJOURS EN LOCAL
 /implement
-# → Sub-agents génèrent code (local Mac)
-# → ESLint check inline (quality)
-# → Semgrep scan (security)
+# [COLLER LE PROMPT GÉNÉRÉ PAR /SPECKIT.AGENTS] 🆕
+# → Sub-agents orchestrés automatiquement (backend → frontend → testing)
+# → MCP Context7 juste-in-time (Next.js, Supabase, shadcn/ui docs)
+# → ESLint checkpoints inline (code clean dès génération)
 # → Commits réguliers + push GitHub (backup)
 # → Jules scanne async (GitHub Actions)
 
-# Fallback cloud (rare <5%): gh issue create --label run-claude
+# Fallback cloud (rare <5%): gh issue create --body "$(cat prompt-orchestration.md)" --label run-claude
 
 # 4. Review + Merge (Mac OU mobile - 15 min)
 gh pr view 1
@@ -400,10 +409,15 @@ MIT License - Open source workflow patterns
 
 ---
 
-**Version:** 4.0 (Multi-Device avec Sécurité)
-**Date:** 2025-10-08
+**Version:** 4.1 (Spec-Kit Enhanced - Workflow Autonome)
+**Date:** 2025-10-10
 **Status:** ✅ Production-Ready
-**Documentation:** ✅ V4 complète et validée
+**Documentation:** ✅ V4.1 complète et validée
 **Source:** docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md
+
+**🆕 V4.1 - Nouveautés:**
+- `/speckit.design` - Design system automatique
+- `/speckit.agents` - Orchestration prompt automatique
+- **Workflow 100% autonome** - Pas de guidance manuelle
 
 **Ship 8-12 clients/semaine avec qualité production** 🚀🔒

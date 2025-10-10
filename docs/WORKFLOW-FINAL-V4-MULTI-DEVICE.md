@@ -1,9 +1,14 @@
 # 🚀 WORKFLOW FINAL V4 - Multi-Device avec Sécurité
 
-**Version:** 4.0 (Production-Ready)
-**Date:** 2025-10-08
+**Version:** 4.1 (Spec-Kit Enhanced - Workflow Autonome)
+**Date:** 2025-10-10
 **Model:** Claude Sonnet 4.5
-**Mission:** 8-10 clients/semaine avec sécurité garantie
+**Mission:** 8-12 clients/semaine avec sécurité garantie
+
+**🆕 V4.1 - Nouveautés:**
+- `/speckit.design` - Design system automatique (tokens + wireframes + components)
+- `/speckit.agents` - Orchestration prompt généré automatiquement
+- **Workflow 100% autonome** - Aucune guidance manuelle requise
 
 ---
 
@@ -310,23 +315,37 @@ cd ~/Documents/DEV/clients
 ./_templates/setup-project.sh nouveau-client
 cd nouveau-client
 
-# 2. Planning Spec-Kit
+# 2. Planning Spec-Kit (Workflow Autonome V4.1)
 /speckit.constitution
-# → .specify/memory/constitution.md (5 principes, tech stack)
+# → .specify/memory/constitution.md (5 principes, tech stack) (5 min)
 
 /speckit.specify
-# → specs/001-mvp/spec.md (7 user stories, FR-001+, SC-001+)
+# → specs/001-mvp/spec.md (7 user stories, FR-001+, SC-001+) (5 min)
+
+/speckit.clarify
+# → Q&A iteration si ambiguïtés détectées (5 min)
+
+/speckit.design 🆕
+# → design/design-tokens.json (20-30 tokens WCAG validés)
+# → design/wireframes/*.svg (3-7 wireframes mobile-first)
+# → design/components-list.md (mapping shadcn/ui) (5 min)
 
 /speckit.plan
 # ⚠️ Vérifier cohérence constitution ↔ spec (gate validation)
-# → specs/001-mvp/plan.md + contracts/ + data-model.md
+# → specs/001-mvp/plan.md + contracts/ + data-model.md (5 min)
 
 /speckit.tasks
-# → specs/001-mvp/tasks.md (T001-T078)
+# → specs/001-mvp/tasks.md (T001-T078) (5 min)
+
+/speckit.agents 🆕
+# → Analyse tasks.md et génère prompt orchestration optimisé
+# → Sélection sub-agents automatique
+# → Stratégie MCP Context7 juste-in-time
+# → ESLint/Lighthouse checkpoints (2 min)
 
 # 3. Commit planning
-git add .specify/ specs/
-git commit -m "docs: complete planning (constitution, spec, plan, tasks)"
+git add .specify/ specs/ design/
+git commit -m "docs: complete planning (constitution, spec, design, plan, tasks, agents)"
 git push
 ```
 
@@ -375,12 +394,22 @@ git push -u origin main
 ```bash
 cd ~/Documents/DEV/clients/nouveau-client
 
-# Implementation LOCALE avec quality inline
+# 1. Copier prompt généré par /speckit.agents 🆕
+# → Prompt contient orchestration optimisée:
+#    - Sub-agents alloués par phase
+#    - MCP Context7 juste-in-time
+#    - ESLint checkpoints
+#    - Parallel execution groups
+
+# 2. Implementation LOCALE avec prompt orchestré
 /implement
+# [COLLER LE PROMPT GÉNÉRÉ PAR /SPECKIT.AGENTS]
 
 # Pendant implementation (LOCAL Mac):
-# → Sub-agents génèrent code
-# → Commits réguliers automatiques
+# → Sub-agents orchestrés automatiquement (backend → frontend → testing)
+# → MCP Context7 invoqué juste-in-time (Next.js docs, Supabase RLS, etc.)
+# → ESLint validations inline (code clean dès génération)
+# → Commits réguliers automatiques (toutes les 30 min)
 # → Push continu vers GitHub (backup)
 # → PRs créées automatiquement
 
@@ -396,6 +425,7 @@ cd ~/Documents/DEV/clients/nouveau-client
 
 **Résultat:**
 - ✅ Code généré localement (rapide, Context7 disponible)
+- ✅ Sub-agents orchestrés optimalement (prompt /speckit.agents)
 - ✅ Backup continu GitHub (sécurité)
 - ✅ Jules report async (sécurité validée)
 
