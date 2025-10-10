@@ -42,6 +42,36 @@
 | **🔑 Setup OAuth** | [CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md](./docs/CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md) | 5 min setup |
 | **🔒 Setup Jules** | [JULES-SECURITY-GUARDIAN-SETUP.md](./docs/JULES-SECURITY-GUARDIAN-SETUP.md) | 15 min setup |
 | **🛠️ Troubleshooting** | [TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md) | Variable |
+| **🔧 MCP Setup (pnpm)** | [TROUBLESHOOTING-MCP-PNPM.md](./docs/TROUBLESHOOTING-MCP-PNPM.md) | **5 min** |
+
+---
+
+## ⚠️ IMPORTANT : MCP Setup avec pnpm
+
+**Si `/mcp` affiche "No MCP servers configured" :**
+
+**❌ NE PAS** éditer `.claude/mcp.json` manuellement (perte de temps garantie)
+
+**✅ TOUJOURS** utiliser CLI :
+
+```bash
+# Setup MCP (2 minutes)
+claude mcp add context7 "pnpm" "dlx" "@upstash/context7-mcp" \
+  -e "CONTEXT7_API_KEY=votre-clé" --scope user
+
+claude mcp add eslint "pnpm" "dlx" "@eslint/mcp@latest" --scope user
+
+# Vérifier
+claude mcp list
+# → context7: ✓ Connected
+# → eslint: ✓ Connected
+
+# Redémarrer Claude Code (Cmd+Q puis relancer)
+```
+
+**Détails complets :** [docs/TROUBLESHOOTING-MCP-PNPM.md](./docs/TROUBLESHOOTING-MCP-PNPM.md)
+
+**Leçon apprise (coût réel 3-4h) :** Claude Code utilise state global (`~/.claude.json`), pas config files.
 
 ---
 
