@@ -1,8 +1,9 @@
 # 🎭 Multi-IA Roundtable Pattern - Documentation Complète
 
-**Version:** 1.0
-**Date:** 2025-10-12
-**Statut:** Concept validé, test en cours (Annuaire Santé MVP)
+**Version:** 1.1
+**Date:** 2025-10-11
+**Statut:** Concept validé, refactoré (constitution allégée vs spec détaillée)
+**Changelog v1.1:** Clarification séparation concerns constitution.md (gouvernance) vs spec.md (technique)
 
 ---
 
@@ -14,7 +15,7 @@
 - **3 IA spécialisées** participent à une "réunion virtuelle"
 - **Chaque IA a un rôle distinct** (pas redondance)
 - **Claude orchestrateur** arbitre et tranche les décisions finales
-- **Output : `constitution.md`** enrichi pour Spec-Kit
+- **Output : `constitution.md` ALLÉGÉE** (gouvernance) + `spec.md` (détails techniques via `/speckit.specify`)
 
 ### Pourquoi Multi-IA ?
 
@@ -24,6 +25,34 @@
 - ❌ Halluciner sans fact-checking externe
 
 **Solution :** Intelligence collective (3 IA → convergence meilleure décision)
+
+---
+
+## ⚡ TL;DR (Quick Summary)
+
+### 🎯 Outputs Pattern Multi-IA
+
+**Constitution.md** (15-25 pages) - **ALLÉGÉE** :
+- Vision business, Personas, Core Features (justifications business)
+- Stack HIGH-LEVEL (Next.js + Supabase, pas SQL détaillé)
+- Décisions arbitrées (Gemini vs ChatGPT avec justifications)
+- Roadmap (MVP → v2.0 → v3.0 avec triggers clairs)
+- Budget & ROI
+
+**Spec.md** (30-50 pages) - Généré par `/speckit.specify` :
+- Database schema SQL COMPLET (CREATE TABLE, indexes, RLS)
+- API endpoints détaillés (params, responses, validations)
+- Standards techniques (pnpm, TypeScript strict, Zod)
+- Sub-agents architecture (healthcare-expert, security-architect...)
+
+### 📐 Règle Séparation
+
+**Si client non-technique peut comprendre → Constitution**
+**Si code SQL/TypeScript/technique → Spec**
+
+**Exemple :**
+- ✅ Constitution : "Stack Next.js + Supabase (décision : MVP rapide)"
+- ❌ Constitution : `CREATE TABLE practitioners (id UUID...);` → Spec.md
 
 ---
 
@@ -131,14 +160,45 @@
 4. **Applique standards Archon** (E1 architecture-first, E2 types anti-hallucination, etc.)
 
 **Claude rédige :**
-- `.specify/memory/constitution.md` (synthèse enrichie, pas copie brute)
-- Structure Spec-Kit valide (sections obligatoires : Vision, Personas, Core Features, Tech Stack, Quality Gates)
+- `.specify/memory/constitution.md` **ALLÉGÉE** (gouvernance, décisions stratégiques)
+- Structure Spec-Kit valide (Vision, Personas, Core Features, Stack HIGH-LEVEL, Roadmap, Budget)
+- **Détails techniques délégués à `/speckit.specify`** (database schema, API endpoints, sub-agents)
 
 **Durée :** 5-10 min (Claude synthétise et rédige)
 
 ---
 
-## 📋 Structure Constitution.md (Output Final)
+## 📐 Constitution vs Spec - Séparation Concerns
+
+### ⚠️ Problème : Constitution Surdimensionnée
+
+**Symptôme :** Constitution.md contient database schema SQL complet, API endpoints, RLS policies
+**Conséquence :** Doublon avec `spec.md` (généré par `/speckit.specify`)
+
+### ✅ Solution : Séparation Claire
+
+| Aspect | Constitution.md | Spec.md |
+|--------|-----------------|---------|
+| **Rôle** | Gouvernance & Vision | Implémentation Technique |
+| **Audience** | Product Owner, Client, Stakeholders | Développeurs, Sub-agents |
+| **Ton** | Stratégique, business-oriented | Technique, précis |
+| **Contenu** | Vision, Personas, Features (JUSTIF BUSINESS), Stack HIGH-LEVEL, Roadmap, Budget, Décisions arbitrées | Standards techniques, Database schema SQL, API endpoints, Sub-agents architecture, Tests stratégie |
+| **Taille** | 15-25 pages | 30-50 pages |
+| **Durée vie** | Stable (change peu) | Évolutif (s'enrichit pendant implémentation) |
+
+### 🎯 Règle Simple
+
+**Test rapide :** Si tu peux expliquer à un client non-technique → Constitution. Sinon → Spec.
+
+**Exemples :**
+- ✅ Constitution : "Stack Next.js + Supabase (décision : MVP rapide, migration HDS v2.0 si données patient)"
+- ❌ Constitution : `CREATE TABLE practitioners (id UUID, rpps TEXT, ...);` → Spec.md
+- ✅ Constitution : "Database PostGIS pour géolocalisation (<500ms query sur 10K praticiens)"
+- ❌ Constitution : `CREATE INDEX idx_location ON practitioners USING GIST(location);` → Spec.md
+
+---
+
+## 📋 Structure Constitution.md (Output Final - ALLÉGÉE)
 
 ### Template Enrichi Multi-IA
 
@@ -188,25 +248,14 @@
 
 ---
 
-## 🏗️ Architecture Technique
+## 🏗️ Architecture Technique (HIGH-LEVEL)
 
 ### Stack Recommandée (ChatGPT + arbitrage Claude)
 
-**Frontend:**
-- Framework: [Next.js 15 PWA]
-- UI: [Tailwind + shadcn/ui mobile]
-- Carte: [Google Maps API]
-- Offline: [Service Worker + IndexedDB]
-
-**Backend:**
-- Database: [Supabase EU (PostgreSQL + PostGIS)]
-- Auth: [Supabase Auth email/password]
-- API: [Supabase client direct OU NestJS custom]
-
-**Hébergement:**
-- Frontend: [Vercel]
-- Backend: [Supabase EU]
-- Roadmap v2.0: [Migration Scalingo HDS si données patient]
+**Frontend:** Next.js 15 PWA + Tailwind + shadcn/ui + Google Maps API
+**Backend:** Supabase EU (PostgreSQL + PostGIS + Auth + RLS)
+**Hébergement:** Vercel + Supabase EU
+**Roadmap v2.0:** Migration Scalingo HDS (SI ajout données patient)
 
 **Décisions Arbitrées (Claude):**
 ```
@@ -218,6 +267,20 @@ Décision Claude:
 ✅ Migration HDS v2.0 SI ajout données patient (contexte consultation)
 ✅ Base légale RGPD: Intérêt légitime (annuaire professionnel)
 ```
+
+### Database (HIGH-LEVEL)
+
+**Tables principales :**
+- `practitioners` (praticiens + spécialités + localisation PostGIS)
+- `nurses` (auth infirmières + validation admin)
+- `audit_logs` (traçabilité RGPD)
+
+**Contraintes critiques :**
+- PostGIS index géolocalisation (query <500ms sur 10K praticiens)
+- RLS policies Supabase (infirmières validées UNIQUEMENT)
+- Audit trail immuable (conformité RGPD Article 30)
+
+→ **Détails techniques SQL : voir `/speckit.specify` → `specs/001-mvp/spec.md`**
 
 ---
 
@@ -248,100 +311,17 @@ Décision Claude:
 
 ---
 
-## 📊 Database Schema (ChatGPT + validation Claude)
+**→ Database Schema SQL complet : voir `/speckit.specify` → `specs/001-mvp/spec.md`**
 
-### Table `practitioners` (MVP)
-
-```sql
-CREATE TABLE practitioners (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-
-  -- Identité
-  name TEXT NOT NULL,
-  rpps_id TEXT UNIQUE, -- Répertoire Partagé Professions Santé (optionnel MVP)
-  specialty TEXT NOT NULL, -- "Médecin généraliste", "Cardiologue", etc.
-
-  -- Contact
-  phone TEXT NOT NULL,
-  email TEXT,
-
-  -- Localisation
-  address TEXT NOT NULL,
-  city TEXT NOT NULL,
-  postal_code TEXT NOT NULL,
-  location GEOGRAPHY(POINT, 4326), -- PostGIS pour recherche géolocalisée
-
-  -- Métadonnées
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-
-  -- Index
-  CONSTRAINT valid_phone CHECK (phone ~ '^\+?[0-9]{10,15}$')
-);
-
--- Index recherche rapide
-CREATE INDEX idx_practitioners_specialty ON practitioners(specialty);
-CREATE INDEX idx_practitioners_city ON practitioners(city);
-CREATE INDEX idx_practitioners_location ON practitioners USING GIST(location);
-
--- Index full-text search nom
-CREATE INDEX idx_practitioners_name_fts ON practitioners USING GIN(to_tsvector('french', name));
-```
-
-### Table `nurses` (Auth infirmières)
-
-```sql
-CREATE TABLE nurses (
-  id UUID PRIMARY KEY REFERENCES auth.users(id),
-
-  -- Identité
-  full_name TEXT NOT NULL,
-  rpps_id TEXT UNIQUE, -- Validation par pôle santé
-
-  -- Affectation
-  health_center TEXT, -- Centre santé rattachement
-  department TEXT, -- Département
-
-  -- Status
-  validated BOOLEAN DEFAULT FALSE, -- Admin pôle santé valide
-  validated_at TIMESTAMPTZ,
-  validated_by UUID REFERENCES auth.users(id),
-
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
-
-### Row Level Security (RLS) Policies
-
-```sql
--- Infirmières validées peuvent lire praticiens
-CREATE POLICY "Nurses read practitioners"
-ON practitioners FOR SELECT
-TO authenticated
-USING (
-  EXISTS (
-    SELECT 1 FROM nurses
-    WHERE nurses.id = auth.uid()
-    AND nurses.validated = TRUE
-  )
-);
-
--- Infirmières peuvent lire leur propre profil
-CREATE POLICY "Nurses read own profile"
-ON nurses FOR SELECT
-TO authenticated
-USING (auth.uid() = id);
-```
-
-**Décision Arbitrée (Claude):**
+**Décisions Arbitrées Auth (Claude):**
 ```
 ChatGPT proposait: "Auth simple email/password, validation manuelle admin"
 Gemini proposait: "PSC (Pro Santé Connect) obligatoire dès MVP"
 
 Décision Claude:
 ✅ MVP: Auth Supabase email/password + validation admin pôle santé
-✅ v2.0: Migration PSC si obligation réglementaire (actuellement pas obligatoire pour app interne)
-✅ Justification: PSC setup lourd (2-3 jours), MVP urgent (4h30), pôle santé = client unique (pas public)
+✅ v2.0: Migration PSC si obligation réglementaire (pas obligatoire app interne actuellement)
+✅ Justification: PSC setup lourd (2-3 jours), MVP urgent (4h30), client unique (pas public)
 ```
 
 ---
@@ -471,25 +451,26 @@ ChatGPT: "Google Maps (€200 gratuits, stable)"
 
 ---
 
-## 🎯 Next Steps (Workflow Spec-Kit)
+## 🎯 Next Steps (Workflow Spec-Kit Complet)
 
 **Constitution validée → Lancement Spec-Kit:**
 
 ```bash
-# 1. Constitution déjà rédigée (ce fichier)
-# ✅ .specify/memory/constitution.md
+# 1. Constitution ALLÉGÉE déjà rédigée
+# ✅ .specify/memory/constitution.md (gouvernance, décisions stratégiques)
 
-# 2. Specify (5 min)
+# 2. Specify (5-10 min) - GÉNÈRE DÉTAILS TECHNIQUES
 /speckit.specify
-# → Génère specs/001-mvp/spec.md (détails techniques)
+# → specs/001-mvp/spec.md (database schema SQL, API endpoints, sub-agents)
+# ⚠️ C'est ICI que ChatGPT outputs techniques sont détaillés
 
 # 3. Plan (10 min)
 /speckit.plan
-# → Génère specs/001-mvp/plan.md (phases implémentation)
+# → specs/001-mvp/plan.md (phases implémentation)
 
 # 4. Tasks (10 min)
 /speckit.tasks
-# → Génère specs/001-mvp/tasks.md (50-100 tasks granulaires)
+# → specs/001-mvp/tasks.md (50-100 tasks granulaires)
 
 # 5. Implementation (3-4h)
 /implement
@@ -503,12 +484,105 @@ gh pr merge 1 --squash
 
 **Total timeline:** 4h30 (30 min planning + 3-4h implementation + 15 min review)
 
+### 📐 Séparation Constitution → Spec
+
+**Constitution.md (15-25 pages)** :
+- ✅ Vision, Personas, Core Features (justifications business)
+- ✅ Stack HIGH-LEVEL (Next.js + Supabase + Google Maps)
+- ✅ Décisions arbitrées (Gemini vs ChatGPT)
+- ✅ Roadmap (MVP → v2.0 → v3.0 avec triggers)
+- ✅ Conformité HIGH-LEVEL (RGPD Article 6, HDS triggers)
+- ✅ Budget & ROI
+
+**Spec.md (30-50 pages)** - Généré par `/speckit.specify` :
+- ✅ Database schema SQL COMPLET (CREATE TABLE, indexes, RLS policies)
+- ✅ API endpoints détaillés (REST params, responses, validations)
+- ✅ Standards techniques (pnpm, TypeScript strict, Zod)
+- ✅ Sub-agents architecture (healthcare-expert, security-architect, etc.)
+- ✅ Tests stratégie (E2E Playwright, unit Vitest, frameworks)
+
 ---
 
-**Version:** 1.0
-**Date:** 2025-10-12
+**Version:** 1.1
+**Date:** 2025-10-11
 **Validé par:** Claude Sonnet 4.5 (orchestrateur) + Gemini 2.0 Flash (analyste) + ChatGPT o1 (pragmatique)
-**Projet:** Annuaire Santé Pro (infirmières → praticiens)
-**Status:** Constitution prête pour `/speckit.specify`
+**Changelog v1.1:** Constitution allégée (15-25 pages), détails techniques délégués à `/speckit.specify` (spec.md 30-50 pages)
+**Status:** Pattern validé, séparation concerns constitution (gouvernance) vs spec (technique) clarifiée
 
 *Intelligence collective multi-modèle pour décisions architecture complexes* 🎭🤖
+
+---
+
+## 📝 Migration Constitution Existante → Allégée
+
+### Si Constitution.md Actuelle Contient SQL/Code
+
+**Symptômes :**
+- Constitution.md > 30 pages
+- Contient `CREATE TABLE`, `CREATE INDEX`, `CREATE POLICY`
+- Contient détails API endpoints (params TypeScript, responses)
+- Contient RLS policies Supabase détaillées
+
+**Action :**
+
+```bash
+# 1. Extraire détails techniques vers spec.md
+cd projet
+/speckit.specify
+
+# Claude va générer specs/001-mvp/spec.md avec TOUS les détails techniques
+
+# 2. Alléger constitution.md
+# Supprimer sections :
+# - Database Schema SQL complet → Remplacer par "Tables : practitioners, nurses, audit_logs"
+# - API Endpoints détaillés → Remplacer par "REST API search/practitioners (voir spec.md)"
+# - RLS Policies SQL → Remplacer par "RLS Supabase (infirmières validées uniquement)"
+
+# 3. Garder dans constitution.md :
+# - Vision, Personas, Core Features
+# - Stack HIGH-LEVEL (Next.js + Supabase, 1 ligne)
+# - Décisions arbitrées (Gemini vs ChatGPT)
+# - Roadmap (MVP → v2.0 triggers)
+# - Budget & ROI
+```
+
+**Résultat :**
+- Constitution.md : 30+ pages → 15-25 pages (gouvernance claire)
+- Spec.md : 0 pages → 30-50 pages (détails techniques)
+- Pas de doublon
+
+---
+
+## 🎯 Checklist Validation Constitution Allégée
+
+### ✅ Constitution.md CORRECT (15-25 pages)
+
+- [ ] Vision business (problème résolu, solution, ROI)
+- [ ] Personas détaillés (comportements, pain points)
+- [ ] Core Features MVP (P0/P1/P2 avec justifications BUSINESS)
+- [ ] Stack HIGH-LEVEL (1-2 lignes par composant : "Next.js PWA + Supabase EU")
+- [ ] Décisions arbitrées (Gemini vs ChatGPT avec justifications explicites)
+- [ ] Roadmap évolution (MVP → v2.0 → v3.0 avec triggers clairs)
+- [ ] Conformité HIGH-LEVEL (RGPD Article 6, HDS triggers, pas RLS SQL)
+- [ ] Budget & ROI (coûts infrastructure, business model)
+- [ ] **AUCUN code SQL/TypeScript** (délégué à spec.md)
+
+### ❌ Constitution.md INCORRECT (Doublon avec Spec)
+
+- [ ] Contient `CREATE TABLE` OU `CREATE INDEX` → Spec.md
+- [ ] Contient RLS policies SQL → Spec.md
+- [ ] Contient API endpoints TypeScript détaillés → Spec.md
+- [ ] Contient standards techniques (pnpm, Node 20) → Spec.md
+- [ ] Contient sub-agents architecture détaillée → Spec.md
+- [ ] > 30 pages → Probablement trop technique
+
+### ✅ Spec.md CORRECT (30-50 pages) - Généré par `/speckit.specify`
+
+- [ ] Database schema SQL COMPLET (CREATE TABLE, indexes, constraints)
+- [ ] RLS policies Supabase détaillées (SQL complet)
+- [ ] API endpoints détaillés (REST/GraphQL params, responses, validations)
+- [ ] Standards techniques (pnpm EXCLUSIVEMENT, Node 20, TypeScript strict)
+- [ ] Sub-agents architecture (healthcare-expert, security-architect, database-expert...)
+- [ ] Tests stratégie (E2E Playwright, unit Vitest, frameworks, coverage)
+
+---
