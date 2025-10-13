@@ -383,6 +383,74 @@ git push
 
 ---
 
+### **🎨 Philosophy: Design/Dev Decoupling (Critical)**
+
+**⭐ COMPETITIVE ADVANTAGE vs AI Tools (Lovable/Bolt/v0)**
+
+**Problem:**
+- AI tools generate functional code BUT generic design (blue buttons, Inter font, standard spacing)
+- Design coupled with code → customization = 1-2 days refactor nightmare
+- Hardcoded colors in components → brittle, unmaintainable
+
+**Solution:**
+- `/speckit.design` generates placeholder design system (Day 1)
+- Claude Code develops using **CSS variables only** (Day 2-3)
+- Human/Designer creates custom design **in parallel** (Day 4)
+- `/import-design` merges custom tokens → UI transforms (15 min vs 1-2 days)
+
+**Architecture:**
+
+```
+Day 1: /speckit.design → design-tokens.json (placeholder: blue #3B82F6)
+                      → components use: bg-primary-500 (NOT bg-blue-600)
+
+Day 2-3: Claude develops (backend + frontend)
+         ↓
+         All components: CSS variables (bg-primary-500, font-heading)
+         NO hardcoded values (bg-blue-600, font-sans)
+
+Day 4: Human designs (PARALLEL work stream)
+       ↓
+       Figma → custom brand (violet #8B5CF6)
+       ↓
+       Export design-tokens.json (custom values)
+
+Day 4 (15 min): /import-design custom-tokens.json
+                ↓
+                Replace placeholder → Rebuild Tailwind
+                ↓
+                Result: Custom brand + 0 code changes
+```
+
+**ROI:**
+- Time: 15 min merge vs 1-2 days refactor = **-95% time**
+- Risk: 0 breaking changes vs high risk = **production-safe**
+- Quality: Custom brand vs generic = **client differentiation**
+
+**Key Rules (CRITICAL):**
+
+✅ **DO:**
+- Generate design system via `/speckit.design` on Day 1 (ALWAYS)
+- Use CSS variables for ALL design (colors, fonts, spacing)
+- Document tokens in spec.md design section
+- Designer works in parallel (no blocking dependencies)
+
+❌ **DON'T:**
+- Skip design system in planning (friction later)
+- Hardcode colors in components (`bg-blue-600` → use `bg-primary-500`)
+- Mix hardcoded + tokens (consistency critical)
+- Modify tokens during dev (wait for final design)
+
+**Why This Matters:**
+
+Lovable/Bolt/v0 = Fast code + generic design = **commodity product**
+
+Archon Workflow = Fast code + custom brand = **professional deliverable**
+
+**Client perception:** "This looks like a real product, not a template" = **competitive advantage**
+
+---
+
 ### **Phase 2: Setup GitHub (Mac - 2 min) - Best Practices**
 
 **Objectif:** Backup + Jules Security + Workflow Pro (PAS pour implementation cloud)

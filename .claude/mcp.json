@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "pnpm",
+      "args": ["dlx", "@upstash/context7-mcp"],
+      "env": {
+        "CONTEXT7_API_KEY": "ctx7sk-a4cbd112-d168-4531-bef2-d6e878606a31"
+      }
+    },
+    "eslint": {
+      "command": "pnpm",
+      "args": ["dlx", "@eslint/mcp@latest"]
+    },
+    "supabase": {
+      "type": "http",
+      "url": "http://localhost:54321/mcp"
+    },
+    "figma": {
+      "command": "pnpm",
+      "args": ["dlx", "@figma/mcp-server"],
+      "env": {
+        "FIGMA_PERSONAL_ACCESS_TOKEN": ""
+      }
+    }
+  }
+}

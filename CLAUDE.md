@@ -682,11 +682,84 @@ P4: Performance # Lighthouse 90+ (optionnel MVP)
 
 ---
 
-## 🎨 DESIGN SYSTEM SIMPLIFIÉ
+## 🎨 DESIGN SYSTEM PHILOSOPHY ⭐
+
+### **CRITICAL: Design/Dev Decoupling from Day 1**
+
+**⭐ COMPETITIVE ADVANTAGE vs Generic AI Tools**
+
+**Core Philosophy:**
+> "Claude Code generates logic. Human crafts brand. 15-minute merge = custom product."
+
+**Problem AI Tools (Lovable/Bolt/v0):**
+- Generate functional code BUT generic design (blue buttons, Inter font)
+- Design coupled with code → customization = 1-2 days refactor nightmare
+- Hardcoded `className="bg-blue-600"` → brittle, unmaintainable
+
+**Archon Solution:**
+- **Day 1:** `/speckit.design` → placeholder tokens (blue #3B82F6)
+- **Day 2-3:** Claude develops using CSS variables ONLY (`bg-primary-500`)
+- **Day 4:** Human designs custom brand in parallel (violet #8B5CF6)
+- **Day 4 (15 min):** `/import-design custom-tokens.json` → UI transforms
+
+**Key Rules (ENFORCE ALWAYS):**
+
+✅ **YOU MUST:**
+- Generate design system via `/speckit.design` on Day 1 (NEVER skip)
+- Use CSS variables for ALL design decisions (colors, fonts, spacing)
+- NEVER hardcode colors: `bg-blue-600` → use `bg-primary-500`
+- Document tokens in spec.md design section (ALWAYS)
+- Remind user: "Designer can work in parallel now"
+
+❌ **YOU MUST NOT:**
+- Skip design system in planning phase (causes friction later)
+- Hardcode ANY color/font in components (brittle, unmaintainable)
+- Mix hardcoded + tokens (consistency = critical)
+- Modify tokens during dev (wait for final design merge)
+
+**Example GOOD Code:**
+```tsx
+// ✅ Future-proof (design decoupled)
+<button className="bg-primary-500 text-neutral-50 font-heading rounded-md">
+  Submit
+</button>
+
+// When /import-design merges violet brand:
+// primary-500: #3B82F6 → #8B5CF6 (automatic)
+// Component code: 0 changes needed
+```
+
+**Example BAD Code:**
+```tsx
+// ❌ Coupled design (1-2 days refactor to customize)
+<button className="bg-blue-600 text-white font-sans rounded-md">
+  Submit
+</button>
+
+// To change brand: touch 50+ components = nightmare
+```
+
+**Why This = Competitive Advantage:**
+
+| AI Tool | Speed | Design | Result |
+|---------|-------|--------|--------|
+| **Lovable/Bolt/v0** | Fast (3-4h) | Generic (blue template) | Commodity |
+| **Archon Workflow** | Fast (3-4h) | Custom (client brand) | Professional |
+
+**Client perception:** "This looks like a real product, not a template" = **deal closer**
+
+**ROI Validated:**
+- Time: 15 min merge vs 1-2 days refactor = **-95%**
+- Risk: 0 breaking changes vs 20-30% components touched = **production-safe**
+- Quality: Custom brand vs generic = **differentiation**
+
+---
+
+## 🎨 DESIGN SYSTEM SIMPLIFIED (Technical)
 
 ### T002: Design Tokens (2-5 min)
 
-**Généré automatiquement par @design-specialist:**
+**Generated automatically by @design-specialist:**
 
 ```json
 {
