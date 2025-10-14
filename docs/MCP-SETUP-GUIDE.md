@@ -282,10 +282,84 @@ claude mcp add-from-claude-desktop --scope project
 
 ---
 
-### Problème: "MCP server configuré mais n'apparaît pas dans la liste" 🆕
+### Problème: "MCP server configuré dans Claude Desktop mais absent du projet" 🆕🆕
 
 **Date:** 2025-10-14
-**Symptôme:** MCP server (ex: basic-memory) configuré dans `claude_desktop_config.json` mais absent de `ListMcpResourcesTool`
+**Symptôme:** MCP server configuré dans Claude Desktop mais n'apparaît pas dans `claude mcp list` ou `ListMcpResourcesTool`
+
+**Cause Racine:** Architecture MCP à 2 niveaux (Desktop vs Projet)
+
+**Architecture MCP:**
+```
+┌─────────────────────────────────────────┐
+│ Claude Desktop Config                    │
+│ ~/Library/Application Support/Claude/   │
+│ claude_desktop_config.json               │
+│                                          │
+│ - Configuration GLOBALE                  │
+│ - Utilisée par Claude Desktop app        │
+│ - Serena, basic-memory, archon, etc.     │
+└─────────────────────────────────────────┘
+                  ↓ (peut être importée)
+┌─────────────────────────────────────────┐
+│ Projet Config                            │
+│ .claude/mcp.json                         │
+│                                          │
+│ - Configuration PAR PROJET ✅            │
+│ - UTILISÉE par Claude Code               │
+│ - Doit inclure MCP voulus                │
+└─────────────────────────────────────────┘
+```
+
+**Solution:**
+
+**Option 1: Import automatique (recommandé selon guide)**
+```bash
+cd /Users/manu/Documents/DEV/archon-orchestrator
+claude mcp add-from-claude-desktop --scope project
+# → Importe TOUS les MCP depuis Claude Desktop vers .claude/mcp.json
+```
+
+**Option 2: Ajout manuel (si import sélectif voulu)**
+```bash
+# 1. Éditer .claude/mcp.json
+nano .claude/mcp.json
+
+# 2. Ajouter MCP voulu (ex: basic-memory)
+{
+  "mcpServers": {
+    "context7": { ... },
+    "basic-memory": {
+      "command": "/Users/manu/.pyenv/shims/uvx",
+      "args": ["basic-memory", "mcp", "--project", "main"]
+    }
+  }
+}
+
+# 3. Sauvegarder et redémarrer Claude Code
+# Exit session (Ctrl+D)
+# Relancer: claude
+```
+
+**Validation:**
+```bash
+# Vérifier MCP projet
+claude mcp list
+# → Doit lister basic-memory avec ✓ Connected
+
+# Dans Claude Code
+ListMcpResourcesTool(server="basic-memory")
+# → Doit retourner resources (pas "Server not found")
+```
+
+**⚠️ Important:** Claude Code utilise `.claude/mcp.json` (pas `claude_desktop_config.json`)
+
+---
+
+### Problème: "MCP server configuré mais n'apparaît pas dans la liste" (Chemin relatif)
+
+**Date:** 2025-10-14
+**Symptôme:** MCP server configuré dans `.claude/mcp.json` mais ne démarre pas
 
 **Cause:** Chemin relatif de la commande au lieu du chemin absolu
 

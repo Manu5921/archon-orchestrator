@@ -21,6 +21,10 @@
       "env": {
         "FIGMA_PERSONAL_ACCESS_TOKEN": ""
       }
+    },
+    "basic-memory": {
+      "command": "/Users/manu/.pyenv/shims/uvx",
+      "args": ["basic-memory", "mcp", "--project", "main"]
     }
   }
 }

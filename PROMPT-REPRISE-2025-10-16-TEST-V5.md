@@ -147,34 +147,41 @@ Dynamic Memory V5              Cross-Project Knowledge
 
 **⚠️ ERREUR RÉSOLUE (2025-10-14):**
 
-**Problème:** basic-memory configuré mais absent de `ListMcpResourcesTool`
+**Problème 1:** basic-memory configuré dans Claude Desktop mais absent de `ListMcpResourcesTool`
 
-**Cause:** Chemin relatif `"command": "uvx"` au lieu de chemin absolu
+**Cause Racine:** Architecture MCP à 2 niveaux
+- **Claude Desktop config** (`~/Library/Application Support/Claude/claude_desktop_config.json`) = Configuration globale
+- **Projet config** (`.claude/mcp.json`) = **Configuration utilisée par Claude Code** ✅
 
 **Solution appliquée:**
-```json
-// ❌ AVANT (ne fonctionnait pas)
-{
-  "basic-memory": {
-    "command": "uvx",
-    "args": ["basic-memory", "mcp", "--project", "main"]
-  }
-}
+```bash
+# Option 1: Import automatique (selon guide MCP)
+claude mcp add-from-claude-desktop --scope project
 
-// ✅ APRÈS (corrigé)
+# Option 2: Ajout manuel (appliqué)
+# Édité .claude/mcp.json pour ajouter:
 {
   "basic-memory": {
-    "command": "/Users/manu/.pyenv/shims/uvx",
+    "command": "/Users/manu/.pyenv/shims/uvx",  // Chemin absolu ✅
     "args": ["basic-memory", "mcp", "--project", "main"]
   }
 }
 ```
 
-**Règle générale:** Toujours utiliser chemins absolus pour `command` dans MCP config
+**Problème 2:** Chemin relatif `"command": "uvx"` vs absolu dans Claude Desktop config
 
-**Documentation mise à jour:** `/Users/manu/Documents/DEV/archon-orchestrator/docs/MCP-SETUP-GUIDE.md` - Section Troubleshooting
+**Solution:** Déjà corrigé dans Desktop config (chemin absolu `/Users/manu/.pyenv/shims/uvx`)
 
-**Action requise:** Redémarrer Claude Desktop (Cmd+Q puis relancer) pour appliquer correction
+**Règles générales:**
+- ✅ Claude Code utilise `.claude/mcp.json` (pas `claude_desktop_config.json`)
+- ✅ Toujours utiliser chemins absolus pour `command`
+- ✅ Vérifier avec `which <command>` avant configuration
+
+**Documentation mise à jour:**
+- `/Users/manu/Documents/DEV/archon-orchestrator/docs/MCP-SETUP-GUIDE.md` - Section Troubleshooting (architecture 2 niveaux)
+- `/Users/manu/Documents/DEV/archon-orchestrator/.claude/mcp.json` - Ajouté basic-memory
+
+**Action requise:** Redémarrer Claude Code session (Ctrl+D puis `claude`) pour appliquer correction
 
 ---
 
