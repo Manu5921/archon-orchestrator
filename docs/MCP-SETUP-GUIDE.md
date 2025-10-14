@@ -282,6 +282,78 @@ claude mcp add-from-claude-desktop --scope project
 
 ---
 
+### Problème: "MCP server configuré mais n'apparaît pas dans la liste" 🆕
+
+**Date:** 2025-10-14
+**Symptôme:** MCP server (ex: basic-memory) configuré dans `claude_desktop_config.json` mais absent de `ListMcpResourcesTool`
+
+**Cause:** Chemin relatif de la commande au lieu du chemin absolu
+
+**Exemple problème:**
+```json
+{
+  "basic-memory": {
+    "command": "uvx",  // ❌ Chemin relatif ne fonctionne pas
+    "args": ["basic-memory", "mcp", "--project", "main"]
+  }
+}
+```
+
+**Solution:**
+```bash
+# 1. Trouver chemin absolu de la commande
+which uvx
+# → /Users/manu/.pyenv/shims/uvx
+
+# 2. Éditer claude_desktop_config.json
+nano ~/Library/Application\ Support/Claude/claude_desktop_config.json
+
+# 3. Remplacer chemin relatif par absolu
+{
+  "basic-memory": {
+    "command": "/Users/manu/.pyenv/shims/uvx",  // ✅ Chemin absolu
+    "args": ["basic-memory", "mcp", "--project", "main"]
+  }
+}
+
+# 4. Backup recommandé avant édition
+cp ~/Library/Application\ Support/Claude/claude_desktop_config.json \
+   ~/Library/Application\ Support/Claude/claude_desktop_config.json.backup
+
+# 5. Quitter Claude Desktop complètement (Cmd+Q)
+# 6. Relancer Claude Desktop
+# 7. Vérifier MCP disponible dans nouvelle session
+```
+
+**Validation:**
+```bash
+# Test manuel commande MCP
+/Users/manu/.pyenv/shims/uvx basic-memory mcp --project main --help
+# → Doit afficher l'aide sans erreur
+
+# Dans Claude Code (après restart)
+ListMcpResourcesTool(server="basic-memory")
+# → Doit retourner resources disponibles (pas "Server not found")
+```
+
+**Règle générale:**
+- ✅ **Toujours utiliser chemins absolus** pour `command` dans MCP config
+- ✅ Vérifier avec `which <command>` avant configuration
+- ✅ Backup config avant modification
+- ✅ Tester commande manuellement avant restart
+
+**Référence:** Serena MCP utilise déjà chemin absolu (bon exemple)
+```json
+{
+  "serena": {
+    "command": "/Users/manu/.pyenv/shims/uv",  // ✅ Chemin absolu
+    "args": ["run", "--directory", "/Users/manu/dev/serena", "serena-mcp-server"]
+  }
+}
+```
+
+---
+
 ## 🔐 Sécurité
 
 ### Best Practices
