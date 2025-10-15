@@ -2,7 +2,27 @@
 
 **Date Session Précédente:** 15 octobre 2025
 **Date Session Actuelle:** 16 octobre 2025
-**Objectif:** Tester Dynamic Memory V5 sur nouveau projet → Si concluant, implémenter V6
+**Objectif Original:** Tester Dynamic Memory V5 sur nouveau projet → Si concluant, implémenter V6
+
+**⚠️ PLAN RÉVISÉ (2025-10-14 - Session Actuelle):**
+
+Suite à découverte critique architecture MCP 3 niveaux, plan de test révisé:
+
+1. **PRIORITÉ 1: Tester MCP basic-memory** (15-20 min)
+   - Valider configuration `~/.claude.json` (architecture 3 niveaux)
+   - Tester tools MCP disponibles (write_note, read_note, search)
+   - Valider intégration Obsidian (Markdown + YAML)
+
+2. **PRIORITÉ 2: Tester Dynamic Memory V5 + basic-memory** (20-30 min)
+   - Workflow dual-memory (project-memory.md + basic-memory)
+   - Pattern extraction depuis projet → basic-memory
+   - Cross-agent access (Zen MCP → Gemini/Codex → basic-memory)
+
+3. **PRIORITÉ 3: Implémenter V6** (si temps restant)
+   - Workflow V6 Observability (9-12h estimé)
+   - MAIS seulement si tests 1-2 concluants
+
+**Justification:** Découverte architecture 3 niveaux = critique pour stabilité système. Valider avant d'ajouter V6.
 
 ---
 
@@ -145,43 +165,92 @@ Dynamic Memory V5              Cross-Project Knowledge
 
 **Objectif:** Valider système mémoire dual (project-memory.md + basic-memory) après redémarrage Claude Desktop
 
-**⚠️ ERREUR RÉSOLUE (2025-10-14):**
+**⚠️ DÉCOUVERTE CRITIQUE + RÉSOLUTION (2025-10-14):**
 
-**Problème 1:** basic-memory configuré dans Claude Desktop mais absent de `ListMcpResourcesTool`
+**Problème:** basic-memory configuré dans Claude Desktop mais absent de `ListMcpResourcesTool`
 
-**Cause Racine:** Architecture MCP à 2 niveaux
-- **Claude Desktop config** (`~/Library/Application Support/Claude/claude_desktop_config.json`) = Configuration globale
-- **Projet config** (`.claude/mcp.json`) = **Configuration utilisée par Claude Code** ✅
+**Cause Racine:** ⚠️ **Architecture MCP à 3 NIVEAUX** (pas 2 !)
 
-**Solution appliquée:**
+```
+NIVEAU 1: Claude Desktop App
+└─ ~/Library/Application Support/Claude/claude_desktop_config.json
+   ↓ (SÉPARÉ)
+
+NIVEAU 2: Claude Code CLI Global ⚠️ CRITIQUE
+└─ ~/.claude.json (organisé par répertoire)
+   ↓ (peut hériter)
+
+NIVEAU 3: Projet Local (optionnel)
+└─ /path/to/project/.claude/mcp.json
+```
+
+**Problème réel:** basic-memory configuré dans Niveau 1 (Desktop) MAIS absent de Niveau 2 (CLI Global `~/.claude.json`)
+
+**Solutions testées:**
+
+❌ **Option 1: Import automatique (NE SUFFIT PAS)**
 ```bash
-# Option 1: Import automatique (selon guide MCP)
 claude mcp add-from-claude-desktop --scope project
+# → Crée seulement niveau 3 (.claude/mcp.json LOCAL)
+# → Ne met PAS à jour niveau 2 (~/.claude.json GLOBAL) !
+```
 
-# Option 2: Ajout manuel (appliqué)
-# Édité .claude/mcp.json pour ajouter:
+✅ **Option 2: Édition manuelle CLI GLOBAL (SOLUTION FINALE)**
+```bash
+# Éditer ~/.claude.json (pas claude_desktop_config.json !)
+# Ajouter basic-memory dans CHAQUE section mcpServers active
+
+# Section "/Users/manu/dev/serena" (ligne 73-83)
 {
-  "basic-memory": {
-    "command": "/Users/manu/.pyenv/shims/uvx",  // Chemin absolu ✅
-    "args": ["basic-memory", "mcp", "--project", "main"]
+  "/Users/manu/dev/serena": {
+    "mcpServers": {
+      "serena": { ... },
+      "basicmemory": {  // ← Ajouté manuellement
+        "type": "stdio",
+        "command": "/Users/manu/.pyenv/shims/uvx",
+        "args": ["basic-memory", "mcp", "--project", "main"],
+        "env": {}
+      }
+    }
+  }
+}
+
+# Section "/Users/manu" (ligne 626-636)
+{
+  "/Users/manu": {
+    "mcpServers": {
+      "archon": { ... },
+      "context7": { ... },
+      "basicmemory": {  // ← Ajouté manuellement aussi
+        "type": "stdio",
+        "command": "/Users/manu/.pyenv/shims/uvx",
+        "args": ["basic-memory", "mcp", "--project", "main"],
+        "env": {}
+      }
+    }
   }
 }
 ```
 
-**Problème 2:** Chemin relatif `"command": "uvx"` vs absolu dans Claude Desktop config
+**Règles générales (révisées):**
+- ⚠️ **Claude Desktop app ≠ Claude Code CLI** → Fichiers config DIFFÉRENTS
+- ⚠️ **`~/.claude.json` organisé PAR RÉPERTOIRE** → Ajouter MCP dans CHAQUE section utilisée
+- ✅ **Toujours chemins ABSOLUS** → `/Users/manu/.pyenv/shims/uvx` (pas `uvx`)
+- ✅ **Redémarrer = EXIT Claude Code** → Ctrl+D puis `claude` (pas juste redémarrage Desktop)
 
-**Solution:** Déjà corrigé dans Desktop config (chemin absolu `/Users/manu/.pyenv/shims/uvx`)
+**Documentation mise à jour (COMPLÈTE):**
+- ✅ `/Users/manu/Documents/DEV/archon-orchestrator/docs/MCP-SETUP-GUIDE.md` - v2.1 (Architecture 3 Niveaux)
+- ✅ `/Users/manu/Documents/DEV/archon-orchestrator/docs/MCP-ARCHITECTURE-3-LEVELS.md` - Diagramme complet
+- ✅ `/Users/manu/Documents/DEV/archon-orchestrator/scripts/add-mcp-to-cli.sh` - Script helper
+- ✅ `/Users/manu/Documents/DEV/archon-orchestrator/scripts/README-add-mcp-to-cli.md` - Guide script
+- ✅ `~/.claude.json` - Édité manuellement (2 sections)
 
-**Règles générales:**
-- ✅ Claude Code utilise `.claude/mcp.json` (pas `claude_desktop_config.json`)
-- ✅ Toujours utiliser chemins absolus pour `command`
-- ✅ Vérifier avec `which <command>` avant configuration
+**Référence Historique:**
+- Même problème résolu pour Serena MCP (conversation ChatGPT)
+- Leçon initiale: Desktop config ≠ CLI config
+- Leçon aujourd'hui: **3 niveaux** (pas 2 !) - CLI Global = fichier critique oublié
 
-**Documentation mise à jour:**
-- `/Users/manu/Documents/DEV/archon-orchestrator/docs/MCP-SETUP-GUIDE.md` - Section Troubleshooting (architecture 2 niveaux)
-- `/Users/manu/Documents/DEV/archon-orchestrator/.claude/mcp.json` - Ajouté basic-memory
-
-**Action requise:** Redémarrer Claude Code session (Ctrl+D puis `claude`) pour appliquer correction
+**Action requise:** EXIT Claude Code (Ctrl+D) + Relancer `claude` pour activer configuration niveau 2
 
 ---
 

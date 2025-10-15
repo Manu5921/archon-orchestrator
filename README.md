@@ -1,67 +1,69 @@
-# 🎼 ARCHON ORCHESTRATOR - Workflow V4
+# 🎼 ARCHON ORCHESTRATOR - Workflow V5.1
 
-**Workflow multi-device productif avec Claude Max + Jules Security + GitHub Actions**
+**Workflow checkpoint-driven avec Multi-IA + MCP + Dynamic Memory**
 
-**Version:** 4.1 (Spec-Kit Enhanced - Workflow Autonome)
-**Date:** 2025-10-10
-**Model:** Claude Sonnet 4.5 (SOTA coding - 49% SWE-bench, 0% error rate)
+**Version:** 5.1 (Checkpoint-Driven Quality + Gemini-Optimized)
+**Date:** 2025-10-15
+**Model:** Claude Sonnet 4.5 (claude-sonnet-4-5-20250929) + Haiku 4 available
 **Capacité:** 8-12 clients/semaine | €80K-€100K/mois revenue
+**Quality:** 8/8 critères via checkpoints every 10 tasks
 
-**🆕 V4.1 - Nouveautés:**
-- `/speckit.design` - Design system automatique (tokens + wireframes + components)
-- `/speckit.agents` - Orchestration prompt généré automatiquement
-- **Workflow 100% autonome** - Aucune guidance manuelle nécessaire
+**🆕 V5.1 - Nouveautés:**
+- **MCP Checkpoints MANDATORY** - ESLint + Context7 + Build every 10 tasks (BLOCKING)
+- **Memory Triggers Exhaustive** - 7 catégories avec verification script
+- **Zen Roundtable Gemini-Optimized** - Analysis-only (8KB vs 56KB, 35× leverage)
+- **Dynamic Memory V5** - Agent self-documentation avec quality template
+- **CLAUDE.md Pattern** - Project-level agent instructions (100-200 lines)
 
 ---
 
 ## 🚀 QUICK START
 
-### Workflow Standard (4-5h par projet)
+### Workflow V5.1 Standard (4-5h par projet)
 
 ```bash
-# 1. Planning (Mac - 30 min)
+# Phase 0: Multi-IA Roundtable (30-45 min) ⭐ V5.1 GEMINI-OPTIMIZED
 cd ~/Documents/DEV/clients
-./setup-project.sh nouveau-client
-cd nouveau-client/
+mkdir nouveau-projet && cd nouveau-projet
+git init
 
-/speckit.constitution  # → .specify/memory/constitution.md (5 min)
-/speckit.specify       # → specs/001-mvp/spec.md (5 min)
-/speckit.clarify       # → Q&A iteration si ambiguïtés (5 min)
-/speckit.design        # → design-tokens.json + wireframes/ + components-list.md (5 min) 🆕
-/speckit.plan          # → specs/001-mvp/plan.md (5 min)
-/speckit.tasks         # → specs/001-mvp/tasks.md (5 min, 50-100 tasks)
-/speckit.agents        # → Prompt orchestration optimisé (2 min) 🆕
+/zen-roundtable "Brief: [description projet]"
+# → Gemini + Codex + Claude analysis (3-4 min)
+# → Output V5.1 (8KB total):
+#   ✅ analysis-multi-ia.md (5KB - insights + decisions)
+#   ✅ prompt-constitution.md (2-3KB - instructions)
+#   ✅ prompt-specify.md (1-2KB - instructions)
 
-git add .specify/ specs/ design/
-git commit -m "docs: planning complete with design system"
-git push
+# Phase 1: Spec-Kit Planning (30-35 min)
+/speckit.constitution  # → constitution.md (60-90s REAL generation)
+/speckit.specify       # → spec.md (90-120s REAL generation)
+/speckit.init          # → CLAUDE.md + project-memory.md + ci-template.yml ⭐ V5
+/speckit.clarify       # → Q&A iteration si ambiguïtés (optionnel)
+/speckit.design        # → design-tokens.json + wireframes + components ⭐ NEVER SKIP
+/speckit.plan          # → plan.md (architecture + file structure)
+/speckit.tasks         # → tasks.md (50-100 tasks checkboxes format)
+/speckit.agents        # → ORCHESTRATION.md (sub-agents strategy) ⭐ V5
 
-# 2. Setup GitHub Actions (1 min)
-mkdir -p .github/workflows
-cp ~/archon-orchestrator/.github/workflows/claude-max-implementation.yml .github/workflows/
-echo $CLAUDE_OAUTH_TOKEN | gh secret set CLAUDE_CODE_OAUTH_TOKEN --repo USER/REPO
-gh label create run-claude --color "0E8A16"
+# Phase 2: GitHub Setup (2 min)
+# Lis CLAUDE.md section 2, exécute steps exactement
+# → Branch, commit, push, PR creation
 
-git add .github/workflows/
-git commit -m "feat: add GitHub Actions + Jules Security"
-git push
-
-# 2b. Setup MCP (Optionnel - 10 sec)
-# ONE-TIME: Config dans Claude Desktop → Settings → MCP
-#   - Context7 (patterns), Supabase (DB)
-#   - ESLint (quality), Semgrep (security)
-claude mcp add-from-claude-desktop --scope project
-
-# 3. Implementation (Mac LOCAL - 3-4h) ⭐ TOUJOURS EN LOCAL
-/implement
-# [COLLER LE PROMPT GÉNÉRÉ PAR /SPECKIT.AGENTS] 🆕
-# → Sub-agents orchestrés automatiquement (backend → frontend → testing)
-# → MCP Context7 juste-in-time (Next.js, Supabase, shadcn/ui docs)
-# → ESLint checkpoints inline (code clean dès génération)
-# → Commits réguliers + push GitHub (backup)
-# → Jules scanne async (GitHub Actions)
-
-# Fallback cloud (rare <5%): gh issue create --body "$(cat prompt-orchestration.md)" --label run-claude
+# Phase 3: Implementation (3-4h) ⭐ V5.1 CHECKPOINT-DRIVEN
+/speckit.implement
+# → Lit ORCHESTRATION.md automatiquement ✅
+# → Lit CLAUDE.md automatiquement ✅
+# → Active checkpoints every 10 tasks:
+#   ✅ T010: ESLint + Build + Context7 (if new lib) + Memory verification
+#   ✅ T020: ESLint + Build + Context7 + Memory verification
+#   ✅ T030: ... (repeat until all tasks)
+# → Sub-agents parallèles (backend + frontend + testing)
+# → MCP tools MANDATORY:
+#   - mcp__eslint__lint-files (every 10 tasks P1 BLOCKER)
+#   - mcp__context7__get-library-docs (new libraries verification)
+# → Auto-documentation:
+#   - project-memory.md (5-15 decisions documented)
+#   - Task tracking automatic (sed commands)
+# → Quality: 8/8 critères via checkpoints
 
 # 4. Review + Merge (Mac OU mobile - 15 min)
 gh pr view 1

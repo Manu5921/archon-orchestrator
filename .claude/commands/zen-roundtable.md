@@ -16,6 +16,7 @@ Execute comprehensive project analysis and generate **constitution.md** + **spec
 **Output Files:**
 - ✅ `.specify/memory/constitution.md` (15-25 pages HIGH-LEVEL governance)
 - ✅ `specs/001-mvp/spec.md` (30-50 pages technical base)
+- ✅ `project-memory.md` (🆕 V5 - Dynamic Memory initial state)
 
 **Next Steps:** `/speckit.clarify` → `/speckit.design` → `/speckit.plan` → `/speckit.tasks` → `/speckit.agents`
 
@@ -146,7 +147,11 @@ After receiving both Gemini + Codex outputs:
 mkdir -p .specify/memory specs/001-mvp
 ```
 
-**Generate TWO files using Write tool:**
+**Generate THREE files using Write tool:**
+
+1. `.specify/memory/constitution.md` (HIGH-LEVEL governance)
+2. `specs/001-mvp/spec.md` (TECHNICAL details)
+3. 🆕 `project-memory.md` (DYNAMIC MEMORY V5 - initial state)
 
 ---
 
@@ -678,11 +683,348 @@ npx shadcn-ui@latest add button card input form label select table dialog toast
 
 ---
 
+#### FILE 3: `project-memory.md` (🆕 V5 - DYNAMIC MEMORY)
+
+**Purpose:** Living memory that will evolve during implementation (agent-writable).
+
+**Initial State (Phase 0):**
+
+```markdown
+# Project Memory: [Project Name]
+
+**Created:** [date]
+**Last Updated:** [date]
+**Phase:** Planning
+**Status:** Active
+
+---
+
+## 🎯 PROJECT IDENTITY
+
+### Vision (One-Liner)
+> [Extract from constitution.md - problem statement one-liner]
+
+### Client Context
+- **Type:** [Startup / PME / Enterprise / Internal Tool]
+- **Sector:** [SaaS / E-commerce / Healthcare / Finance / etc.]
+- **Target Users:** [B2B / B2C / Internal]
+- **Scale:** MVP
+- **Budget:** [From Codex cost analysis]
+
+### Timeline
+- **Kickoff:** [date]
+- **MVP Target:** [From constitution roadmap]
+- **Launch Target:** [From constitution roadmap]
+
+---
+
+## 🏗️ ARCHITECTURAL DECISIONS (ADR)
+
+### Tech Stack
+
+**Frontend:**
+- Framework: [From spec.md]
+- UI Library: [shadcn/ui]
+- Styling: Tailwind CSS
+- State Management: [From spec.md or TBD]
+
+**Backend:**
+- Runtime: [From spec.md]
+- Framework: [From spec.md]
+- Database: [From spec.md - e.g., Supabase PostgreSQL]
+- ORM: [From spec.md or TBD]
+
+**Infrastructure:**
+- Hosting: [From spec.md - e.g., Vercel]
+- CDN: [From spec.md]
+- Storage: [From spec.md]
+- CI/CD: GitHub Actions
+
+### Architecture Pattern
+- **Chosen:** [From constitution.md - Monolith/Microservices/Serverless]
+- **Reason:** [Extract from Multi-IA arbitration rationale]
+- **Trade-offs Accepted:**
+  - ✅ **Pros:** [From Codex analysis]
+  - ❌ **Cons:** [From Gemini critical analysis]
+
+### Authentication Strategy
+- **Approach:** [From spec.md - e.g., Supabase Auth]
+- **Reason:** [Extract from arbitration - e.g., "Built-in security, -90% dev time"]
+- **OAuth Providers:** [From spec.md]
+- **Session Management:** [From spec.md]
+
+### Data Modeling
+- **Primary Entities:** [From spec.md schema - list tables]
+- **Key Relations:** [From spec.md - describe main foreign keys]
+- **Indexes:** [From spec.md - list indexes OR "Will be documented in Runtime Decisions"]
+- **Migrations Strategy:** [TBD or from spec.md]
+
+---
+
+## 🎨 DESIGN SYSTEM (Brand Identity)
+
+### Design Decoupling Status
+- **Design Tokens Generated:** [NO - will be done in /speckit.design]
+- **Custom Brand Merged:** [NO - pending Phase 4 /import-design]
+- **Design Source:** Placeholder (blue tokens)
+
+### Color Palette
+```json
+{
+  "primary": {"50": "#EFF6FF", "500": "#3B82F6", "900": "#1E3A8A"},
+  "secondary": {"50": "#F0FDF4", "500": "#10B981", "900": "#064E3B"},
+  "neutral": {"50": "#F8FAFC", "500": "#64748B", "900": "#0F172A"}
+}
+```
+**Note:** Placeholder tokens (will be replaced via /import-design Phase 4)
+
+### Typography
+- **Heading Font:** [From spec.md design-tokens or "Inter (placeholder)"]
+- **Body Font:** [From spec.md design-tokens or "Inter (placeholder)"]
+- **Code Font:** [From spec.md design-tokens or "JetBrains Mono"]
+
+### Components Library
+- **Source:** shadcn/ui
+- **Components Used:** [From spec.md components-list.md or TBD]
+
+---
+
+## 🧩 PATTERNS APPLIED
+
+### 1. Design/Dev Decoupling ⭐
+- **Reference:** `docs/GOLDEN-PATTERNS.md` - Section Design/Dev Decoupling
+- **Health Score:** 9.9/10 (Competitive Advantage)
+- **Applied When:** Phase 1 `/speckit.design` → design-tokens.json will be generated
+- **Custom Brand Status:** Pending (Phase 4 /import-design)
+- **ROI:** -95% time (15 min merge vs 1-2 days refactor)
+
+### 2. Zen MCP Multi-IA Orchestration
+- **Reference:** `docs/ZEN-MCP-WORKFLOW-ORCHESTRATION.md`
+- **Health Score:** 9.8/10 (Validated Production)
+- **Applied When:** Phase 0 `/zen-roundtable` (this file created via Multi-IA)
+- **Results:**
+  - **Codex (gpt-5):** [Summarize key technical recommendations from output]
+  - **Gemini (2.5-pro):** [Summarize key critical analysis from output]
+  - **Claude (Sonnet 4.5):** Arbitrated → Final decisions documented in constitution.md + spec.md
+- **ROI:** -87% time (45 min vs 6h manual roundtrips)
+
+### 3. Sub-Agents Orchestration
+- **Reference:** `docs/SUB-AGENTS-MASTERY.md`
+- **Health Score:** 9.5/10 (Proven Pattern)
+- **Agents Generated:** [From spec.md - backend-specialist, frontend-specialist, design-specialist, testing-specialist]
+- **Orchestration:** `/speckit.agents` will generate optimal prompts
+- **ROI:** 3-4h implementation vs 6-8h sequential
+
+### 4. Dynamic Memory V5 🆕
+- **Reference:** `docs/GOLDEN-PATTERNS.md` - Section Dynamic Memory Pattern V5
+- **Health Score:** 10.0/10 (Game Changer)
+- **Applied:** This file = living memory (agent-writable during Phase 2 implementation)
+- **Usage:** Agents will call `/update-memory` to document runtime decisions (WHY behind HOW)
+- **ROI:** -90% onboarding time, -95% audit compliance effort
+
+---
+
+## 🔒 COMPLIANCE & SECURITY
+
+### Regulatory Requirements
+- **RGPD (GDPR):** [From constitution.md - YES/NO]
+  - **Data retention:** [From constitution or TBD]
+  - **Right to deletion:** [TBD implementation]
+  - **Consent management:** [TBD implementation]
+- **HIPAA:** [From constitution.md - YES/NO/N/A]
+- **SOC2:** [From constitution.md - YES/NO/N/A]
+- **PCI-DSS:** [From constitution.md - YES/NO/N/A or "Using Stripe"]
+- **Custom Requirements:** [From Gemini critical analysis - compliance risks]
+
+### Security Measures
+- **Authentication:** [From spec.md - e.g., Supabase Auth with Google OAuth]
+- **Authorization:** [From spec.md - e.g., Row-Level Security policies]
+- **Data Encryption:**
+  - At rest: [From spec.md or "YES via Supabase"]
+  - In transit: [HTTPS enforced / TLS 1.3]
+- **Secrets Management:** [Environment variables / TBD]
+- **Rate Limiting:** [TBD implementation]
+- **CSRF Protection:** [TBD implementation]
+- **XSS Prevention:** [TBD implementation]
+
+### Jules Security Scan
+- **Scan Date:** [TBD - Phase 5 review]
+- **Score:** [TBD]
+- **Critical Issues:** [TBD]
+- **Status:** Not yet scanned (will be done Phase 5)
+
+---
+
+## 🚨 CRITICAL CONTEXT (Read First)
+
+### Must-Know Constraints
+1. **[Constraint 1]:** [From constitution.md or Gemini analysis - critical constraints]
+2. **[Constraint 2]:** [From constitution.md - technical limitations]
+3. **[Constraint 3]:** [From constitution.md - business constraints]
+
+### Known Risks & Mitigations
+| Risk | Severity | Probability | Mitigation Strategy | Owner |
+|------|----------|-------------|---------------------|-------|
+| [From Gemini analysis - risk 1] | High/Med/Low | High/Med/Low | [From Codex - mitigation] | [TBD] |
+| [From Codex analysis - technical risk 1] | ... | ... | ... | ... |
+
+### Stakeholder Map
+| Name | Role | Involvement | Communication Frequency |
+|------|------|-------------|-------------------------|
+| [From constitution or TBD] | [Decision Maker / Sponsor / User Rep] | [Level] | [Daily / Weekly / Milestones] |
+
+### Success Metrics (KPIs)
+**From constitution.md - Success Metrics section:**
+- **Technical:** [Build time, Test coverage, Lighthouse score]
+- **Business:** [User sign-ups, Revenue, NPS score]
+- **Launch Criteria:** [List of must-have metrics to consider MVP "done"]
+
+---
+
+## ⚙️ RUNTIME DECISIONS (Self-Documented by Agents) 🆕
+
+> **Philosophy:** This section will be **populated during Phase 2 implementation** by agents using `/update-memory`. It captures the **WHY** behind implementation decisions in real-time.
+
+### Backend Decisions
+
+*[Will be populated by backend-specialist during Phase 2 using /update-memory]*
+
+**Example structure (agents will follow this template):**
+
+#### [YYYY-MM-DD] [Decision Title]
+- **Agent:** backend-specialist
+- **Decision:** [What was implemented]
+- **Reason:** [Why this approach vs alternatives]
+- **Trade-offs:** [Pros / Cons accepted]
+- **Alternative Considered:** [What was NOT chosen and why]
+- **Validation:** [How verified this works]
+
+---
+
+### Frontend Decisions
+
+*[Will be populated by frontend-specialist during Phase 2 using /update-memory]*
+
+---
+
+### Testing Decisions
+
+*[Will be populated by testing-specialist during Phase 2 using /update-memory]*
+
+---
+
+### Design Decisions
+
+*[Will be populated by design-specialist during Phase 1 /speckit.design using /update-memory]*
+
+---
+
+### DevOps Decisions
+
+*[Will be populated by devops-specialist if needed using /update-memory]*
+
+---
+
+## 🐛 ISSUES ENCOUNTERED & RESOLVED
+
+*[Will be populated during implementation when significant issues are encountered and resolved]*
+
+**Template structure:**
+
+### [Issue #1] [Title]
+- **Date:** [YYYY-MM-DD]
+- **Phase:** [Planning / Implementation / Review]
+- **Agent:** [Which agent encountered this]
+- **Context:** [What happened, what was expected]
+- **Root Cause:** [Why it failed - be specific]
+- **Solution Applied:** [How fixed - code snippet if relevant]
+- **Prevention:** [What to avoid in future / pattern to use]
+- **Time Impact:** [+X hours to project timeline]
+
+---
+
+## 📝 SESSION NOTES (Chronological)
+
+### Session [date] - Phase 0: Multi-IA Roundtable
+- **Duration:** 4-5 min
+- **Outcome:** constitution.md + spec.md + project-memory.md (this file) generated
+- **Key Decisions:**
+  - **Architecture:** [From constitution - chosen pattern]
+  - **Tech Stack:** [From spec - stack chosen]
+  - **Compliance:** [From constitution - RGPD/HIPAA/etc.]
+- **Multi-IA Summary:**
+  - **Codex:** [1-line summary of main technical recommendation]
+  - **Gemini:** [1-line summary of main critical insight]
+  - **Claude:** Arbitrated → Final decisions in constitution.md
+- **Next Steps:** `/speckit.clarify` (if needed) → `/speckit.design` → `/speckit.plan` → `/speckit.tasks` → `/speckit.agents`
+
+*[Additional session notes will be added as project progresses]*
+
+---
+
+## 📚 EXTERNAL REFERENCES
+
+### Documentation
+- **Constitution:** `.specify/memory/constitution.md`
+- **Technical Spec:** `specs/001-mvp/spec.md`
+- **Design Figma:** [TBD - will be added if custom design created]
+
+### Related Patterns
+- [GOLDEN-PATTERNS.md](docs/GOLDEN-PATTERNS.md) - Design/Dev Decoupling
+- [ZEN-MCP-WORKFLOW-ORCHESTRATION.md](docs/ZEN-MCP-WORKFLOW-ORCHESTRATION.md) - Multi-IA
+- [SUB-AGENTS-MASTERY.md](docs/SUB-AGENTS-MASTERY.md) - Orchestration
+
+---
+
+**🌟 PROJECT PHILOSOPHY**
+
+> This memory file is the **soul of the project**. It encapsulates the **intentionality** behind every decision. Code shows WHAT we built. Comments show HOW we built it. **This file shows WHY we built it this way.**
+
+> With this memory, any agent (or human, 6 months from now) can understand the project instantly, without reading thousands of lines of code or conversation history.
+
+**Memory Status:** ✅ **LIVING DOCUMENT - WILL BE UPDATED BY AGENTS DURING IMPLEMENTATION**
+
+---
+
+**Version:** 1.0 (Dynamic Memory V5 - Initial State)
+**Created:** [date] via Multi-IA Roundtable (Gemini + Codex + Claude)
+**Template Source:** `templates/project-memory-template.md`
+
+*Project Memory V5: Self-Documenting, Agent-Writable, Intentionality-Preserving* 🧠✨
+```
+
+**Critical Instructions for File Generation:**
+
+1. **Extract data from Multi-IA outputs:**
+   - Codex → Tech stack, cost structure, timeline
+   - Gemini → Critical analysis, risks, blind spots
+   - Claude arbitration → Final decisions rationale
+
+2. **Pre-fill sections where data is available:**
+   - Project Identity (from brief + constitution)
+   - ADR (from constitution + spec tech stack)
+   - Patterns Applied (Zen MCP results summary)
+   - Compliance (from constitution)
+   - Critical Context (from Gemini risks + constitution constraints)
+
+3. **Leave TBD where data will come later:**
+   - Runtime Decisions (agents populate Phase 2)
+   - Issues Encountered (populate when occurs)
+   - Additional session notes (populate as project progresses)
+
+4. **Link to source files:**
+   - constitution.md (HIGH-LEVEL governance)
+   - spec.md (TECHNICAL details)
+   - This file (LIVING MEMORY - WHY behind decisions)
+
+---
+
 ### Step 4: Verify Files Created
 
 ```bash
 ls -lh .specify/memory/constitution.md
 ls -lh specs/001-mvp/spec.md
+ls -lh project-memory.md
 
 echo "✅ Files created - Ready for Spec-Kit workflow"
 echo "Next: /speckit.clarify (if needed) → /speckit.design → /speckit.plan → /speckit.tasks"
@@ -696,11 +1038,12 @@ Update todo list - mark all steps completed.
 
 ## Output Format
 
-**Deliverables:** 2 files ready for Spec-Kit workflow
+**Deliverables:** 3 files ready for Spec-Kit workflow
 
 **Files Created:**
 1. `.specify/memory/constitution.md` (15-25 pages HIGH-LEVEL governance)
 2. `specs/001-mvp/spec.md` (30-50 pages technical base)
+3. `project-memory.md` (🆕 V5 - Dynamic Memory initial state)
 
 **Time:** ~4-5 minutes total (vs 10-20 min manual Multi-IA roundtrip + file writing)
 
@@ -727,6 +1070,7 @@ Update todo list - mark all steps completed.
 3. Files created:
    - `.specify/memory/constitution.md` (business vision + HIGH-LEVEL architecture)
    - `specs/001-mvp/spec.md` (SQL schema + API endpoints + sub-agents)
+   - `project-memory.md` (🆕 V5 - Dynamic Memory initial state with Multi-IA results)
 4. Ready for `/speckit.clarify` → `/speckit.design` → `/speckit.plan` → `/speckit.tasks`
 
 ---

@@ -1,14 +1,39 @@
 # 🔌 MCP Setup Guide - Ultra Simple
 
-**Version:** 2.0 (Simplifié)
-**Date:** 2025-10-09
+**Version:** 2.1 (Architecture 3 Niveaux)
+**Date:** 2025-10-14
 **Workflow:** V4 Multi-Device
+**Découverte Critique:** Claude Desktop ≠ Claude Code CLI (fichiers config SÉPARÉS)
 
 ---
 
 ## 🎯 Vue d'Ensemble
 
 Configuration MCP servers pour Claude Code en **1 commande**.
+
+### ⚠️ Architecture MCP à 3 Niveaux (CRITIQUE - Lire d'abord !)
+
+**DÉCOUVERTE 2025-10-14:** Claude utilise **3 fichiers de configuration DIFFÉRENTS** (pas 1 seul !)
+
+```
+NIVEAU 1: Claude Desktop App
+└─ ~/Library/Application Support/Claude/claude_desktop_config.json
+   ↓ (SÉPARÉ)
+
+NIVEAU 2: Claude Code CLI Global ⚠️ CRITIQUE
+└─ ~/.claude.json (organisé par répertoire)
+   ↓ (peut hériter)
+
+NIVEAU 3: Projet Local (optionnel)
+└─ /path/to/project/.claude/mcp.json
+```
+
+**Règle d'or:** Si MCP configuré dans Desktop mais ABSENT de Claude Code CLI:
+→ **Éditer `~/.claude.json` manuellement** (pas `claude_desktop_config.json` !)
+
+**Détails complets:** Voir section Troubleshooting → "MCP server configuré dans Claude Desktop mais absent du projet"
+
+---
 
 ### MCP Servers Recommandés
 
@@ -287,72 +312,223 @@ claude mcp add-from-claude-desktop --scope project
 **Date:** 2025-10-14
 **Symptôme:** MCP server configuré dans Claude Desktop mais n'apparaît pas dans `claude mcp list` ou `ListMcpResourcesTool`
 
-**Cause Racine:** Architecture MCP à 2 niveaux (Desktop vs Projet)
+**Cause Racine:** ⚠️ **Architecture MCP à 3 NIVEAUX** (pas 2 !) - **DÉCOUVERTE CRITIQUE**
 
-**Architecture MCP:**
+**Architecture MCP COMPLÈTE:**
 ```
-┌─────────────────────────────────────────┐
-│ Claude Desktop Config                    │
-│ ~/Library/Application Support/Claude/   │
-│ claude_desktop_config.json               │
-│                                          │
-│ - Configuration GLOBALE                  │
-│ - Utilisée par Claude Desktop app        │
-│ - Serena, basic-memory, archon, etc.     │
-└─────────────────────────────────────────┘
-                  ↓ (peut être importée)
-┌─────────────────────────────────────────┐
-│ Projet Config                            │
-│ .claude/mcp.json                         │
-│                                          │
-│ - Configuration PAR PROJET ✅            │
-│ - UTILISÉE par Claude Code               │
-│ - Doit inclure MCP voulus                │
-└─────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│ NIVEAU 1: Claude Desktop App (Interface graphique)         │
+│ ~/Library/Application Support/Claude/                      │
+│ claude_desktop_config.json                                  │
+│                                                             │
+│ - Configuration GLOBALE                                     │
+│ - Utilisée par Claude Desktop app seulement                │
+│ - Interface: Settings → MCP → Add Server                   │
+└─────────────────────────────────────────────────────────────┘
+                  ↓ SÉPARÉ DE ↓
+┌─────────────────────────────────────────────────────────────┐
+│ NIVEAU 2: Claude Code CLI (Terminal)                       │
+│ ~/.claude.json                                              │
+│                                                             │
+│ - Configuration GLOBALE CLI ✅ CRITIQUE                     │
+│ - Utilisée par Claude Code (terminal 'claude')             │
+│ - **SÉPARÉ de claude_desktop_config.json**                 │
+│ - DOIT être configuré MANUELLEMENT                         │
+│ - Contient mcpServers par RÉPERTOIRE                       │
+└─────────────────────────────────────────────────────────────┘
+                  ↓ peut hériter de ↓
+┌─────────────────────────────────────────────────────────────┐
+│ NIVEAU 3: Projet Local (Optionnel)                         │
+│ /path/to/project/.claude/mcp.json                          │
+│                                                             │
+│ - Configuration PAR PROJET                                  │
+│ - Surcharge config globale CLI si définie                  │
+│ - Créée via: claude mcp add-from-claude-desktop            │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-**Solution:**
+**⚠️ DÉCOUVERTE CRITIQUE (2025-10-14):**
 
-**Option 1: Import automatique (recommandé selon guide)**
+Le problème n'était PAS juste "Desktop vs Projet" mais **"Desktop vs CLI Global vs Projet"** !
+
+**Pourquoi `claude mcp add-from-claude-desktop` ne suffit PAS toujours:**
+
+1. **Desktop config ≠ CLI config** → Fichiers DIFFÉRENTS (claude_desktop_config.json vs .claude.json)
+2. **La commande `claude mcp add-from-claude-desktop`** crée seulement `.claude/mcp.json` LOCAL (niveau 3)
+3. **Claude Code CLI lit AUSSI `~/.claude.json`** (niveau 2) selon le répertoire courant
+4. **Si MCP absent de `~/.claude.json`** → Claude Code CLI ne le voit pas (même si configuré dans Desktop)
+
+**Cas d'Usage Réel (basic-memory troubleshooting):**
+
 ```bash
-cd /Users/manu/Documents/DEV/archon-orchestrator
-claude mcp add-from-claude-desktop --scope project
-# → Importe TOUS les MCP depuis Claude Desktop vers .claude/mcp.json
-```
+# Situation initiale:
+# ✅ basic-memory configuré dans claude_desktop_config.json (Desktop app fonctionne)
+# ❌ basic-memory ABSENT de ~/.claude.json (Claude Code CLI ne le voit pas)
+# ❌ Même après 3 redémarrages de Claude Desktop (mauvais fichier !)
 
-**Option 2: Ajout manuel (si import sélectif voulu)**
-```bash
-# 1. Éditer .claude/mcp.json
-nano .claude/mcp.json
+# Solution appliquée:
+# 1. Éditer ~/.claude.json (pas claude_desktop_config.json !)
+# 2. Trouver sections mcpServers actives (grep -n '"mcpServers"')
+# 3. Ajouter basic-memory dans CHAQUE section active du répertoire
 
-# 2. Ajouter MCP voulu (ex: basic-memory)
+# Exemple: Section "/Users/manu/dev/serena"
 {
-  "mcpServers": {
-    "context7": { ... },
-    "basic-memory": {
-      "command": "/Users/manu/.pyenv/shims/uvx",
-      "args": ["basic-memory", "mcp", "--project", "main"]
+  "/Users/manu/dev/serena": {
+    "mcpServers": {
+      "serena": { ... },
+      "basicmemory": {  // ← Ajouté manuellement
+        "type": "stdio",
+        "command": "/Users/manu/.pyenv/shims/uvx",
+        "args": ["basic-memory", "mcp", "--project", "main"],
+        "env": {}
+      }
     }
   }
 }
 
-# 3. Sauvegarder et redémarrer Claude Code
-# Exit session (Ctrl+D)
-# Relancer: claude
+# Exemple: Section "/Users/manu" (home)
+{
+  "/Users/manu": {
+    "mcpServers": {
+      "archon": { ... },
+      "context7": { ... },
+      "serena": { ... },
+      "basicmemory": {  // ← Ajouté manuellement aussi
+        "type": "stdio",
+        "command": "/Users/manu/.pyenv/shims/uvx",
+        "args": ["basic-memory", "mcp", "--project", "main"],
+        "env": {}
+      }
+    }
+  }
+}
 ```
 
-**Validation:**
+**Solution COMPLÈTE:**
+
+**Option 1: Import automatique (recommandé si sections existent déjà)**
 ```bash
-# Vérifier MCP projet
-claude mcp list
-# → Doit lister basic-memory avec ✓ Connected
-
-# Dans Claude Code
-ListMcpResourcesTool(server="basic-memory")
-# → Doit retourner resources (pas "Server not found")
+cd /Users/manu/Documents/DEV/archon-orchestrator
+claude mcp add-from-claude-desktop --scope project
+# → Crée .claude/mcp.json LOCAL (niveau 3)
+# ⚠️ NE MET PAS À JOUR ~/.claude.json (niveau 2) !
 ```
 
-**⚠️ Important:** Claude Code utilise `.claude/mcp.json` (pas `claude_desktop_config.json`)
+**Option 2: Configuration manuelle CLI GLOBALE (si MCP utilisé partout) ✅ RECOMMANDÉ**
+```bash
+# 1. Trouver sections actives dans ~/.claude.json
+grep -n '"mcpServers"' ~/.claude.json
+
+# 2. Pour CHAQUE section active, éditer:
+nano ~/.claude.json
+
+# 3. Ajouter MCP dans section(s) voulue(s):
+{
+  "/Users/manu": {  // ← Section du répertoire HOME
+    "mcpServers": {
+      "existing-mcp": { ... },
+      "basicmemory": {  // ← Nouveau MCP
+        "type": "stdio",
+        "command": "/Users/manu/.pyenv/shims/uvx",  // Chemin absolu !
+        "args": ["basic-memory", "mcp", "--project", "main"],
+        "env": {}
+      }
+    }
+  },
+  "/Users/manu/dev/serena": {  // ← Section autre répertoire
+    "mcpServers": {
+      "serena": { ... },
+      "basicmemory": {  // ← Répéter pour chaque section
+        "type": "stdio",
+        "command": "/Users/manu/.pyenv/shims/uvx",
+        "args": ["basic-memory", "mcp", "--project", "main"],
+        "env": {}
+      }
+    }
+  }
+}
+
+# 4. Sauvegarder et EXIT Claude Code (Ctrl+D)
+# 5. Relancer: claude
+```
+
+**Option 3: Mix Claude Desktop + Édition manuelle CLI (workflow optimal)**
+```bash
+# 1. Configurer TOUS les MCP dans Claude Desktop (UI friendly)
+# Claude Desktop → Settings → MCP → Add Server
+
+# 2. Éditer ~/.claude.json MANUELLEMENT pour ajouter MCP manquants
+nano ~/.claude.json
+
+# 3. Copier config depuis claude_desktop_config.json vers ~/.claude.json
+# Adapter format si nécessaire (chemin absolu, type: "stdio", etc.)
+
+# Exemple: Copier basic-memory
+# Source: ~/Library/Application Support/Claude/claude_desktop_config.json
+{
+  "basicmemory": {
+    "command": "/Users/manu/.pyenv/shims/uvx",
+    "args": ["basic-memory", "mcp", "--project", "main"]
+  }
+}
+
+# Destination: ~/.claude.json (ajouter dans section "/Users/manu")
+{
+  "/Users/manu": {
+    "mcpServers": {
+      "basicmemory": {
+        "type": "stdio",  // Ajouter type explicite
+        "command": "/Users/manu/.pyenv/shims/uvx",
+        "args": ["basic-memory", "mcp", "--project", "main"],
+        "env": {}  // Ajouter env vide si absent
+      }
+    }
+  }
+}
+
+# 4. Sauvegarder, exit, relancer
+```
+
+**Validation COMPLÈTE:**
+```bash
+# 1. Vérifier fichier Desktop (app graphique)
+cat ~/Library/Application\ Support/Claude/claude_desktop_config.json | grep -A 5 basicmemory
+
+# 2. Vérifier fichier CLI global (terminal)
+cat ~/.claude.json | grep -A 8 basicmemory
+
+# 3. Vérifier fichier projet local (optionnel)
+cat .claude/mcp.json | grep -A 5 basicmemory
+
+# 4. Tester dans Claude Code
+claude
+ListMcpResourcesTool()  # Lister TOUS les MCP
+# → Doit inclure basicmemory
+
+# 5. Vérifier processus actif
+ps aux | grep basic-memory
+# → Doit montrer processus basic-memory en cours
+```
+
+**⚠️ RÈGLES CRITIQUES:**
+
+1. **Claude Desktop app ≠ Claude Code CLI** → Fichiers config DIFFÉRENTS
+2. **`~/.claude.json` organisé PAR RÉPERTOIRE** → Ajouter MCP dans CHAQUE section utilisée
+3. **Toujours chemins ABSOLUS** → `/Users/manu/.pyenv/shims/uvx` (pas `uvx`)
+4. **Redémarrer = EXIT Claude Code** → Ctrl+D puis `claude` (pas juste redémarrage Desktop)
+5. **Validation = Processus actif** → `ps aux | grep <mcp-name>` doit montrer processus
+
+**Référence Historique:**
+
+Même problème résolu pour Serena MCP (conversation passée ChatGPT):
+- Symptôme: Serena configuré dans Desktop mais absent de Claude Code CLI
+- Solution: Ajouter `--directory /Users/manu/dev/serena` dans `~/.claude.json`
+- Leçon: Desktop config ≠ CLI config (discovery initiale)
+
+Cette troubleshooting session (basic-memory 2025-10-14) confirme:
+- **3 niveaux config** (Desktop / CLI Global / Projet Local)
+- **CLI Global = fichier critique souvent oublié**
+- **Configuration manuelle CLI = nécessaire si import automatique insuffisant**
 
 ---
 
@@ -624,8 +800,16 @@ claude
 
 ---
 
-**Version:** 2.0 (Simplifié avec `claude mcp add-from-claude-desktop`)
-**Date:** 2025-10-09
-**Status:** ✅ Production Ready
+**Version:** 2.1 (Architecture 3 Niveaux)
+**Date:** 2025-10-14
+**Status:** ✅ Production Ready + Troubleshooting Avancé
 
-*MCP Setup en 1 commande - Configuration Claude Desktop comme source de vérité* 🔌⚡
+**Découvertes Critiques:**
+- ✅ Architecture MCP = 3 niveaux (Desktop / CLI Global / Projet Local)
+- ✅ `~/.claude.json` = fichier critique souvent oublié (config CLI par répertoire)
+- ✅ `claude mcp add-from-claude-desktop` crée seulement niveau 3 (pas niveau 2 !)
+- ✅ Solution validée: Édition manuelle `~/.claude.json` pour MCP globaux
+
+**Cas d'Usage Réel:** basic-memory + Serena troubleshooting (2025-10-14)
+
+*MCP Setup en 1 commande - MAIS édition manuelle CLI si problème* 🔌⚡🛠️
