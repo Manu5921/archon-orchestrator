@@ -1,7 +1,7 @@
 /**
  * Architecture-Compliance V2 - Quality Gates Implementation
  * Enforces mandatory quality gates before allowing task completion
- * 
+ *
  * CRITICAL: Prevents AI agents from bypassing architecture compliance
  */
 
@@ -19,7 +19,7 @@ export class ArchitectureQualityGates {
       requireAllGates: true,
       ...options
     };
-    
+
     this.gateResults = new Map();
     this.gateExecutions = [];
   }
@@ -34,30 +34,30 @@ export class ArchitectureQualityGates {
    */
   async executeQualityGates(injectionId, taskResult, agentType, taskDescription) {
     const executionId = `gate-exec-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     this.logger.info(`Starting quality gates execution: ${executionId}`);
-    
+
     try {
       // Get architecture context from injection
       const architectureContext = await this.getArchitectureContextFromInjection(injectionId);
-      
+
       // Define mandatory quality gates
       const qualityGates = this.defineQualityGates(architectureContext, agentType);
-      
+
       // Execute each gate
       const gateResults = [];
       let allGatesPassed = true;
-      
+
       for (const gate of qualityGates) {
         const gateResult = await this.executeGate(gate, taskResult, architectureContext, agentType);
         gateResults.push(gateResult);
-        
+
         if (!gateResult.passed && gate.blocking) {
           allGatesPassed = false;
           this.logger.error(`BLOCKING GATE FAILED: ${gate.id} - ${gate.description}`);
         }
       }
-      
+
       // Log execution
       const execution = {
         executionId,
@@ -72,22 +72,22 @@ export class ArchitectureQualityGates {
         blockingFailures: gateResults.filter(r => !r.passed && r.blocking).length,
         gateResults
       };
-      
+
       this.gateExecutions.push(execution);
-      
+
       if (this.options.blockingMode && !allGatesPassed) {
         throw new Error(`ARCHITECTURE COMPLIANCE GATE FAILURE - Task cannot be completed: ${execution.blockingFailures} blocking violations`);
       }
-      
+
       this.logger.info(`Quality gates completed: ${execution.passedGates}/${execution.totalGates} passed`);
-      
+
       return {
         success: allGatesPassed,
         executionId,
         results: execution,
         complianceScore: (execution.passedGates / execution.totalGates * 100).toFixed(2)
       };
-      
+
     } catch (error) {
       this.logger.error(`Quality gates execution failed: ${error.message}`);
       throw new Error(`ARCHITECTURE QUALITY GATE EXECUTION FAILURE: ${error.message}`);
@@ -102,7 +102,7 @@ export class ArchitectureQualityGates {
    */
   defineQualityGates(architectureContext, agentType) {
     const gates = [];
-    
+
     // Gate 0 - Architecture Context Validation
     gates.push({
       id: 'gate0_context_validation',
@@ -112,7 +112,7 @@ export class ArchitectureQualityGates {
       required: true,
       validator: 'validateArchitectureContext'
     });
-    
+
     // Gate 1 - Technology Stack Compliance
     gates.push({
       id: 'gate1_tech_stack_compliance',
@@ -123,7 +123,7 @@ export class ArchitectureQualityGates {
       validator: 'validateTechStackCompliance',
       agentSpecific: true
     });
-    
+
     // Gate 2 - Architecture Constraints Compliance
     gates.push({
       id: 'gate2_constraints_compliance',
@@ -133,7 +133,7 @@ export class ArchitectureQualityGates {
       required: true,
       validator: 'validateArchitectureConstraints'
     });
-    
+
     // Gate 3 - File Structure Compliance
     gates.push({
       id: 'gate3_structure_compliance',
@@ -143,7 +143,7 @@ export class ArchitectureQualityGates {
       required: false, // Make optional for testing
       validator: 'validateStructureCompliance'
     });
-    
+
     // Gate 4 - Security Compliance (if security context exists)
     if (architectureContext.security || architectureContext.constraints.some(c => c.type === 'security')) {
       gates.push({
@@ -155,11 +155,11 @@ export class ArchitectureQualityGates {
         validator: 'validateSecurityCompliance'
       });
     }
-    
+
     // Add agent-specific gates
     const agentGates = this.getAgentSpecificGates(agentType, architectureContext);
     gates.push(...agentGates);
-    
+
     return gates;
   }
 
@@ -173,19 +173,19 @@ export class ArchitectureQualityGates {
    */
   async executeGate(gate, taskResult, architectureContext, agentType) {
     const startTime = Date.now();
-    
+
     try {
       this.logger.debug(`Executing gate: ${gate.id}`);
-      
+
       // Get validator function
       const validator = this[gate.validator];
       if (!validator) {
         throw new Error(`Validator not found: ${gate.validator}`);
       }
-      
+
       // Execute validation
       const validationResult = await validator.call(this, taskResult, architectureContext, agentType, gate);
-      
+
       const result = {
         gateId: gate.id,
         description: gate.description,
@@ -196,12 +196,12 @@ export class ArchitectureQualityGates {
         violations: validationResult.violations || [],
         recommendations: validationResult.recommendations || []
       };
-      
+
       // Store result
       this.gateResults.set(gate.id, result);
-      
+
       return result;
-      
+
     } catch (error) {
       const result = {
         gateId: gate.id,
@@ -213,7 +213,7 @@ export class ArchitectureQualityGates {
         violations: [`Gate execution failed: ${error.message}`],
         recommendations: ['Check gate configuration and validator implementation']
       };
-      
+
       this.gateResults.set(gate.id, result);
       return result;
     }
@@ -228,24 +228,24 @@ export class ArchitectureQualityGates {
   async validateArchitectureContext(taskResult, architectureContext) {
     const violations = [];
     const recommendations = [];
-    
+
     // Check if architecture context was properly loaded
     if (!architectureContext) {
       violations.push('No architecture context available');
       recommendations.push('Ensure architecture document exists and is accessible');
       return { passed: false, violations, recommendations };
     }
-    
+
     if (!architectureContext.documentPath) {
       violations.push('No architecture document found');
       recommendations.push('Create ARCHITECTURE.md or CLAUDE.md in project root');
     }
-    
+
     if (architectureContext.constraints.length === 0) {
       violations.push('No architecture constraints defined');
       recommendations.push('Add technology constraints to architecture document');
     }
-    
+
     return {
       passed: violations.length === 0,
       violations,
@@ -268,9 +268,9 @@ export class ArchitectureQualityGates {
   async validateTechStackCompliance(taskResult, architectureContext, agentType) {
     const violations = [];
     const recommendations = [];
-    
+
     const techStack = architectureContext.techStack;
-    
+
     // Check if task result contains technology violations
     if (taskResult.code) {
       // Analyze code for technology compliance
@@ -278,19 +278,19 @@ export class ArchitectureQualityGates {
       violations.push(...codeAnalysis.violations);
       recommendations.push(...codeAnalysis.recommendations);
     }
-    
+
     if (taskResult.dependencies) {
       // Check dependency compliance
       const depAnalysis = this.analyzeDependencyCompliance(taskResult.dependencies, techStack);
       violations.push(...depAnalysis.violations);
       recommendations.push(...depAnalysis.recommendations);
     }
-    
+
     // Agent-specific technology validation
     const agentValidation = this.validateAgentTechCompliance(taskResult, techStack, agentType);
     violations.push(...agentValidation.violations);
     recommendations.push(...agentValidation.recommendations);
-    
+
     return {
       passed: violations.length === 0,
       violations,
@@ -312,16 +312,16 @@ export class ArchitectureQualityGates {
   async validateArchitectureConstraints(taskResult, architectureContext) {
     const violations = [];
     const recommendations = [];
-    
+
     for (const constraint of architectureContext.constraints) {
       const constraintValidation = await this.validateSingleConstraint(taskResult, constraint);
-      
+
       if (!constraintValidation.compliant) {
         violations.push(`Constraint violation: ${constraint.description}`);
         recommendations.push(constraintValidation.recommendation || 'Review constraint requirements');
       }
     }
-    
+
     return {
       passed: violations.length === 0,
       violations,
@@ -342,7 +342,7 @@ export class ArchitectureQualityGates {
   async validateStructureCompliance(taskResult, architectureContext) {
     const violations = [];
     const recommendations = [];
-    
+
     // Check file paths if provided
     if (taskResult.filePaths) {
       for (const filePath of taskResult.filePaths) {
@@ -353,7 +353,7 @@ export class ArchitectureQualityGates {
         }
       }
     }
-    
+
     // Check naming conventions
     if (taskResult.files) {
       for (const [fileName, content] of Object.entries(taskResult.files)) {
@@ -364,7 +364,7 @@ export class ArchitectureQualityGates {
         }
       }
     }
-    
+
     return {
       passed: violations.length === 0,
       violations,
@@ -384,14 +384,14 @@ export class ArchitectureQualityGates {
   async validateSecurityCompliance(taskResult, architectureContext) {
     const violations = [];
     const recommendations = [];
-    
+
     // Check for common security violations in code
     if (taskResult.code) {
       const securityAnalysis = this.analyzeSecurityCompliance(taskResult.code);
       violations.push(...securityAnalysis.violations);
       recommendations.push(...securityAnalysis.recommendations);
     }
-    
+
     return {
       passed: violations.length === 0,
       violations,
@@ -411,42 +411,42 @@ export class ArchitectureQualityGates {
    */
   getAgentSpecificGates(agentType, architectureContext) {
     const gates = [];
-    
+
     switch (agentType.toLowerCase()) {
-      case 'backend':
-        gates.push({
-          id: 'gate_backend_api_compliance',
-          description: 'Backend API patterns compliance',
-          type: 'backend_compliance',
-          blocking: true,
-          required: true,
-          validator: 'validateBackendCompliance'
-        });
-        break;
-        
-      case 'frontend':
-        gates.push({
-          id: 'gate_frontend_component_compliance',
-          description: 'Frontend component patterns compliance',
-          type: 'frontend_compliance',
-          blocking: true,
-          required: true,
-          validator: 'validateFrontendCompliance'
-        });
-        break;
-        
-      case 'database':
-        gates.push({
-          id: 'gate_database_schema_compliance',
-          description: 'Database schema patterns compliance',
-          type: 'database_compliance',
-          blocking: true,
-          required: true,
-          validator: 'validateDatabaseCompliance'
-        });
-        break;
+    case 'backend':
+      gates.push({
+        id: 'gate_backend_api_compliance',
+        description: 'Backend API patterns compliance',
+        type: 'backend_compliance',
+        blocking: true,
+        required: true,
+        validator: 'validateBackendCompliance'
+      });
+      break;
+
+    case 'frontend':
+      gates.push({
+        id: 'gate_frontend_component_compliance',
+        description: 'Frontend component patterns compliance',
+        type: 'frontend_compliance',
+        blocking: true,
+        required: true,
+        validator: 'validateFrontendCompliance'
+      });
+      break;
+
+    case 'database':
+      gates.push({
+        id: 'gate_database_schema_compliance',
+        description: 'Database schema patterns compliance',
+        type: 'database_compliance',
+        blocking: true,
+        required: true,
+        validator: 'validateDatabaseCompliance'
+      });
+      break;
     }
-    
+
     return gates;
   }
 
@@ -459,23 +459,23 @@ export class ArchitectureQualityGates {
   analyzeTechnologyUsage(code, techStack) {
     const violations = [];
     const recommendations = [];
-    
+
     // Check for prohibited technologies based on tech stack
     if (techStack.backend === 'Node.js' && code.includes('from flask')) {
       violations.push('Using Flask (Python) when Node.js is specified');
       recommendations.push('Use Express.js or other Node.js framework instead');
     }
-    
+
     if (techStack.database === 'Supabase' && (code.includes('mongoose') || code.includes('mongodb'))) {
       violations.push('Using MongoDB when Supabase (PostgreSQL) is specified');
       recommendations.push('Use Supabase client instead of MongoDB/Mongoose');
     }
-    
+
     if (techStack.frontend === 'Next.js' && code.includes('from django')) {
       violations.push('Using Django templates when Next.js is specified');
       recommendations.push('Use Next.js React components instead');
     }
-    
+
     return { violations, recommendations };
   }
 
@@ -488,9 +488,9 @@ export class ArchitectureQualityGates {
   analyzeDependencyCompliance(dependencies, techStack) {
     const violations = [];
     const recommendations = [];
-    
+
     const depList = Array.isArray(dependencies) ? dependencies : Object.keys(dependencies);
-    
+
     for (const dep of depList) {
       // Check for conflicting dependencies
       if (techStack.database === 'Supabase' && (dep.includes('mongodb') || dep.includes('mongoose'))) {
@@ -498,7 +498,7 @@ export class ArchitectureQualityGates {
         recommendations.push('Use @supabase/supabase-js instead');
       }
     }
-    
+
     return { violations, recommendations };
   }
 
@@ -512,24 +512,24 @@ export class ArchitectureQualityGates {
   validateAgentTechCompliance(taskResult, techStack, agentType) {
     const violations = [];
     const recommendations = [];
-    
+
     // Agent-specific validation logic
     switch (agentType.toLowerCase()) {
-      case 'backend':
-        if (techStack.backend && !this.isCompatibleWithBackendTech(taskResult, techStack.backend)) {
-          violations.push(`Backend implementation not compatible with ${techStack.backend}`);
-          recommendations.push(`Ensure code uses ${techStack.backend} patterns and libraries`);
-        }
-        break;
-        
-      case 'frontend':
-        if (techStack.frontend && !this.isCompatibleWithFrontendTech(taskResult, techStack.frontend)) {
-          violations.push(`Frontend implementation not compatible with ${techStack.frontend}`);
-          recommendations.push(`Ensure code uses ${techStack.frontend} patterns and components`);
-        }
-        break;
+    case 'backend':
+      if (techStack.backend && !this.isCompatibleWithBackendTech(taskResult, techStack.backend)) {
+        violations.push(`Backend implementation not compatible with ${techStack.backend}`);
+        recommendations.push(`Ensure code uses ${techStack.backend} patterns and libraries`);
+      }
+      break;
+
+    case 'frontend':
+      if (techStack.frontend && !this.isCompatibleWithFrontendTech(taskResult, techStack.frontend)) {
+        violations.push(`Frontend implementation not compatible with ${techStack.frontend}`);
+        recommendations.push(`Ensure code uses ${techStack.frontend} patterns and components`);
+      }
+      break;
     }
-    
+
     return { violations, recommendations };
   }
 
@@ -541,17 +541,17 @@ export class ArchitectureQualityGates {
    */
   isCompatibleWithBackendTech(taskResult, backendTech) {
     if (!taskResult.code) return true;
-    
+
     const code = taskResult.code.toLowerCase();
-    
+
     if (backendTech.toLowerCase().includes('node') || backendTech.toLowerCase().includes('express')) {
       return code.includes('require(') || code.includes('import') || code.includes('express');
     }
-    
+
     if (backendTech.toLowerCase().includes('python') || backendTech.toLowerCase().includes('fastapi')) {
       return code.includes('from') || code.includes('import') || code.includes('fastapi');
     }
-    
+
     return true; // Default to compatible if can't determine
   }
 
@@ -563,17 +563,17 @@ export class ArchitectureQualityGates {
    */
   isCompatibleWithFrontendTech(taskResult, frontendTech) {
     if (!taskResult.code) return true;
-    
+
     const code = taskResult.code.toLowerCase();
-    
+
     if (frontendTech.toLowerCase().includes('react') || frontendTech.toLowerCase().includes('next')) {
       return code.includes('react') || code.includes('jsx') || code.includes('next');
     }
-    
+
     if (frontendTech.toLowerCase().includes('vue')) {
       return code.includes('vue') || code.includes('<template>');
     }
-    
+
     return true;
   }
 
@@ -592,23 +592,23 @@ export class ArchitectureQualityGates {
     // Check if code violates the constraint (basic implementation)
     if (taskResult.code) {
       const code = taskResult.code.toLowerCase();
-      
+
       // Technology stack constraint checks
       if (constraint.description.includes('Node.js') && (code.includes('python') || code.includes('flask'))) {
-        return { 
-          compliant: false, 
-          recommendation: 'Use Node.js instead of Python/Flask as specified in architecture' 
+        return {
+          compliant: false,
+          recommendation: 'Use Node.js instead of Python/Flask as specified in architecture'
         };
       }
-      
+
       if (constraint.description.includes('Supabase') && (code.includes('mongodb') || code.includes('mysql'))) {
-        return { 
-          compliant: false, 
-          recommendation: 'Use Supabase (PostgreSQL) instead of MongoDB/MySQL as specified' 
+        return {
+          compliant: false,
+          recommendation: 'Use Supabase (PostgreSQL) instead of MongoDB/MySQL as specified'
         };
       }
     }
-    
+
     return { compliant: true, recommendation: 'Constraint appears to be followed' };
   }
 
@@ -621,12 +621,12 @@ export class ArchitectureQualityGates {
   validateFilePathStructure(filePath, structure) {
     // Basic structure validation
     if (!filePath.startsWith('src/')) {
-      return { 
-        compliant: false, 
-        recommendation: 'Files should be placed in src/ directory as per architecture' 
+      return {
+        compliant: false,
+        recommendation: 'Files should be placed in src/ directory as per architecture'
       };
     }
-    
+
     return { compliant: true, recommendation: 'File structure looks good' };
   }
 
@@ -642,13 +642,13 @@ export class ArchitectureQualityGates {
       // Components should be PascalCase
       const baseName = fileName.split('.')[0];
       if (baseName[0] !== baseName[0].toUpperCase()) {
-        return { 
-          compliant: false, 
-          recommendation: 'React components should use PascalCase naming (e.g., UserProfile.tsx)' 
+        return {
+          compliant: false,
+          recommendation: 'React components should use PascalCase naming (e.g., UserProfile.tsx)'
         };
       }
     }
-    
+
     return { compliant: true, recommendation: 'Naming convention looks good' };
   }
 
@@ -660,20 +660,20 @@ export class ArchitectureQualityGates {
   analyzeSecurityCompliance(code) {
     const violations = [];
     const recommendations = [];
-    
+
     if (!code) return { violations, recommendations };
-    
+
     // Basic security checks
     if (code.includes('password') && !code.includes('hash')) {
       violations.push('Potential plain text password usage detected');
       recommendations.push('Use proper password hashing (bcrypt, argon2)');
     }
-    
-    if (code.match(/api[_\-]?key\s*=\s*["'][^"']+["']/i)) {
+
+    if (code.match(/api[_-]?key\s*=\s*["'][^"']+["']/i)) {
       violations.push('Hardcoded API key detected');
       recommendations.push('Use environment variables for API keys');
     }
-    
+
     return { violations, recommendations };
   }
 
@@ -688,10 +688,10 @@ export class ArchitectureQualityGates {
   async validateBackendCompliance(taskResult, architectureContext, agentType, gate) {
     const violations = [];
     const recommendations = [];
-    
+
     if (taskResult.code) {
       const code = taskResult.code.toLowerCase();
-      
+
       // Check for Express.js usage (required for backend) - be more flexible
       if (code.includes('app.') || code.includes('router.') || code.includes('express')) {
         // Code appears to use Express patterns - this is good
@@ -699,14 +699,14 @@ export class ArchitectureQualityGates {
         violations.push('Backend should use Express.js framework as specified, not Python frameworks');
         recommendations.push('Use Express.js instead of Python frameworks');
       }
-      
+
       // Check for Supabase usage (required database)
       if (code.includes('database') && !code.includes('supabase')) {
         violations.push('Database operations should use Supabase client');
         recommendations.push('Use @supabase/supabase-js for database operations');
       }
     }
-    
+
     return {
       passed: violations.length === 0,
       violations,
@@ -726,10 +726,10 @@ export class ArchitectureQualityGates {
   async validateFrontendCompliance(taskResult, architectureContext, agentType, gate) {
     const violations = [];
     const recommendations = [];
-    
+
     if (taskResult.code) {
       const code = taskResult.code.toLowerCase();
-      
+
       // Check for React/Next.js usage (if frontend specified)
       const frontendTech = architectureContext.techStack.frontend;
       if (frontendTech && frontendTech.includes('Next.js')) {
@@ -739,7 +739,7 @@ export class ArchitectureQualityGates {
         }
       }
     }
-    
+
     return {
       passed: violations.length === 0,
       violations,
@@ -759,17 +759,17 @@ export class ArchitectureQualityGates {
   async validateDatabaseCompliance(taskResult, architectureContext, agentType, gate) {
     const violations = [];
     const recommendations = [];
-    
+
     if (taskResult.code || taskResult.dependencies) {
       const code = (taskResult.code || '').toLowerCase();
       const deps = taskResult.dependencies || [];
-      
+
       // Check for Supabase usage (required)
       if (code.includes('database') && !code.includes('supabase')) {
         violations.push('Database operations must use Supabase as specified');
         recommendations.push('Use @supabase/supabase-js client for database access');
       }
-      
+
       // Check dependencies for prohibited database libraries
       const prohibitedDeps = ['mongodb', 'mongoose', 'mysql', 'postgresql'];
       for (const dep of deps) {
@@ -779,7 +779,7 @@ export class ArchitectureQualityGates {
         }
       }
     }
-    
+
     return {
       passed: violations.length === 0,
       violations,
@@ -806,7 +806,7 @@ export class ArchitectureQualityGates {
   getExecutionStats() {
     const totalExecutions = this.gateExecutions.length;
     const successfulExecutions = this.gateExecutions.filter(e => e.allGatesPassed).length;
-    
+
     return {
       totalExecutions,
       successfulExecutions,

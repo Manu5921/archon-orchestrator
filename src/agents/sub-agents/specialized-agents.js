@@ -33,10 +33,10 @@ export class SpecializedAgent extends EventEmitter {
   async executeTask(task) {
     this.status = 'busy';
     const startTime = Date.now();
-    
+
     try {
       logger.debug(`🔧 ${this.type} executing task: ${task.id}`);
-      
+
       // Record task
       this.tasks.set(task.id, {
         ...task,
@@ -46,7 +46,7 @@ export class SpecializedAgent extends EventEmitter {
 
       // Execute specialized task logic
       const result = await this._executeSpecializedTask(task);
-      
+
       // Update task status
       const taskRecord = this.tasks.get(task.id);
       taskRecord.status = 'completed';
@@ -71,7 +71,7 @@ export class SpecializedAgent extends EventEmitter {
     } catch (error) {
       logger.error(`❌ ${this.type} task failed: ${task.id}`, error);
       this.status = 'error';
-      
+
       const taskRecord = this.tasks.get(task.id);
       if (taskRecord) {
         taskRecord.status = 'failed';
@@ -86,14 +86,14 @@ export class SpecializedAgent extends EventEmitter {
     }
   }
 
-  async _executeSpecializedTask(task) {
+  async _executeSpecializedTask(_task) {
     // To be overridden by specialized agents
     throw new Error(`Specialized task execution not implemented for ${this.type}`);
   }
 
   _updateMetrics(duration, success, qualityScore) {
     this.performance_metrics.tasks_completed++;
-    
+
     // Update success rate
     const successCount = Array.from(this.tasks.values())
       .filter(t => t.status === 'completed' && t.result?.success).length;
@@ -144,29 +144,29 @@ export class FrontendAgent extends SpecializedAgent {
     const { type, requirements, context = {} } = task;
 
     switch (type) {
-      case 'create_component':
-        return await this._createComponent(requirements, context);
-      
-      case 'optimize_performance':
-        return await this._optimizePerformance(requirements, context);
-      
-      case 'implement_responsive':
-        return await this._implementResponsive(requirements, context);
-      
-      case 'add_accessibility':
-        return await this._addAccessibility(requirements, context);
-      
-      case 'setup_state_management':
-        return await this._setupStateManagement(requirements, context);
+    case 'create_component':
+      return await this._createComponent(requirements, context);
 
-      default:
-        return await this._genericFrontendTask(task);
+    case 'optimize_performance':
+      return await this._optimizePerformance(requirements, context);
+
+    case 'implement_responsive':
+      return await this._implementResponsive(requirements, context);
+
+    case 'add_accessibility':
+      return await this._addAccessibility(requirements, context);
+
+    case 'setup_state_management':
+      return await this._setupStateManagement(requirements, context);
+
+    default:
+      return await this._genericFrontendTask(task);
     }
   }
 
-  async _createComponent(requirements, context) {
+  async _createComponent(requirements, _context) {
     logger.info(`🎨 Frontend Agent creating component: ${requirements.component_name}`);
-    
+
     // Simulate component creation logic
     const componentCode = `
 import React, { useState, useEffect } from 'react';
@@ -201,7 +201,7 @@ export const ${requirements.component_name} = ({ ${requirements.props?.join(', '
     };
   }
 
-  async _optimizePerformance(requirements, context) {
+  async _optimizePerformance(requirements, _context) {
     logger.info(`⚡ Frontend Agent optimizing performance for: ${requirements.target}`);
 
     const optimizations = {
@@ -220,8 +220,8 @@ export const ${requirements.component_name} = ({ ${requirements.props?.join(', '
     };
   }
 
-  async _implementResponsive(requirements, context) {
-    logger.info(`📱 Frontend Agent implementing responsive design`);
+  async _implementResponsive(_requirements, _context) {
+    logger.info('📱 Frontend Agent implementing responsive design');
 
     return {
       success: true,
@@ -236,7 +236,7 @@ export const ${requirements.component_name} = ({ ${requirements.props?.join(', '
   }
 
   async _addAccessibility(requirements, context) {
-    logger.info(`♿ Frontend Agent adding accessibility features`);
+    logger.info('♿ Frontend Agent adding accessibility features');
 
     return {
       success: true,
@@ -252,7 +252,7 @@ export const ${requirements.component_name} = ({ ${requirements.props?.join(', '
   }
 
   async _setupStateManagement(requirements, context) {
-    logger.info(`🗃️ Frontend Agent setting up state management`);
+    logger.info('🗃️ Frontend Agent setting up state management');
 
     return {
       success: true,
@@ -268,7 +268,7 @@ export const ${requirements.component_name} = ({ ${requirements.props?.join(', '
 
   async _genericFrontendTask(task) {
     logger.info(`🛠️ Frontend Agent executing generic task: ${task.type}`);
-    
+
     return {
       success: true,
       output: `Frontend task completed: ${task.description || task.type}`,
@@ -279,7 +279,7 @@ export const ${requirements.component_name} = ({ ${requirements.props?.join(', '
 }
 
 /**
- * Backend Development Sub-Agent  
+ * Backend Development Sub-Agent
  * Specialized in APIs, databases, authentication, and backend architecture
  */
 export class BackendAgent extends SpecializedAgent {
@@ -299,23 +299,23 @@ export class BackendAgent extends SpecializedAgent {
     const { type, requirements, context = {} } = task;
 
     switch (type) {
-      case 'create_api':
-        return await this._createAPI(requirements, context);
-      
-      case 'design_database':
-        return await this._designDatabase(requirements, context);
-      
-      case 'implement_auth':
-        return await this._implementAuth(requirements, context);
-      
-      case 'optimize_queries':
-        return await this._optimizeQueries(requirements, context);
-      
-      case 'setup_security':
-        return await this._setupSecurity(requirements, context);
+    case 'create_api':
+      return await this._createAPI(requirements, context);
 
-      default:
-        return await this._genericBackendTask(task);
+    case 'design_database':
+      return await this._designDatabase(requirements, context);
+
+    case 'implement_auth':
+      return await this._implementAuth(requirements, context);
+
+    case 'optimize_queries':
+      return await this._optimizeQueries(requirements, context);
+
+    case 'setup_security':
+      return await this._setupSecurity(requirements, context);
+
+    default:
+      return await this._genericBackendTask(task);
     }
   }
 
@@ -358,7 +358,7 @@ module.exports = router;
   }
 
   async _designDatabase(requirements, context) {
-    logger.info(`🗄️ Backend Agent designing database schema`);
+    logger.info('🗄️ Backend Agent designing database schema');
 
     return {
       success: true,
@@ -374,7 +374,7 @@ module.exports = router;
   }
 
   async _implementAuth(requirements, context) {
-    logger.info(`🔐 Backend Agent implementing authentication`);
+    logger.info('🔐 Backend Agent implementing authentication');
 
     return {
       success: true,
@@ -390,7 +390,7 @@ module.exports = router;
   }
 
   async _optimizeQueries(requirements, context) {
-    logger.info(`⚡ Backend Agent optimizing database queries`);
+    logger.info('⚡ Backend Agent optimizing database queries');
 
     return {
       success: true,
@@ -406,7 +406,7 @@ module.exports = router;
   }
 
   async _setupSecurity(requirements, context) {
-    logger.info(`🛡️ Backend Agent setting up security measures`);
+    logger.info('🛡️ Backend Agent setting up security measures');
 
     return {
       success: true,
@@ -423,7 +423,7 @@ module.exports = router;
 
   async _genericBackendTask(task) {
     logger.info(`🛠️ Backend Agent executing generic task: ${task.type}`);
-    
+
     return {
       success: true,
       output: `Backend task completed: ${task.description || task.type}`,
@@ -454,23 +454,23 @@ export class TestingAgent extends SpecializedAgent {
     const { type, requirements, context = {} } = task;
 
     switch (type) {
-      case 'create_unit_tests':
-        return await this._createUnitTests(requirements, context);
-      
-      case 'create_integration_tests':
-        return await this._createIntegrationTests(requirements, context);
-      
-      case 'create_e2e_tests':
-        return await this._createE2ETests(requirements, context);
-      
-      case 'performance_testing':
-        return await this._performanceTest(requirements, context);
-      
-      case 'security_audit':
-        return await this._securityAudit(requirements, context);
+    case 'create_unit_tests':
+      return await this._createUnitTests(requirements, context);
 
-      default:
-        return await this._genericTestingTask(task);
+    case 'create_integration_tests':
+      return await this._createIntegrationTests(requirements, context);
+
+    case 'create_e2e_tests':
+      return await this._createE2ETests(requirements, context);
+
+    case 'performance_testing':
+      return await this._performanceTest(requirements, context);
+
+    case 'security_audit':
+      return await this._securityAudit(requirements, context);
+
+    default:
+      return await this._genericTestingTask(task);
     }
   }
 
@@ -525,7 +525,7 @@ describe('${requirements.target}', () => {
   }
 
   async _createIntegrationTests(requirements, context) {
-    logger.info(`🔗 Testing Agent creating integration tests`);
+    logger.info('🔗 Testing Agent creating integration tests');
 
     return {
       success: true,
@@ -541,7 +541,7 @@ describe('${requirements.target}', () => {
   }
 
   async _createE2ETests(requirements, context) {
-    logger.info(`🌐 Testing Agent creating E2E tests`);
+    logger.info('🌐 Testing Agent creating E2E tests');
 
     return {
       success: true,
@@ -557,7 +557,7 @@ describe('${requirements.target}', () => {
   }
 
   async _performanceTest(requirements, context) {
-    logger.info(`⚡ Testing Agent running performance tests`);
+    logger.info('⚡ Testing Agent running performance tests');
 
     return {
       success: true,
@@ -573,7 +573,7 @@ describe('${requirements.target}', () => {
   }
 
   async _securityAudit(requirements, context) {
-    logger.info(`🛡️ Testing Agent conducting security audit`);
+    logger.info('🛡️ Testing Agent conducting security audit');
 
     return {
       success: true,
@@ -590,7 +590,7 @@ describe('${requirements.target}', () => {
 
   async _genericTestingTask(task) {
     logger.info(`🛠️ Testing Agent executing generic task: ${task.type}`);
-    
+
     return {
       success: true,
       output: `Testing task completed: ${task.description || task.type}`,
@@ -621,23 +621,23 @@ export class DevOpsAgent extends SpecializedAgent {
     const { type, requirements, context = {} } = task;
 
     switch (type) {
-      case 'setup_deployment':
-        return await this._setupDeployment(requirements, context);
-      
-      case 'configure_ci_cd':
-        return await this._configureCICD(requirements, context);
-      
-      case 'setup_monitoring':
-        return await this._setupMonitoring(requirements, context);
-      
-      case 'infrastructure_setup':
-        return await this._setupInfrastructure(requirements, context);
-      
-      case 'security_hardening':
-        return await this._securityHardening(requirements, context);
+    case 'setup_deployment':
+      return await this._setupDeployment(requirements, context);
 
-      default:
-        return await this._genericDevOpsTask(task);
+    case 'configure_ci_cd':
+      return await this._configureCICD(requirements, context);
+
+    case 'setup_monitoring':
+      return await this._setupMonitoring(requirements, context);
+
+    case 'infrastructure_setup':
+      return await this._setupInfrastructure(requirements, context);
+
+    case 'security_hardening':
+      return await this._securityHardening(requirements, context);
+
+    default:
+      return await this._genericDevOpsTask(task);
     }
   }
 
@@ -683,7 +683,7 @@ services:
   }
 
   async _configureCICD(requirements, context) {
-    logger.info(`⚙️ DevOps Agent configuring CI/CD pipeline`);
+    logger.info('⚙️ DevOps Agent configuring CI/CD pipeline');
 
     return {
       success: true,
@@ -699,7 +699,7 @@ services:
   }
 
   async _setupMonitoring(requirements, context) {
-    logger.info(`📊 DevOps Agent setting up monitoring and observability`);
+    logger.info('📊 DevOps Agent setting up monitoring and observability');
 
     return {
       success: true,
@@ -715,7 +715,7 @@ services:
   }
 
   async _setupInfrastructure(requirements, context) {
-    logger.info(`🏗️ DevOps Agent setting up infrastructure as code`);
+    logger.info('🏗️ DevOps Agent setting up infrastructure as code');
 
     return {
       success: true,
@@ -731,7 +731,7 @@ services:
   }
 
   async _securityHardening(requirements, context) {
-    logger.info(`🔒 DevOps Agent implementing security hardening`);
+    logger.info('🔒 DevOps Agent implementing security hardening');
 
     return {
       success: true,
@@ -748,7 +748,7 @@ services:
 
   async _genericDevOpsTask(task) {
     logger.info(`🛠️ DevOps Agent executing generic task: ${task.type}`);
-    
+
     return {
       success: true,
       output: `DevOps task completed: ${task.description || task.type}`,
@@ -765,20 +765,20 @@ services:
 export class SubAgentFactory {
   static createAgent(type, parentId, config = {}) {
     switch (type) {
-      case 'frontend':
-        return new FrontendAgent(parentId);
-      
-      case 'backend':
-        return new BackendAgent(parentId);
-      
-      case 'testing':
-        return new TestingAgent(parentId);
-      
-      case 'devops':
-        return new DevOpsAgent(parentId);
-      
-      default:
-        throw new Error(`Unknown sub-agent type: ${type}`);
+    case 'frontend':
+      return new FrontendAgent(parentId);
+
+    case 'backend':
+      return new BackendAgent(parentId);
+
+    case 'testing':
+      return new TestingAgent(parentId);
+
+    case 'devops':
+      return new DevOpsAgent(parentId);
+
+    default:
+      throw new Error(`Unknown sub-agent type: ${type}`);
     }
   }
 
@@ -807,12 +807,12 @@ export class SubAgentManager extends EventEmitter {
 
   async createSubAgent(type, config = {}) {
     logger.info(`🤖 Creating ${type} sub-agent for orchestrator: ${this.orchestratorId}`);
-    
+
     const agent = SubAgentFactory.createAgent(type, this.orchestratorId, config);
     await agent.initialize();
-    
+
     this.agents.set(agent.id, agent);
-    
+
     // Listen to agent events
     agent.on('task_completed', (event) => {
       this.activeTasksMap.delete(event.agent_id);
@@ -845,7 +845,7 @@ export class SubAgentManager extends EventEmitter {
 
   async distributeParallelTasks(tasks) {
     logger.info(`🔄 Distributing ${tasks.length} parallel tasks across sub-agents`);
-    
+
     const results = await Promise.allSettled(
       tasks.map(async (task) => {
         const agent = await this.assignTask(task.agent_type, task);
@@ -868,7 +868,7 @@ export class SubAgentManager extends EventEmitter {
 
   getPerformanceMetrics() {
     const agents = Array.from(this.agents.values());
-    
+
     return {
       total_agents: agents.length,
       agents_by_type: agents.reduce((acc, agent) => {
@@ -883,16 +883,16 @@ export class SubAgentManager extends EventEmitter {
 
   async shutdown() {
     logger.info(`🛑 Shutting down sub-agent manager for: ${this.orchestratorId}`);
-    
+
     for (const [agentId, agent] of this.agents) {
       agent.status = 'shutting_down';
       agent.removeAllListeners();
     }
-    
+
     this.agents.clear();
     this.activeTasksMap.clear();
     this.removeAllListeners();
-    
+
     logger.info('✅ Sub-agent manager shutdown complete');
   }
 

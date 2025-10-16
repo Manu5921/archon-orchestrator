@@ -15,7 +15,7 @@
     "connect:gemini": "node src/agents/gemini-connector.js",
     "connect:claude": "node src/agents/claude-connector.js",
     "knowledge:sync": "node src/knowledge/sync.js",
-    "test": "npm run test:unit",
+    "test": "pnpm test:unit",
     "test:real": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "test:unit": "NODE_OPTIONS='--experimental-vm-modules' jest --testPathIgnorePatterns=/tests/e2e/",
     "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch --testPathIgnorePatterns=/tests/e2e/",
