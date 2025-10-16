@@ -61,7 +61,7 @@ class StripeService {
     if (!process.env.STRIPE_SECRET_KEY) {
       throw new Error('STRIPE_SECRET_KEY est requis pour le service de paiement');
     }
-    
+
     if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
       console.warn('⚠️ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY manquant pour le frontend');
     }
@@ -86,11 +86,11 @@ class StripeService {
         mode: 'subscription',
         line_items: [{
           price: priceId,
-          quantity: 1,
+          quantity: 1
         }],
         success_url: successUrl || `${process.env.NEXT_PUBLIC_SITE_URL}/onboarding/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: cancelUrl || `${process.env.NEXT_PUBLIC_SITE_URL}/pricing`,
-        
+
         // Période d'essai pour améliorer conversion
         subscription_data: {
           trial_period_days: trialDays,
@@ -99,10 +99,10 @@ class StripeService {
             plan: this.getPlanByPriceId(priceId)?.name || 'unknown'
           }
         },
-        
+
         // Configuration client
         customer_email: customerEmail,
-        
+
         // Métadonnées pour tracking conversion
         metadata: {
           source: 'onboarding_flow',
@@ -113,12 +113,12 @@ class StripeService {
 
         // Collecte d'informations supplémentaires
         billing_address_collection: 'required',
-        
+
         // Configuration des taxes automatiques
         automatic_tax: {
-          enabled: true,
+          enabled: true
         },
-        
+
         // Personnalisation de l'interface
         custom_text: {
           submit: {
@@ -131,7 +131,7 @@ class StripeService {
       if (customerData.name || customerData.company) {
         sessionConfig.customer_creation = 'always';
         sessionConfig.custom_fields = [];
-        
+
         if (customerData.company) {
           sessionConfig.custom_fields.push({
             key: 'company',
@@ -178,28 +178,28 @@ class StripeService {
       console.log('📥 Webhook Stripe reçu:', event.type);
 
       switch (event.type) {
-        case 'checkout.session.completed':
-          await this.handleCheckoutCompleted(event.data.object);
-          break;
-          
-        case 'invoice.payment_succeeded':
-          await this.handlePaymentSucceeded(event.data.object);
-          break;
-          
-        case 'customer.subscription.created':
-          await this.handleSubscriptionCreated(event.data.object);
-          break;
-          
-        case 'customer.subscription.trial_will_end':
-          await this.handleTrialWillEnd(event.data.object);
-          break;
-          
-        case 'invoice.payment_failed':
-          await this.handlePaymentFailed(event.data.object);
-          break;
+      case 'checkout.session.completed':
+        await this.handleCheckoutCompleted(event.data.object);
+        break;
 
-        default:
-          console.log(`📋 Webhook non géré: ${event.type}`);
+      case 'invoice.payment_succeeded':
+        await this.handlePaymentSucceeded(event.data.object);
+        break;
+
+      case 'customer.subscription.created':
+        await this.handleSubscriptionCreated(event.data.object);
+        break;
+
+      case 'customer.subscription.trial_will_end':
+        await this.handleTrialWillEnd(event.data.object);
+        break;
+
+      case 'invoice.payment_failed':
+        await this.handlePaymentFailed(event.data.object);
+        break;
+
+      default:
+        console.log(`📋 Webhook non géré: ${event.type}`);
       }
 
       return { success: true, processed: event.type };
@@ -217,7 +217,7 @@ class StripeService {
     try {
       const customer = await stripe.customers.retrieve(session.customer);
       const subscription = await stripe.subscriptions.retrieve(session.subscription);
-      
+
       // Données pour email service
       const userData = {
         id: customer.id,
@@ -248,7 +248,7 @@ class StripeService {
   async handlePaymentSucceeded(invoice) {
     try {
       const customer = await stripe.customers.retrieve(invoice.customer);
-      
+
       const paymentData = {
         customer_name: customer.name,
         customer_email: customer.email,
@@ -280,7 +280,7 @@ class StripeService {
   async handleTrialWillEnd(subscription) {
     try {
       const customer = await stripe.customers.retrieve(subscription.customer);
-      
+
       const trialData = {
         user_id: customer.id,
         user_name: customer.name,
@@ -313,7 +313,7 @@ class StripeService {
     try {
       const session = await stripe.billingPortal.sessions.create({
         customer: customerId,
-        return_url: returnUrl || `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/billing`,
+        return_url: returnUrl || `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/billing`
       });
 
       return {
@@ -441,7 +441,7 @@ const stripeService = new StripeService();
 module.exports = {
   stripeService,
   PRICING_PLANS,
-  
+
   // Fonctions directes
   createCheckoutSession: (data) => stripeService.createCheckoutSession(data),
   handleWebhook: (body, signature) => stripeService.handleWebhook(body, signature),

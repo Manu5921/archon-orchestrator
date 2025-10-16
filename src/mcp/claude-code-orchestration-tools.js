@@ -4,7 +4,7 @@ const logger = new Logger('ClaudeCodeOrchestrationTools');
 
 /**
  * 🎯 OUTILS MCP POUR ORCHESTRATION CLAUDE CODE
- * 
+ *
  * Ces outils permettent à Claude Code d'être le véritable orchestrator
  * en gardant le contrôle sur chaque étape du workflow révolutionnaire.
  */
@@ -13,7 +13,7 @@ export class ClaudeCodeOrchestrationTools {
   constructor(orchestrator) {
     this.orchestrator = orchestrator;
   }
-  
+
   getToolsList() {
     return [
       // ÉTAPE 1: Initialisation projet
@@ -29,7 +29,7 @@ export class ClaudeCodeOrchestrationTools {
           required: ['project_description']
         }
       },
-      
+
       // ÉTAPE 2: Demander exploration à Gemini
       {
         name: 'orchestra:request_gemini_exploration',
@@ -44,7 +44,7 @@ export class ClaudeCodeOrchestrationTools {
           required: ['project_id', 'exploration_prompt']
         }
       },
-      
+
       // ÉTAPE 3: Valider la réponse de Gemini
       {
         name: 'orchestra:validate_exploration',
@@ -59,7 +59,7 @@ export class ClaudeCodeOrchestrationTools {
           required: ['project_id', 'gemini_response']
         }
       },
-      
+
       // ÉTAPE 4: Créer sub-agents spécialisés
       {
         name: 'orchestra:create_sub_agents',
@@ -68,10 +68,10 @@ export class ClaudeCodeOrchestrationTools {
           type: 'object',
           properties: {
             project_id: { type: 'string', description: 'Project identifier' },
-            required_specializations: { 
-              type: 'array', 
-              items: { 
-                type: 'string', 
+            required_specializations: {
+              type: 'array',
+              items: {
+                type: 'string',
                 enum: ['frontend', 'backend', 'testing', 'devops', 'database', 'api', 'ui_ux']
               },
               description: 'Required sub-agent specializations'
@@ -81,7 +81,7 @@ export class ClaudeCodeOrchestrationTools {
           required: ['project_id', 'required_specializations']
         }
       },
-      
+
       // ÉTAPE 5: Assigner tâche à sub-agent
       {
         name: 'orchestra:assign_task_to_sub_agent',
@@ -90,8 +90,8 @@ export class ClaudeCodeOrchestrationTools {
           type: 'object',
           properties: {
             project_id: { type: 'string', description: 'Project identifier' },
-            sub_agent_type: { 
-              type: 'string', 
+            sub_agent_type: {
+              type: 'string',
               enum: ['frontend', 'backend', 'testing', 'devops', 'database', 'api', 'ui_ux'],
               description: 'Type of sub-agent'
             },
@@ -102,7 +102,7 @@ export class ClaudeCodeOrchestrationTools {
           required: ['project_id', 'sub_agent_type', 'task_description']
         }
       },
-      
+
       // ÉTAPE 6: Demander review à Gemini
       {
         name: 'orchestra:request_gemini_review',
@@ -118,7 +118,7 @@ export class ClaudeCodeOrchestrationTools {
           required: ['project_id', 'code_or_output']
         }
       },
-      
+
       // ÉTAPE 7: Appliquer corrections
       {
         name: 'orchestra:apply_review_corrections',
@@ -134,7 +134,7 @@ export class ClaudeCodeOrchestrationTools {
           required: ['project_id', 'original_code', 'gemini_feedback']
         }
       },
-      
+
       // ÉTAPE 8: Archiver dans Archon
       {
         name: 'orchestra:archive_to_archon',
@@ -150,7 +150,7 @@ export class ClaudeCodeOrchestrationTools {
           required: ['project_id', 'patterns_learned']
         }
       },
-      
+
       // UTILITAIRES
       {
         name: 'orchestra:get_project_state',
@@ -163,7 +163,7 @@ export class ClaudeCodeOrchestrationTools {
           required: ['project_id']
         }
       },
-      
+
       {
         name: 'orchestra:list_available_sub_agents',
         description: 'List all available sub-agents and their capabilities',
@@ -176,44 +176,44 @@ export class ClaudeCodeOrchestrationTools {
       }
     ];
   }
-  
+
   async executeTool(toolName, args) {
     logger.info(`🎯 Claude Code executing: ${toolName}`);
-    
+
     try {
       switch (toolName) {
-        case 'orchestra:init_project':
-          return await this.initProject(args);
-          
-        case 'orchestra:request_gemini_exploration':
-          return await this.requestGeminiExploration(args);
-          
-        case 'orchestra:validate_exploration':
-          return await this.validateExploration(args);
-          
-        case 'orchestra:create_sub_agents':
-          return await this.createSubAgents(args);
-          
-        case 'orchestra:assign_task_to_sub_agent':
-          return await this.assignTaskToSubAgent(args);
-          
-        case 'orchestra:request_gemini_review':
-          return await this.requestGeminiReview(args);
-          
-        case 'orchestra:apply_review_corrections':
-          return await this.applyReviewCorrections(args);
-          
-        case 'orchestra:archive_to_archon':
-          return await this.archiveToArchon(args);
-          
-        case 'orchestra:get_project_state':
-          return await this.getProjectState(args);
-          
-        case 'orchestra:list_available_sub_agents':
-          return await this.listAvailableSubAgents(args);
-          
-        default:
-          throw new Error(`Unknown tool: ${toolName}`);
+      case 'orchestra:init_project':
+        return await this.initProject(args);
+
+      case 'orchestra:request_gemini_exploration':
+        return await this.requestGeminiExploration(args);
+
+      case 'orchestra:validate_exploration':
+        return await this.validateExploration(args);
+
+      case 'orchestra:create_sub_agents':
+        return await this.createSubAgents(args);
+
+      case 'orchestra:assign_task_to_sub_agent':
+        return await this.assignTaskToSubAgent(args);
+
+      case 'orchestra:request_gemini_review':
+        return await this.requestGeminiReview(args);
+
+      case 'orchestra:apply_review_corrections':
+        return await this.applyReviewCorrections(args);
+
+      case 'orchestra:archive_to_archon':
+        return await this.archiveToArchon(args);
+
+      case 'orchestra:get_project_state':
+        return await this.getProjectState(args);
+
+      case 'orchestra:list_available_sub_agents':
+        return await this.listAvailableSubAgents(args);
+
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
       }
     } catch (error) {
       logger.error(`Tool execution failed: ${toolName}`, error);
@@ -224,14 +224,14 @@ export class ClaudeCodeOrchestrationTools {
       };
     }
   }
-  
+
   // IMPLÉMENTATIONS DES OUTILS
-  
+
   async initProject(args) {
     const { project_description, archon_project_id } = args;
-    
+
     const projectId = `project_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`;
-    
+
     // Initialiser le contexte projet
     const projectContext = {
       id: projectId,
@@ -249,15 +249,15 @@ export class ClaudeCodeOrchestrationTools {
         archival: 'pending'
       }
     };
-    
+
     // Stocker dans l'orchestrator
     if (!this.orchestrator.projects) {
       this.orchestrator.projects = new Map();
     }
     this.orchestrator.projects.set(projectId, projectContext);
-    
+
     logger.info(`🎯 Claude Code initialized project: ${projectId}`);
-    
+
     return {
       success: true,
       project_id: projectId,
@@ -266,15 +266,15 @@ export class ClaudeCodeOrchestrationTools {
       context: projectContext
     };
   }
-  
+
   async requestGeminiExploration(args) {
     const { project_id, exploration_prompt, constraints = [] } = args;
-    
+
     const project = this.orchestrator.projects?.get(project_id);
     if (!project) {
       throw new Error(`Project ${project_id} not found`);
     }
-    
+
     // Obtenir l'agent Gemini
     let geminiAgent = this.orchestrator.agents.get('gemini');
     if (!geminiAgent) {
@@ -291,7 +291,7 @@ export class ClaudeCodeOrchestrationTools {
         this.orchestrator.agents.set('gemini', geminiAgent);
       }
     }
-    
+
     // Préparer le contexte pour Gemini
     const explorationContext = {
       project_description: project.description,
@@ -300,20 +300,20 @@ export class ClaudeCodeOrchestrationTools {
       requested_by: 'claude_code', // Claude Code fait la demande
       request_time: new Date().toISOString()
     };
-    
+
     // Demander l'exploration à Gemini
     const explorationResult = await geminiAgent.execute(
       'explore',
       explorationContext
     );
-    
+
     // Mettre à jour l'état du projet
     project.workflow_state.exploration = 'completed';
     project.exploration_result = explorationResult;
     project.last_updated = new Date().toISOString();
-    
+
     logger.info(`🎨 Gemini exploration completed for project ${project_id}`);
-    
+
     return {
       success: true,
       project_id: project_id,
@@ -323,15 +323,15 @@ export class ClaudeCodeOrchestrationTools {
       orchestrated_by: 'claude_code'
     };
   }
-  
+
   async validateExploration(args) {
     const { project_id, gemini_response, validation_criteria = [] } = args;
-    
+
     const project = this.orchestrator.projects?.get(project_id);
     if (!project) {
       throw new Error(`Project ${project_id} not found`);
     }
-    
+
     // Claude Code fait la validation
     const validation = {
       validated_by: 'claude_code',
@@ -346,14 +346,14 @@ export class ClaudeCodeOrchestrationTools {
         'Begin implementation phase'
       ]
     };
-    
+
     // Mettre à jour le projet
     project.workflow_state.validation = 'completed';
     project.validation_result = validation;
     project.last_updated = new Date().toISOString();
-    
+
     logger.info(`🎯 Claude Code validated exploration for project ${project_id}`);
-    
+
     return {
       success: true,
       project_id: project_id,
@@ -363,48 +363,48 @@ export class ClaudeCodeOrchestrationTools {
       orchestrated_by: 'claude_code'
     };
   }
-  
+
   // TODO: Implémenter les autres méthodes...
   async createSubAgents(args) {
     // À implémenter
     return { success: true, message: 'Sub-agents creation - to be implemented' };
   }
-  
+
   async assignTaskToSubAgent(args) {
     // À implémenter
     return { success: true, message: 'Task assignment - to be implemented' };
   }
-  
+
   async requestGeminiReview(args) {
     // À implémenter
     return { success: true, message: 'Gemini review request - to be implemented' };
   }
-  
+
   async applyReviewCorrections(args) {
     // À implémenter
     return { success: true, message: 'Review corrections - to be implemented' };
   }
-  
+
   async archiveToArchon(args) {
     // À implémenter
     return { success: true, message: 'Archon archival - to be implemented' };
   }
-  
+
   async getProjectState(args) {
     const { project_id } = args;
     const project = this.orchestrator.projects?.get(project_id);
-    
+
     if (!project) {
       throw new Error(`Project ${project_id} not found`);
     }
-    
+
     return {
       success: true,
       project: project,
       orchestrated_by: 'claude_code'
     };
   }
-  
+
   async listAvailableSubAgents(args) {
     return {
       success: true,

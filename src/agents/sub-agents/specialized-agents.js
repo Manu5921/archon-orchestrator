@@ -235,7 +235,7 @@ export const ${requirements.component_name} = ({ ${requirements.props?.join(', '
     };
   }
 
-  async _addAccessibility(requirements, context) {
+  async _addAccessibility(_requirements, _context) {
     logger.info('♿ Frontend Agent adding accessibility features');
 
     return {
@@ -251,7 +251,7 @@ export const ${requirements.component_name} = ({ ${requirements.props?.join(', '
     };
   }
 
-  async _setupStateManagement(requirements, context) {
+  async _setupStateManagement(_requirements, _context) {
     logger.info('🗃️ Frontend Agent setting up state management');
 
     return {
@@ -319,7 +319,7 @@ export class BackendAgent extends SpecializedAgent {
     }
   }
 
-  async _createAPI(requirements, context) {
+  async _createAPI(requirements, _context) {
     logger.info(`🔌 Backend Agent creating API: ${requirements.endpoint_name}`);
 
     const apiCode = `
@@ -357,7 +357,7 @@ module.exports = router;
     };
   }
 
-  async _designDatabase(requirements, context) {
+  async _designDatabase(requirements, _context) {
     logger.info('🗄️ Backend Agent designing database schema');
 
     return {
@@ -373,7 +373,7 @@ module.exports = router;
     };
   }
 
-  async _implementAuth(requirements, context) {
+  async _implementAuth(requirements, _context) {
     logger.info('🔐 Backend Agent implementing authentication');
 
     return {
@@ -389,7 +389,7 @@ module.exports = router;
     };
   }
 
-  async _optimizeQueries(requirements, context) {
+  async _optimizeQueries(_requirements, _context) {
     logger.info('⚡ Backend Agent optimizing database queries');
 
     return {
@@ -405,7 +405,7 @@ module.exports = router;
     };
   }
 
-  async _setupSecurity(requirements, context) {
+  async _setupSecurity(_requirements, _context) {
     logger.info('🛡️ Backend Agent setting up security measures');
 
     return {
@@ -474,7 +474,7 @@ export class TestingAgent extends SpecializedAgent {
     }
   }
 
-  async _createUnitTests(requirements, context) {
+  async _createUnitTests(requirements, _context) {
     logger.info(`🧪 Testing Agent creating unit tests for: ${requirements.target}`);
 
     const testCode = `
@@ -524,7 +524,7 @@ describe('${requirements.target}', () => {
     };
   }
 
-  async _createIntegrationTests(requirements, context) {
+  async _createIntegrationTests(_requirements, _context) {
     logger.info('🔗 Testing Agent creating integration tests');
 
     return {
@@ -540,7 +540,7 @@ describe('${requirements.target}', () => {
     };
   }
 
-  async _createE2ETests(requirements, context) {
+  async _createE2ETests(_requirements, _context) {
     logger.info('🌐 Testing Agent creating E2E tests');
 
     return {
@@ -556,7 +556,7 @@ describe('${requirements.target}', () => {
     };
   }
 
-  async _performanceTest(requirements, context) {
+  async _performanceTest(_requirements, _context) {
     logger.info('⚡ Testing Agent running performance tests');
 
     return {
@@ -572,7 +572,7 @@ describe('${requirements.target}', () => {
     };
   }
 
-  async _securityAudit(requirements, context) {
+  async _securityAudit(_requirements, _context) {
     logger.info('🛡️ Testing Agent conducting security audit');
 
     return {
@@ -641,7 +641,7 @@ export class DevOpsAgent extends SpecializedAgent {
     }
   }
 
-  async _setupDeployment(requirements, context) {
+  async _setupDeployment(requirements, _context) {
     logger.info(`🚀 DevOps Agent setting up deployment for: ${requirements.environment}`);
 
     const deploymentConfig = `
@@ -682,7 +682,7 @@ services:
     };
   }
 
-  async _configureCICD(requirements, context) {
+  async _configureCICD(_requirements, _context) {
     logger.info('⚙️ DevOps Agent configuring CI/CD pipeline');
 
     return {
@@ -698,7 +698,7 @@ services:
     };
   }
 
-  async _setupMonitoring(requirements, context) {
+  async _setupMonitoring(_requirements, _context) {
     logger.info('📊 DevOps Agent setting up monitoring and observability');
 
     return {
@@ -714,7 +714,7 @@ services:
     };
   }
 
-  async _setupInfrastructure(requirements, context) {
+  async _setupInfrastructure(requirements, _context) {
     logger.info('🏗️ DevOps Agent setting up infrastructure as code');
 
     return {
@@ -730,7 +730,7 @@ services:
     };
   }
 
-  async _securityHardening(requirements, context) {
+  async _securityHardening(_requirements, _context) {
     logger.info('🔒 DevOps Agent implementing security hardening');
 
     return {
@@ -763,7 +763,7 @@ services:
  * Creates and manages specialized sub-agents
  */
 export class SubAgentFactory {
-  static createAgent(type, parentId, config = {}) {
+  static createAgent(type, parentId, _config = {}) {
     switch (type) {
     case 'frontend':
       return new FrontendAgent(parentId);
@@ -884,7 +884,7 @@ export class SubAgentManager extends EventEmitter {
   async shutdown() {
     logger.info(`🛑 Shutting down sub-agent manager for: ${this.orchestratorId}`);
 
-    for (const [agentId, agent] of this.agents) {
+    for (const agent of this.agents.values()) {
       agent.status = 'shutting_down';
       agent.removeAllListeners();
     }

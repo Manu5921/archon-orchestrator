@@ -21,20 +21,20 @@ export class GeminiCLIWrapper {
   async initialize() {
     try {
       // Test 1: Vérifier que Gemini CLI est installé
-      const { stdout: versionOutput } = await execAsync('gemini --version', { 
+      const { stdout: versionOutput } = await execAsync('gemini --version', {
         timeout: 5000,
         encoding: 'utf8'
       });
-      
+
       this.version = versionOutput.trim();
       logger.info(`✅ Gemini CLI detected: ${this.version}`);
 
       // Test 2: Test d'exécution simple pour vérifier ESM compatibility
       const testResult = await this.executeCommand(['--help'], { timeout: 3000 });
-      
+
       if (testResult.success) {
         this.initialized = true;
-        logger.info(`✅ Gemini CLI wrapper initialized successfully`);
+        logger.info('✅ Gemini CLI wrapper initialized successfully');
         return { success: true, version: this.version };
       } else {
         throw new Error('CLI test failed');
@@ -42,13 +42,13 @@ export class GeminiCLIWrapper {
 
     } catch (error) {
       logger.error(`❌ Gemini CLI initialization failed: ${error.message}`);
-      
+
       // Fallback: Mode dégradé mais fonctionnel
       this.initialized = false;
-      return { 
-        success: false, 
+      return {
+        success: false,
         error: error.message,
-        fallback_mode: true 
+        fallback_mode: true
       };
     }
   }
@@ -66,10 +66,10 @@ export class GeminiCLIWrapper {
 
     return new Promise((resolve) => {
       const startTime = Date.now();
-      
+
       // SOLUTION: Utiliser exec au lieu de spawn pour contourner les problèmes ESM
       const command = `gemini ${args.join(' ')}`;
-      
+
       logger.debug(`🔧 Executing: ${command}`);
 
       const childProcess = exec(command, {
@@ -82,7 +82,7 @@ export class GeminiCLIWrapper {
         }
       }, (error, stdout, stderr) => {
         const duration = Date.now() - startTime;
-        
+
         if (error) {
           // SOLUTION: Gestion spécifique des erreurs ESM
           if (error.message.includes('require is not defined')) {
@@ -175,16 +175,16 @@ export class GeminiCLIWrapper {
         output: JSON.stringify({
           approaches: [
             {
-              name: "Standard Implementation",
+              name: 'Standard Implementation',
               description: `Implement ${input} using established patterns and best practices`,
               confidence: 0.75,
-              timeline: "2-3 weeks"
+              timeline: '2-3 weeks'
             },
             {
-              name: "Modular Architecture", 
+              name: 'Modular Architecture',
               description: `Break down ${input} into composable modules for maintainability`,
               confidence: 0.80,
-              timeline: "3-4 weeks"
+              timeline: '3-4 weeks'
             }
           ],
           approaches_found: 2,
@@ -192,10 +192,10 @@ export class GeminiCLIWrapper {
         }),
         fallback_reason: 'CLI unavailable - using pattern-based exploration'
       },
-      
+
       review: {
         success: true,
-        mode: 'fallback', 
+        mode: 'fallback',
         output: `Code review completed (fallback mode):
         
 AUTOMATED ANALYSIS:
@@ -234,7 +234,7 @@ STATUS: APPROVED (with recommendations)`,
     }
 
     const testResult = await this.executeCommand(['--version'], { timeout: 3000 });
-    
+
     return {
       healthy: testResult.success,
       version: this.version,

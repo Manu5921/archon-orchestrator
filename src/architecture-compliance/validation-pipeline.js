@@ -1,7 +1,7 @@
 /**
  * Architecture-Compliance V2 - Validation Pipeline
  * Orchestrates the complete architecture compliance workflow
- * 
+ *
  * CRITICAL: End-to-end validation from context injection to quality gates
  */
 
@@ -22,7 +22,7 @@ export class ArchitectureValidationPipeline {
       maxRetries: 2,
       ...options
     };
-    
+
     this.pipelineExecutions = [];
     this.validationMetrics = {
       totalExecutions: 0,
@@ -45,21 +45,21 @@ export class ArchitectureValidationPipeline {
   async executeValidationPipeline(agentType, originalPrompt, taskDescription, taskResult = null, options = {}) {
     const executionId = `pipeline-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const startTime = Date.now();
-    
+
     this.logger.info(`Starting architecture validation pipeline: ${executionId}`);
-    
+
     const pipelineOptions = { ...this.options, ...options };
     let retryCount = 0;
-    
+
     while (retryCount <= pipelineOptions.maxRetries) {
       try {
         // Phase 1: Pre-Task Architecture Context Injection
         const contextInjectionResult = await this.executeContextInjectionPhase(
-          agentType, 
-          originalPrompt, 
+          agentType,
+          originalPrompt,
           taskDescription
         );
-        
+
         // Phase 2: Task Execution (if no task result provided, this is planning phase)
         let taskExecutionResult = taskResult;
         if (!taskExecutionResult && pipelineOptions.executeTask) {
@@ -70,7 +70,7 @@ export class ArchitectureValidationPipeline {
             pipelineOptions.taskExecutor
           );
         }
-        
+
         // Phase 3: Post-Task Quality Gates Validation (only if we have task results)
         let qualityGatesResult = null;
         if (taskExecutionResult) {
@@ -81,7 +81,7 @@ export class ArchitectureValidationPipeline {
             taskDescription
           );
         }
-        
+
         // Phase 4: Compliance Reporting
         const complianceReport = await this.generateComplianceReport(
           executionId,
@@ -89,7 +89,7 @@ export class ArchitectureValidationPipeline {
           taskExecutionResult,
           qualityGatesResult
         );
-        
+
         // Record successful execution
         const execution = {
           executionId,
@@ -106,11 +106,11 @@ export class ArchitectureValidationPipeline {
             complianceReport: complianceReport
           }
         };
-        
+
         this.recordExecution(execution);
-        
+
         this.logger.info(`Architecture validation pipeline completed successfully: ${executionId}`);
-        
+
         return {
           success: true,
           executionId,
@@ -120,10 +120,10 @@ export class ArchitectureValidationPipeline {
           complianceReport,
           enhancedPrompt: contextInjectionResult.enhancedPrompt
         };
-        
+
       } catch (error) {
         retryCount++;
-        
+
         if (retryCount > pipelineOptions.maxRetries) {
           // Record failed execution
           const failedExecution = {
@@ -137,9 +137,9 @@ export class ArchitectureValidationPipeline {
             error: error.message,
             lastError: error
           };
-          
+
           this.recordExecution(failedExecution);
-          
+
           this.logger.error(`Architecture validation pipeline failed after ${pipelineOptions.maxRetries} retries: ${error.message}`);
           throw new Error(`ARCHITECTURE VALIDATION PIPELINE FAILURE: ${error.message}`);
         } else {
@@ -160,22 +160,22 @@ export class ArchitectureValidationPipeline {
    */
   async executeContextInjectionPhase(agentType, originalPrompt, taskDescription) {
     this.logger.debug('Executing Phase 1: Architecture Context Injection');
-    
+
     try {
       const contextResult = await architectureContextInjection.injectArchitectureContext(
         agentType,
         originalPrompt,
         taskDescription
       );
-      
+
       // Validate context injection was successful
       if (!contextResult.enhancedPrompt || !contextResult.architectureContext) {
         throw new Error('Context injection failed: incomplete result');
       }
-      
+
       this.logger.info(`Context injection successful: ${contextResult.injectionId}`);
       return contextResult;
-      
+
     } catch (error) {
       this.logger.error(`Context injection phase failed: ${error.message}`);
       throw new Error(`CONTEXT INJECTION PHASE FAILURE: ${error.message}`);
@@ -192,21 +192,21 @@ export class ArchitectureValidationPipeline {
    */
   async executeTaskWithArchitectureContext(enhancedPrompt, agentType, taskDescription, taskExecutor) {
     this.logger.debug('Executing Phase 2: Task Execution with Architecture Context');
-    
+
     if (!taskExecutor) {
       throw new Error('No task executor provided - pipeline cannot execute task');
     }
-    
+
     try {
       const taskResult = await taskExecutor(enhancedPrompt, agentType, taskDescription);
-      
+
       if (!taskResult) {
         throw new Error('Task executor returned no result');
       }
-      
+
       this.logger.info('Task execution completed with architecture context');
       return taskResult;
-      
+
     } catch (error) {
       this.logger.error(`Task execution phase failed: ${error.message}`);
       throw new Error(`TASK EXECUTION PHASE FAILURE: ${error.message}`);
@@ -223,7 +223,7 @@ export class ArchitectureValidationPipeline {
    */
   async executeQualityGatesPhase(injectionId, taskResult, agentType, taskDescription) {
     this.logger.debug('Executing Phase 3: Quality Gates Validation');
-    
+
     try {
       const gatesResult = await architectureQualityGates.executeQualityGates(
         injectionId,
@@ -231,14 +231,14 @@ export class ArchitectureValidationPipeline {
         agentType,
         taskDescription
       );
-      
+
       if (!gatesResult.success && this.options.strictMode) {
         throw new Error(`Quality gates validation failed: ${gatesResult.results.blockingFailures} blocking violations`);
       }
-      
+
       this.logger.info(`Quality gates validation completed: ${gatesResult.complianceScore}% compliance`);
       return gatesResult;
-      
+
     } catch (error) {
       this.logger.error(`Quality gates phase failed: ${error.message}`);
       throw new Error(`QUALITY GATES PHASE FAILURE: ${error.message}`);
@@ -255,7 +255,7 @@ export class ArchitectureValidationPipeline {
    */
   async generateComplianceReport(executionId, contextResult, taskResult, gatesResult) {
     this.logger.debug('Executing Phase 4: Compliance Reporting');
-    
+
     const report = {
       executionId,
       timestamp: new Date().toISOString(),
@@ -286,12 +286,12 @@ export class ArchitectureValidationPipeline {
         next_steps: this.getNextSteps(contextResult, gatesResult)
       }
     };
-    
+
     // Save report if configured
     if (this.options.saveReports) {
       await this.saveComplianceReport(executionId, report);
     }
-    
+
     return report;
   }
 
@@ -304,19 +304,19 @@ export class ArchitectureValidationPipeline {
   calculateOverallCompliance(contextResult, gatesResult) {
     let score = 0;
     let maxScore = 100;
-    
+
     // Context injection worth 40%
     if (contextResult?.architectureContext?.documentPath) {
       score += 40;
     } else {
       score += 10; // Partial credit for attempted injection
     }
-    
+
     // Quality gates worth 60%
     if (gatesResult?.complianceScore) {
       score += (parseFloat(gatesResult.complianceScore) * 0.6);
     }
-    
+
     return Math.min(score, maxScore).toFixed(2);
   }
 
@@ -328,7 +328,7 @@ export class ArchitectureValidationPipeline {
    */
   getComplianceStatus(contextResult, gatesResult) {
     const overallCompliance = parseFloat(this.calculateOverallCompliance(contextResult, gatesResult));
-    
+
     if (overallCompliance >= 95) return 'EXCELLENT';
     if (overallCompliance >= 80) return 'GOOD';
     if (overallCompliance >= 60) return 'ACCEPTABLE';
@@ -357,7 +357,7 @@ export class ArchitectureValidationPipeline {
    */
   getCriticalViolations(gatesResult) {
     if (!gatesResult?.results?.gateResults) return [];
-    
+
     return gatesResult.results.gateResults
       .filter(gate => !gate.passed && gate.blocking)
       .map(gate => ({
@@ -375,23 +375,23 @@ export class ArchitectureValidationPipeline {
    */
   getNextSteps(contextResult, gatesResult) {
     const steps = [];
-    
+
     if (!contextResult?.architectureContext?.documentPath) {
       steps.push('Create architecture document (ARCHITECTURE.md or CLAUDE.md)');
     }
-    
+
     if (gatesResult?.results?.blockingFailures > 0) {
       steps.push('Resolve blocking quality gate violations before proceeding');
     }
-    
+
     if (!contextResult?.architectureContext?.techStack?.backend && !contextResult?.architectureContext?.techStack?.frontend) {
       steps.push('Define technology stack in architecture document');
     }
-    
+
     if (steps.length === 0) {
       steps.push('Continue with task execution - architecture compliance validated');
     }
-    
+
     return steps;
   }
 
@@ -403,7 +403,7 @@ export class ArchitectureValidationPipeline {
    */
   generateRecommendations(contextResult, gatesResult) {
     const recommendations = [];
-    
+
     if (!contextResult?.architectureContext?.documentPath) {
       recommendations.push({
         type: 'critical',
@@ -412,7 +412,7 @@ export class ArchitectureValidationPipeline {
         action: 'Use architecture template to create ARCHITECTURE.md'
       });
     }
-    
+
     if (gatesResult?.results?.failedGates > 0) {
       recommendations.push({
         type: 'warning',
@@ -421,7 +421,7 @@ export class ArchitectureValidationPipeline {
         action: 'Review and resolve gate violations before proceeding'
       });
     }
-    
+
     if (contextResult?.architectureContext?.constraints?.length === 0) {
       recommendations.push({
         type: 'improvement',
@@ -430,7 +430,7 @@ export class ArchitectureValidationPipeline {
         action: 'Define technology, security, and performance constraints'
       });
     }
-    
+
     return recommendations;
   }
 
@@ -443,10 +443,10 @@ export class ArchitectureValidationPipeline {
     try {
       const reportsDir = path.join(process.cwd(), 'reports', 'architecture-compliance');
       await fs.mkdir(reportsDir, { recursive: true });
-      
+
       const reportPath = path.join(reportsDir, `${executionId}.json`);
       await fs.writeFile(reportPath, JSON.stringify(report, null, 2));
-      
+
       this.logger.debug(`Compliance report saved: ${reportPath}`);
     } catch (error) {
       this.logger.warn(`Failed to save compliance report: ${error.message}`);
@@ -459,7 +459,7 @@ export class ArchitectureValidationPipeline {
    */
   recordExecution(execution) {
     this.pipelineExecutions.push(execution);
-    
+
     // Update metrics
     this.validationMetrics.totalExecutions++;
     if (execution.success) {
@@ -467,12 +467,12 @@ export class ArchitectureValidationPipeline {
     } else {
       this.validationMetrics.failedExecutions++;
     }
-    
+
     // Update average execution time
     const totalTime = this.pipelineExecutions.reduce((sum, exec) => sum + exec.executionTime, 0);
     this.validationMetrics.averageExecutionTime = Math.round(totalTime / this.validationMetrics.totalExecutions);
     this.validationMetrics.lastExecution = execution;
-    
+
     // Keep only last 100 executions to prevent memory issues
     if (this.pipelineExecutions.length > 100) {
       this.pipelineExecutions = this.pipelineExecutions.slice(-100);
@@ -488,14 +488,14 @@ export class ArchitectureValidationPipeline {
    */
   async quickValidation(taskResult, agentType, taskDescription) {
     this.logger.info('Running quick architecture validation');
-    
+
     try {
       // Load architecture context
-      const architectureContext = await architectureContextInjection.loadArchitectureContext();
-      
+      // const _architectureContext = await architectureContextInjection.loadArchitectureContext();
+
       // Create minimal injection record
       const injectionId = `quick-${Date.now()}`;
-      
+
       // Run quality gates
       const gatesResult = await architectureQualityGates.executeQualityGates(
         injectionId,
@@ -503,14 +503,14 @@ export class ArchitectureValidationPipeline {
         agentType,
         taskDescription
       );
-      
+
       return {
         success: gatesResult.success,
         complianceScore: gatesResult.complianceScore,
         violations: gatesResult.results.gateResults.filter(g => !g.passed),
         recommendations: gatesResult.results.gateResults.flatMap(g => g.recommendations || [])
       };
-      
+
     } catch (error) {
       this.logger.error(`Quick validation failed: ${error.message}`);
       return {
@@ -528,7 +528,7 @@ export class ArchitectureValidationPipeline {
   getExecutionStats() {
     return {
       ...this.validationMetrics,
-      successRate: this.validationMetrics.totalExecutions > 0 ? 
+      successRate: this.validationMetrics.totalExecutions > 0 ?
         (this.validationMetrics.successfulExecutions / this.validationMetrics.totalExecutions * 100).toFixed(2) : '0.00',
       recentExecutions: this.pipelineExecutions.slice(-10)
     };

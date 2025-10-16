@@ -1,4 +1,4 @@
-import WebSocket, { WebSocketServer } from 'ws';
+// import WebSocket // Unused, { WebSocketServer } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from '../utils/logger.js';
 import { MCPTools } from './tools.js';
@@ -13,7 +13,7 @@ export class MCPServer {
   }
 
   async start() {
-    this.wss = new WebSocketServer({ port: this.port });
+    this.wss = new // WebSocketServer({ port: this.port });
 
     this.wss.on('connection', (ws) => {
       const clientId = uuidv4();

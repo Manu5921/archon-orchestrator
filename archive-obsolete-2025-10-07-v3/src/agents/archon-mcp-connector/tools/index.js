@@ -1,605 +1,776 @@
-/**
- * MCP Tools Handlers for Archon
- * Implémente le contrat MCP avec fallbacks gracieux
- */
-
-import { archonClient } from '../rest/archonClient.js';
-import { getCapabilities } from '../rest/capabilities.js';
-import {
-  validateGetInput,
-  validateExploreInput,
-  validateRagInput,
-  validateManageTaskInput,
-  ValidationError
-} from './validation.js';
+#!/usr/bin/env node
 
 /**
- * Get capabilities (cached)
+ * GDPR COMPLIANCE SYSTEM - MAIN INTEGRATION MODULE
+ *
+ * Phase 4 TrustBoost - Complete GDPR compliance system
+ * Integrates all compliance components for full regulatory compliance
+ *
+ * Components:
+ * - Granular consent management system
+ * - Automated data export/deletion (<24h SLA)
+ * - Comprehensive audit trail (WHO, WHAT, WHEN)
+ * - Legally validated documents (CGU/CGV, Privacy Policy)
+ * - GDPR certification and validation system
  */
-let capabilities = null;
-async function getCap() {
-  if (!capabilities) {
-    capabilities = await getCapabilities();
+
+import { EventEmitter } from 'events';
+import { logger } from '../utils/logger.js';
+
+// Import GDPR compliance components
+import { consentManager } from './consent-manager.js';
+import { dataProcessor } from './data-processor.js';
+import { auditTrailSystem } from './audit-trail-system.js';
+import { legalDocumentsGenerator } from './legal-documents.js';
+import { gdprValidator } from './gdpr-validator.js';
+
+/**
+ * Main GDPR Compliance System Integration
+ */
+export class GDPRComplianceSystem extends EventEmitter {
+  constructor(options = {}) {
+    super();
+
+    this.config = {
+      // System configuration
+      environment: process.env.NODE_ENV || 'production',
+      systemName: 'TrustBoost GDPR Compliance System',
+      version: '2024.1',
+
+      // Component configuration
+      components: {
+        consentManager: { enabled: true, required: true },
+        dataProcessor: { enabled: true, required: true },
+        auditTrailSystem: { enabled: true, required: true },
+        legalDocuments: { enabled: true, required: true },
+        gdprValidator: { enabled: true, required: false }
+      },
+
+      // Integration settings
+      integration: {
+        autoInitialize: true,
+        healthCheckInterval: 30000, // 30 seconds
+        complianceCheckInterval: 24 * 60 * 60 * 1000, // 24 hours
+        reportingInterval: 7 * 24 * 60 * 60 * 1000 // Weekly
+      },
+
+      ...options
+    };
+
+    this.components = {};
+    this.systemHealth = {
+      status: 'initializing',
+      components: {},
+      lastCheck: null,
+      uptime: Date.now()
+    };
+
+    this.complianceStatus = {
+      score: null,
+      certification: null,
+      lastAudit: null,
+      nextAuditDue: null
+    };
+
+    this.initialized = false;
+
+    // Auto-initialize if enabled
+    if (this.config.integration.autoInitialize) {
+      this.init();
+    }
   }
-  return capabilities;
-}
-
-/**
- * Code bias prefix for search_code_examples
- */
-const CODE_BIAS_PREFIX = "type:code example OR snippet OR function OR class. ";
-
-/**
- * Helper pour réponses d'erreur standardisées
- */
-function errorResponse(error, toolName, retry = false) {
-  return {
-    ok: false,
-    error: error.message || String(error),
-    tool: toolName,
-    retry,
-    timestamp: new Date().toISOString()
-  };
-}
-
-/**
- * Helper pour réponses de succès standardisées
- */
-function successResponse(result, toolName) {
-  return {
-    ok: true,
-    tool: toolName,
-    result,
-    timestamp: new Date().toISOString()
-  };
-}
-
-/**
- * MCP Tools implementations
- */
-export const tools = {
 
   /**
-   * ENSURE_PROJECT tool - Idempotent project creation/retrieval with priority system
+   * Initialize the complete GDPR compliance system
    */
-  async ensure_project(rawInput) {
+  async init() {
     try {
-      const { id, name } = rawInput || {};
-      
-      // PRIORITY SYSTEM: --archon-project-id > ARCHON_PROJECT_ID > state > lookup > create
-      const priorityId = process.env.ARCHON_PROJECT_ID || id;
-      const priorityName = name;
-      
-      let selectedId = null;
-      let selectionReason = null;
-      
-      // Priority 1: Environment variable or CLI parameter  
-      if (priorityId) {
-        try {
-          const project = await archonClient.getProject(priorityId);
-          selectedId = priorityId;
-          selectionReason = process.env.ARCHON_PROJECT_ID ? 'env:ARCHON_PROJECT_ID' : 'param:id';
-          
-          console.log(`[archon.ensure_project] { chosen:"${selectedId}", reason:"${selectionReason}" }`);
-          
-          return successResponse({ 
-            ok: true, 
-            id: project.id,
-            project,
-            found: 'by_priority_id',
-            selection_reason: selectionReason
-          }, 'ensure_project');
-        } catch (error) {
-          console.log(`Priority project ID ${priorityId} not found, continuing to name lookup...`);
-        }
-      }
+      logger.info('🚀 Initializing GDPR Compliance System...');
+      logger.info('═══════════════════════════════════════════════');
 
-      // Priority 2: Lookup by name
-      if (priorityName) {
-        try {
-          const projects = await archonClient.listProjects();
-          const found = projects.find(p => p.title === priorityName || p.name === priorityName);
-          if (found) {
-            selectedId = found.id;
-            selectionReason = 'lookup:name';
-            
-            console.log(`[archon.ensure_project] { chosen:"${selectedId}", reason:"${selectionReason}" }`);
-            
-            return successResponse({ 
-              ok: true, 
-              id: found.id,
-              project: found,
-              found: 'by_name_lookup',
-              selection_reason: selectionReason
-            }, 'ensure_project');
-          }
-          
-          // Priority 3: Create new project
-          const created = await archonClient.createProject({ 
-            title: priorityName,
-            description: `Auto-created by Orchestra workflow`
-          });
-          
-          selectedId = created.id;
-          selectionReason = 'created:new';
-          
-          console.log(`[archon.ensure_project] { chosen:"${selectedId}", reason:"${selectionReason}" }`);
-          
-          return successResponse({ 
-            ok: true, 
-            id: created.id,
-            project: created,
-            found: 'created',
-            selection_reason: selectionReason
-          }, 'ensure_project');
-          
-        } catch (createError) {
-          return errorResponse(`Failed to create project: ${createError.message}`, 'ensure_project', true);
-        }
-      }
+      const startTime = Date.now();
 
-      return errorResponse('Missing project identifier (id or name)', 'ensure_project', false);
+      // Initialize core components
+      await this.initializeComponents();
 
-    } catch (error) {
-      return errorResponse(error.message, 'ensure_project', shouldRetry(error));
-    }
-  },
+      // Set up component event listeners
+      this.setupEventListeners();
 
-  /**
-   * SELF_TEST tool - Health check for specific project
-   */
-  async self_test(rawInput) {
-    try {
-      const { project_id } = rawInput || {};
-      
-      if (!project_id) {
-        return errorResponse('project_id required for self_test', 'self_test', false);
-      }
+      // Generate legal documents
+      await this.generateLegalDocuments();
 
-      const project = await archonClient.getProject(project_id);
-      
-      return successResponse({
-        ok: true,
-        project: {
-          id: project.id,
-          name: project.title || project.name,
-          created_at: project.created_at
-        },
-        timestamp: new Date().toISOString()
-      }, 'self_test');
+      // Start monitoring processes
+      this.startHealthMonitoring();
+      this.startComplianceMonitoring();
+      this.startReporting();
 
-    } catch (error) {
-      return errorResponse(error.message, 'self_test', shouldRetry(error));
-    }
-  },
-  
-  /**
-   * GET tool - Récupère une ressource par ID
-   */
-  async get(rawInput) {
-    try {
-      const input = validateGetInput(rawInput);
-      
-      let data;
-      switch (input.resource) {
-        case 'project':
-          data = await archonClient.getProject(input.id);
-          break;
-        case 'task':
-          data = await archonClient.getTask(input.id);
-          break;
-        case 'artifact':
-          // Fallback si pas d'artifacts endpoint
-          const cap = await getCap();
-          if (cap.artifacts) {
-            data = await archonClient.rest('GET', `/artifacts/${input.id}`);
-          } else {
-            return errorResponse('Artifacts not available', 'get', false);
-          }
-          break;
-        default:
-          return errorResponse(`Unsupported resource: ${input.resource}`, 'get', false);
-      }
+      // Perform initial compliance check
+      await this.performInitialComplianceCheck();
 
-      return successResponse({ 
-        resource: input.resource, 
-        data 
-      }, 'get');
+      this.initialized = true;
+      const initTime = Date.now() - startTime;
 
-    } catch (error) {
-      if (error instanceof ValidationError) {
-        return errorResponse(`Validation error: ${error.message}`, 'get', false);
-      }
-      return errorResponse(error.message, 'get', shouldRetry(error));
-    }
-  },
+      logger.info('✅ GDPR Compliance System initialized successfully');
+      logger.info(`⏱️ Initialization time: ${initTime}ms`);
+      logger.info('═══════════════════════════════════════════════');
 
-  /**
-   * EXPLORE_PROJECT tool - Explore projet avec sous-ressources
-   */
-  async explore_project(rawInput) {
-    try {
-      const input = validateExploreInput(rawInput);
-      const cap = await getCap();
-
-      // Récupérer le projet principal
-      const project = await archonClient.getProject(input.project_id);
-      
-      // Récupérer les sous-ressources demandées
-      const promises = [];
-      const result = { project };
-
-      if (input.with.includes('tasks') && cap.tasks) {
-        promises.push(
-          archonClient.listTasks(input.project_id)
-            .then(tasks => { result.tasks = tasks; })
-            .catch(() => { result.tasks = []; })
-        );
-      }
-
-      if (input.with.includes('events') && cap.events) {
-        promises.push(
-          archonClient.listEvents(input.project_id)
-            .then(events => { result.events = events; })
-            .catch(() => { result.events = []; })
-        );
-      }
-
-      if (input.with.includes('artifacts') && cap.artifacts) {
-        promises.push(
-          archonClient.listArtifacts(input.project_id)
-            .then(artifacts => { result.artifacts = artifacts; })
-            .catch(() => { result.artifacts = []; })
-        );
-      }
-
-      await Promise.all(promises);
-
-      return successResponse(result, 'explore_project');
-
-    } catch (error) {
-      if (error instanceof ValidationError) {
-        return errorResponse(`Validation error: ${error.message}`, 'explore_project', false);
-      }
-      return errorResponse(error.message, 'explore_project', shouldRetry(error));
-    }
-  },
-
-  /**
-   * PERFORM_RAG_QUERY tool - Recherche RAG avec fallbacks
-   */
-  async perform_rag_query(rawInput) {
-    try {
-      const input = validateRagInput(rawInput);
-      const cap = await getCap();
-
-      // Tentative 1: RAG endpoint natif
-      if (cap.ragQuery) {
-        try {
-          const res = await archonClient.ragQuery(input.project_id, input.query, input.top_k);
-          return successResponse({
-            answers: res.answers || [],
-            sources: res.sources || []
-          }, 'perform_rag_query');
-        } catch (ragError) {
-          console.warn('Native RAG failed, trying fallbacks:', ragError.message);
-        }
-      }
-
-      // Fallback 1: Search endpoint
-      try {
-        const searchResults = await archonClient.search(input.project_id, input.query, input.top_k);
-        return successResponse({
-          answers: searchResults.items?.map(item => ({
-            text: item.snippet || item.content || JSON.stringify(item),
-            score: item.score || 0.5
-          })) || [],
-          sources: searchResults.items || []
-        }, 'perform_rag_query');
-      } catch (searchError) {
-        console.warn('Search fallback failed:', searchError.message);
-      }
-
-      // Fallback 2: Best-effort from tasks/events
-      const promises = [];
-      if (cap.tasks) {
-        promises.push(archonClient.listTasks(input.project_id).catch(() => []));
-      }
-      if (cap.events) {
-        promises.push(archonClient.listEvents(input.project_id).catch(() => []));
-      }
-
-      const results = await Promise.all(promises);
-      const pool = results.flat();
-      
-      // Simple text matching
-      const matches = pool.filter(item => {
-        const text = JSON.stringify(item).toLowerCase();
-        return text.includes(input.query.toLowerCase());
+      // Emit system ready event
+      this.emit('systemReady', {
+        initTime,
+        components: Object.keys(this.components).length,
+        complianceScore: this.complianceStatus.score
       });
 
-      if (matches.length > 0) {
-        return successResponse({
-          answers: matches.slice(0, input.top_k).map(item => ({
-            text: item.title || item.description || JSON.stringify(item),
-            score: 0.3
-          })),
-          sources: matches.slice(0, input.top_k)
-        }, 'perform_rag_query');
-      }
-
-      // Aucun résultat
       return {
-        ok: false,
-        error: "tool_unavailable",
-        capability: "ragQuery",
-        retry: false,
-        suggestion: "skip_orchestra_step",
-        tool: 'perform_rag_query'
+        success: true,
+        initTime,
+        components: this.getComponentStatus(),
+        complianceStatus: this.complianceStatus
       };
 
     } catch (error) {
-      if (error instanceof ValidationError) {
-        return errorResponse(`Validation error: ${error.message}`, 'perform_rag_query', false);
-      }
-      return errorResponse(error.message, 'perform_rag_query', shouldRetry(error));
-    }
-  },
-
-  /**
-   * MANAGE_TASK tool - Gestion des tâches
-   */
-  async manageTask(rawInput) {
-    try {
-      const input = validateManageTaskInput(rawInput);
-
-      let result;
-      switch (input.action) {
-        case 'create':
-          const createData = {
-            project_id: input.project_id,
-            title: input.task?.title || 'New Task',
-            description: input.task?.desc || input.task?.description || '',
-            status: input.task?.status || 'todo',
-            priority: input.task?.priority || 'medium',
-            assignee: input.task?.assignee || 'User',
-            task_order: input.task?.task_order || 0,
-            feature: input.task?.feature || null,
-            external_id: input.task?.external_id || null // For idempotence
-          };
-          result = await archonClient.createTask(createData);
-          break;
-
-        case 'update':
-          if (!input.task?.id) {
-            return errorResponse('Task ID required for update action', 'manageTask', false);
-          }
-          result = await archonClient.updateTask(input.task.id, input.task);
-          break;
-
-        case 'close':
-          if (!input.task?.id) {
-            return errorResponse('Task ID required for close action', 'manageTask', false);
-          }
-          result = await archonClient.closeTask(input.task.id);
-          break;
-
-        default:
-          return errorResponse(`Unknown action: ${input.action}`, 'manageTask', false);
-      }
-
-      return successResponse({ 
-        ok: true, 
-        task: result 
-      }, 'manageTask');
-
-    } catch (error) {
-      if (error instanceof ValidationError) {
-        return errorResponse(`Validation error: ${error.message}`, 'manageTask', false);
-      }
-      return errorResponse(error.message, 'manageTask', shouldRetry(error));
-    }
-  },
-
-  /**
-   * SEARCH_CODE_EXAMPLES tool - Search avec bias code (ChatGPT strategy)
-   */
-  async search_code_examples(rawInput) {
-    try {
-      const { project_id, query, top_k = 5 } = rawInput || {};
-      
-      if (!project_id || !query) {
-        return errorResponse('project_id and query required for search_code_examples', 'search_code_examples', false);
-      }
-
-      const cap = await getCap();
-
-      // Fallback 1: Si RAG natif disponible → utilise-le avec bias code
-      if (cap.ragQuery) {
-        try {
-          const ragResult = await tools.perform_rag_query({
-            project_id,
-            query: `${CODE_BIAS_PREFIX}${query}`,
-            top_k
-          });
-          
-          if (ragResult.ok) {
-            return successResponse({
-              items: ragResult.result?.answers || [],
-              sources: ragResult.result?.sources || [],
-              method: 'rag_with_code_bias'
-            }, 'search_code_examples');
-          }
-        } catch (ragError) {
-          console.warn('RAG code search failed, trying fallbacks:', ragError.message);
-        }
-      }
-
-      // Fallback 2: Search endpoint avec type=code
-      try {
-        const searchUrl = `/search?project_id=${project_id}&type=code&q=${encodeURIComponent(query)}&k=${top_k}`;
-        const searchResults = await archonClient.rest('GET', searchUrl);
-        
-        return successResponse({
-          items: (searchResults.items || []).slice(0, top_k),
-          sources: searchResults.items || [],
-          method: 'search_endpoint'
-        }, 'search_code_examples');
-        
-      } catch (searchError) {
-        console.warn('Search endpoint failed:', searchError.message);
-      }
-
-      // Fallback 3: Filter tasks/events pour du code
-      const promises = [];
-      if (cap.tasks) {
-        promises.push(archonClient.listTasks(project_id).catch(() => []));
-      }
-      if (cap.events) {
-        promises.push(archonClient.listEvents(project_id).catch(() => []));
-      }
-
-      const results = await Promise.all(promises);
-      const pool = results.flat();
-      
-      // Simple heuristic pour détecter du code
-      const isCodey = (item) => {
-        const text = JSON.stringify(item).toLowerCase();
-        return text.includes('```') || 
-               text.includes('function ') || 
-               text.includes('class ') || 
-               text.includes('import ') ||
-               text.includes('const ') ||
-               text.includes('def ') ||
-               text.includes('async ');
-      };
-
-      const matches = pool
-        .filter(isCodey)
-        .filter(item => {
-          const text = JSON.stringify(item).toLowerCase();
-          return text.includes(query.toLowerCase());
-        });
-
-      if (matches.length > 0) {
-        return successResponse({
-          items: matches.slice(0, top_k),
-          sources: matches.slice(0, top_k),
-          method: 'tasks_events_filter'
-        }, 'search_code_examples');
-      }
-
-      // Aucun résultat trouvé
-      return {
-        ok: false,
-        error: "tool_unavailable",
-        capability: "search_code_examples",
-        retry: false,
-        suggestion: "skip_orchestra_step",
-        tool: 'search_code_examples'
-      };
-
-    } catch (error) {
-      return errorResponse(error.message, 'search_code_examples', shouldRetry(error));
-    }
-  },
-
-  /**
-   * Capabilities tool - Retourne les capacités détectées
-   */
-  async capabilities() {
-    try {
-      const cap = await getCap();
-      return successResponse({
-        version: "archon-mcp-contract/0.1.1",
-        capabilities: cap,
-        tools: [
-          { name: "get", aliases: ["read", "fetch"] },
-          { name: "explore_project", aliases: ["explore", "project.explore"] },
-          { name: "perform_rag_query", aliases: ["rag_query"] },
-          { name: "search_code_examples", aliases: ["search.examples.code", "code.search"] },
-          { name: "manageTask", aliases: ["task.create", "task.update", "task.close"] },
-          { name: "capabilities" },
-          { name: "agents.capabilities" }
-        ]
-      }, 'capabilities');
-    } catch (error) {
-      return errorResponse(error.message, 'capabilities', true);
-    }
-  },
-
-  /**
-   * agents.capabilities tool - Retourne les agents disponibles dynamiquement (Hybrid Architecture)
-   */
-  async 'agents.capabilities'() {
-    try {
-      // Access orchestrator capabilities if available (new hybrid format)
-      const orchestratorCap = global.__orchestrator_capabilities || { 
-        agents: { claude: false, gemini: false, archon: true },
-        versions: {},
-        endpoints: {},
-        configured: [],
-        detected: {}
-      };
-      
-      // Support both old and new capability format
-      const isOldFormat = typeof orchestratorCap.hasClaude !== 'undefined';
-      
-      return successResponse({
-        version: "archon-mcp-contract/0.1.2-hybrid",
-        agents: isOldFormat ? {
-          claude: orchestratorCap.hasClaude,
-          gemini: orchestratorCap.hasGemini, 
-          archon: true,
-          archon_mcp: true
-        } : {
-          claude: orchestratorCap.agents.claude,
-          gemini: orchestratorCap.agents.gemini,
-          archon: orchestratorCap.agents.archon,
-          archon_mcp: true
-        },
-        versions: orchestratorCap.versions || {},
-        endpoints: orchestratorCap.endpoints || {},
-        configured_agents: orchestratorCap.configured || orchestratorCap.availableAgents || [],
-        detected_agents: orchestratorCap.detected || {},
-        facade_mode: true,
-        hybrid_architecture: !isOldFormat,
-        timestamp: new Date().toISOString()
-      }, 'agents.capabilities');
-    } catch (error) {
-      return errorResponse(error.message, 'agents.capabilities', true);
+      logger.error(`❌ Failed to initialize GDPR Compliance System: ${error.message}`);
+      this.systemHealth.status = 'failed';
+      this.emit('systemError', error);
+      throw error;
     }
   }
+
+  /**
+   * Initialize all GDPR compliance components
+   */
+  async initializeComponents() {
+    logger.info('🔧 Initializing GDPR compliance components...');
+
+    // Initialize consent manager
+    if (this.config.components.consentManager.enabled) {
+      try {
+        if (!consentManager.initialized) {
+          await consentManager.init();
+        }
+        this.components.consentManager = consentManager;
+        logger.info('✅ Consent Manager initialized');
+      } catch (error) {
+        logger.error(`❌ Consent Manager failed: ${error.message}`);
+        if (this.config.components.consentManager.required) {
+          throw error;
+        }
+      }
+    }
+
+    // Initialize data processor
+    if (this.config.components.dataProcessor.enabled) {
+      try {
+        if (!dataProcessor.initialized) {
+          await dataProcessor.init();
+        }
+        this.components.dataProcessor = dataProcessor;
+        logger.info('✅ Data Processor initialized');
+      } catch (error) {
+        logger.error(`❌ Data Processor failed: ${error.message}`);
+        if (this.config.components.dataProcessor.required) {
+          throw error;
+        }
+      }
+    }
+
+    // Initialize audit trail system
+    if (this.config.components.auditTrailSystem.enabled) {
+      try {
+        if (!auditTrailSystem.initialized) {
+          await auditTrailSystem.init();
+        }
+        this.components.auditTrailSystem = auditTrailSystem;
+        logger.info('✅ Audit Trail System initialized');
+      } catch (error) {
+        logger.error(`❌ Audit Trail System failed: ${error.message}`);
+        if (this.config.components.auditTrailSystem.required) {
+          throw error;
+        }
+      }
+    }
+
+    // Initialize GDPR validator
+    if (this.config.components.gdprValidator.enabled) {
+      try {
+        if (!gdprValidator.initialized) {
+          await gdprValidator.init();
+        }
+        this.components.gdprValidator = gdprValidator;
+        logger.info('✅ GDPR Validator initialized');
+      } catch (error) {
+        logger.error(`❌ GDPR Validator failed: ${error.message}`);
+        if (this.config.components.gdprValidator.required) {
+          throw error;
+        }
+      }
+    }
+  }
+
+  /**
+   * Set up event listeners for component coordination
+   */
+  setupEventListeners() {
+    logger.info('🔗 Setting up component event listeners...');
+
+    // Consent Manager events
+    if (this.components.consentManager) {
+      this.components.consentManager.on('consentChanged', async (event) => {
+        await this.handleConsentChanged(event);
+      });
+
+      this.components.consentManager.on('consentWithdrawn', async (event) => {
+        await this.handleConsentWithdrawn(event);
+      });
+    }
+
+    // Data Processor events
+    if (this.components.dataProcessor) {
+      this.components.dataProcessor.on('exportCompleted', async (event) => {
+        await this.handleExportCompleted(event);
+      });
+
+      this.components.dataProcessor.on('deletionCompleted', async (event) => {
+        await this.handleDeletionCompleted(event);
+      });
+
+      this.components.dataProcessor.on('slaBreached', async (event) => {
+        await this.handleSLABreach(event);
+      });
+    }
+
+    // Audit Trail System events
+    if (this.components.auditTrailSystem) {
+      this.components.auditTrailSystem.on('criticalEvent', async (event) => {
+        await this.handleCriticalAuditEvent(event);
+      });
+
+      this.components.auditTrailSystem.on('dataBreachDetected', async (event) => {
+        await this.handleDataBreach(event);
+      });
+    }
+
+    logger.info('✅ Event listeners configured');
+  }
+
+  /**
+   * Generate legal documents
+   */
+  async generateLegalDocuments() {
+    if (this.config.components.legalDocuments.enabled) {
+      try {
+        logger.info('📄 Generating legal documents...');
+
+        const result = await legalDocumentsGenerator.generateAllDocuments();
+        this.components.legalDocuments = legalDocumentsGenerator;
+
+        logger.info(`✅ Legal documents generated: ${result.documents.join(', ')}`);
+
+        // Log document generation in audit trail
+        if (this.components.auditTrailSystem) {
+          await this.components.auditTrailSystem.logSystemEvent('legal_documents_generated', {
+            documents: result.documents,
+            outputPath: result.outputPath
+          });
+        }
+
+      } catch (error) {
+        logger.error(`❌ Legal documents generation failed: ${error.message}`);
+        if (this.config.components.legalDocuments.required) {
+          throw error;
+        }
+      }
+    }
+  }
+
+  /**
+   * Perform initial compliance check
+   */
+  async performInitialComplianceCheck() {
+    if (this.components.gdprValidator) {
+      try {
+        logger.info('🔍 Performing initial GDPR compliance audit...');
+
+        const audit = await this.components.gdprValidator.performComplianceAudit({
+          type: 'initial_system_audit',
+          triggeredBy: 'system_initialization'
+        });
+
+        this.complianceStatus = {
+          score: audit.overallCompliance.score,
+          status: audit.overallCompliance.status,
+          certification: audit.overallCompliance.certification,
+          lastAudit: audit.startTime,
+          nextAuditDue: audit.nextAuditDate,
+          auditId: audit.id
+        };
+
+        logger.info(`✅ Initial compliance check completed: ${audit.overallCompliance.score}% (${audit.overallCompliance.status})`);
+
+        // Log compliance check
+        if (this.components.auditTrailSystem) {
+          await this.components.auditTrailSystem.logSystemEvent('compliance_check_completed', {
+            auditId: audit.id,
+            score: audit.overallCompliance.score,
+            status: audit.overallCompliance.status,
+            certification: audit.overallCompliance.certification?.certificationLevel
+          });
+        }
+
+        // Emit compliance event
+        this.emit('complianceChecked', {
+          score: audit.overallCompliance.score,
+          status: audit.overallCompliance.status,
+          audit
+        });
+
+      } catch (error) {
+        logger.error(`❌ Initial compliance check failed: ${error.message}`);
+      }
+    }
+  }
+
+  /**
+   * Event handlers for component coordination
+   */
+
+  async handleConsentChanged(event) {
+    const { userId, consentRecord, changedCategories } = event;
+
+    // Log consent change in audit trail
+    if (this.components.auditTrailSystem) {
+      await this.components.auditTrailSystem.logAuditEvent(
+        'consent_updated',
+        userId,
+        {
+          consentId: consentRecord.id,
+          changedCategories,
+          preferences: consentRecord.preferences,
+          legalBasis: consentRecord.legalBasis,
+          processingActivity: 'consent_management'
+        }
+      );
+    }
+
+    // Check if consent changes affect data processing
+    await this.checkConsentImpactOnProcessing(userId, changedCategories);
+
+    this.emit('userConsentChanged', { userId, changedCategories });
+  }
+
+  async handleConsentWithdrawn(event) {
+    const { userId, withdrawalData } = event;
+
+    // Log consent withdrawal
+    if (this.components.auditTrailSystem) {
+      await this.components.auditTrailSystem.logAuditEvent(
+        'consent_withdrawn',
+        userId,
+        {
+          withdrawnCategories: withdrawalData.withdrawnCategories,
+          withdrawalReason: withdrawalData.withdrawalReason,
+          withdrawnAt: withdrawalData.withdrawnAt,
+          processingActivity: 'consent_management'
+        }
+      );
+    }
+
+    // Automatically trigger data deletion if required
+    await this.handleConsentWithdrawalDataImpact(userId, withdrawalData);
+
+    this.emit('userConsentWithdrawn', { userId, withdrawalData });
+  }
+
+  async handleExportCompleted(event) {
+    const { request } = event;
+
+    logger.info(`📤 Data export completed for user ${request.userId} (Request: ${request.id})`);
+
+    // Log export completion
+    if (this.components.auditTrailSystem) {
+      await this.components.auditTrailSystem.logAuditEvent(
+        'data_export_completed',
+        request.userId,
+        {
+          requestId: request.id,
+          exportFiles: request.exportFiles.length,
+          totalSize: request.totalDataSize,
+          format: request.format,
+          completedAt: request.actualCompletionTime,
+          slaStatus: request.slaStatus,
+          processingActivity: 'data_portability'
+        }
+      );
+    }
+
+    this.emit('userDataExported', { userId: request.userId, request });
+  }
+
+  async handleDeletionCompleted(event) {
+    const { request } = event;
+
+    logger.info(`🗑️ Data deletion completed for user ${request.userId} (Request: ${request.id})`);
+
+    // Log deletion completion
+    if (this.components.auditTrailSystem) {
+      await this.components.auditTrailSystem.logAuditEvent(
+        'data_deletion_completed',
+        request.userId,
+        {
+          requestId: request.id,
+          deletedSources: request.deletedDataSources,
+          retainedSources: request.retainedDataSources,
+          completedAt: request.actualCompletionTime,
+          slaStatus: request.slaStatus,
+          processingActivity: 'data_erasure'
+        }
+      );
+    }
+
+    this.emit('userDataDeleted', { userId: request.userId, request });
+  }
+
+  async handleSLABreach(event) {
+    const { request } = event;
+
+    logger.error(`🚨 SLA BREACH: Request ${request.id} (${request.type}) - User ${request.userId}`);
+
+    // Log SLA breach as critical event
+    if (this.components.auditTrailSystem) {
+      await this.components.auditTrailSystem.logAuditEvent(
+        'sla_breach',
+        request.userId,
+        {
+          requestId: request.id,
+          requestType: request.type,
+          slaDeadline: request.slaDeadline,
+          actualTime: new Date().toISOString(),
+          severity: 'critical',
+          processingActivity: 'sla_monitoring'
+        }
+      );
+    }
+
+    this.emit('slaBreached', { request, severity: 'critical' });
+  }
+
+  async handleCriticalAuditEvent(event) {
+    logger.error(`🚨 CRITICAL AUDIT EVENT: ${event.eventType} - ${event.id}`);
+
+    // Escalate critical events
+    this.emit('criticalEvent', {
+      eventType: event.eventType,
+      eventId: event.id,
+      subjectId: event.subjectId,
+      timestamp: event.timestamp,
+      severity: 'critical'
+    });
+  }
+
+  async handleDataBreach(event) {
+    logger.error(`🚨 DATA BREACH DETECTED: ${event.eventData.breachId}`);
+
+    // Immediate breach response
+    await this.initiateBreachResponse(event);
+
+    this.emit('dataBreachDetected', {
+      breachId: event.eventData.breachId,
+      breachType: event.eventData.breachType,
+      affectedSubjects: event.eventData.affectedSubjects,
+      timestamp: event.timestamp
+    });
+  }
+
+  /**
+   * Supporting methods
+   */
+
+  async checkConsentImpactOnProcessing(userId, changedCategories) {
+    // Check if withdrawn consent affects ongoing processing
+    if (this.components.consentManager && this.components.dataProcessor) {
+      const consent = this.components.consentManager.getConsent(userId);
+
+      for (const category of changedCategories) {
+        if (!consent.preferences[category]) {
+          // Consent withdrawn for this category - check for data retention requirements
+          logger.info(`🔄 Checking data processing impact for user ${userId}, category: ${category}`);
+
+          // Could trigger automatic data cleanup or processing restriction
+          // Implementation depends on specific business rules
+        }
+      }
+    }
+  }
+
+  async handleConsentWithdrawalDataImpact(userId, withdrawalData) {
+    // Automatically handle data processing changes when consent is withdrawn
+    const { withdrawnCategories } = withdrawalData;
+
+    // Check if any withdrawn categories require data deletion
+    const deletionRequiredCategories = withdrawnCategories.filter(category =>
+      ['marketing', 'analytics'].includes(category) // Example categories that require deletion
+    );
+
+    if (deletionRequiredCategories.length > 0 && this.components.dataProcessor) {
+      logger.info(`🗑️ Initiating automatic data deletion for user ${userId} due to consent withdrawal`);
+
+      // Request automatic data deletion
+      await this.components.dataProcessor.requestDataDeletion(userId, {
+        deletionScope: 'specific',
+        specificDataSources: deletionRequiredCategories,
+        reason: 'consent_withdrawal_automatic',
+        urgency: 'high'
+      });
+    }
+  }
+
+  async initiateBreachResponse(breachEvent) {
+    // Immediate breach response procedures
+    const breachId = breachEvent.eventData.breachId;
+
+    logger.error(`🚨 Initiating breach response for: ${breachId}`);
+
+    // 1. Containment measures
+    // 2. Impact assessment
+    // 3. Notification preparation (72h deadline)
+    // 4. Communication planning
+
+    // This would trigger actual breach response procedures
+  }
+
+  /**
+   * Monitoring and reporting
+   */
+
+  startHealthMonitoring() {
+    setInterval(async () => {
+      try {
+        await this.performHealthCheck();
+      } catch (error) {
+        logger.error(`❌ Health check failed: ${error.message}`);
+      }
+    }, this.config.integration.healthCheckInterval);
+  }
+
+  startComplianceMonitoring() {
+    setInterval(async () => {
+      try {
+        await this.performComplianceCheck();
+      } catch (error) {
+        logger.error(`❌ Compliance check failed: ${error.message}`);
+      }
+    }, this.config.integration.complianceCheckInterval);
+  }
+
+  startReporting() {
+    setInterval(async () => {
+      try {
+        await this.generateSystemReport();
+      } catch (error) {
+        logger.error(`❌ System reporting failed: ${error.message}`);
+      }
+    }, this.config.integration.reportingInterval);
+  }
+
+  async performHealthCheck() {
+    const healthCheck = {
+      timestamp: new Date().toISOString(),
+      status: 'healthy',
+      components: {}
+    };
+
+    // Check each component
+    for (const [name, component] of Object.entries(this.components)) {
+      healthCheck.components[name] = {
+        status: component && component.initialized ? 'healthy' : 'unhealthy',
+        lastActivity: new Date().toISOString(),
+        memoryUsage: process.memoryUsage()
+      };
+    }
+
+    // Overall system status
+    const unhealthyComponents = Object.values(healthCheck.components)
+      .filter(comp => comp.status === 'unhealthy').length;
+
+    if (unhealthyComponents > 0) {
+      healthCheck.status = 'degraded';
+    }
+
+    this.systemHealth = healthCheck;
+
+    // Emit health status
+    this.emit('healthCheck', healthCheck);
+  }
+
+  async performComplianceCheck() {
+    if (this.components.gdprValidator) {
+      const audit = await this.components.gdprValidator.performComplianceAudit({
+        type: 'scheduled_compliance_check',
+        triggeredBy: 'automated_monitoring'
+      });
+
+      this.complianceStatus = {
+        score: audit.overallCompliance.score,
+        status: audit.overallCompliance.status,
+        certification: audit.overallCompliance.certification,
+        lastAudit: audit.startTime,
+        nextAuditDue: audit.nextAuditDate,
+        auditId: audit.id
+      };
+
+      this.emit('complianceChecked', {
+        score: audit.overallCompliance.score,
+        status: audit.overallCompliance.status,
+        audit
+      });
+    }
+  }
+
+  async generateSystemReport() {
+    const report = {
+      timestamp: new Date().toISOString(),
+      systemInfo: {
+        name: this.config.systemName,
+        version: this.config.version,
+        uptime: Date.now() - this.systemHealth.uptime,
+        environment: this.config.environment
+      },
+      healthStatus: this.systemHealth,
+      complianceStatus: this.complianceStatus,
+      componentStatus: this.getComponentStatus()
+    };
+
+    logger.info(`📊 System report generated - Compliance: ${this.complianceStatus.score || 'N/A'}%, Health: ${this.systemHealth.status}`);
+
+    this.emit('systemReport', report);
+
+    return report;
+  }
+
+  /**
+   * Public API methods
+   */
+
+  getSystemStatus() {
+    return {
+      initialized: this.initialized,
+      health: this.systemHealth,
+      compliance: this.complianceStatus,
+      components: this.getComponentStatus()
+    };
+  }
+
+  getComponentStatus() {
+    const status = {};
+
+    for (const [name, component] of Object.entries(this.components)) {
+      status[name] = {
+        initialized: component && component.initialized,
+        active: Boolean(component),
+        lastActivity: new Date().toISOString()
+      };
+    }
+
+    return status;
+  }
+
+  async requestDataExport(userId, options = {}) {
+    if (!this.components.dataProcessor) {
+      throw new Error('Data processor not available');
+    }
+
+    return await this.components.dataProcessor.requestDataExport(userId, options);
+  }
+
+  async requestDataDeletion(userId, options = {}) {
+    if (!this.components.dataProcessor) {
+      throw new Error('Data processor not available');
+    }
+
+    return await this.components.dataProcessor.requestDataDeletion(userId, options);
+  }
+
+  async setUserConsent(userId, consentData, userContext = {}) {
+    if (!this.components.consentManager) {
+      throw new Error('Consent manager not available');
+    }
+
+    return await this.components.consentManager.setConsent(userContext, {
+      ...consentData,
+      userId
+    });
+  }
+
+  async getUserConsent(userId) {
+    if (!this.components.consentManager) {
+      throw new Error('Consent manager not available');
+    }
+
+    return this.components.consentManager.getConsent(userId);
+  }
+
+  async generateComplianceReport() {
+    if (!this.components.gdprValidator) {
+      throw new Error('GDPR validator not available');
+    }
+
+    return await this.components.gdprValidator.generateComplianceReport();
+  }
+}
+
+// Export singleton instance
+export const gdprComplianceSystem = new GDPRComplianceSystem();
+
+// Export all components
+export {
+  consentManager,
+  dataProcessor,
+  auditTrailSystem,
+  legalDocumentsGenerator,
+  gdprValidator
 };
 
-/**
- * Retry logic strict (ChatGPT strategy)
- * Ne retry QUE sur pannes réseau/timeouts/5xx
- */
-function shouldRetry(error) {
-  const message = String(error.message || error);
-  
-  // 5xx server errors → retry
-  if (message.includes('HTTP 5')) return true;
-  
-  // Network/connection errors → retry
-  if (message.includes('network') || 
-      message.includes('ECONN') || 
-      message.includes('ETIMEDOUT') ||
-      message.includes('timeout')) return true;
-  
-  // 4xx client errors → NO retry
-  if (message.includes('HTTP 4')) return false;
-  
-  // Validation errors → NO retry
-  if (message.includes('Validation error') ||
-      message.includes('validation_error') ||
-      message.includes('Invalid input')) return false;
-  
-  // Tool unavailable → NO retry  
-  if (message.includes('tool_unavailable') ||
-      message.includes('unknown_action')) return false;
-  
-  // Default: NO retry (ChatGPT strict policy)
-  return false;
+// Main initialization function
+export async function initializeGDPRCompliance(options = {}) {
+  const system = new GDPRComplianceSystem(options);
+  await system.init();
+  return system;
+}
+
+// Quick start function for simple integration
+export async function quickStartGDPR() {
+  logger.info('🚀 GDPR Quick Start - Initializing TrustBoost Phase 4...');
+
+  const system = await initializeGDPRCompliance({
+    environment: process.env.NODE_ENV || 'production',
+    integration: {
+      autoInitialize: true,
+      healthCheckInterval: 30000,
+      complianceCheckInterval: 24 * 60 * 60 * 1000
+    }
+  });
+
+  logger.info('✅ TrustBoost Phase 4 - GDPR Compliance System ready!');
+  logger.info('🎯 Features: Consent Management, Data Processing, Audit Trail, Legal Docs, Validation');
+  logger.info(`📊 Compliance Score: ${system.complianceStatus.score || 'Calculating...'}%`);
+
+  return system;
+}
+
+// CLI execution
+if (import.meta.url === `file://${process.argv[1]}`) {
+  quickStartGDPR()
+    .then(system => {
+      logger.info('🎉 GDPR Compliance System started successfully!');
+
+      // Keep process alive for monitoring
+      process.on('SIGINT', async () => {
+        logger.info('👋 Shutting down GDPR Compliance System...');
+        process.exit(0);
+      });
+    })
+    .catch(error => {
+      logger.error(`💥 Failed to start GDPR Compliance System: ${error.message}`);
+      process.exit(1);
+    });
 }

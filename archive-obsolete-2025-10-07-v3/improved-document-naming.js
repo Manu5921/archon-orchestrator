@@ -6,51 +6,51 @@ export class IntelligentDocumentNaming {
   constructor() {
     this.namingPatterns = {
       failure_analysis: {
-        prefix: "FAILURE-ANALYSIS",
-        template: "{prefix} - {project} - {component} - {date}",
+        prefix: 'FAILURE-ANALYSIS',
+        template: '{prefix} - {project} - {component} - {date}',
         examples: [
-          "FAILURE-ANALYSIS - NutriCoach - Frontend-Agents - 2025-09-01",
-          "FAILURE-ANALYSIS - ECommerce - Payment-System - 2025-08-15"
+          'FAILURE-ANALYSIS - NutriCoach - Frontend-Agents - 2025-09-01',
+          'FAILURE-ANALYSIS - ECommerce - Payment-System - 2025-08-15'
         ]
       },
       solution_system: {
-        prefix: "SOLUTION",
-        template: "{prefix} - {system-name} - {version} - {scope}",
+        prefix: 'SOLUTION',
+        template: '{prefix} - {system-name} - {version} - {scope}',
         examples: [
-          "SOLUTION - Architecture-Compliance - V2 - Quality-Gates-System",
-          "SOLUTION - Error-Handling - V1 - Frontend-Components"
+          'SOLUTION - Architecture-Compliance - V2 - Quality-Gates-System',
+          'SOLUTION - Error-Handling - V1 - Frontend-Components'
         ]
       },
       integration_workflow: {
-        prefix: "WORKFLOW",
-        template: "{prefix} - {integration-type} - {components} - {status}",
+        prefix: 'WORKFLOW',
+        template: '{prefix} - {integration-type} - {components} - {status}',
         examples: [
-          "WORKFLOW - CI-CD-Integration - GitHub-Jules-Archon - Production-Ready",
-          "WORKFLOW - Multi-Agent - Claude-Gemini-Orchestra - Validated"
+          'WORKFLOW - CI-CD-Integration - GitHub-Jules-Archon - Production-Ready',
+          'WORKFLOW - Multi-Agent - Claude-Gemini-Orchestra - Validated'
         ]
       },
       best_practices: {
-        prefix: "BEST-PRACTICES",
-        template: "{prefix} - {domain} - {technology} - {level}",
+        prefix: 'BEST-PRACTICES',
+        template: '{prefix} - {domain} - {technology} - {level}',
         examples: [
-          "BEST-PRACTICES - Frontend - React-TypeScript - Enterprise",
-          "BEST-PRACTICES - Security - API-Design - Advanced"
+          'BEST-PRACTICES - Frontend - React-TypeScript - Enterprise',
+          'BEST-PRACTICES - Security - API-Design - Advanced'
         ]
       },
       post_mortem: {
-        prefix: "POST-MORTEM",
-        template: "{prefix} - {incident} - {impact} - {date}",
+        prefix: 'POST-MORTEM',
+        template: '{prefix} - {incident} - {impact} - {date}',
         examples: [
-          "POST-MORTEM - Type-Safety-Breakdown - High-Impact - 2025-09-01",
-          "POST-MORTEM - Database-Migration-Failure - Critical - 2025-08-20"
+          'POST-MORTEM - Type-Safety-Breakdown - High-Impact - 2025-09-01',
+          'POST-MORTEM - Database-Migration-Failure - Critical - 2025-08-20'
         ]
       },
       knowledge_update: {
-        prefix: "KNOWLEDGE-UPDATE",
-        template: "{prefix} - {topic} - {update-type} - {version}",
+        prefix: 'KNOWLEDGE-UPDATE',
+        template: '{prefix} - {topic} - {update-type} - {version}',
         examples: [
-          "KNOWLEDGE-UPDATE - Architecture-Patterns - New-Patterns - V2.1",
-          "KNOWLEDGE-UPDATE - Security-Guidelines - Policy-Change - V3.0"
+          'KNOWLEDGE-UPDATE - Architecture-Patterns - New-Patterns - V2.1',
+          'KNOWLEDGE-UPDATE - Security-Guidelines - Policy-Change - V3.0'
         ]
       }
     };
@@ -62,7 +62,7 @@ export class IntelligentDocumentNaming {
   generateIntelligentName(content, metadata) {
     const docType = metadata.type || this.detectDocumentType(content);
     const pattern = this.namingPatterns[docType] || this.namingPatterns.knowledge_update;
-    
+
     const variables = this.extractVariables(content, metadata, docType);
     return this.applyTemplate(pattern.template, variables);
   }
@@ -72,7 +72,7 @@ export class IntelligentDocumentNaming {
    */
   detectDocumentType(content) {
     const lowerContent = content.toLowerCase();
-    
+
     if (lowerContent.includes('failure') || lowerContent.includes('échec')) {
       return 'failure_analysis';
     }
@@ -88,7 +88,7 @@ export class IntelligentDocumentNaming {
     if (lowerContent.includes('best practices') || lowerContent.includes('guidelines')) {
       return 'best_practices';
     }
-    
+
     return 'knowledge_update';
   }
 
@@ -105,23 +105,23 @@ export class IntelligentDocumentNaming {
 
     // Variables spécifiques par type
     switch (docType) {
-      case 'failure_analysis':
-        variables.project = metadata.project || this.extractProject(content) || 'Unknown-Project';
-        variables.component = this.extractComponent(content) || 'System';
-        variables.severity = metadata.severity || this.extractSeverity(content) || 'Medium';
-        break;
-        
-      case 'solution_system':
-        variables['system-name'] = this.extractSystemName(content) || 'System';
-        variables.version = this.extractVersion(content) || 'V1';
-        variables.scope = this.extractScope(content) || 'General';
-        break;
-        
-      case 'integration_workflow':
-        variables['integration-type'] = this.extractIntegrationType(content) || 'Integration';
-        variables.components = this.extractComponents(content) || 'Multi-Component';
-        variables.status = metadata.status || this.extractStatus(content) || 'In-Progress';
-        break;
+    case 'failure_analysis':
+      variables.project = metadata.project || this.extractProject(content) || 'Unknown-Project';
+      variables.component = this.extractComponent(content) || 'System';
+      variables.severity = metadata.severity || this.extractSeverity(content) || 'Medium';
+      break;
+
+    case 'solution_system':
+      variables['system-name'] = this.extractSystemName(content) || 'System';
+      variables.version = this.extractVersion(content) || 'V1';
+      variables.scope = this.extractScope(content) || 'General';
+      break;
+
+    case 'integration_workflow':
+      variables['integration-type'] = this.extractIntegrationType(content) || 'Integration';
+      variables.components = this.extractComponents(content) || 'Multi-Component';
+      variables.status = metadata.status || this.extractStatus(content) || 'In-Progress';
+      break;
     }
 
     return variables;
@@ -132,12 +132,12 @@ export class IntelligentDocumentNaming {
    */
   applyTemplate(template, variables) {
     let result = template;
-    
+
     Object.entries(variables).forEach(([key, value]) => {
       const placeholder = `{${key}}`;
       result = result.replace(new RegExp(placeholder, 'g'), value);
     });
-    
+
     // Nettoyer et formater
     return result
       .replace(/[^a-zA-Z0-9\-\s]/g, '') // Supprimer caractères spéciaux
@@ -198,7 +198,7 @@ export class IntelligentDocumentNaming {
     if (content.toLowerCase().includes('archon')) components.push('Archon');
     if (content.toLowerCase().includes('claude')) components.push('Claude');
     if (content.toLowerCase().includes('gemini')) components.push('Gemini');
-    
+
     return components.length > 0 ? components.join('-') : 'Multi-Component';
   }
 
@@ -214,14 +214,14 @@ export class IntelligentDocumentNaming {
 // Exemples d'amélioration de nos documents actuels
 export const improvedDocumentNames = {
   current: [
-    "archon-memory-failures.md",
-    "architecture-compliance-v2.md", 
-    "github-jules-integration.md"
+    'archon-memory-failures.md',
+    'architecture-compliance-v2.md',
+    'github-jules-integration.md'
   ],
   improved: [
-    "FAILURE-ANALYSIS - NutriCoach - Frontend-Agents - Critical - 2025-09-01.md",
-    "SOLUTION - Architecture-Compliance - V2 - Quality-Gates-System - Production.md",
-    "WORKFLOW - CI-CD-Integration - GitHub-Jules-Archon - Production-Ready.md"
+    'FAILURE-ANALYSIS - NutriCoach - Frontend-Agents - Critical - 2025-09-01.md',
+    'SOLUTION - Architecture-Compliance - V2 - Quality-Gates-System - Production.md',
+    'WORKFLOW - CI-CD-Integration - GitHub-Jules-Archon - Production-Ready.md'
   ]
 };
 

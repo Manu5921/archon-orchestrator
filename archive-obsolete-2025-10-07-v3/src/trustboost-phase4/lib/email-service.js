@@ -19,16 +19,16 @@ const EMAIL_CONFIG = {
     TRIAL_REMINDER: process.env.SENDGRID_TEMPLATE_TRIAL || 'd-trial-reminder',
     SUPPORT_TICKET: process.env.SENDGRID_TEMPLATE_SUPPORT || 'd-support-ticket'
   },
-  
+
   // Configuration de base
   FROM_EMAIL: process.env.SENDGRID_FROM_EMAIL || 'onboarding@trustboost.ai',
   FROM_NAME: process.env.SENDGRID_FROM_NAME || 'TrustBoost Team',
   REPLY_TO: process.env.SENDGRID_REPLY_TO || 'support@trustboost.ai',
-  
+
   // Catégories pour analytics
   CATEGORIES: {
     ONBOARDING: 'onboarding',
-    PAYMENT: 'payment', 
+    PAYMENT: 'payment',
     SUPPORT: 'support',
     MARKETING: 'marketing'
   }
@@ -42,10 +42,10 @@ class EmailService {
     if (!process.env.SENDGRID_API_KEY) {
       throw new Error('SENDGRID_API_KEY est requis pour le service email');
     }
-    
+
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     sgClient.setApiKey(process.env.SENDGRID_API_KEY);
-    
+
     // Configuration EU data residency si spécifiée
     if (process.env.SENDGRID_DATA_RESIDENCY === 'eu') {
       sgClient.setDataResidency('eu');
@@ -260,7 +260,7 @@ class EmailService {
   async sendEmail(msg) {
     try {
       const response = await sgMail.send(msg);
-      
+
       // Log pour analytics business
       console.log('✅ Email envoyé avec succès:', {
         to: Array.isArray(msg.to) ? msg.to.length : 1,
@@ -268,20 +268,20 @@ class EmailService {
         categories: msg.categories || [],
         timestamp: new Date().toISOString()
       });
-      
+
       return {
         success: true,
         messageId: response[0].headers['x-message-id'],
         statusCode: response[0].statusCode
       };
-      
+
     } catch (error) {
       console.error('❌ Erreur envoi email:', error);
-      
+
       if (error.response) {
         console.error('Response body:', error.response.body);
       }
-      
+
       return {
         success: false,
         error: error.message,
@@ -313,13 +313,13 @@ class EmailService {
       };
 
       const [response, body] = await sgClient.request(request);
-      
+
       return {
         success: true,
         data: body,
         statusCode: response.statusCode
       };
-      
+
     } catch (error) {
       console.error('❌ Erreur récupération stats:', error);
       return {
@@ -337,7 +337,7 @@ const emailService = new EmailService();
 module.exports = {
   emailService,
   EMAIL_CONFIG,
-  
+
   // Fonctions directes pour faciliter l'import
   sendWelcomeEmail: (email, data) => emailService.sendWelcomeEmail(email, data),
   sendOnboardingSequence: (email, data, step) => emailService.sendOnboardingSequence(email, data, step),

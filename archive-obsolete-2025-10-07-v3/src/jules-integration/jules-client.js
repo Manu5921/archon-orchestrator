@@ -17,7 +17,7 @@ export class JulesArchitectureBoundClient {
     this.apiUrl = options.apiUrl || 'https://jules-api.google.com/v2';
     this.timeout = options.timeout || 30000;
     this.architectureContext = null;
-    
+
     if (!this.apiKey) {
       logger.warn('Jules API key not provided - using mock mode');
       this.mockMode = true;
@@ -31,12 +31,12 @@ export class JulesArchitectureBoundClient {
     try {
       const architecturePath = path.join(projectPath, 'ARCHITECTURE.md');
       const architectureContent = await fs.readFile(architecturePath, 'utf8');
-      
+
       // Extract key architecture information
       const techStackMatch = architectureContent.match(/## 🛠️ Technology Stack\s*([\s\S]*?)(?=##|$)/);
       const constraintsMatch = architectureContent.match(/## 📋 Architecture Constraints\s*([\s\S]*?)(?=##|$)/);
       const patternsMatch = architectureContent.match(/## 🏗️ Design Patterns\s*([\s\S]*?)(?=##|$)/);
-      
+
       this.architectureContext = {
         techStack: techStackMatch ? techStackMatch[1].trim() : 'Not specified',
         constraints: constraintsMatch ? constraintsMatch[1].trim() : 'Not specified',
@@ -53,7 +53,7 @@ export class JulesArchitectureBoundClient {
       return this.architectureContext;
     } catch (error) {
       logger.error('Failed to load architecture context', { error: error.message });
-      
+
       // Fallback to default architecture context
       this.architectureContext = {
         techStack: 'Node.js + Express.js + Supabase (default)',
@@ -63,7 +63,7 @@ export class JulesArchitectureBoundClient {
         projectPath,
         fallback: true
       };
-      
+
       return this.architectureContext;
     }
   }
@@ -129,7 +129,7 @@ export class JulesArchitectureBoundClient {
     //   timeout: this.timeout
     // });
     // return response.json();
-    
+
     // Mock for demonstration
     throw new Error('Mock Jules API - use generateMockAnalysis instead');
   }
@@ -139,12 +139,12 @@ export class JulesArchitectureBoundClient {
    */
   async prepareCodeFiles(filePaths) {
     const files = [];
-    
+
     for (const filePath of filePaths) {
       try {
         const content = await fs.readFile(filePath, 'utf8');
         const stats = await fs.stat(filePath);
-        
+
         files.push({
           path: filePath,
           content,
@@ -156,7 +156,7 @@ export class JulesArchitectureBoundClient {
         logger.warn('Failed to read file', { filePath, error: error.message });
       }
     }
-    
+
     return files;
   }
 
@@ -168,13 +168,13 @@ export class JulesArchitectureBoundClient {
     const architectureScore = hasError ? 45.5 : this.calculateMockArchitectureScore(codeFiles);
     const securityScore = hasError ? 32.0 : Math.random() * 30 + 70;
     const performanceScore = hasError ? 28.5 : Math.random() * 25 + 75;
-    
+
     const analysis = {
       analysis_id: `jules_arch_${Date.now()}`,
       timestamp: new Date().toISOString(),
       mode: 'architecture_bound',
       architecture_context: this.architectureContext,
-      
+
       architecture_compliance: {
         score: architectureScore,
         violations_found: hasError ? 5 : Math.floor((100 - architectureScore) / 10),
@@ -185,24 +185,24 @@ export class JulesArchitectureBoundClient {
           constraints: this.evaluateConstraints(codeFiles)
         }
       },
-      
+
       security_analysis: {
         score: securityScore,
         vulnerabilities: this.generateSecurityVulnerabilities(hasError),
         recommendations: this.generateSecurityRecommendations()
       },
-      
+
       performance_analysis: {
         score: performanceScore,
         issues: this.generatePerformanceIssues(hasError),
         recommendations: this.generatePerformanceRecommendations()
       },
-      
+
       overall_score: (architectureScore + securityScore + performanceScore) / 3,
       status: hasError ? 'FAILED' : (architectureScore >= 75 ? 'PASSED' : 'FAILED_ARCHITECTURE_VIOLATIONS'),
-      
+
       recommendations: this.generateOverallRecommendations(hasError),
-      
+
       integration_metadata: {
         archon_integration: true,
         architecture_compliance_v2: true,
@@ -225,13 +225,13 @@ export class JulesArchitectureBoundClient {
    */
   calculateMockArchitectureScore(codeFiles) {
     let score = 85; // Base score
-    
+
     // Check for architecture compliance patterns
     const hasNodeJS = codeFiles.some(f => f.includes('express') || f.includes('node'));
     const hasPython = codeFiles.some(f => f.includes('flask') || f.includes('django'));
     const hasSupabase = codeFiles.some(f => f.includes('supabase'));
     const hasMongoDB = codeFiles.some(f => f.includes('mongoose') || f.includes('mongodb'));
-    
+
     // Architecture context compliance
     if (this.architectureContext?.techStack.includes('Node.js') && hasNodeJS) {
       score += 10;
@@ -428,7 +428,7 @@ export class JulesArchitectureBoundClient {
       integration_type: 'jules_v2_architecture_bound',
       timestamp: new Date().toISOString(),
       architecture_context: this.architectureContext,
-      
+
       compliance_summary: {
         overall_score: analysis.overall_score,
         architecture_score: analysis.architecture_compliance.score,
@@ -436,13 +436,13 @@ export class JulesArchitectureBoundClient {
         performance_score: analysis.performance_analysis.score,
         status: analysis.status
       },
-      
+
       violations: {
         blocking_count: analysis.architecture_compliance.blocking_issues,
         total_count: analysis.architecture_compliance.violations_found,
         details: analysis.architecture_compliance.details
       },
-      
+
       recommendations: {
         immediate_actions: analysis.recommendations.filter(r => r.includes('CRITICAL') || r.includes('HIGH PRIORITY')),
         improvements: analysis.recommendations.filter(r => !r.includes('CRITICAL') && !r.includes('HIGH PRIORITY')),
@@ -452,7 +452,7 @@ export class JulesArchitectureBoundClient {
           'Validate API contracts match specifications'
         ]
       },
-      
+
       learning_insights: {
         common_violations: ['Technology stack misalignment', 'Security pattern non-compliance'],
         success_patterns: ['Proper error handling', 'Modular code structure'],

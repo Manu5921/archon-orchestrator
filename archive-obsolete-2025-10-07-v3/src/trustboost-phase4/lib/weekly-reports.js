@@ -1,7 +1,7 @@
 /**
  * AGENT 6: Performance & Optimization Engineer
  * TrustBoost Phase 4 - Weekly Performance Reports
- * 
+ *
  * Génération automatique de rapports hebdomadaires
  * - Core Web Vitals trends
  * - Performance regression analysis
@@ -23,7 +23,7 @@ export class WeeklyReportGenerator {
       reportInterval: 7 * 24 * 60 * 60 * 1000, // Weekly
       outputDirectory: './reports/performance',
       reportFormat: 'html', // 'html', 'json', 'markdown'
-      
+
       // Performance thresholds
       targetThresholds: {
         lighthouseScore: 95,
@@ -32,10 +32,10 @@ export class WeeklyReportGenerator {
         databaseP99: 50, // 50ms
         errorRate: 0.01 // 1%
       },
-      
+
       // Data retention
       keepReports: 12, // Keep 12 weeks of reports
-      
+
       ...options
     };
 
@@ -57,7 +57,7 @@ export class WeeklyReportGenerator {
   startWeeklyReports() {
     // Generate report immediately if it's time
     this.checkAndGenerateReport();
-    
+
     // Schedule weekly reports
     this.reportTimer = setInterval(() => {
       this.checkAndGenerateReport();
@@ -72,7 +72,7 @@ export class WeeklyReportGenerator {
   async checkAndGenerateReport() {
     const now = new Date();
     const dayOfWeek = now.getDay();
-    
+
     // Generate report on Mondays
     if (dayOfWeek === 1) {
       await this.generateWeeklyReport();
@@ -85,7 +85,7 @@ export class WeeklyReportGenerator {
   async collectWeeklyData(performanceMonitor, bundleOptimizer, databaseOptimizer, cacheStrategy) {
     const endDate = new Date();
     const startDate = new Date(endDate.getTime() - (7 * 24 * 60 * 60 * 1000));
-    
+
     console.log(`Collecting performance data for week: ${startDate.toISOString()} to ${endDate.toISOString()}`);
 
     const weeklyData = {
@@ -114,7 +114,7 @@ export class WeeklyReportGenerator {
     }
 
     const metrics = monitor.getMetrics();
-    
+
     return {
       summary: {
         FCP: this.calculateWeeklyStats('FCP', startDate, endDate),
@@ -137,7 +137,7 @@ export class WeeklyReportGenerator {
     }
 
     const summary = optimizer.getPerformanceSummary();
-    
+
     return {
       summary: {
         totalQueries: summary.totalQueries,
@@ -164,7 +164,7 @@ export class WeeklyReportGenerator {
     }
 
     const metrics = strategy.getMetrics();
-    
+
     return {
       summary: {
         hitRatio: Math.round(metrics.hitRatio * 10000) / 10000,
@@ -187,7 +187,7 @@ export class WeeklyReportGenerator {
     }
 
     const metrics = optimizer.getBundleMetrics();
-    
+
     return {
       summary: {
         totalSize: metrics.totalSize,
@@ -279,7 +279,7 @@ export class WeeklyReportGenerator {
 
       // Save report
       await this.saveReport(report);
-      
+
       console.log('Weekly performance report generated successfully');
       return report;
 
@@ -316,7 +316,7 @@ export class WeeklyReportGenerator {
     if (data.webVitals && data.webVitals.summary) {
       const vitalsPass = this.checkWebVitalsCompliance(data.webVitals.summary);
       summary.keyMetrics.webVitalsCompliance = vitalsPass;
-      
+
       if (!vitalsPass) {
         healthScore -= 25;
         issues.push('Core Web Vitals not meeting targets');
@@ -329,7 +329,7 @@ export class WeeklyReportGenerator {
     if (data.bundleSize && data.bundleSize.summary) {
       const bundleCompliance = data.bundleSize.summary.targetCompliance;
       summary.keyMetrics.bundleSizeCompliance = bundleCompliance;
-      
+
       if (!bundleCompliance) {
         healthScore -= 20;
         issues.push('Bundle size exceeds targets');
@@ -342,7 +342,7 @@ export class WeeklyReportGenerator {
     if (data.database && data.database.summary) {
       const dbGood = data.database.summary.p99 <= this.options.targetThresholds.databaseP99;
       summary.keyMetrics.databasePerformance = dbGood ? 'good' : 'poor';
-      
+
       if (!dbGood) {
         healthScore -= 20;
         issues.push('Database P99 latency exceeds 50ms target');
@@ -355,7 +355,7 @@ export class WeeklyReportGenerator {
     if (data.cache && data.cache.summary) {
       const cacheEfficiency = data.cache.summary.hitRatio;
       summary.keyMetrics.cacheEfficiency = cacheEfficiency;
-      
+
       if (cacheEfficiency < this.options.targetThresholds.cacheHitRatio) {
         healthScore -= 15;
         issues.push('Cache hit ratio below 90% target');
@@ -518,12 +518,12 @@ export class WeeklyReportGenerator {
     try {
       // Ensure output directory exists
       await mkdir(this.options.outputDirectory, { recursive: true });
-      
+
       const timestamp = new Date().toISOString().split('T')[0];
       const filename = `performance-report-week-${report.metadata.period.week}-${timestamp}`;
-      
+
       let content, extension;
-      
+
       if (this.options.reportFormat === 'html') {
         content = this.generateHTMLReport(report);
         extension = 'html';
@@ -534,13 +534,13 @@ export class WeeklyReportGenerator {
         content = JSON.stringify(report, null, 2);
         extension = 'json';
       }
-      
+
       const filepath = path.join(this.options.outputDirectory, `${filename}.${extension}`);
       await writeFile(filepath, content, 'utf8');
-      
+
       console.log(`Performance report saved: ${filepath}`);
       return filepath;
-      
+
     } catch (error) {
       console.error('Error saving report:', error);
       throw error;
@@ -595,16 +595,16 @@ export class WeeklyReportGenerator {
 
         ${report.executiveSummary.achievements.length > 0 ? `
         <h3>🎉 Achievements This Week</h3>
-        ${report.executiveSummary.achievements.map(achievement => 
-            `<div class="achievement">${achievement}</div>`
-        ).join('')}
+        ${report.executiveSummary.achievements.map(achievement =>
+    `<div class="achievement">${achievement}</div>`
+  ).join('')}
         ` : ''}
 
         ${report.executiveSummary.majorIssues.length > 0 ? `
         <h3>🚨 Major Issues</h3>
-        ${report.executiveSummary.majorIssues.map(issue => 
-            `<div class="recommendation">${issue}</div>`
-        ).join('')}
+        ${report.executiveSummary.majorIssues.map(issue =>
+    `<div class="recommendation">${issue}</div>`
+  ).join('')}
         ` : ''}
 
         <h2>Recommendations</h2>
@@ -658,22 +658,22 @@ export class WeeklyReportGenerator {
 
   checkWebVitalsCompliance(summary) {
     if (!summary) return false;
-    
-    return Object.values(summary).every(metric => 
+
+    return Object.values(summary).every(metric =>
       metric && (metric.rating === 'good' || metric.isGood)
     );
   }
 
   calculateWebVitalsGrade(summary) {
     if (!summary) return 'F';
-    
-    const passing = Object.values(summary).filter(metric => 
+
+    const passing = Object.values(summary).filter(metric =>
       metric && (metric.rating === 'good' || metric.isGood)
     ).length;
-    
+
     const total = Object.keys(summary).length;
     const percentage = (passing / total) * 100;
-    
+
     if (percentage >= 90) return 'A';
     if (percentage >= 80) return 'B';
     if (percentage >= 70) return 'C';
@@ -791,7 +791,7 @@ export class WeeklyReportGenerator {
   generateNextWeekTargets(data) {
     return [
       'Maintain >95 Lighthouse performance score',
-      'Keep bundle size under 20KB (gzipped)', 
+      'Keep bundle size under 20KB (gzipped)',
       'Achieve >90% cache hit ratio',
       'Maintain database P99 latency <50ms',
       'Zero Core Web Vitals failures'

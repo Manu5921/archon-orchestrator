@@ -10,20 +10,20 @@ import fs from 'fs/promises';
 
 async function testSmartReviewPhase1() {
   logger.info('🧠 Testing Smart Review Workflow Phase 1...');
-  
+
   // Mock capabilities avec Gemini disponible
   const mockCapabilities = {
     agents: { gemini: true, claude: true, archon: true }
   };
-  
+
   // Task de test avec contexte architectural
   const testTask = {
     title: 'User Authentication Service Review',
     requirements: 'Secure JWT-based authentication with password hashing and rate limiting',
     architecture: 'Next.js App Router + Supabase + Middleware'
   };
-  
-  // Create test file temporairement 
+
+  // Create test file temporairement
   const testFilePath = './test-auth-service.js';
   const testCode = `
 import bcrypt from 'bcrypt';
@@ -120,70 +120,70 @@ export async function registerUser(email, password, name) {
   }
 }
   `;
-  
+
   try {
     // 1. Create test file
     await fs.writeFile(testFilePath, testCode);
     logger.info(`📄 Created test file: ${testFilePath}`);
-    
+
     // 2. Test Context Preparation Service
-    logger.info(`🔍 Testing Context Preparation...`);
+    logger.info('🔍 Testing Context Preparation...');
     const contextStartTime = Date.now();
     const contextResult = await contextService.prepareReviewContext(testFilePath, testTask);
     const contextDuration = Date.now() - contextStartTime;
-    
+
     if (!contextResult.ok) {
       logger.error(`❌ Context preparation failed: ${contextResult.error}`);
       return { success: false, reason: 'context_preparation_failed' };
     }
-    
+
     logger.info(`✅ Context prepared in ${contextDuration}ms`);
     logger.info(`   Complexity Score: ${contextResult.complexity_score}/10`);
     logger.info(`   Insights: ${contextResult.insights.length} detected`);
     logger.info(`   Context insights: ${contextResult.insights.join(', ')}`);
-    
+
     // 3. Test Smart Review with Context
-    logger.info(`🧠 Testing Smart Review Phase 1...`);
+    logger.info('🧠 Testing Smart Review Phase 1...');
     const reviewStartTime = Date.now();
     const reviewResult = await smartReviewWithContext(mockCapabilities, testFilePath, testTask);
     const totalDuration = Date.now() - reviewStartTime;
-    
+
     // 4. Analyze Results
-    logger.info(`📊 Smart Review Phase 1 Results:`);
+    logger.info('📊 Smart Review Phase 1 Results:');
     logger.info(`   Success: ${reviewResult.ok}`);
     logger.info(`   Phase: ${reviewResult.phase || 'unknown'}`);
     logger.info(`   Used: ${reviewResult.used}`);
     logger.info(`   Total Duration: ${totalDuration}ms`);
-    
+
     if (reviewResult.ok) {
       logger.info(`   Context Duration: ${reviewResult.context_duration_ms}ms`);
       logger.info(`   Review Duration: ${reviewResult.duration_ms - reviewResult.context_duration_ms}ms`);
       logger.info(`   Response Length: ${reviewResult.text.length} chars`);
       logger.info(`   Insights Count: ${reviewResult.insights?.length || 0}`);
-      
+
       // Check if it's really using Smart Review Phase 1
-      const isSmartReview = reviewResult.phase === "smart_review_phase_1" && 
-                           reviewResult.context_duration_ms && 
+      const isSmartReview = reviewResult.phase === 'smart_review_phase_1' &&
+                           reviewResult.context_duration_ms &&
                            reviewResult.insights;
-      
+
       if (isSmartReview) {
-        logger.info(`✅ SUCCESS: Smart Review Phase 1 confirmed!`);
+        logger.info('✅ SUCCESS: Smart Review Phase 1 confirmed!');
         logger.info(`   Context preparation: ${reviewResult.context_duration_ms}ms`);
         logger.info(`   Complexity detected: ${reviewResult.complexity_score}/10`);
-        
+
         // Show preview of intelligent response
         const preview = reviewResult.text.slice(0, 300);
         logger.info(`   Response preview: "${preview}..."`);
-        
+
         return {
           success: true,
-          phase: "smart_review_phase_1",
+          phase: 'smart_review_phase_1',
           total_duration: totalDuration,
           context_duration: reviewResult.context_duration_ms,
           complexity_score: reviewResult.complexity_score,
           insights_count: reviewResult.insights?.length || 0
         };
-        
+
       } else {
         logger.warn(`⚠️ Warning: Not using Smart Review Phase 1 (mode: ${reviewResult.used})`);
         return {
@@ -193,7 +193,7 @@ export async function registerUser(email, password, name) {
           phase: reviewResult.phase
         };
       }
-      
+
     } else {
       logger.error(`❌ Smart Review failed: ${reviewResult.error}`);
       return {
@@ -203,7 +203,7 @@ export async function registerUser(email, password, name) {
         code: reviewResult.code
       };
     }
-    
+
   } catch (error) {
     logger.error(`💥 Test error: ${error.message}`);
     return {
@@ -226,28 +226,28 @@ export async function registerUser(email, password, name) {
 testSmartReviewPhase1()
   .then(result => {
     logger.info(`\n${'='.repeat(50)}`);
-    
+
     if (result.success) {
-      logger.info(`🎉 SMART REVIEW PHASE 1 TEST PASSED!`);
+      logger.info('🎉 SMART REVIEW PHASE 1 TEST PASSED!');
       logger.info(`   Phase: ${result.phase}`);
       logger.info(`   Total Duration: ${result.total_duration}ms`);
       logger.info(`   Context Duration: ${result.context_duration}ms`);
       logger.info(`   Review Duration: ${result.total_duration - result.context_duration}ms`);
       logger.info(`   Complexity Score: ${result.complexity_score}/10`);
       logger.info(`   Insights Detected: ${result.insights_count}`);
-      
+
       // Performance Analysis
-      const performanceGain = result.context_duration < 2000 ? 'EXCELLENT' : 
-                             result.context_duration < 3000 ? 'GOOD' : 'NEEDS_OPTIMIZATION';
+      const performanceGain = result.context_duration < 2000 ? 'EXCELLENT' :
+        result.context_duration < 3000 ? 'GOOD' : 'NEEDS_OPTIMIZATION';
       logger.info(`   Performance: ${performanceGain} (target: <2000ms)`);
-      
+
     } else {
       logger.error(`😞 Smart Review Phase 1 test failed: ${result.reason}`);
       if (result.error) logger.error(`   Error: ${result.error}`);
       if (result.mode) logger.error(`   Mode: ${result.mode}`);
       if (result.phase) logger.error(`   Phase: ${result.phase}`);
     }
-    
+
     logger.info(`${'='.repeat(50)}\n`);
     process.exit(result.success ? 0 : 1);
   })

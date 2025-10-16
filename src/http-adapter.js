@@ -3,7 +3,7 @@
 import express from 'express';
 import WebSocket from 'ws';
 import { logger } from './utils/logger.js';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } // Unused from 'uuid';
 
 /**
  * HTTP to WebSocket adapter for Orchestra MCP Server
@@ -15,15 +15,15 @@ export class HTTPtoWSAdapter {
     this.wsPort = wsPort;
     this.app = express();
     this.wsConnections = new Map();
-    
+
     this.setupMiddleware();
     this.setupRoutes();
   }
-  
+
   setupMiddleware() {
     this.app.use(express.json());
     this.app.use(express.text({ type: 'text/plain' }));
-    
+
     // CORS for Archon frontend
     this.app.use((req, res, next) => {
       res.header('Access-Control-Allow-Origin', '*');
@@ -35,7 +35,7 @@ export class HTTPtoWSAdapter {
       }
       next();
     });
-    
+
     // Request logging
     this.app.use((req, res, next) => {
       logger.debug(`HTTP Adapter: ${req.method} ${req.path}`, {
@@ -45,7 +45,7 @@ export class HTTPtoWSAdapter {
       next();
     });
   }
-  
+
   setupRoutes() {
     // Health check
     this.app.get('/health', (req, res) => {
@@ -56,22 +56,22 @@ export class HTTPtoWSAdapter {
         websocket_port: this.wsPort
       });
     });
-    
+
     // MCP Streamable HTTP endpoint for Archon
     this.app.post('/mcp', async (req, res) => {
       try {
         // Parse the streamable HTTP body
         const message = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-        
+
         logger.info('HTTP->WS: Received MCP message', message);
-        
+
         // Forward to WebSocket and get response
         const response = await this.forwardToWebSocket(message);
-        
+
         // Return as Streamable HTTP response
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(response));
-        
+
       } catch (error) {
         logger.error('HTTP Adapter error:', error);
         res.status(500).json({
@@ -84,7 +84,7 @@ export class HTTPtoWSAdapter {
         });
       }
     });
-    
+
     // List available tools (for Archon discovery)
     this.app.get('/tools', async (req, res) => {
       try {
@@ -94,7 +94,7 @@ export class HTTPtoWSAdapter {
           method: 'tools/list',
           params: {}
         });
-        
+
         if (response.result?.tools) {
           res.json({
             tools: response.result.tools.map(tool => ({
@@ -111,13 +111,13 @@ export class HTTPtoWSAdapter {
         res.status(500).json({ error: error.message });
       }
     });
-    
+
     // Execute tool (for Archon tool calls)
     this.app.post('/tools/:toolName', async (req, res) => {
       try {
         const { toolName } = req.params;
         const args = req.body;
-        
+
         const response = await this.forwardToWebSocket({
           jsonrpc: '2.0',
           id: `tool-${Date.now()}`,
@@ -127,7 +127,7 @@ export class HTTPtoWSAdapter {
             arguments: args
           }
         });
-        
+
         res.json(response.result || response);
       } catch (error) {
         logger.error(`Tool execution error (${req.params.toolName}):`, error);
@@ -135,7 +135,7 @@ export class HTTPtoWSAdapter {
       }
     });
   }
-  
+
   async forwardToWebSocket(message) {
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(`ws://localhost:${this.wsPort}`);
@@ -143,23 +143,23 @@ export class HTTPtoWSAdapter {
         ws.close();
         reject(new Error('WebSocket timeout'));
       }, 30000);
-      
+
       ws.on('open', () => {
         logger.debug('WebSocket connection opened for message forwarding');
         ws.send(JSON.stringify(message));
       });
-      
+
       ws.on('message', (data) => {
         clearTimeout(timeout);
         try {
           const response = JSON.parse(data.toString());
           logger.debug('WS->HTTP: Received response', response);
-          
+
           // Skip initialize messages, wait for actual response
           if (response.method === 'initialize') {
             return;
           }
-          
+
           // Check if this is the response to our request
           if (response.id === message.id || response.result || response.error) {
             ws.close();
@@ -171,19 +171,19 @@ export class HTTPtoWSAdapter {
           reject(error);
         }
       });
-      
+
       ws.on('error', (error) => {
         clearTimeout(timeout);
         logger.error('WebSocket forwarding error:', error);
         reject(error);
       });
-      
+
       ws.on('close', () => {
         clearTimeout(timeout);
       });
     });
   }
-  
+
   start() {
     return new Promise((resolve) => {
       this.server = this.app.listen(this.httpPort, () => {
@@ -194,7 +194,7 @@ export class HTTPtoWSAdapter {
       });
     });
   }
-  
+
   stop() {
     if (this.server) {
       this.server.close();
@@ -206,12 +206,12 @@ export class HTTPtoWSAdapter {
 // Start adapter if run directly
 if (process.argv[1].endsWith('http-adapter.js')) {
   const adapter = new HTTPtoWSAdapter();
-  
+
   adapter.start().catch(error => {
     logger.error('Failed to start HTTP adapter:', error);
     process.exit(1);
   });
-  
+
   process.on('SIGINT', () => {
     logger.info('Shutting down HTTP adapter...');
     adapter.stop();

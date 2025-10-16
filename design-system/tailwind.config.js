@@ -5,7 +5,7 @@ const config = {
   content: [
     './src/**/*.{js,ts,jsx,tsx,mdx}',
     './stories/**/*.{js,ts,jsx,tsx,mdx}',
-    './.storybook/**/*.{js,ts,jsx,tsx,mdx}',
+    './.storybook/**/*.{js,ts,jsx,tsx,mdx}'
   ],
   darkMode: ['class', '[data-theme="dark"]'],
   theme: {
@@ -15,7 +15,7 @@ const config = {
         // Couleurs primaires TrustBoost
         primary: {
           50: '#f0f9ff',
-          100: '#e0f2fe', 
+          100: '#e0f2fe',
           200: '#bae6fd',
           300: '#7dd3fc',
           400: '#38bdf8',
@@ -24,7 +24,7 @@ const config = {
           700: '#0369a1',
           800: '#075985',
           900: '#0c4a6e',
-          950: '#082f49',
+          950: '#082f49'
         },
         // Couleurs secondaires pour la confiance
         trust: {
@@ -38,7 +38,7 @@ const config = {
           700: '#15803d',
           800: '#166534',
           900: '#14532d',
-          950: '#052e16',
+          950: '#052e16'
         },
         // Couleurs d'alerte et status
         warning: {
@@ -52,7 +52,7 @@ const config = {
           700: '#b45309',
           800: '#92400e',
           900: '#78350f',
-          950: '#451a03',
+          950: '#451a03'
         },
         error: {
           50: '#fef2f2',
@@ -65,7 +65,7 @@ const config = {
           700: '#b91c1c',
           800: '#991b1b',
           900: '#7f1d1d',
-          950: '#450a0a',
+          950: '#450a0a'
         },
         // Couleurs neutres pour les interfaces
         neutral: {
@@ -80,14 +80,14 @@ const config = {
           700: '#404040',
           800: '#262626',
           900: '#171717',
-          950: '#0a0a0a',
-        },
+          950: '#0a0a0a'
+        }
       },
       // Typographie TrustBoost
       fontFamily: {
         'sans': ['Inter', 'system-ui', 'sans-serif'],
         'display': ['Satoshi', 'Inter', 'system-ui', 'sans-serif'],
-        'mono': ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+        'mono': ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace']
       },
       fontSize: {
         'xs': ['0.75rem', { lineHeight: '1rem' }],
@@ -102,13 +102,13 @@ const config = {
         '6xl': ['3.75rem', { lineHeight: '1' }],
         '7xl': ['4.5rem', { lineHeight: '1' }],
         '8xl': ['6rem', { lineHeight: '1' }],
-        '9xl': ['8rem', { lineHeight: '1' }],
+        '9xl': ['8rem', { lineHeight: '1' }]
       },
       // Espacements basés sur une échelle modulaire
       spacing: {
         '18': '4.5rem',
         '88': '22rem',
-        '120': '30rem',
+        '120': '30rem'
       },
       // Breakpoints responsive mobile-first
       screens: {
@@ -118,7 +118,7 @@ const config = {
         'lg': '1024px',
         'xl': '1280px',
         '2xl': '1536px',
-        '3xl': '1920px', // Pattern Context7
+        '3xl': '1920px' // Pattern Context7
       },
       // Border radius pour la consistance
       borderRadius: {
@@ -130,7 +130,7 @@ const config = {
         'xl': '0.75rem',
         '2xl': '1rem',
         '3xl': '1.5rem',
-        'full': '9999px',
+        'full': '9999px'
       },
       // Box shadows pour la profondeur
       boxShadow: {
@@ -141,7 +141,7 @@ const config = {
         'xl': '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
         '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
         'inner': 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
-        'none': 'none',
+        'none': 'none'
       },
       // Animations personnalisées
       animation: {
@@ -149,32 +149,32 @@ const config = {
         'slide-up': 'slideUp 0.3s ease-out',
         'slide-down': 'slideDown 0.3s ease-out',
         'scale-in': 'scaleIn 0.2s ease-out',
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
       },
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
+          '100%': { opacity: '1' }
         },
         slideUp: {
           '0%': { transform: 'translateY(10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
+          '100%': { transform: 'translateY(0)', opacity: '1' }
         },
         slideDown: {
           '0%': { transform: 'translateY(-10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
+          '100%': { transform: 'translateY(0)', opacity: '1' }
         },
         scaleIn: {
           '0%': { transform: 'scale(0.95)', opacity: '0' },
-          '100%': { transform: 'scale(1)', opacity: '1' },
-        },
+          '100%': { transform: 'scale(1)', opacity: '1' }
+        }
       },
       // Transitions fluides
       transitionTimingFunction: {
         'fluid': 'cubic-bezier(0.3, 0, 0, 1)', // Pattern Context7
-        'snappy': 'cubic-bezier(0.2, 0, 0, 1)', // Pattern Context7
-      },
-    },
+        'snappy': 'cubic-bezier(0.2, 0, 0, 1)' // Pattern Context7
+      }
+    }
   },
   plugins: [
     require('@tailwindcss/forms'),
@@ -185,27 +185,27 @@ const config = {
         '.btn-primary': {
           '@apply bg-primary-500 hover:bg-primary-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors duration-200 ease-snappy': {},
           '&:focus': {
-            '@apply outline-none ring-2 ring-primary-500 ring-offset-2': {},
+            '@apply outline-none ring-2 ring-primary-500 ring-offset-2': {}
           },
           '&:disabled': {
-            '@apply opacity-50 cursor-not-allowed': {},
-          },
+            '@apply opacity-50 cursor-not-allowed': {}
+          }
         },
         '.card': {
           '@apply bg-white rounded-xl shadow-lg border border-neutral-200 p-6': {},
           '&[data-theme="dark"]': {
-            '@apply bg-neutral-800 border-neutral-700': {},
-          },
+            '@apply bg-neutral-800 border-neutral-700': {}
+          }
         },
         '.input-field': {
           '@apply w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent': {},
           '&[data-theme="dark"]': {
-            '@apply bg-neutral-800 border-neutral-600 text-white': {},
-          },
-        },
+            '@apply bg-neutral-800 border-neutral-600 text-white': {}
+          }
+        }
       });
-    },
-  ],
+    }
+  ]
 };
 
 export default config;

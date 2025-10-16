@@ -5,8 +5,6 @@
  * CRITICAL: Prevents AI agents from bypassing architecture compliance
  */
 
-import { promises as fs } from 'fs';
-import path from 'path';
 import { Logger } from '../utils/logger.js';
 import { architectureContextInjection } from './context-injection.js';
 
@@ -356,7 +354,7 @@ export class ArchitectureQualityGates {
 
     // Check naming conventions
     if (taskResult.files) {
-      for (const [fileName, content] of Object.entries(taskResult.files)) {
+      for (const [fileName] of Object.entries(taskResult.files)) {
         const namingValidation = this.validateNamingConvention(fileName, architectureContext.structure.namingConventions);
         if (!namingValidation.compliant) {
           violations.push(`Naming convention violation: ${fileName}`);
@@ -381,7 +379,7 @@ export class ArchitectureQualityGates {
    * @param {Object} architectureContext - Architecture context
    * @returns {Object} Validation result
    */
-  async validateSecurityCompliance(taskResult, architectureContext) {
+  async validateSecurityCompliance(taskResult, _architectureContext) {
     const violations = [];
     const recommendations = [];
 
@@ -409,7 +407,7 @@ export class ArchitectureQualityGates {
    * @param {Object} architectureContext - Architecture context
    * @returns {Array} Agent-specific gates
    */
-  getAgentSpecificGates(agentType, architectureContext) {
+  getAgentSpecificGates(agentType, _architectureContext) {
     const gates = [];
 
     switch (agentType.toLowerCase()) {
@@ -618,7 +616,7 @@ export class ArchitectureQualityGates {
    * @param {Object} structure - Expected structure
    * @returns {Object} Structure validation result
    */
-  validateFilePathStructure(filePath, structure) {
+  validateFilePathStructure(filePath, _structure) {
     // Basic structure validation
     if (!filePath.startsWith('src/')) {
       return {
@@ -636,7 +634,7 @@ export class ArchitectureQualityGates {
    * @param {Object} namingConventions - Expected naming conventions
    * @returns {Object} Naming validation result
    */
-  validateNamingConvention(fileName, namingConventions) {
+  validateNamingConvention(fileName, _namingConventions) {
     // Basic naming convention checks
     if (fileName.endsWith('.tsx') || fileName.endsWith('.jsx')) {
       // Components should be PascalCase
@@ -685,7 +683,7 @@ export class ArchitectureQualityGates {
    * @param {Object} gate - Gate configuration
    * @returns {Object} Validation result
    */
-  async validateBackendCompliance(taskResult, architectureContext, agentType, gate) {
+  async validateBackendCompliance(taskResult, _architectureContext, _agentType, _gate) {
     const violations = [];
     const recommendations = [];
 
@@ -723,7 +721,7 @@ export class ArchitectureQualityGates {
    * @param {Object} gate - Gate configuration
    * @returns {Object} Validation result
    */
-  async validateFrontendCompliance(taskResult, architectureContext, agentType, gate) {
+  async validateFrontendCompliance(taskResult, architectureContext, _agentType, _gate) {
     const violations = [];
     const recommendations = [];
 
@@ -756,7 +754,7 @@ export class ArchitectureQualityGates {
    * @param {Object} gate - Gate configuration
    * @returns {Object} Validation result
    */
-  async validateDatabaseCompliance(taskResult, architectureContext, agentType, gate) {
+  async validateDatabaseCompliance(taskResult, _architectureContext, _agentType, _gate) {
     const violations = [];
     const recommendations = [];
 

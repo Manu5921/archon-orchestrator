@@ -1,10 +1,10 @@
 /**
- * AGENT 6: Performance & Optimization Engineer  
+ * AGENT 6: Performance & Optimization Engineer
  * TrustBoost Phase 4 - Advanced Cache Strategy
- * 
+ *
  * Implementation basée sur patterns Context7 /vercel/next.js
  * - SWR (Stale While Revalidate)
- * - ISR (Incremental Static Regeneration) 
+ * - ISR (Incremental Static Regeneration)
  * - CDN Edge Caching
  * - Service Worker caching
  */
@@ -20,18 +20,18 @@ export class CacheStrategy {
       // SWR configuration
       swrMaxAge: 60, // 1 minute fresh
       swrStaleWhileRevalidate: 300, // 5 minutes stale
-      
+
       // Memory cache limits
       maxMemoryCacheSize: 100,
       maxMemoryCacheAge: 600000, // 10 minutes
-      
-      // CDN configuration  
+
+      // CDN configuration
       cdnCacheControl: 's-maxage=3600, stale-while-revalidate=86400',
-      
+
       // Performance targets
       cacheHitRatio: 0.9, // 90% hit ratio target
       responseTimeTarget: 100, // <100ms p95
-      
+
       ...options
     };
 
@@ -62,46 +62,46 @@ export class CacheStrategy {
   async swr(key, fetcher, options = {}) {
     const startTime = performance.now();
     const swrOptions = { ...this.options, ...options };
-    
+
     try {
       // Check memory cache first
       const cached = this.memoryCache.get(key);
       const now = Date.now();
-      
+
       if (cached) {
         const age = (now - cached.timestamp) / 1000;
-        
+
         // If fresh, return immediately
         if (age < swrOptions.swrMaxAge) {
           this.updateMetrics('hit', performance.now() - startTime);
           return cached.data;
         }
-        
+
         // If stale but within revalidate window, return stale and revalidate in background
         if (age < (swrOptions.swrMaxAge + swrOptions.swrStaleWhileRevalidate)) {
           this.updateMetrics('hit', performance.now() - startTime);
-          
+
           // Background revalidation
           this.revalidateInBackground(key, fetcher, swrOptions);
-          
+
           return cached.data;
         }
       }
-      
+
       // Cache miss or expired - fetch fresh data
       this.updateMetrics('miss', performance.now() - startTime);
       return await this.fetchAndCache(key, fetcher, swrOptions);
-      
+
     } catch (error) {
       this.updateMetrics('error', performance.now() - startTime);
-      
+
       // Return stale data on error if available
       const cached = this.memoryCache.get(key);
       if (cached) {
         console.warn(`SWR error for ${key}, returning stale data:`, error);
         return cached.data;
       }
-      
+
       throw error;
     }
   }
@@ -113,17 +113,17 @@ export class CacheStrategy {
     try {
       this.metrics.revalidations++;
       const freshData = await fetcher();
-      
+
       // Update cache with fresh data
       this.memoryCache.set(key, {
         data: freshData,
         timestamp: Date.now(),
         etag: this.generateETag(freshData)
       });
-      
+
       // Notify listeners of update (optional)
       this.notifyUpdate(key, freshData);
-      
+
     } catch (error) {
       console.warn(`Background revalidation failed for ${key}:`, error);
     }
@@ -134,14 +134,14 @@ export class CacheStrategy {
    */
   async fetchAndCache(key, fetcher, options) {
     const freshData = await fetcher();
-    
+
     // Cache the fresh data
     this.memoryCache.set(key, {
       data: freshData,
       timestamp: Date.now(),
       etag: this.generateETag(freshData)
     });
-    
+
     return freshData;
   }
 
@@ -152,7 +152,7 @@ export class CacheStrategy {
   async isr(key, generator, revalidateTime = 3600) {
     const cached = this.memoryCache.get(key);
     const now = Date.now();
-    
+
     // If we have cached data and it's fresh
     if (cached && (now - cached.timestamp) < (revalidateTime * 1000)) {
       return {
@@ -161,28 +161,28 @@ export class CacheStrategy {
         source: 'cache'
       };
     }
-    
+
     // If we have cached data but it's stale, return it and regenerate in background
     if (cached) {
       // Start background regeneration
       this.regenerateInBackground(key, generator, revalidateTime);
-      
+
       return {
         data: cached.data,
         revalidate: true,
         source: 'stale'
       };
     }
-    
+
     // No cached data - generate on demand
     const freshData = await generator();
-    
+
     this.memoryCache.set(key, {
       data: freshData,
       timestamp: now,
       etag: this.generateETag(freshData)
     });
-    
+
     return {
       data: freshData,
       revalidate: false,
@@ -196,15 +196,15 @@ export class CacheStrategy {
   async regenerateInBackground(key, generator, revalidateTime) {
     try {
       const freshData = await generator();
-      
+
       this.memoryCache.set(key, {
         data: freshData,
         timestamp: Date.now(),
         etag: this.generateETag(freshData)
       });
-      
+
       console.log(`ISR: Regenerated ${key} in background`);
-      
+
     } catch (error) {
       console.error(`ISR regeneration failed for ${key}:`, error);
     }
@@ -215,33 +215,33 @@ export class CacheStrategy {
    */
   getCacheHeaders(type = 'default') {
     const headers = {};
-    
+
     switch (type) {
-      case 'static':
-        // Long term caching for static assets
-        headers['Cache-Control'] = 'public, max-age=31536000, immutable';
-        break;
-        
-      case 'api':
-        // Short term caching with SWR for API responses
-        headers['Cache-Control'] = `s-maxage=${this.options.swrMaxAge}, stale-while-revalidate=${this.options.swrStaleWhileRevalidate}`;
-        break;
-        
-      case 'page':
-        // Medium term caching for pages with ISR
-        headers['Cache-Control'] = 's-maxage=3600, stale-while-revalidate=86400';
-        break;
-        
-      case 'widget':
-        // Optimized for TrustBoost widget
-        headers['Cache-Control'] = 's-maxage=300, stale-while-revalidate=900';
-        headers['Vary'] = 'Accept-Encoding';
-        break;
-        
-      default:
-        headers['Cache-Control'] = this.options.cdnCacheControl;
+    case 'static':
+      // Long term caching for static assets
+      headers['Cache-Control'] = 'public, max-age=31536000, immutable';
+      break;
+
+    case 'api':
+      // Short term caching with SWR for API responses
+      headers['Cache-Control'] = `s-maxage=${this.options.swrMaxAge}, stale-while-revalidate=${this.options.swrStaleWhileRevalidate}`;
+      break;
+
+    case 'page':
+      // Medium term caching for pages with ISR
+      headers['Cache-Control'] = 's-maxage=3600, stale-while-revalidate=86400';
+      break;
+
+    case 'widget':
+      // Optimized for TrustBoost widget
+      headers['Cache-Control'] = 's-maxage=300, stale-while-revalidate=900';
+      headers['Vary'] = 'Accept-Encoding';
+      break;
+
+    default:
+      headers['Cache-Control'] = this.options.cdnCacheControl;
     }
-    
+
     return headers;
   }
 
@@ -256,7 +256,7 @@ export class CacheStrategy {
     // Register service worker for advanced caching
     navigator.serviceWorker.register('/sw.js').then(registration => {
       console.log('Service Worker registered for advanced caching');
-      
+
       // Send cache strategy configuration to service worker
       if (registration.active) {
         registration.active.postMessage({
@@ -280,7 +280,7 @@ export class CacheStrategy {
         } else if (resource.type === 'page') {
           await this.isr(resource.key, resource.generator, resource.revalidate);
         }
-        
+
         console.log(`Cache warmed for: ${resource.key}`);
       } catch (error) {
         console.warn(`Cache warming failed for ${resource.key}:`, error);
@@ -298,7 +298,7 @@ export class CacheStrategy {
     if (pattern) {
       // Invalidate keys matching pattern
       const keysToDelete = [];
-      
+
       for (const key of this.memoryCache.keys()) {
         if (typeof pattern === 'string' && key.includes(pattern)) {
           keysToDelete.push(key);
@@ -306,11 +306,11 @@ export class CacheStrategy {
           keysToDelete.push(key);
         }
       }
-      
+
       keysToDelete.forEach(key => {
         this.memoryCache.delete(key);
       });
-      
+
       console.log(`Invalidated ${keysToDelete.length} cache entries matching pattern: ${pattern}`);
     } else {
       // Clear all cache
@@ -327,7 +327,7 @@ export class CacheStrategy {
       .sort()
       .map(key => `${key}:${params[key]}`)
       .join('|');
-      
+
     return normalized ? `${base}::${normalized}` : base;
   }
 
@@ -345,13 +345,13 @@ export class CacheStrategy {
   simpleHash(str) {
     let hash = 0;
     if (str.length === 0) return hash.toString(36);
-    
+
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
       hash = ((hash << 5) - hash) + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
-    
+
     return Math.abs(hash).toString(36);
   }
 
@@ -360,10 +360,10 @@ export class CacheStrategy {
    */
   updateMetrics(type, responseTime) {
     this.metrics[type === 'hit' ? 'hits' : type === 'miss' ? 'misses' : 'errors']++;
-    
+
     // Update average response time
     const totalRequests = this.metrics.hits + this.metrics.misses + this.metrics.errors;
-    this.metrics.avgResponseTime = 
+    this.metrics.avgResponseTime =
       (this.metrics.avgResponseTime * (totalRequests - 1) + responseTime) / totalRequests;
   }
 
@@ -372,7 +372,7 @@ export class CacheStrategy {
    */
   getMetrics() {
     const totalRequests = this.metrics.hits + this.metrics.misses + this.metrics.errors;
-    
+
     return {
       ...this.metrics,
       hitRatio: totalRequests > 0 ? this.metrics.hits / totalRequests : 0,
@@ -428,7 +428,7 @@ export class WidgetCache extends CacheStrategy {
       },
       {
         key: 'widget-theme',
-        type: 'api', 
+        type: 'api',
         fetcher: () => fetch('/api/widget/theme').then(r => r.json())
       },
       {

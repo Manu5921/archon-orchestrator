@@ -20,13 +20,13 @@ class SecurityIntegrationTester {
 
   async init() {
     console.log('🔧 Initializing security integration test...');
-    
+
     await this.guardian.init();
     await this.scheduler.init();
-    
+
     // Create test directory with vulnerable code samples
     await this.createTestFiles();
-    
+
     console.log('✅ Security test environment ready');
   }
 
@@ -121,7 +121,7 @@ const API_KEY = 'sk-abcd1234567890abcdef'; // SECURITY ISSUE: Hardcoded API key
    */
   async testSecurityScan() {
     console.log('\\n🔍 Testing security scan functionality...');
-    
+
     const results = await this.guardian.runSecurityScan({
       paths: [SECURITY_TEST_DIR],
       scanType: 'comprehensive'
@@ -137,7 +137,7 @@ const API_KEY = 'sk-abcd1234567890abcdef'; // SECURITY ISSUE: Hardcoded API key
     // Verify expected vulnerabilities are detected
     const expectedPatterns = [
       'hardcodedSecrets',
-      'sqlInjection', 
+      'sqlInjection',
       'corsUnsafe',
       'pathTraversal',
       'commandInjection',
@@ -161,23 +161,23 @@ const API_KEY = 'sk-abcd1234567890abcdef'; // SECURITY ISSUE: Hardcoded API key
    */
   async testReportGeneration(scanResults) {
     console.log('\\n📋 Testing security report generation...');
-    
+
     try {
       console.log('🔍 Debug - scanResults structure:', Object.keys(scanResults));
       console.log('🔍 Debug - issues count:', scanResults.issues?.length);
       console.log('🔍 Debug - stats:', scanResults.stats);
-      
+
       const report = await this.guardian.generateSecurityReport(scanResults);
-      
+
       console.log('🔍 Debug - report structure:', Object.keys(report));
-      
+
       // Test markdown report
       const markdown = this.guardian.generateMarkdownReport(report);
       await fs.writeFile('./security-test-report.md', markdown);
-      
+
       console.log('✅ Generated security report: security-test-report.md');
       console.log(`📊 Report contains ${report.executiveSummary.totalIssues} total issues`);
-      
+
       return report;
     } catch (error) {
       console.error('❌ Report generation failed:', error.message);
@@ -191,13 +191,13 @@ const API_KEY = 'sk-abcd1234567890abcdef'; // SECURITY ISSUE: Hardcoded API key
    */
   async testSchedulerStatus() {
     console.log('\\n⏰ Testing scheduler status...');
-    
+
     const status = this.scheduler.getStatus();
-    
+
     console.log('📅 Scheduler Status:');
     console.log(`   Running: ${status.isRunning}`);
     console.log(`   Active Schedules: ${status.activeSchedules.length}`);
-    
+
     if (status.activeSchedules.length > 0) {
       console.log('   Next Runs:');
       status.activeSchedules.forEach(name => {
@@ -207,7 +207,7 @@ const API_KEY = 'sk-abcd1234567890abcdef'; // SECURITY ISSUE: Hardcoded API key
     } else {
       console.log('⚠️ No active schedules found');
     }
-    
+
     return status;
   }
 
@@ -216,17 +216,17 @@ const API_KEY = 'sk-abcd1234567890abcdef'; // SECURITY ISSUE: Hardcoded API key
    */
   async testActionItems(scanResults) {
     console.log('\\n📝 Testing action item creation...');
-    
+
     const criticalIssues = scanResults.issues.filter(i => i.severity === 'CRITICAL');
-    
+
     if (criticalIssues.length > 0) {
       await this.scheduler.createSecurityActionItems(criticalIssues);
-      
+
       // Read generated action items
       try {
         const actionItems = JSON.parse(await fs.readFile('security-action-items.json', 'utf8'));
         console.log(`✅ Created ${actionItems.length} security action items`);
-        
+
         // Show sample action item
         if (actionItems.length > 0) {
           const sample = actionItems[0];
@@ -249,16 +249,16 @@ const API_KEY = 'sk-abcd1234567890abcdef'; // SECURITY ISSUE: Hardcoded API key
    */
   async testNotifications(scanResults) {
     console.log('\\n📢 Testing notification formatting...');
-    
+
     // Test critical issues notification
     const criticalIssues = scanResults.issues.filter(i => i.severity === 'CRITICAL');
-    
+
     if (criticalIssues.length > 0) {
       const message = this.scheduler.formatSecurityNotification('CRITICAL_ISSUES_DETECTED', {
         count: criticalIssues.length,
         issues: criticalIssues
       });
-      
+
       console.log('🚨 Sample Critical Issues Notification:');
       console.log(message);
       console.log('✅ Notification formatting working');
@@ -272,7 +272,7 @@ const API_KEY = 'sk-abcd1234567890abcdef'; // SECURITY ISSUE: Hardcoded API key
       summary: { criticalIssues: criticalIssues.length, riskLevel: 'MEDIUM' },
       trends: { direction: 'IMPROVING' }
     });
-    
+
     console.log('\\n📊 Sample Weekly Report Notification:');
     console.log(weeklyMessage);
   }
@@ -282,7 +282,7 @@ const API_KEY = 'sk-abcd1234567890abcdef'; // SECURITY ISSUE: Hardcoded API key
    */
   async cleanup() {
     console.log('\\n🧹 Cleaning up test files...');
-    
+
     try {
       await fs.rm(SECURITY_TEST_DIR, { recursive: true, force: true });
       await fs.unlink('./security-test-report.md').catch(() => {});
@@ -298,41 +298,41 @@ const API_KEY = 'sk-abcd1234567890abcdef'; // SECURITY ISSUE: Hardcoded API key
   async runFullTest() {
     console.log('🚀 Starting Jules Security Integration Test\\n');
     console.log('═'.repeat(50));
-    
+
     try {
       // Initialize
       await this.init();
-      
+
       // Test security scanning
       const scanResults = await this.testSecurityScan();
-      
+
       // Test report generation
       await this.testReportGeneration(scanResults);
-      
+
       // Test scheduler
       await this.testSchedulerStatus();
-      
+
       // Test action items
       await this.testActionItems(scanResults);
-      
+
       // Test notifications
       await this.testNotifications(scanResults);
-      
+
       console.log('\\n' + '═'.repeat(50));
       console.log('🎉 Security Integration Test COMPLETED SUCCESSFULLY!');
       console.log('\\n📊 Test Summary:');
       console.log(`   Vulnerabilities Detected: ${scanResults.issues.length}`);
       console.log(`   Critical Issues: ${scanResults.stats.criticalIssues}`);
-      console.log(`   Security Report Generated: ✅`);
-      console.log(`   Action Items Created: ✅`);
-      console.log(`   Notifications Working: ✅`);
-      
+      console.log('   Security Report Generated: ✅');
+      console.log('   Action Items Created: ✅');
+      console.log('   Notifications Working: ✅');
+
       return {
         success: true,
         totalIssues: scanResults.issues.length,
         criticalIssues: scanResults.stats.criticalIssues
       };
-      
+
     } catch (error) {
       console.error('❌ Integration test failed:', error.message);
       return { success: false, error: error.message };
@@ -346,7 +346,7 @@ const API_KEY = 'sk-abcd1234567890abcdef'; // SECURITY ISSUE: Hardcoded API key
 async function main() {
   const tester = new SecurityIntegrationTester();
   const result = await tester.runFullTest();
-  
+
   if (!result.success) {
     process.exit(1);
   }

@@ -1,6 +1,6 @@
 /**
  * Archon V3 MetaSupervisor - Intelligence Économique
- * 
+ *
  * Architecture: Setup 1x OpenRouter -> Validation locale 0-token -> Escalation rare
  * Économies: 73% réduction vs validation continue
  */
@@ -14,7 +14,7 @@ export class ArchonV3MetaSupervisor {
     this.openRouterApiKey = process.env.OPENROUTER_API_KEY || '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';
     this.archonApiUrl = 'http://localhost:8181';
     this.naming = new IntelligentDocumentNaming();
-    
+
     // Cache système pour économiser tokens
     this.projectRulesCache = new Map();
     this.validationRulesCache = new Map();
@@ -27,9 +27,9 @@ export class ArchonV3MetaSupervisor {
    */
   async initializeProjectSupervision(projectDescription, techStack) {
     console.log('🧠 MetaSupervisor: Initializing project supervision...');
-    
+
     const cacheKey = this.generateCacheKey(projectDescription, techStack);
-    
+
     // Check cache first
     if (this.projectRulesCache.has(cacheKey)) {
       console.log('✅ Using cached project rules (0 tokens)');
@@ -39,18 +39,18 @@ export class ArchonV3MetaSupervisor {
     try {
       // UN SEUL appel OpenRouter pour tout le projet
       const projectRules = await this.generateProjectRules(projectDescription, techStack);
-      
+
       // Cache pour économiser futures utilisations
       this.projectRulesCache.set(cacheKey, projectRules);
-      
+
       // Sauvegarder rules localement
       await this.cacheProjectRulesLocally(projectDescription, projectRules);
-      
+
       console.log('✅ Project supervision rules generated and cached');
-      console.log(`📊 Token usage: ~4,000 tokens ($0.12) - Investment for entire project`);
-      
+      console.log('📊 Token usage: ~4,000 tokens ($0.12) - Investment for entire project');
+
       return projectRules;
-      
+
     } catch (error) {
       console.error('❌ Project initialization failed:', error.message);
       return this.getFallbackRules(techStack);
@@ -110,7 +110,7 @@ Return as JSON with executable validation functions as strings.
 
     const result = await response.json();
     const rulesContent = result.choices[0].message.content;
-    
+
     // Parse et structure les rules
     return this.parseProjectRules(rulesContent);
   }
@@ -121,31 +121,31 @@ Return as JSON with executable validation functions as strings.
    */
   async validateCodeLocally(code, agentType, projectId) {
     console.log(`🔍 MetaSupervisor: Local validation for ${agentType}...`);
-    
+
     const projectRules = await this.getProjectRules(projectId);
-    
+
     const validation = {
       // Validation syntaxique
       syntaxCheck: this.validateSyntax(code),
-      
+
       // Rules pré-générées (cached)
       rulesCheck: this.applyCachedRules(code, projectRules),
-      
+
       // RAG pattern matching (0 tokens)
       patternMatch: await this.ragPatternValidation(code, agentType),
-      
+
       // Analyse statique structure
       staticAnalysis: this.analyzeCodeStructure(code),
-      
+
       // Patterns connus knowledge base
       knownIssues: await this.checkKnownPatterns(code)
     };
 
     // Score de risque composite
     const riskScore = this.calculateRiskScore(validation);
-    
+
     console.log(`📊 Local validation complete - Risk Score: ${riskScore}`);
-    
+
     return {
       approved: riskScore < 0.7, // Seuil plus permissif pour démo
       riskScore,
@@ -173,15 +173,15 @@ Return as JSON with executable validation functions as strings.
 
     try {
       const escalationResult = await this.openRouterEscalation(code, localValidation, context);
-      
+
       // Apprendre pour éviter futures escalations
       await this.updateLocalRulesFromEscalation(escalationResult);
-      
+
       console.log('✅ Escalation resolved');
-      console.log(`📊 Token usage: ~500-1000 tokens ($0.015-0.03)`);
-      
+      console.log('📊 Token usage: ~500-1000 tokens ($0.015-0.03)');
+
       return escalationResult;
-      
+
     } catch (error) {
       console.error('❌ Escalation failed:', error.message);
       return {
@@ -197,43 +197,43 @@ Return as JSON with executable validation functions as strings.
    */
   async superviseCodeGeneration(code, agent, projectContext) {
     const startTime = Date.now();
-    
+
     const agentType = agent.type || agent.name.toLowerCase().replace(' agent', '');
     console.log(`🎯 MetaSupervisor: Supervising ${agentType} code generation...`);
-    
+
     // Phase 1: Validation locale (0 tokens)
     const localValidation = await this.validateCodeLocally(
-      code, 
-      agentType, 
+      code,
+      agentType,
       projectContext.projectId
     );
 
     // Phase 2: Escalation si nécessaire (rare)
     const finalValidation = await this.escalateIfNeeded(
-      code, 
-      localValidation, 
+      code,
+      localValidation,
       projectContext
     );
 
     // Phase 3: Auto-correction si possible
     if (!finalValidation.approved && finalValidation.issues.length > 0) {
       const correctionResult = await this.attemptAutoCorrection(
-        code, 
-        finalValidation.issues, 
+        code,
+        finalValidation.issues,
         agent
       );
-      
+
       if (correctionResult.success) {
         return await this.superviseCodeGeneration(
-          correctionResult.correctedCode, 
-          agent, 
+          correctionResult.correctedCode,
+          agent,
           projectContext
         );
       }
     }
 
     const duration = Date.now() - startTime;
-    
+
     // Documentation pour learning
     await this.documentSupervisionResult({
       agent: agentType,
@@ -245,7 +245,7 @@ Return as JSON with executable validation functions as strings.
     });
 
     console.log(`⚡ MetaSupervisor: Supervision complete in ${duration}ms`);
-    
+
     return finalValidation;
   }
 
@@ -266,7 +266,7 @@ Return as JSON with executable validation functions as strings.
 
   applyCachedRules(code, projectRules) {
     const violations = [];
-    
+
     if (projectRules?.techStack) {
       // Vérifier tech stack compliance
       if (projectRules.techStack.includes('Node.js') && code.includes('from flask import')) {
@@ -276,7 +276,7 @@ Return as JSON with executable validation functions as strings.
           message: 'Flask usage detected in Node.js project'
         });
       }
-      
+
       if (projectRules.techStack.includes('Supabase') && code.includes('mongoose')) {
         violations.push({
           type: 'database_violation',
@@ -305,7 +305,7 @@ Return as JSON with executable validation functions as strings.
       });
 
       const result = await response.json();
-      
+
       return {
         patternsFound: result.total_found || 0,
         similarPatterns: result.results || [],
@@ -351,7 +351,7 @@ Return as JSON with executable validation functions as strings.
       }
     ];
 
-    const detectedIssues = knownIssues.filter(issue => 
+    const detectedIssues = knownIssues.filter(issue =>
       issue.pattern.test(code)
     );
 
@@ -367,7 +367,7 @@ Return as JSON with executable validation functions as strings.
 
     // Syntax issues
     if (!validation.syntaxCheck.valid) score += 0.3;
-    
+
     // Rules violations
     if (!validation.rulesCheck.passed) {
       const criticalViolations = validation.rulesCheck.violations.filter(v => v.severity === 'critical');
@@ -377,10 +377,10 @@ Return as JSON with executable validation functions as strings.
 
     // Pattern confidence
     if (validation.patternMatch.confidence < 0.5) score += 0.2;
-    
+
     // Quality score
     if (validation.staticAnalysis.qualityScore < 0.6) score += 0.3;
-    
+
     // Known issues
     if (validation.knownIssues.riskLevel === 'high') score += 0.5;
     else if (validation.knownIssues.riskLevel === 'medium') score += 0.3;
@@ -448,7 +448,7 @@ Provide detailed analysis and correction suggestions:
 
     const result = await response.json();
     const analysis = result.choices[0].message.content;
-    
+
     return {
       approved: analysis.includes('approved') || analysis.includes('quality') && !analysis.includes('critical'),
       escalationAnalysis: analysis,
@@ -574,7 +574,7 @@ Provide detailed analysis and correction suggestions:
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
       }
-      
+
       // Fallback parsing
       return {
         techStack: this.extractTechStack(rulesContent),
@@ -604,16 +604,16 @@ Provide detailed analysis and correction suggestions:
 
   calculateComplexity(code) {
     const cyclomaticIndicators = [
-      /if\s*\(/g, /else/g, /while\s*\(/g, /for\s*\(/g, 
+      /if\s*\(/g, /else/g, /while\s*\(/g, /for\s*\(/g,
       /switch\s*\(/g, /case\s+/g, /catch\s*\(/g, /&&/g, /\|\|/g
     ];
-    
+
     let complexity = 1; // Base complexity
     cyclomaticIndicators.forEach(pattern => {
       const matches = code.match(pattern);
       if (matches) complexity += matches.length;
     });
-    
+
     return complexity;
   }
 
@@ -621,11 +621,11 @@ Provide detailed analysis and correction suggestions:
     const importRegex = /import\s+.+\s+from\s+['"]([^'"]+)['"]/g;
     const imports = [];
     let match;
-    
+
     while ((match = importRegex.exec(code)) !== null) {
       imports.push(match[1]);
     }
-    
+
     return imports;
   }
 
@@ -633,11 +633,11 @@ Provide detailed analysis and correction suggestions:
     const exportRegex = /export\s+(?:default\s+)?(?:class|function|const|let|var)\s+(\w+)/g;
     const exports = [];
     let match;
-    
+
     while ((match = exportRegex.exec(code)) !== null) {
       exports.push(match[1]);
     }
-    
+
     return exports;
   }
 
@@ -645,30 +645,30 @@ Provide detailed analysis and correction suggestions:
     const functionRegex = /(?:function\s+(\w+)|(\w+)\s*=\s*(?:async\s+)?(?:\([^)]*\)\s*=>|function))/g;
     const functions = [];
     let match;
-    
+
     while ((match = functionRegex.exec(code)) !== null) {
       functions.push(match[1] || match[2]);
     }
-    
+
     return functions;
   }
 
   calculateQualityScore(analysis) {
     let score = 1.0;
-    
+
     // Penalize excessive complexity
     if (analysis.complexity > 15) score -= 0.3;
     else if (analysis.complexity > 10) score -= 0.1;
-    
+
     // Penalize excessive length
     if (analysis.linesOfCode > 200) score -= 0.2;
     else if (analysis.linesOfCode > 100) score -= 0.1;
-    
+
     // Reward good structure
     if (analysis.imports.length > 0) score += 0.1;
     if (analysis.exports.length > 0) score += 0.1;
     if (analysis.functions.length > 0 && analysis.functions.length < 10) score += 0.1;
-    
+
     return Math.max(0, Math.min(1, score));
   }
 
@@ -676,13 +676,13 @@ Provide detailed analysis and correction suggestions:
     // Simple parsing of suggestions from OpenRouter response
     const suggestions = [];
     const lines = analysis.split('\n');
-    
+
     lines.forEach(line => {
       if (line.includes('suggest') || line.includes('recommend') || line.includes('should')) {
         suggestions.push(line.trim());
       }
     });
-    
+
     return suggestions;
   }
 
@@ -692,7 +692,7 @@ Provide detailed analysis and correction suggestions:
   getSupervisionStatistics() {
     return {
       totalEscalations: this.escalationLog.length,
-      averageRiskScore: this.escalationLog.length > 0 ? 
+      averageRiskScore: this.escalationLog.length > 0 ?
         this.escalationLog.reduce((sum, log) => sum + log.riskScore, 0) / this.escalationLog.length : 0,
       economicsSavings: this.calculateSavings(),
       lastEscalation: this.escalationLog.length > 0 ? this.escalationLog[this.escalationLog.length - 1] : null
@@ -704,7 +704,7 @@ Provide detailed analysis and correction suggestions:
     const assumedValidations = 100; // Typical validations per month
     const traditionalCost = assumedValidations * 0.03; // $0.03 per validation
     const currentCost = 0.12 + (this.escalationLog.length * 0.03); // Setup + escalations
-    
+
     return {
       traditionalCost,
       currentCost,

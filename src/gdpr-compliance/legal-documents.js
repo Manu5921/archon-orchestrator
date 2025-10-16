@@ -2,10 +2,10 @@
 
 /**
  * LEGAL DOCUMENTS GENERATOR - CGU/CGV & PRIVACY POLICY
- * 
+ *
  * Generates legally compliant Terms of Service, Terms and Conditions,
  * and Privacy Policy documents for GDPR compliance
- * 
+ *
  * Compliance with:
  * - GDPR (EU General Data Protection Regulation)
  * - French CNIL requirements
@@ -36,7 +36,7 @@ export class LegalDocumentsGenerator {
         website: process.env.COMPANY_WEBSITE || 'https://trustboost.fr',
         vatNumber: process.env.COMPANY_VAT || 'FR12345678901'
       },
-      
+
       // Legal contacts
       contacts: {
         dpo: {
@@ -54,7 +54,7 @@ export class LegalDocumentsGenerator {
           address: process.env.HOSTING_ADDRESS || '2 rue Kellermann, 59100 Roubaix, France'
         }
       },
-      
+
       // Service information
       service: {
         name: process.env.SERVICE_NAME || 'TrustBoost Platform',
@@ -62,7 +62,7 @@ export class LegalDocumentsGenerator {
         url: process.env.SERVICE_URL || 'https://app.trustboost.fr',
         supportEmail: process.env.SUPPORT_EMAIL || 'support@trustboost.fr'
       },
-      
+
       // Document settings
       documents: {
         language: 'fr',
@@ -71,7 +71,7 @@ export class LegalDocumentsGenerator {
         version: '2024.1',
         outputPath: options.outputPath || './src/legal'
       },
-      
+
       ...options
     };
   }
@@ -82,7 +82,7 @@ export class LegalDocumentsGenerator {
   async generateAllDocuments() {
     try {
       await fs.mkdir(this.config.documents.outputPath, { recursive: true });
-      
+
       const documents = {
         termsOfService: await this.generateTermsOfService(),
         privacyPolicy: await this.generatePrivacyPolicy(),
@@ -90,7 +90,7 @@ export class LegalDocumentsGenerator {
         legalNotices: await this.generateLegalNotices(),
         dataProcessingAgreement: await this.generateDataProcessingAgreement()
       };
-      
+
       // Save documents to files
       for (const [docType, content] of Object.entries(documents)) {
         const fileName = `${docType.replace(/([A-Z])/g, '-$1').toLowerCase()}.md`;
@@ -98,7 +98,7 @@ export class LegalDocumentsGenerator {
         await fs.writeFile(filePath, content, 'utf8');
         logger.info(`✅ Generated: ${fileName}`);
       }
-      
+
       // Generate integration instructions
       const integrationInstructions = this.generateIntegrationInstructions();
       await fs.writeFile(
@@ -106,15 +106,15 @@ export class LegalDocumentsGenerator {
         JSON.stringify(integrationInstructions, null, 2),
         'utf8'
       );
-      
+
       logger.info('✅ All legal documents generated successfully');
-      
+
       return {
         success: true,
         documents: Object.keys(documents),
         outputPath: this.config.documents.outputPath
       };
-      
+
     } catch (error) {
       logger.error(`❌ Failed to generate legal documents: ${error.message}`);
       throw error;
@@ -934,59 +934,59 @@ Adresse : ${this.config.contacts.dpo.address}
       integrationInstructions: {
         version: this.config.documents.version,
         lastUpdated: this.config.documents.lastUpdated,
-        
+
         footer_links: {
-          description: "Liens à placer dans le footer du site",
+          description: 'Liens à placer dans le footer du site',
           required: true,
           links: [
             {
-              text: "Mentions légales",
-              url: "/legal/legal-notices",
-              placement: "footer_primary",
+              text: 'Mentions légales',
+              url: '/legal/legal-notices',
+              placement: 'footer_primary',
               required: true
             },
             {
-              text: "CGU",
-              url: "/legal/terms-of-service", 
-              placement: "footer_primary",
+              text: 'CGU',
+              url: '/legal/terms-of-service',
+              placement: 'footer_primary',
               required: true
             },
             {
-              text: "Politique de confidentialité",
-              url: "/legal/privacy-policy",
-              placement: "footer_primary", 
+              text: 'Politique de confidentialité',
+              url: '/legal/privacy-policy',
+              placement: 'footer_primary',
               required: true
             },
             {
-              text: "Gestion des cookies",
-              url: "#",
-              action: "openCookiePreferences()",
-              placement: "footer_primary",
+              text: 'Gestion des cookies',
+              url: '#',
+              action: 'openCookiePreferences()',
+              placement: 'footer_primary',
               required: true
             },
             {
-              text: "Contact DPO",
+              text: 'Contact DPO',
               url: `mailto:${this.config.contacts.dpo.email}`,
-              placement: "footer_secondary",
+              placement: 'footer_secondary',
               required: false
             }
           ]
         },
-        
+
         consent_forms: {
-          description: "Checkboxes de consentement à placer sur les formulaires",
+          description: 'Checkboxes de consentement à placer sur les formulaires',
           registration_form: {
             necessary_consent: {
               text: "J'accepte les conditions générales d'utilisation",
               required: true,
               checked: false,
-              legal_basis: "contract"
+              legal_basis: 'contract'
             },
             marketing_consent: {
               text: "J'accepte de recevoir des communications marketing (optionnel)",
               required: false,
               checked: false,
-              legal_basis: "consent"
+              legal_basis: 'consent'
             }
           },
           contact_form: {
@@ -994,153 +994,153 @@ Adresse : ${this.config.contacts.dpo.address}
               text: "J'accepte le traitement de mes données personnelles pour répondre à ma demande",
               required: true,
               checked: false,
-              legal_basis: "consent"
+              legal_basis: 'consent'
             }
           }
         },
-        
+
         cookie_banner: {
-          description: "Configuration de la bannière de cookies",
-          trigger: "first_visit_without_consent",
-          position: "bottom",
+          description: 'Configuration de la bannière de cookies',
+          trigger: 'first_visit_without_consent',
+          position: 'bottom',
           blocking: false,
           texts: {
-            title: "Gestion des cookies",
-            description: `Ce site utilise des cookies pour améliorer votre expérience. Vous pouvez accepter tous les cookies ou personnaliser vos préférences.`,
-            accept_all: "Accepter tout",
-            reject_all: "Refuser tout",
-            customize: "Personnaliser",
-            save_preferences: "Enregistrer mes préférences"
+            title: 'Gestion des cookies',
+            description: 'Ce site utilise des cookies pour améliorer votre expérience. Vous pouvez accepter tous les cookies ou personnaliser vos préférences.',
+            accept_all: 'Accepter tout',
+            reject_all: 'Refuser tout',
+            customize: 'Personnaliser',
+            save_preferences: 'Enregistrer mes préférences'
           },
           categories: [
             {
-              id: "necessary",
-              name: "Cookies nécessaires",
-              description: "Indispensables au fonctionnement du site",
+              id: 'necessary',
+              name: 'Cookies nécessaires',
+              description: 'Indispensables au fonctionnement du site',
               required: true,
               enabled: true
             },
             {
-              id: "analytics",
-              name: "Cookies analytiques", 
+              id: 'analytics',
+              name: 'Cookies analytiques',
               description: "Nous aident à comprendre l'utilisation du site",
               required: false,
               enabled: false
             },
             {
-              id: "marketing",
-              name: "Cookies marketing",
-              description: "Permettent la personnalisation publicitaire",
+              id: 'marketing',
+              name: 'Cookies marketing',
+              description: 'Permettent la personnalisation publicitaire',
               required: false,
               enabled: false
             }
           ]
         },
-        
+
         user_rights_interface: {
-          description: "Interface de gestion des droits utilisateur",
-          access_path: "/account/privacy",
+          description: 'Interface de gestion des droits utilisateur',
+          access_path: '/account/privacy',
           sections: [
             {
-              title: "Mes données personnelles",
+              title: 'Mes données personnelles',
               actions: [
                 {
-                  name: "Télécharger mes données",
-                  endpoint: "/api/user/export-data",
-                  method: "POST"
+                  name: 'Télécharger mes données',
+                  endpoint: '/api/user/export-data',
+                  method: 'POST'
                 },
                 {
-                  name: "Supprimer mon compte", 
-                  endpoint: "/api/user/delete-account",
-                  method: "DELETE",
+                  name: 'Supprimer mon compte',
+                  endpoint: '/api/user/delete-account',
+                  method: 'DELETE',
                   confirmation_required: true
                 }
               ]
             },
             {
-              title: "Gestion des consentements",
+              title: 'Gestion des consentements',
               actions: [
                 {
-                  name: "Modifier mes préférences cookies",
-                  action: "openCookiePreferences()"
+                  name: 'Modifier mes préférences cookies',
+                  action: 'openCookiePreferences()'
                 },
                 {
-                  name: "Gérer mes consentements marketing",
-                  endpoint: "/api/user/marketing-consent",
-                  method: "PUT"
+                  name: 'Gérer mes consentements marketing',
+                  endpoint: '/api/user/marketing-consent',
+                  method: 'PUT'
                 }
               ]
             }
           ]
         },
-        
+
         api_endpoints: {
           description: "Points d'API requis pour la conformité GDPR",
           endpoints: [
             {
-              path: "/api/legal/consent",
-              method: "POST",
-              description: "Enregistrer un consentement utilisateur",
+              path: '/api/legal/consent',
+              method: 'POST',
+              description: 'Enregistrer un consentement utilisateur',
               required: true
             },
             {
-              path: "/api/legal/consent/:userId",
-              method: "GET", 
+              path: '/api/legal/consent/:userId',
+              method: 'GET',
               description: "Récupérer les consentements d'un utilisateur",
               required: true
             },
             {
-              path: "/api/legal/data-export",
-              method: "POST",
+              path: '/api/legal/data-export',
+              method: 'POST',
               description: "Demander l'export des données utilisateur",
               required: true
             },
             {
-              path: "/api/legal/data-deletion",
-              method: "POST",
-              description: "Demander la suppression des données utilisateur", 
+              path: '/api/legal/data-deletion',
+              method: 'POST',
+              description: 'Demander la suppression des données utilisateur',
               required: true
             }
           ]
         },
-        
+
         compliance_checklist: {
-          description: "Check-list de conformité GDPR",
+          description: 'Check-list de conformité GDPR',
           items: [
             {
-              category: "Documentation légale",
+              category: 'Documentation légale',
               items: [
-                "CGU en place et accessibles",
-                "Politique de confidentialité complète",
-                "Mentions légales conformes",
-                "DPA disponible pour les clients B2B"
+                'CGU en place et accessibles',
+                'Politique de confidentialité complète',
+                'Mentions légales conformes',
+                'DPA disponible pour les clients B2B'
               ]
             },
             {
-              category: "Consentements",
+              category: 'Consentements',
               items: [
-                "Bannière de consentement fonctionnelle",
-                "Granularité des choix utilisateur",
-                "Facilité de retrait du consentement",
-                "Enregistrement des consentements"
+                'Bannière de consentement fonctionnelle',
+                'Granularité des choix utilisateur',
+                'Facilité de retrait du consentement',
+                'Enregistrement des consentements'
               ]
             },
             {
-              category: "Droits utilisateur",
+              category: 'Droits utilisateur',
               items: [
-                "Interface de gestion des données personnelles",
-                "Export de données fonctionnel",
-                "Suppression de compte implémentée",
-                "Contact DPO accessible"
+                'Interface de gestion des données personnelles',
+                'Export de données fonctionnel',
+                'Suppression de compte implémentée',
+                'Contact DPO accessible'
               ]
             },
             {
-              category: "Sécurité",
+              category: 'Sécurité',
               items: [
-                "Chiffrement des données en transit",
-                "Chiffrement des données au repos",  
-                "Authentification sécurisée",
-                "Logs de sécurité"
+                'Chiffrement des données en transit',
+                'Chiffrement des données au repos',
+                'Authentification sécurisée',
+                'Logs de sécurité'
               ]
             }
           ]
@@ -1169,7 +1169,7 @@ Adresse : ${this.config.contacts.dpo.address}
         },
         ecommerce: {
           score: 92,
-          status: 'compliant', 
+          status: 'compliant',
           issues: ['Améliorer les conditions de rétractation']
         }
       },
@@ -1179,7 +1179,7 @@ Adresse : ${this.config.contacts.dpo.address}
         'Vérification de la liste des sous-traitants'
       ]
     };
-    
+
     return complianceReport;
   }
 }

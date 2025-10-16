@@ -15,7 +15,7 @@ describe('Logger', () => {
     consoleSpy = {
       log: jest.spyOn(console, 'log').mockImplementation(() => {}),
       warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
+      error: jest.spyOn(console, 'error').mockImplementation(() => {})
     };
   });
 
@@ -101,7 +101,7 @@ describe('Logger', () => {
         testLogger.info(`Message ${i}`);
       }
       const duration = Date.now() - start;
-      
+
       expect(duration).toBeLessThan(1000); // Should complete in less than 1 second
       expect(consoleSpy.log).toHaveBeenCalledTimes(1000);
     });
@@ -112,7 +112,7 @@ describe('Logger', () => {
         testLogger.debug(`Debug message ${i}`);
       }
       const duration = Date.now() - start;
-      
+
       expect(duration).toBeLessThan(100); // Should be very fast when disabled
       expect(consoleSpy.log).not.toHaveBeenCalled();
     });
@@ -124,12 +124,12 @@ describe('Logger', () => {
       for (let i = 0; i < 100; i++) {
         loggers.push(new Logger(`Logger${i}`));
       }
-      
+
       loggers.forEach((log, index) => {
         log.info(`Test message ${index}`);
         expect(log.name).toBe(`Logger${index}`);
       });
-      
+
       expect(consoleSpy.log).toHaveBeenCalledTimes(100);
     });
   });

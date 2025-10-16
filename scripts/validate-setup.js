@@ -44,11 +44,11 @@ console.log('\n📦 Checking dependencies...');
 try {
   const packagePath = path.join(__dirname, '..', 'package.json');
   const packageData = JSON.parse(await fs.readFile(packagePath, 'utf8'));
-  
+
   const requiredDeps = [
     '@playwright/test'
   ];
-  
+
   for (const dep of requiredDeps) {
     if (packageData.devDependencies?.[dep] || packageData.dependencies?.[dep]) {
       console.log(`  ✅ ${dep}`);
@@ -65,17 +65,17 @@ console.log('\n⚡ Checking npm scripts...');
 try {
   const packagePath = path.join(__dirname, '..', 'package.json');
   const packageData = JSON.parse(await fs.readFile(packagePath, 'utf8'));
-  
+
   const requiredScripts = [
     'test:e2e',
-    'test:widget', 
+    'test:widget',
     'test:dashboard',
     'test:performance',
     'test:security',
     'quality:gate',
     'playwright:install'
   ];
-  
+
   for (const script of requiredScripts) {
     if (packageData.scripts?.[script]) {
       console.log(`  ✅ ${script}`);
@@ -92,7 +92,7 @@ console.log('\n🎭 Checking Playwright configuration...');
 try {
   execSync('npx playwright --version', { stdio: 'pipe' });
   console.log('  ✅ Playwright CLI available');
-  
+
   // Vérifier que les browsers sont installés
   try {
     execSync('npx playwright test --list', { stdio: 'pipe', cwd: path.join(__dirname, '..') });
@@ -100,7 +100,7 @@ try {
   } catch {
     console.log('  ⚠️  Playwright browsers may need installation (run: npm run playwright:install)');
   }
-  
+
 } catch {
   console.log('  ❌ Playwright not available');
 }
@@ -110,7 +110,7 @@ console.log('\n🧪 Checking test structure...');
 const testDirs = [
   'tests/e2e/setup',
   'tests/e2e/widget',
-  'tests/e2e/dashboard', 
+  'tests/e2e/dashboard',
   'tests/e2e/performance',
   'tests/e2e/security',
   'tests/e2e/utils'
@@ -133,15 +133,15 @@ console.log('\n🚀 Checking CI/CD pipeline...');
 try {
   const workflowPath = path.join(__dirname, '..', '.github/workflows/e2e-tests.yml');
   const workflowContent = await fs.readFile(workflowPath, 'utf8');
-  
+
   const requiredJobs = [
     'setup-validation',
-    'e2e-tests', 
+    'e2e-tests',
     'performance-tests',
     'security-tests',
     'test-report'
   ];
-  
+
   for (const job of requiredJobs) {
     if (workflowContent.includes(`${job}:`)) {
       console.log(`  ✅ Job: ${job}`);
@@ -158,7 +158,7 @@ console.log('\n📋 Setup Instructions:');
 console.log('1. Install Playwright browsers:');
 console.log('   npm run playwright:install');
 console.log('');
-console.log('2. Run test validation:');  
+console.log('2. Run test validation:');
 console.log('   npm run test:e2e');
 console.log('');
 console.log('3. Run quality gate:');

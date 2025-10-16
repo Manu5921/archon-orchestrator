@@ -77,7 +77,7 @@ export class ArchonMCPConnector {
 
     try {
       logger.info(`🔌 Connecting to Archon MCP server: ${this.config.mcpUrl}`);
-      
+
       // Initialiser la session MCP
       const initResponse = await fetch(this.config.mcpUrl, {
         method: 'POST',
@@ -208,131 +208,131 @@ export class ArchonMCPConnector {
 
   async execute(taskId, command, args = []) {
     const startTime = Date.now();
-    
+
     try {
       logger.debug(`[ARCHON MCP] Executing ${command} for task ${taskId}`, args);
-      
+
       let toolName;
       let toolParams;
       const duration = () => Date.now() - startTime;
 
       switch (command) {
-        case 'manage_project':
-          const projectAction = args[0]?.action || 'list';
-          
-          // Utiliser les fonctions individuelles
-          switch (projectAction) {
-            case 'create':
-              toolName = 'create_project';
-              toolParams = {
-                title: args[0].title,
-                description: args[0].description || '',
-                github_repo: args[0].github_repo || null
-              };
-              break;
-            case 'list':
-              toolName = 'list_projects';
-              toolParams = {};
-              break;
-            case 'get':
-              toolName = 'get_project';
-              toolParams = { project_id: args[0].project_id };
-              break;
-            case 'update':
-              toolName = 'update_project';
-              toolParams = {
-                project_id: args[0].project_id,
-                ...args[0].update_fields
-              };
-              break;
-            default:
-              return {
-                success: false,
-                error: `Unsupported project action: ${projectAction}`,
-                duration_ms: duration()
-              };
-          }
-          break;
-          
-        case 'manage_task':
-          const taskAction = args[0]?.action || 'list';
-          
-          switch (taskAction) {
-            case 'create':
-              toolName = 'create_task';
-              toolParams = {
-                project_id: args[0].project_id,
-                title: args[0].title,
-                description: args[0].description || '',
-                feature: args[0].feature || 'General',
-                task_order: args[0].task_order || 0,
-                assignee: args[0].assignee || 'User'
-              };
-              break;
-            case 'list':
-              toolName = 'list_tasks';
-              toolParams = {
-                filter_by: args[0].filter_by || null,
-                filter_value: args[0].filter_value || null,
-                project_id: args[0].project_id || null
-              };
-              break;
-            case 'get':
-              toolName = 'get_task';
-              toolParams = { task_id: args[0].task_id };
-              break;
-            case 'update':
-              toolName = 'update_task';
-              toolParams = {
-                task_id: args[0].task_id,
-                ...args[0].update_fields
-              };
-              break;
-            default:
-              return {
-                success: false,
-                error: `Unsupported task action: ${taskAction}`,
-                duration_ms: duration()
-              };
-          }
-          break;
-          
-        case 'perform_rag_query':
-          toolName = 'perform_rag_query';
+      case 'manage_project':
+        const projectAction = args[0]?.action || 'list';
+
+        // Utiliser les fonctions individuelles
+        switch (projectAction) {
+        case 'create':
+          toolName = 'create_project';
           toolParams = {
-            query: args[0]?.query || args[0],
-            match_count: args[0]?.match_count || 5
+            title: args[0].title,
+            description: args[0].description || '',
+            github_repo: args[0].github_repo || null
           };
           break;
-          
-        case 'search_code_examples':
-          toolName = 'search_code_examples';
+        case 'list':
+          toolName = 'list_projects';
+          toolParams = {};
+          break;
+        case 'get':
+          toolName = 'get_project';
+          toolParams = { project_id: args[0].project_id };
+          break;
+        case 'update':
+          toolName = 'update_project';
           toolParams = {
-            query: args[0]?.query || args[0],
-            match_count: args[0]?.match_count || 3
+            project_id: args[0].project_id,
+            ...args[0].update_fields
           };
           break;
-          
         default:
-          logger.error(`[ARCHON MCP] Unsupported command: ${JSON.stringify(command)} with args: ${JSON.stringify(args)}`);
           return {
             success: false,
-            error: `Command '${command}' not supported`,
+            error: `Unsupported project action: ${projectAction}`,
             duration_ms: duration()
           };
+        }
+        break;
+
+      case 'manage_task':
+        const taskAction = args[0]?.action || 'list';
+
+        switch (taskAction) {
+        case 'create':
+          toolName = 'create_task';
+          toolParams = {
+            project_id: args[0].project_id,
+            title: args[0].title,
+            description: args[0].description || '',
+            feature: args[0].feature || 'General',
+            task_order: args[0].task_order || 0,
+            assignee: args[0].assignee || 'User'
+          };
+          break;
+        case 'list':
+          toolName = 'list_tasks';
+          toolParams = {
+            filter_by: args[0].filter_by || null,
+            filter_value: args[0].filter_value || null,
+            project_id: args[0].project_id || null
+          };
+          break;
+        case 'get':
+          toolName = 'get_task';
+          toolParams = { task_id: args[0].task_id };
+          break;
+        case 'update':
+          toolName = 'update_task';
+          toolParams = {
+            task_id: args[0].task_id,
+            ...args[0].update_fields
+          };
+          break;
+        default:
+          return {
+            success: false,
+            error: `Unsupported task action: ${taskAction}`,
+            duration_ms: duration()
+          };
+        }
+        break;
+
+      case 'perform_rag_query':
+        toolName = 'perform_rag_query';
+        toolParams = {
+          query: args[0]?.query || args[0],
+          match_count: args[0]?.match_count || 5
+        };
+        break;
+
+      case 'search_code_examples':
+        toolName = 'search_code_examples';
+        toolParams = {
+          query: args[0]?.query || args[0],
+          match_count: args[0]?.match_count || 3
+        };
+        break;
+
+      default:
+        logger.error(`[ARCHON MCP] Unsupported command: ${JSON.stringify(command)} with args: ${JSON.stringify(args)}`);
+        return {
+          success: false,
+          error: `Command '${command}' not supported`,
+          duration_ms: duration()
+        };
       }
 
-      const result = await this.sendRequest(`tools/call`, {
+      const result = await this.sendRequest('tools/call', {
         name: toolName,
         arguments: toolParams
       });
-      
+
       return {
         success: true,
         ...result,
         duration_ms: duration()
       };
-      
+
     } catch (error) {
       logger.error(`[ARCHON MCP] Error executing ${command}:`, error);
       return {
@@ -342,12 +342,12 @@ export class ArchonMCPConnector {
       };
     }
   }
-  
+
   async exportContext(taskId) {
     return {
       agent: 'archon_mcp_streaming',
       task_id: taskId,
-      context: { 
+      context: {
         source: 'archon_mcp_streaming',
         server: this.serverInfo,
         capabilities: this.capabilities
@@ -355,17 +355,17 @@ export class ArchonMCPConnector {
       timestamp: new Date().toISOString()
     };
   }
-  
+
   async importContext(taskId, context) {
     logger.debug(`[ARCHON MCP] Imported context for task ${taskId}`);
     return { success: true };
   }
-  
+
   async syncContext(contextType, data) {
     logger.debug(`[ARCHON MCP] Syncing ${contextType} context`);
     return { success: true };
   }
-  
+
   async close() {
     if (this.eventSource) {
       this.eventSource.close();

@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/validate-project-structure.js",
-    "lint": "eslint . --ext .js,.mjs,.cjs --max-warnings 0",
-    "lint:fix": "eslint . --ext .js,.mjs,.cjs --fix",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
     "dev": "node --watch src/index.js",
     "start": "node src/lighthouse-server.js",
     "start:orchestra": "node src/index.js",
@@ -80,6 +80,7 @@
   "devDependencies": {
     "@babel/core": "^7.28.3",
     "@babel/preset-env": "^7.28.3",
+    "@eslint/js": "^9.37.0",
     "@jest/globals": "^30.1.2",
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.55.0",

@@ -1,7 +1,7 @@
 /**
  * AGENT 6: Performance & Optimization Engineer
  * TrustBoost Phase 4 - Database Query Optimizer
- * 
+ *
  * Optimisation des requêtes pour <50ms p99
  * - Query caching et preparation
  * - Connection pooling optimisé
@@ -19,23 +19,23 @@ export class DatabaseOptimizer {
     this.options = {
       // Performance targets
       p99Target: 50, // <50ms p99 requirement
-      p95Target: 30, // <30ms p95 for better UX  
+      p95Target: 30, // <30ms p95 for better UX
       p50Target: 15, // <15ms median
-      
+
       // Connection pooling
       maxConnections: 20,
       minConnections: 5,
       acquireTimeout: 30000,
       idleTimeout: 30000,
-      
+
       // Query caching
       queryCacheSize: 1000,
       queryCacheTTL: 300000, // 5 minutes
-      
+
       // Monitoring
       enableQueryAnalysis: true,
       slowQueryThreshold: 25, // Log queries >25ms
-      
+
       ...options
     };
 
@@ -43,10 +43,10 @@ export class DatabaseOptimizer {
     this.queryMetrics = new Map();
     this.preparedStatements = new Map();
     this.connectionPool = null;
-    
+
     // Query cache for repeated queries
     this.queryCache = new Map();
-    
+
     this.initializeMonitoring();
   }
 
@@ -66,7 +66,7 @@ export class DatabaseOptimizer {
   async executeQuery(query, params = [], options = {}) {
     const queryId = this.getQueryId(query);
     const startTime = performance.now();
-    
+
     try {
       // Check query cache first
       if (options.cache !== false) {
@@ -84,7 +84,7 @@ export class DatabaseOptimizer {
 
       // Execute query
       const result = await this.executeWithPool(queryId, params, options);
-      
+
       // Cache result if appropriate
       if (options.cache !== false && this.shouldCache(query)) {
         this.setInCache(queryId, params, result);
@@ -107,13 +107,13 @@ export class DatabaseOptimizer {
     } catch (error) {
       const duration = performance.now() - startTime;
       this.recordMetric(queryId, duration, 'error');
-      
+
       console.error('Database query error:', {
         query: this.sanitizeQuery(query),
         error: error.message,
         duration
       });
-      
+
       throw error;
     }
   }
@@ -123,7 +123,7 @@ export class DatabaseOptimizer {
    */
   async executeBatch(queries, options = {}) {
     const startTime = performance.now();
-    
+
     try {
       // Group similar queries for better performance
       const groupedQueries = this.groupQueries(queries);
@@ -175,7 +175,7 @@ export class DatabaseOptimizer {
       this.connectionPool = mysql.createPool(poolConfig);
     } else if (config.type === 'sqlite') {
       // SQLite doesn't need pooling but we can simulate it
-      this.connectionPool = { 
+      this.connectionPool = {
         query: this.createSQLiteQuery(config.database)
       };
     }
@@ -210,7 +210,7 @@ export class DatabaseOptimizer {
     }
 
     const prepared = this.preparedStatements.get(queryId);
-    
+
     if (typeof prepared === 'object' && prepared.execute) {
       // Prepared statement
       return await prepared.execute(params);
@@ -226,17 +226,17 @@ export class DatabaseOptimizer {
   getFromCache(queryId, params) {
     const cacheKey = this.getCacheKey(queryId, params);
     const cached = this.queryCache.get(cacheKey);
-    
+
     if (cached && (Date.now() - cached.timestamp) < this.options.queryCacheTTL) {
       return cached.result;
     }
-    
+
     return null;
   }
 
   setInCache(queryId, params, result) {
     const cacheKey = this.getCacheKey(queryId, params);
-    
+
     // Limit cache size
     if (this.queryCache.size >= this.options.queryCacheSize) {
       const oldestKey = this.queryCache.keys().next().value;
@@ -251,12 +251,12 @@ export class DatabaseOptimizer {
 
   shouldCache(query) {
     const upperQuery = query.toUpperCase().trim();
-    
+
     // Only cache SELECT queries
     if (!upperQuery.startsWith('SELECT')) {
       return false;
     }
-    
+
     // Don't cache queries with NOW(), RAND(), etc.
     const nonCacheableKeywords = ['NOW()', 'RAND()', 'RANDOM()', 'CURRENT_TIMESTAMP'];
     return !nonCacheableKeywords.some(keyword => upperQuery.includes(keyword));
@@ -400,7 +400,7 @@ export class DatabaseOptimizer {
    */
   getPerformanceSummary() {
     const allMetrics = Array.from(this.queryMetrics.values());
-    
+
     if (allMetrics.length === 0) {
       return { status: 'no-data' };
     }
@@ -418,7 +418,7 @@ export class DatabaseOptimizer {
       p99: this.calculatePercentile(allTimes, 0.99),
       errorRate: totalErrors / totalQueries,
       cacheHitRate: totalCacheHits / totalQueries,
-      slowQueries: allMetrics.filter(m => 
+      slowQueries: allMetrics.filter(m =>
         this.calculatePercentile(m.times, 0.95) > this.options.slowQueryThreshold
       ).length,
       performance: {
@@ -449,7 +449,7 @@ export class DatabaseOptimizer {
 
   calculatePercentile(values, percentile) {
     if (values.length === 0) return 0;
-    
+
     const sorted = [...values].sort((a, b) => a - b);
     const index = Math.ceil(sorted.length * percentile) - 1;
     return sorted[Math.max(0, index)];
@@ -490,7 +490,7 @@ export class DatabaseOptimizer {
   groupQueries(queries) {
     // Group similar queries for batch execution
     const groups = new Map();
-    
+
     queries.forEach(q => {
       const template = this.getQueryTemplate(q.query);
       if (!groups.has(template)) {
@@ -513,7 +513,7 @@ export class DatabaseOptimizer {
   resetMetrics() {
     // Keep only recent metrics to prevent memory bloat
     const cutoffTime = Date.now() - 3600000; // 1 hour
-    
+
     for (const [queryId, metric] of this.queryMetrics.entries()) {
       if (metric.lastExecuted < cutoffTime) {
         this.queryMetrics.delete(queryId);
@@ -523,7 +523,7 @@ export class DatabaseOptimizer {
     // Clear old cache entries
     const cacheEntries = Array.from(this.queryCache.entries());
     const staleCutoff = Date.now() - this.options.queryCacheTTL;
-    
+
     cacheEntries.forEach(([key, value]) => {
       if (value.timestamp < staleCutoff) {
         this.queryCache.delete(key);

@@ -11,7 +11,7 @@ class CustomSequencer extends Sequencer {
     // 1. Unit tests first (utils, then core components)
     // 2. Integration tests last
     // 3. Alphabetical order within each category
-    
+
     const priorities = {
       'utils': 1,
       'orchestrator': 2,
@@ -19,7 +19,7 @@ class CustomSequencer extends Sequencer {
       'mcp': 4,
       'integration': 5
     };
-    
+
     return tests.sort((testA, testB) => {
       // Extract category from path
       const getCategoryPriority = (path) => {
@@ -30,15 +30,15 @@ class CustomSequencer extends Sequencer {
         }
         return 999; // Unknown category goes last
       };
-      
+
       const priorityA = getCategoryPriority(testA.path);
       const priorityB = getCategoryPriority(testB.path);
-      
+
       // First sort by priority
       if (priorityA !== priorityB) {
         return priorityA - priorityB;
       }
-      
+
       // Then sort alphabetically
       return testA.path.localeCompare(testB.path);
     });

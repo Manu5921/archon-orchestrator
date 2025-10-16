@@ -16,12 +16,12 @@ if (globalThis.__GEMINI_BRIDGE) {
       res.setHeader('Content-Type', 'application/json');
       return res.end(JSON.stringify({ ok: true, pid: process.pid, port: PORT }));
     }
-    
+
     if (req.method !== 'POST' || req.url !== '/chat') {
       res.statusCode = 404;
       return res.end('{"error":"not found - use POST /chat"}');
     }
-    
+
     let body = '';
     req.on('data', chunk => body += chunk);
     req.on('end', async () => {
@@ -35,36 +35,36 @@ if (globalThis.__GEMINI_BRIDGE) {
         // Use -p flag for direct prompt (Gemini 0.2.1 syntax)
         console.log(`[gemini-bridge] executing: ${BIN} -p "${prompt.slice(0,100)}..."`);
         const ps = spawn(BIN, ['-p', prompt], { stdio: ['ignore', 'pipe', 'pipe'] });
-        
+
         let out = '';
         let err = '';
-        
+
         ps.stdout.on('data', d => out += d.toString());
         ps.stderr.on('data', d => err += d.toString());
-        
+
         ps.on('exit', (code) => {
-          
+
           if (code === 0 && out.trim()) {
             res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify({ ok: true, text: out.trim(), mode: 'bridge' }));
           } else {
             console.error(`[gemini-bridge] CLI failed: code=${code}, stderr=${err}`);
             res.statusCode = 500;
-            res.end(JSON.stringify({ 
-              ok: false, 
-              code, 
+            res.end(JSON.stringify({
+              ok: false,
+              code,
               error: err.trim() || 'gemini CLI failed',
               stderr: err.trim()
             }));
           }
         });
-        
+
         ps.on('error', (error) => {
           console.error('[gemini-bridge] spawn error:', error.message);
           res.statusCode = 500;
           res.end(JSON.stringify({ ok: false, error: error.message }));
         });
-        
+
       } catch (e) {
         console.error('[gemini-bridge] request error:', e.message);
         res.statusCode = 500;
@@ -102,7 +102,7 @@ if (globalThis.__GEMINI_BRIDGE) {
     console.log('[gemini-bridge] shutting down...');
     server.close(() => process.exit(0));
   });
-  
+
   process.on('SIGTERM', () => {
     console.log('[gemini-bridge] terminating...');
     server.close(() => process.exit(0));
@@ -119,7 +119,7 @@ export function startGeminiBridge() {
       resolve({ port: PORT, url: `http://127.0.0.1:${PORT}` });
       return;
     }
-    
+
     // If we reach here, bridge wasn't started yet
     const server = globalThis.__GEMINI_BRIDGE;
     if (server && server.listening) {

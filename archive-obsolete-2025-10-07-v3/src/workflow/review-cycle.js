@@ -3,7 +3,7 @@ import { logger } from '../utils/logger.js';
 
 /**
  * Revolutionary Review Cycle - Gemini-Claude Collaborative Code Improvement
- * 
+ *
  * This implements the revolutionary workflow where:
  * 1. Gemini provides rapid, creative code review with quality scoring
  * 2. Claude adjusts code based on Gemini feedback with precision
@@ -29,9 +29,9 @@ export class ReviewCycle extends EventEmitter {
    */
   async startReviewCycle(projectId, taskId, initialCode, requirements = {}) {
     const cycleId = `${projectId}_${taskId}_${Date.now()}`;
-    
+
     logger.info(`🔄 Starting Revolutionary Review Cycle: ${cycleId}`);
-    
+
     const reviewCycle = {
       id: cycleId,
       project_id: projectId,
@@ -76,7 +76,7 @@ export class ReviewCycle extends EventEmitter {
       logger.error(`❌ Review cycle failed: ${cycleId}`, error);
       reviewCycle.status = 'failed';
       reviewCycle.error = error.message;
-      
+
       return {
         success: false,
         cycle_id: cycleId,
@@ -107,7 +107,7 @@ export class ReviewCycle extends EventEmitter {
 
       // Phase 1: Gemini Creative Review
       logger.info(`🎨 Gemini reviewing code (iteration ${iterationCount})`);
-      
+
       const geminiReview = await this.geminiAgent.reviewCode(
         reviewCycle.project_id,
         reviewCycle.task_id,
@@ -136,25 +136,25 @@ export class ReviewCycle extends EventEmitter {
       logger.info(`📊 Gemini review - Quality: ${iteration.gemini_review.quality_score}/100, Approved: ${iteration.gemini_review.approved}`);
 
       // Check if quality threshold reached
-      if (iteration.gemini_review.approved || 
+      if (iteration.gemini_review.approved ||
           iteration.gemini_review.quality_score >= reviewCycle.quality_threshold) {
-        
+
         logger.info(`✅ Quality threshold reached! Final score: ${iteration.gemini_review.quality_score}/100`);
-        
+
         iteration.completed_at = new Date();
         reviewCycle.iterations.push(iteration);
         reviewCycle.status = 'approved';
         reviewCycle.final_quality_score = iteration.gemini_review.quality_score;
         reviewCycle.final_code = currentCode;
         reviewCycle.completed_at = new Date();
-        
+
         return this._buildSuccessfulResult(reviewCycle);
       }
 
       // Phase 2: Claude Precise Adjustment
       if (iterationCount < reviewCycle.max_iterations) {
-        logger.info(`🎯 Claude adjusting code based on Gemini feedback`);
-        
+        logger.info('🎯 Claude adjusting code based on Gemini feedback');
+
         const claudeAdjustment = await this.claudeAgent.adjustCodeFromReview(
           reviewCycle.project_id,
           reviewCycle.task_id,
@@ -182,7 +182,7 @@ export class ReviewCycle extends EventEmitter {
         if (claudeAdjustment.success && claudeAdjustment.output) {
           currentCode = claudeAdjustment.output;
           reviewCycle.current_code = currentCode;
-          
+
           logger.info(`🔧 Claude adjustment completed with confidence: ${iteration.claude_adjustment.confidence}%`);
         } else {
           logger.warn(`⚠️ Claude adjustment had issues: ${claudeAdjustment.error || 'Unknown error'}`);
@@ -214,15 +214,15 @@ export class ReviewCycle extends EventEmitter {
       if (iterationCount >= 2) {
         const lastTwoIterations = reviewCycle.iterations.slice(-2);
         const qualityDifference = Math.abs(
-          lastTwoIterations[1].gemini_review.quality_score - 
+          lastTwoIterations[1].gemini_review.quality_score -
           lastTwoIterations[0].gemini_review.quality_score
         );
 
         if (qualityDifference < 2) {
           logger.warn(`⚠️ Quality improvement stagnating (difference: ${qualityDifference})`);
-          
+
           if (iterationCount >= 3) {
-            logger.info(`🛑 Stopping review cycle due to stagnation`);
+            logger.info('🛑 Stopping review cycle due to stagnation');
             break;
           }
         }
@@ -230,8 +230,8 @@ export class ReviewCycle extends EventEmitter {
     }
 
     // Max iterations reached or stagnated
-    const finalQuality = reviewCycle.iterations.length > 0 ? 
-      reviewCycle.iterations[reviewCycle.iterations.length - 1].gemini_review.quality_score : 
+    const finalQuality = reviewCycle.iterations.length > 0 ?
+      reviewCycle.iterations[reviewCycle.iterations.length - 1].gemini_review.quality_score :
       reviewCycle.initial_quality_score;
 
     reviewCycle.status = 'max_iterations_reached';
@@ -249,7 +249,7 @@ export class ReviewCycle extends EventEmitter {
    */
   _buildSuccessfulResult(reviewCycle) {
     this.reviewMetrics.successful_reviews++;
-    
+
     return {
       success: true,
       status: 'approved',
@@ -270,7 +270,7 @@ export class ReviewCycle extends EventEmitter {
    */
   _buildFinalResult(reviewCycle) {
     const wasSuccessful = reviewCycle.final_quality_score >= reviewCycle.quality_threshold;
-    
+
     if (wasSuccessful) {
       this.reviewMetrics.successful_reviews++;
     }
@@ -310,13 +310,13 @@ export class ReviewCycle extends EventEmitter {
       avg_iteration_time_ms: Math.round(avgIterationTime),
       major_issues_resolved: majorIssuesResolved,
       gemini_avg_confidence: Math.round(
-        reviewCycle.iterations.reduce((sum, iter) => sum + (iter.gemini_review?.confidence || 0), 0) / 
+        reviewCycle.iterations.reduce((sum, iter) => sum + (iter.gemini_review?.confidence || 0), 0) /
         reviewCycle.iterations.length
       ),
       claude_avg_confidence: Math.round(
         reviewCycle.iterations
           .filter(iter => iter.claude_adjustment)
-          .reduce((sum, iter) => sum + (iter.claude_adjustment.confidence || 0), 0) / 
+          .reduce((sum, iter) => sum + (iter.claude_adjustment.confidence || 0), 0) /
         reviewCycle.iterations.filter(iter => iter.claude_adjustment).length
       ),
       focus_areas_addressed: reviewCycle.focus_areas.length,
@@ -401,7 +401,7 @@ export class ReviewCycle extends EventEmitter {
    */
   _analyzeFocusAreaPerformance(reviewCycle) {
     const analysis = {};
-    
+
     for (const area of reviewCycle.focus_areas) {
       analysis[area] = {
         initial_score: this._extractAreaScore(reviewCycle.iterations[0]?.gemini_review, area) || 0,
@@ -410,10 +410,10 @@ export class ReviewCycle extends EventEmitter {
         ) || 0,
         improvement: 0
       };
-      
+
       analysis[area].improvement = analysis[area].final_score - analysis[area].initial_score;
     }
-    
+
     return analysis;
   }
 
@@ -452,8 +452,8 @@ export class ReviewCycle extends EventEmitter {
       status: cycle.status,
       current_iteration: cycle.iterations.length,
       max_iterations: cycle.max_iterations,
-      current_quality: cycle.iterations.length > 0 ? 
-        cycle.iterations[cycle.iterations.length - 1].gemini_review?.quality_score : 
+      current_quality: cycle.iterations.length > 0 ?
+        cycle.iterations[cycle.iterations.length - 1].gemini_review?.quality_score :
         cycle.initial_quality_score,
       quality_threshold: cycle.quality_threshold,
       started_at: cycle.started_at,
@@ -467,7 +467,7 @@ export class ReviewCycle extends EventEmitter {
   getReviewMetrics() {
     return {
       ...this.reviewMetrics,
-      success_rate: this.reviewMetrics.total_cycles > 0 ? 
+      success_rate: this.reviewMetrics.total_cycles > 0 ?
         (this.reviewMetrics.successful_reviews / this.reviewMetrics.total_cycles) * 100 : 0,
       active_reviews: this.activeReviews.size,
       last_updated: new Date().toISOString()
@@ -513,7 +513,7 @@ export class ReviewCycle extends EventEmitter {
       for (const [cycleId] of toRemove) {
         this.activeReviews.delete(cycleId);
       }
-      
+
       logger.debug(`🧹 Cleaned up ${toRemove.length} completed review cycles`);
     }
   }
@@ -523,7 +523,7 @@ export class ReviewCycle extends EventEmitter {
    */
   async shutdown() {
     logger.info('🛑 Shutting down Review Cycle engine');
-    
+
     // Cancel all active reviews
     const activeCycles = Array.from(this.activeReviews.entries())
       .filter(([_, cycle]) => cycle.status === 'in_progress');
@@ -534,7 +534,7 @@ export class ReviewCycle extends EventEmitter {
 
     this.activeReviews.clear();
     this.removeAllListeners();
-    
+
     logger.info('✅ Review Cycle engine shutdown complete');
   }
 }
@@ -577,7 +577,7 @@ export class EnhancedGeminiAgent {
 
   _buildEnhancedReviewPrompt(code, requirements, context) {
     const focusAreas = (context.focus_areas || ['code_quality']).join(', ');
-    const previousContext = context.previous_iterations ? 
+    const previousContext = context.previous_iterations ?
       `\nPREVIOUS ITERATIONS CONTEXT:\n${JSON.stringify(context.previous_iterations, null, 2)}` : '';
 
     return `
@@ -611,7 +611,7 @@ Emphasize creativity, speed, and practical suggestions for improvement.
 
   _parseEnhancedReviewResult(result, context) {
     const output = result.exploration || result.output || result;
-    
+
     // Extract structured data from review output
     const qualityMatch = output.toString().match(/QUALITY SCORE.*?(\d+)/i);
     const approvedMatch = output.toString().match(/APPROVED.*?(true|false)/i);
@@ -632,68 +632,68 @@ Emphasize creativity, speed, and practical suggestions for improvement.
 
   _estimateQualityScore(output) {
     const text = output.toString().toLowerCase();
-    
+
     // Simple heuristic quality scoring
     let score = 50;
-    
+
     if (text.includes('excellent') || text.includes('great')) score += 20;
     if (text.includes('good') || text.includes('well')) score += 10;
     if (text.includes('issues') || text.includes('problems')) score -= 15;
     if (text.includes('critical') || text.includes('serious')) score -= 25;
     if (text.includes('minor') && text.includes('issues')) score -= 5;
-    
+
     return Math.max(0, Math.min(100, score));
   }
 
   _extractFeedback(output) {
     const lines = output.toString().split('\n');
     const feedback = [];
-    
+
     for (const line of lines) {
       if (line.match(/^\d+\.|^-\s|issue|problem|concern/i)) {
         feedback.push(line.trim());
       }
     }
-    
+
     return feedback.slice(0, 8); // Limit to 8 feedback items
   }
 
   _extractSuggestions(output) {
     const lines = output.toString().split('\n');
     const suggestions = [];
-    
+
     for (const line of lines) {
       if (line.match(/suggest|recommend|consider|should/i)) {
         suggestions.push(line.trim());
       }
     }
-    
+
     return suggestions.slice(0, 5); // Limit to 5 suggestions
   }
 
   _extractStrengths(output) {
     const lines = output.toString().split('\n');
     const strengths = [];
-    
+
     for (const line of lines) {
       if (line.match(/good|excellent|well|strength|positive/i)) {
         strengths.push(line.trim());
       }
     }
-    
+
     return strengths.slice(0, 3); // Limit to 3 strengths
   }
 
   _extractFocusAnalysis(output, focusAreas) {
     const analysis = {};
     const text = output.toString().toLowerCase();
-    
+
     for (const area of focusAreas) {
       const areaLower = area.toLowerCase().replace('_', ' ');
-      
+
       // Simple scoring based on keywords
       let score = 70; // Default score
-      
+
       if (text.includes(areaLower)) {
         if (text.includes(`${areaLower} good`) || text.includes(`${areaLower} excellent`)) {
           score = 85;
@@ -701,10 +701,10 @@ Emphasize creativity, speed, and practical suggestions for improvement.
           score = 45;
         }
       }
-      
+
       analysis[area] = { score, analyzed: text.includes(areaLower) };
     }
-    
+
     return analysis;
   }
 
@@ -747,8 +747,8 @@ export class EnhancedClaudeAgent {
         `${projectId}_${taskId}_adjustment`,
         'improve',
         [adjustmentPrompt],
-        { 
-          mode: 'code_improvement', 
+        {
+          mode: 'code_improvement',
           focus: 'review_feedback',
           context: adjustmentContext.iteration_context
         }
@@ -808,14 +808,14 @@ Deliver production-ready, well-documented code that addresses all feedback point
 
   _parseEnhancedAdjustmentResult(result, context) {
     const output = result.output || '';
-    
+
     // Extract improved code (everything after "IMPROVED CODE:")
     const improvedCodeMatch = output.match(/IMPROVED CODE:?\s*([\s\S]*?)(?:\n\n[A-Z]|\nCHANGES MADE|$)/i);
     const changesMatch = output.match(/CHANGES MADE:?\s*([\s\S]*?)(?:\n\n[A-Z]|\nREASONING|$)/i);
     const reasoningMatch = output.match(/REASONING:?\s*([\s\S]*?)(?:\n\n[A-Z]|\nCONFIDENCE|$)/i);
     const confidenceMatch = output.match(/CONFIDENCE.*?(\d+)/i);
 
-    const changesList = changesMatch ? 
+    const changesList = changesMatch ?
       changesMatch[1].split('\n').filter(line => line.trim()).slice(0, 10) : [];
 
     return {

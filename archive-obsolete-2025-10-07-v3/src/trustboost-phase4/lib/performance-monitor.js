@@ -1,7 +1,7 @@
 /**
  * AGENT 6: Performance & Optimization Engineer
  * TrustBoost Phase 4 - Performance Monitoring Infrastructure
- * 
+ *
  * Core Web Vitals monitoring avec patterns Context7
  * - Next.js useReportWebVitals integration
  * - Real-time metrics collection
@@ -29,7 +29,7 @@ export class PerformanceMonitor {
       reportingEndpoint: options.endpoint || '/api/performance-metrics',
       ...options
     };
-    
+
     this.metrics = new Map();
     this.observers = new Map();
     this.startTime = performance.now();
@@ -51,7 +51,7 @@ export class PerformanceMonitor {
     const lcpObserver = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
       const lastEntry = entries[entries.length - 1];
-      
+
       const metric = {
         name: 'LCP',
         value: lastEntry.renderTime || lastEntry.loadTime,
@@ -59,7 +59,7 @@ export class PerformanceMonitor {
         id: this.generateMetricId(),
         entries: [lastEntry]
       };
-      
+
       webVitalsCallback(metric);
     });
 
@@ -67,7 +67,7 @@ export class PerformanceMonitor {
     const fcpObserver = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
       const fcpEntry = entries.find(entry => entry.name === 'first-contentful-paint');
-      
+
       if (fcpEntry) {
         const metric = {
           name: 'FCP',
@@ -76,7 +76,7 @@ export class PerformanceMonitor {
           id: this.generateMetricId(),
           entries: [fcpEntry]
         };
-        
+
         webVitalsCallback(metric);
       }
     });
@@ -86,14 +86,14 @@ export class PerformanceMonitor {
     let clsEntries = [];
     const clsObserver = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
-      
+
       for (const entry of entries) {
         if (!entry.hadRecentInput) {
           clsValue += entry.value;
           clsEntries.push(entry);
         }
       }
-      
+
       const metric = {
         name: 'CLS',
         value: clsValue,
@@ -101,7 +101,7 @@ export class PerformanceMonitor {
         id: this.generateMetricId(),
         entries: clsEntries
       };
-      
+
       webVitalsCallback(metric);
     });
 
@@ -109,7 +109,7 @@ export class PerformanceMonitor {
     const fidObserver = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
       const firstInput = entries[0];
-      
+
       if (firstInput) {
         const metric = {
           name: 'FID',
@@ -118,7 +118,7 @@ export class PerformanceMonitor {
           id: this.generateMetricId(),
           entries: [firstInput]
         };
-        
+
         webVitalsCallback(metric);
       }
     });
@@ -161,7 +161,7 @@ export class PerformanceMonitor {
    */
   handleWebVital(metric) {
     const { name, value, id } = metric;
-    
+
     // Store metric
     this.metrics.set(name, {
       ...metric,
@@ -192,9 +192,9 @@ export class PerformanceMonitor {
    */
   getRating(metricName, value) {
     const threshold = this.options.metricsThreshold[metricName];
-    
+
     if (!threshold) return 'unknown';
-    
+
     // Ratings based on Core Web Vitals standards
     const ratings = {
       FCP: { good: 1800, needsImprovement: 3000 },
@@ -221,7 +221,7 @@ export class PerformanceMonitor {
     const navigationEntry = performance.getEntriesByType('navigation')[0];
     if (navigationEntry) {
       const ttfb = navigationEntry.responseStart - navigationEntry.requestStart;
-      
+
       const metric = {
         name: 'TTFB',
         value: ttfb,
@@ -229,7 +229,7 @@ export class PerformanceMonitor {
         id: this.generateMetricId(),
         entries: [navigationEntry]
       };
-      
+
       this.handleWebVital(metric);
     }
   }
@@ -271,7 +271,7 @@ export class PerformanceMonitor {
    */
   checkPerformanceThresholds(metric) {
     const rating = this.getRating(metric.name, metric.value);
-    
+
     if (rating === 'poor') {
       console.warn(`Performance Alert: ${metric.name} is ${rating}`, {
         value: Math.round(metric.value),
@@ -398,12 +398,12 @@ export class BundleAnalyzer {
     performanceEntries.forEach(entry => {
       if (entry.transferSize) {
         totalSize += entry.transferSize;
-        
+
         const resourceType = this.getResourceType(entry.name);
         if (!resourceMap.has(resourceType)) {
           resourceMap.set(resourceType, { count: 0, size: 0 });
         }
-        
+
         const current = resourceMap.get(resourceType);
         resourceMap.set(resourceType, {
           count: current.count + 1,

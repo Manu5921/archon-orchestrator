@@ -35,15 +35,15 @@ export default async function handler(req, res) {
     console.log('✅ Webhook traité avec succès:', result.processed);
 
     // Réponse rapide à Stripe (important pour éviter les timeouts)
-    res.status(200).json({ 
-      received: true, 
+    res.status(200).json({
+      received: true,
       processed: result.processed,
       timestamp: new Date().toISOString()
     });
 
   } catch (error) {
     console.error('❌ Erreur webhook Stripe:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Erreur serveur',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
@@ -56,6 +56,6 @@ export default async function handler(req, res) {
  */
 export const config = {
   api: {
-    bodyParser: false,
-  },
+    bodyParser: false
+  }
 };

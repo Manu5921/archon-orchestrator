@@ -1,8 +1,8 @@
 /**
  * AGENT 6: Performance & Optimization Engineer
  * TrustBoost Phase 4 - Bundle Size Optimizer
- * 
- * Optimisation bundle size pour target <20KB (gzipped) 
+ *
+ * Optimisation bundle size pour target <20KB (gzipped)
  * - Bundle analysis et tree shaking
  * - Code splitting automatique
  * - Import optimization
@@ -26,21 +26,21 @@ export class BundleOptimizer {
       // Size targets
       maxBundleSize: 20 * 1024, // 20KB target (gzipped)
       maxUncompressed: 60 * 1024, // 60KB uncompressed
-      
+
       // Analysis options
       analyzeImports: true,
       detectUnusedCode: true,
       trackDependencies: true,
-      
+
       // Optimization strategies
       enableTreeShaking: true,
       enableCodeSplitting: true,
       enableCompression: true,
-      
+
       // File patterns
       sourceFiles: ['**/*.js', '**/*.ts', '**/*.jsx', '**/*.tsx'],
       excludePatterns: ['node_modules/**', '**/*.test.*', '**/*.spec.*'],
-      
+
       ...options
     };
 
@@ -56,11 +56,11 @@ export class BundleOptimizer {
     try {
       const bundleContent = await fs.readFile(bundlePath, 'utf8');
       const stats = await fs.stat(bundlePath);
-      
+
       // Compression analysis
       const gzipped = await gzip(bundleContent);
       const brotlied = await brotli(bundleContent);
-      
+
       const analysis = {
         file: bundlePath,
         sizes: {
@@ -159,7 +159,7 @@ export class BundleOptimizer {
     const functionRegex = /(?:function\s+(\w+)|const\s+(\w+)\s*=\s*(?:\([^)]*\)|[^=]+)\s*=>)/g;
     let match;
     const declaredFunctions = new Set();
-    
+
     while ((match = functionRegex.exec(content)) !== null) {
       const funcName = match[1] || match[2];
       if (funcName) {
@@ -170,7 +170,7 @@ export class BundleOptimizer {
     // Find variable declarations
     const variableRegex = /(?:const|let|var)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
     const declaredVariables = new Set();
-    
+
     while ((match = variableRegex.exec(content)) !== null) {
       declaredVariables.add(match[1]);
     }
@@ -179,7 +179,7 @@ export class BundleOptimizer {
     for (const funcName of declaredFunctions) {
       const usageRegex = new RegExp(`\\b${funcName}\\s*\\(`, 'g');
       const usageMatches = content.match(usageRegex) || [];
-      
+
       if (usageMatches.length <= 1) { // Only declaration
         unused.functions.push(funcName);
       }
@@ -188,7 +188,7 @@ export class BundleOptimizer {
     for (const varName of declaredVariables) {
       const usageRegex = new RegExp(`\\b${varName}\\b`, 'g');
       const usageMatches = content.match(usageRegex) || [];
-      
+
       if (usageMatches.length <= 1) { // Only declaration
         unused.variables.push(varName);
       }
@@ -210,10 +210,10 @@ export class BundleOptimizer {
     // Extract external dependencies
     const importRegex = /(?:import\s+[^'"]from\s+['"]([^'"]+)['"]|require\(['"]([^'"]+)['"]\))/g;
     let match;
-    
+
     while ((match = importRegex.exec(content)) !== null) {
       const moduleName = match[1] || match[2];
-      
+
       if (!moduleName.startsWith('./') && !moduleName.startsWith('../')) {
         const baseModule = moduleName.split('/')[0];
         const current = dependencies.external.get(baseModule) || 0;
@@ -317,39 +317,39 @@ export class BundleOptimizer {
    */
   async optimizeBundle(bundlePath, outputPath) {
     console.log(`Optimizing bundle: ${bundlePath}`);
-    
+
     const analysis = await this.analyzeBundleSize(bundlePath);
     const recommendations = this.generateOptimizationRecommendations(analysis);
-    
+
     let content = await fs.readFile(bundlePath, 'utf8');
     const optimizations = [];
 
     // Apply optimizations based on recommendations
     for (const rec of recommendations) {
       switch (rec.type) {
-        case 'dead-code':
-          content = await this.removeDeadCode(content);
-          optimizations.push('Dead code removal');
-          break;
-          
-        case 'imports':
-          content = await this.optimizeImports(content);
-          optimizations.push('Import optimization');
-          break;
-          
-        case 'compression':
-          content = await this.optimizeForCompression(content);
-          optimizations.push('Compression optimization');
-          break;
+      case 'dead-code':
+        content = await this.removeDeadCode(content);
+        optimizations.push('Dead code removal');
+        break;
+
+      case 'imports':
+        content = await this.optimizeImports(content);
+        optimizations.push('Import optimization');
+        break;
+
+      case 'compression':
+        content = await this.optimizeForCompression(content);
+        optimizations.push('Compression optimization');
+        break;
       }
     }
 
     // Write optimized bundle
     await fs.writeFile(outputPath, content, 'utf8');
-    
+
     // Analyze optimized bundle
     const optimizedAnalysis = await this.analyzeBundleSize(outputPath);
-    
+
     return {
       original: analysis,
       optimized: optimizedAnalysis,
@@ -392,25 +392,25 @@ export class BundleOptimizer {
     // Convert namespace imports to specific imports where possible
     const namespaceRegex = /import\s+\*\s+as\s+(\w+)\s+from\s+['"]([^'"]+)['"]/g;
     let match;
-    
+
     while ((match = namespaceRegex.exec(content)) !== null) {
       const namespace = match[1];
       const module = match[2];
-      
+
       // Find usage of namespace
       const usageRegex = new RegExp(`${namespace}\\.(\\w+)`, 'g');
       const usages = new Set();
       let usageMatch;
-      
+
       while ((usageMatch = usageRegex.exec(content)) !== null) {
         usages.add(usageMatch[1]);
       }
-      
+
       if (usages.size > 0 && usages.size <= 5) {
         // Convert to specific imports
         const specificImport = `import { ${Array.from(usages).join(', ')} } from '${module}'`;
         optimized = optimized.replace(match[0], specificImport);
-        
+
         // Replace usage
         for (const usage of usages) {
           const usagePattern = new RegExp(`${namespace}\\.${usage}`, 'g');
@@ -430,16 +430,16 @@ export class BundleOptimizer {
 
     // Remove extra whitespace
     optimized = optimized.replace(/\s+/g, ' ');
-    
+
     // Remove comments
     optimized = optimized.replace(/\/\*[^*]*\*+(?:[^/*][^*]*\*+)*\//g, '');
     optimized = optimized.replace(/\/\/.*$/gm, '');
-    
+
     // Optimize common patterns
     optimized = optimized.replace(/;\s*}/g, '}');
     optimized = optimized.replace(/{\s*/g, '{');
     optimized = optimized.replace(/\s*}/g, '}');
-    
+
     return optimized;
   }
 
@@ -471,7 +471,7 @@ export class BundleOptimizer {
 
       report.summary.totalSize += analysis.sizes.uncompressed;
       report.summary.totalGzipped += analysis.sizes.gzipped;
-      
+
       if (analysis.isOptimized) {
         report.summary.bundlesOptimized++;
       } else {
@@ -480,7 +480,7 @@ export class BundleOptimizer {
     }
 
     if (report.bundles.length > 0) {
-      report.summary.averageCompressionRatio = 
+      report.summary.averageCompressionRatio =
         report.bundles.reduce((sum, b) => sum + b.compressionRatio, 0) / report.bundles.length;
     }
 
@@ -563,7 +563,7 @@ export class BundleOptimizer {
    */
   getBundleMetrics() {
     const analyses = Array.from(this.bundleAnalysis.values());
-    
+
     if (analyses.length === 0) {
       return { status: 'no-data' };
     }
@@ -616,7 +616,7 @@ export class WidgetBundleOptimizer extends BundleOptimizer {
 
     // Generate widget-specific recommendations
     const recommendations = this.generateWidgetRecommendations(analyses);
-    
+
     console.log('Widget optimization recommendations:', recommendations);
 
     return {
@@ -631,9 +631,9 @@ export class WidgetBundleOptimizer extends BundleOptimizer {
    */
   generateWidgetRecommendations(analyses) {
     const recommendations = [];
-    
+
     const totalSize = analyses.reduce((sum, a) => sum + a.sizes.gzipped, 0);
-    
+
     if (totalSize > this.options.maxBundleSize) {
       recommendations.push({
         type: 'widget-size',

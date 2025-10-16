@@ -15,30 +15,30 @@ const ALIASES = {
   'read': 'get',
   'fetch': 'get',
   'retrieve': 'get',
-  
+
   // PROJECT variations (NEW - ChatGPT suggestion)
   'ensure_project': 'ensure_project',
   'project.ensure': 'ensure_project',
   'manage_project': 'ensure_project',
   'manageProject': 'ensure_project',  // OLD workflow calls
-  
+
   // SELF TEST variations (NEW)
   'self_test': 'self_test',
   'ping': 'self_test',
   'health_check': 'self_test',
-  
+
   // EXPLORE variations
   'explore': 'explore_project',
   'explore_project': 'explore_project',
   'project.explore': 'explore_project',
   'project_explore': 'explore_project',
-  
-  // RAG variations  
+
+  // RAG variations
   'rag_query': 'perform_rag_query',
   'perform_rag_query': 'perform_rag_query',
   'rag': 'perform_rag_query',
   'query': 'perform_rag_query',
-  
+
   // TASK variations
   'manage_task': 'manageTask',
   'manageTask': 'manageTask',
@@ -48,24 +48,24 @@ const ALIASES = {
   'create_task': 'manageTask',
   'update_task': 'manageTask',
   'close_task': 'manageTask',
-  
+
   // SEARCH CODE variations (NEW - ChatGPT)
   'search_code_examples': 'search_code_examples',
   'search.examples.code': 'search_code_examples',
   'code.search': 'search_code_examples',
-  
+
   // CAPABILITIES
   'capabilities': 'capabilities',
   'list_tools': 'capabilities',
   'get_capabilities': 'capabilities',
-  
-  // AGENTS CAPABILITIES  
+
+  // AGENTS CAPABILITIES
   'agents.capabilities': 'agents.capabilities',
   'agents_capabilities': 'agents.capabilities',
   'get_agents': 'agents.capabilities'
 };
 
-const L = log("archon.execute");
+const L = log('archon.execute');
 
 /**
  * Normalise les arguments pour tous les tools (ChatGPT strategy)
@@ -77,7 +77,7 @@ function normalizeArgs(action, args) {
   // Project ID aliases
   a.project_id = a.project_id || a.projectId || a.projectID || a.pid;
 
-  // Query aliases  
+  // Query aliases
   a.query = a.query || a.q || a.search || a.text;
 
   // top_k aliases (for RAG & similar)
@@ -108,11 +108,11 @@ function normalizeArgs(action, args) {
  */
 export async function execute(taskId, action, args) {
   const cid = getCorrelationId(args);
-  
-  L("enter", { 
-    cid, 
-    taskId, 
-    action, 
+
+  L('enter', {
+    cid,
+    taskId,
+    action,
     argsKeys: Array.isArray(args) ? args.map(a => Object.keys(a || {})) : Object.keys(args || {})
   });
 
@@ -121,16 +121,16 @@ export async function execute(taskId, action, args) {
   const toolFunction = tools[toolName];
 
   if (!toolFunction) {
-    L("unknown_action", { cid, action, toolName, availableTools: Object.keys(tools) });
+    L('unknown_action', { cid, action, toolName, availableTools: Object.keys(tools) });
     return {
       ok: false,
-      error: "unknown_action",
+      error: 'unknown_action',
       actionRequested: action,
       recognizedAs: toolName,
       availableTools: Object.keys(tools),
       availableAliases: Object.keys(ALIASES),
       retry: false,
-      suggestion: "capability_discovery_or_skip",
+      suggestion: 'capability_discovery_or_skip',
       timestamp: new Date().toISOString(),
       cid
     };
@@ -139,7 +139,7 @@ export async function execute(taskId, action, args) {
   try {
     // Normalisation des args
     let rawInput;
-    
+
     if (Array.isArray(args) && args.length > 0) {
       rawInput = args[0] || {};
     } else if (args && typeof args === 'object') {
@@ -171,10 +171,10 @@ export async function execute(taskId, action, args) {
       }
     }
 
-    L("tool_call", { 
-      cid, 
-      toolName, 
-      action, 
+    L('tool_call', {
+      cid,
+      toolName,
+      action,
       inputKeys: Object.keys(input),
       normalizedKeys: Object.keys(input).filter(k => !Object.keys(rawInput).includes(k))
     });
@@ -182,12 +182,12 @@ export async function execute(taskId, action, args) {
     // Appel du tool
     const result = await toolFunction(input);
 
-    L("tool_result", { cid, toolName, ok: result?.ok ?? true, hasError: !!result?.error });
+    L('tool_result', { cid, toolName, ok: result?.ok ?? true, hasError: !!result?.error });
 
     return result;
 
   } catch (error) {
-    L("tool_error", { cid, toolName, action, error: error.message });
+    L('tool_error', { cid, toolName, action, error: error.message });
 
     return {
       ok: false,
@@ -206,13 +206,13 @@ export async function execute(taskId, action, args) {
  */
 export function listTools() {
   return {
-    version: "archon-mcp-contract/0.1.0",
+    version: 'archon-mcp-contract/0.1.0',
     tools: [
-      { name: "get", aliases: ["read", "fetch", "retrieve"] },
-      { name: "explore_project", aliases: ["explore", "project.explore", "project_explore"] },
-      { name: "perform_rag_query", aliases: ["rag_query", "rag", "query"] },
-      { name: "manageTask", aliases: ["manage_task", "task.create", "task.update", "task.close"] },
-      { name: "capabilities", aliases: ["list_tools", "get_capabilities"] }
+      { name: 'get', aliases: ['read', 'fetch', 'retrieve'] },
+      { name: 'explore_project', aliases: ['explore', 'project.explore', 'project_explore'] },
+      { name: 'perform_rag_query', aliases: ['rag_query', 'rag', 'query'] },
+      { name: 'manageTask', aliases: ['manage_task', 'task.create', 'task.update', 'task.close'] },
+      { name: 'capabilities', aliases: ['list_tools', 'get_capabilities'] }
     ],
     aliases: ALIASES
   };
@@ -224,29 +224,29 @@ export function listTools() {
  */
 function shouldRetryError(error) {
   const message = String(error.message || error);
-  
+
   // 5xx server errors → retry
   if (message.includes('HTTP 5')) return true;
-  
+
   // Network/connection errors → retry
-  if (message.includes('network') || 
-      message.includes('ECONN') || 
+  if (message.includes('network') ||
+      message.includes('ECONN') ||
       message.includes('ETIMEDOUT') ||
       message.includes('timeout') ||
       message.includes('socket')) return true;
-  
+
   // 4xx client errors → NO retry
   if (message.includes('HTTP 4')) return false;
-  
+
   // Validation errors → NO retry
   if (message.includes('Validation error') ||
       message.includes('validation_error') ||
       message.includes('Invalid input')) return false;
-  
-  // Tool errors → NO retry  
+
+  // Tool errors → NO retry
   if (message.includes('tool_unavailable') ||
       message.includes('unknown_action')) return false;
-  
+
   // Default: NO retry (ChatGPT strict policy)
   return false;
 }
@@ -258,7 +258,7 @@ export async function healthCheck() {
   try {
     // Test basic tool access
     const capResult = await tools.capabilities();
-    
+
     if (capResult.ok) {
       return {
         healthy: true,

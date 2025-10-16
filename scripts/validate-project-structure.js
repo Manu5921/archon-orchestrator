@@ -14,7 +14,6 @@
  */
 
 import { existsSync } from 'fs';
-import { join } from 'path';
 
 const REQUIRED_FILES = [
   // Spec-Kit Commands (Core - V5.2.1)

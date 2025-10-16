@@ -5,9 +5,9 @@ import { logger } from './src/utils/logger.js';
 
 async function configureRealAgents() {
   logger.info('🔧 Configuring Real Agents for Orchestra...\n');
-  
+
   const checks = [];
-  
+
   // Check Gemini CLI
   logger.info('1. Checking Gemini CLI...');
   try {
@@ -24,7 +24,7 @@ async function configureRealAgents() {
     logger.warn('⚠️ Gemini check failed:', error.message);
     checks.push({ agent: 'gemini', status: 'error', error: error.message });
   }
-  
+
   // Check Claude CLI
   logger.info('\n2. Checking Claude CLI...');
   try {
@@ -41,7 +41,7 @@ async function configureRealAgents() {
     logger.warn('⚠️ Claude check failed:', error.message);
     checks.push({ agent: 'claude', status: 'error', error: error.message });
   }
-  
+
   // Check Archon connection
   logger.info('\n3. Checking Archon connection...');
   try {
@@ -59,63 +59,63 @@ async function configureRealAgents() {
     logger.warn('⚠️ Archon check failed:', error.message);
     checks.push({ agent: 'archon', status: 'error', error: error.message });
   }
-  
+
   // Check API Keys
   logger.info('\n4. Checking API Keys...');
   const geminiKey = process.env.GEMINI_API_KEY;
   const claudeKey = process.env.ANTHROPIC_API_KEY;
-  
+
   if (geminiKey) {
     logger.info('✅ GEMINI_API_KEY configured');
   } else {
     logger.warn('⚠️ GEMINI_API_KEY not set');
   }
-  
+
   if (claudeKey) {
     logger.info('✅ ANTHROPIC_API_KEY configured');
   } else {
     logger.warn('⚠️ ANTHROPIC_API_KEY not set');
   }
-  
+
   // Summary
   logger.info('\n' + '='.repeat(50));
   logger.info('📊 AGENT CONFIGURATION SUMMARY');
   logger.info('='.repeat(50));
-  
+
   const available = checks.filter(c => c.status === 'available');
   const missing = checks.filter(c => c.status === 'missing');
   const errors = checks.filter(c => c.status === 'error' || c.status === 'unreachable');
-  
+
   logger.info(`✅ Available agents: ${available.length}/3`);
   available.forEach(c => logger.info(`   - ${c.agent}: Ready`));
-  
+
   if (missing.length > 0) {
     logger.info(`⚠️ Missing agents: ${missing.length}`);
     missing.forEach(c => logger.info(`   - ${c.agent}: ${c.error}`));
   }
-  
+
   if (errors.length > 0) {
     logger.info(`❌ Error agents: ${errors.length}`);
     errors.forEach(c => logger.info(`   - ${c.agent}: ${c.error}`));
   }
-  
+
   // Recommendations
   logger.info('\n📋 NEXT STEPS:');
-  
+
   if (available.length === 3 && geminiKey && claudeKey) {
     logger.info('🎉 ALL AGENTS READY!');
     logger.info('You can now start Orchestra without mock mode:');
     logger.info('   node start-for-archon.js');
   } else {
     logger.info('🔧 Configuration needed:');
-    
+
     if (!geminiKey) {
       logger.info('   1. Set GEMINI_API_KEY in .env file');
     }
     if (!claudeKey) {
       logger.info('   2. Set ANTHROPIC_API_KEY in .env file');
     }
-    
+
     missing.forEach(c => {
       if (c.agent === 'gemini') {
         logger.info('   3. Install Gemini CLI: npm install -g @google-ai/gemini-cli');
@@ -124,7 +124,7 @@ async function configureRealAgents() {
         logger.info('   4. Install Claude CLI from claude.ai/code');
       }
     });
-    
+
     logger.info('\n   Or continue with mock mode:');
     logger.info('   USE_MOCK_AGENTS=true node start-for-archon.js');
   }
@@ -136,18 +136,18 @@ async function checkCommand(command, ...args) {
       timeout: 5000,
       shell: true
     });
-    
+
     let output = '';
     let error = '';
-    
+
     process.stdout.on('data', (data) => {
       output += data.toString();
     });
-    
+
     process.stderr.on('data', (data) => {
       error += data.toString();
     });
-    
+
     process.on('close', (code) => {
       resolve({
         success: code === 0,
@@ -155,7 +155,7 @@ async function checkCommand(command, ...args) {
         code
       });
     });
-    
+
     process.on('error', (err) => {
       resolve({
         success: false,
@@ -163,7 +163,7 @@ async function checkCommand(command, ...args) {
         code: -1
       });
     });
-    
+
     setTimeout(() => {
       process.kill();
       resolve({

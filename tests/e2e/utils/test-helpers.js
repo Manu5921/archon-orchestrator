@@ -24,7 +24,7 @@ export class WebVitalsHelper {
         setTimeout(() => {
           resolve(window.webVitalsData || {
             lcp: null,
-            fid: null, 
+            fid: null,
             cls: null
           });
         }, 3000);
@@ -37,11 +37,11 @@ export class WebVitalsHelper {
     if (webVitals.lcp !== null) {
       expect(webVitals.lcp).toBeLessThan(2500); // LCP < 2.5s
     }
-    
+
     if (webVitals.fid !== null) {
       expect(webVitals.fid).toBeLessThan(100); // FID < 100ms
     }
-    
+
     if (webVitals.cls !== null) {
       expect(webVitals.cls).toBeLessThan(0.1); // CLS < 0.1
     }
@@ -56,20 +56,20 @@ export class WebVitalsHelper {
     return await this.page.evaluate(() => {
       const navigation = performance.getEntriesByType('navigation')[0];
       const paint = performance.getEntriesByType('paint');
-      
+
       return {
         // Time to First Byte
         ttfb: navigation.responseStart - navigation.requestStart,
-        
+
         // First Contentful Paint
         fcp: paint.find(entry => entry.name === 'first-contentful-paint')?.startTime || null,
-        
+
         // DOM Content Loaded
         domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
-        
+
         // Load Complete
         loadComplete: navigation.loadEventEnd - navigation.loadEventStart,
-        
+
         // Resource Count
         resourceCount: performance.getEntriesByType('resource').length
       };
@@ -124,7 +124,7 @@ export class SecurityTestHelper {
     for (const payload of payloads) {
       await this.page.fill(inputSelector, payload);
       await this.page.keyboard.press('Enter');
-      
+
       // Vérifier qu'aucune alerte JavaScript n'est déclenchée
       const alertHandled = await this.page.evaluate(() => {
         let alertTriggered = false;
@@ -133,7 +133,7 @@ export class SecurityTestHelper {
         setTimeout(() => { window.alert = originalAlert; }, 100);
         return alertTriggered;
       });
-      
+
       expect(alertHandled).toBeFalsy();
       console.log(`✅ XSS payload blocked: ${payload.substring(0, 30)}...`);
     }
@@ -144,7 +144,7 @@ export class SecurityTestHelper {
    */
   async validateCSP() {
     const cspViolations = [];
-    
+
     this.page.on('console', msg => {
       if (msg.text().includes('Content Security Policy')) {
         cspViolations.push(msg.text());
@@ -153,7 +153,7 @@ export class SecurityTestHelper {
 
     // Attendre les potentielles violations CSP
     await this.page.waitForTimeout(2000);
-    
+
     return cspViolations;
   }
 }
@@ -170,11 +170,11 @@ export class WidgetTestHelper {
    * Attend le chargement complet du widget TrustBoost
    */
   async waitForWidgetLoad(timeout = 10000) {
-    await this.page.waitForSelector('[data-testid="trustboost-widget"]', { 
+    await this.page.waitForSelector('[data-testid="trustboost-widget"]', {
       timeout,
-      state: 'visible' 
+      state: 'visible'
     });
-    
+
     // Attendre que le widget soit complètement initialisé
     await this.page.waitForFunction(() => {
       const widget = document.querySelector('[data-testid="trustboost-widget"]');
@@ -188,14 +188,14 @@ export class WidgetTestHelper {
   async testWidgetInteraction() {
     // Clic sur le widget
     await this.page.click('[data-testid="trustboost-widget"]');
-    
+
     // Vérifier l'ouverture du panel
     await expect(this.page.locator('[data-testid="widget-panel"]')).toBeVisible();
-    
+
     // Test des éléments interactifs
     const interactiveElements = await this.page.locator('[data-testid^="widget-"] button, [data-testid^="widget-"] input').count();
     expect(interactiveElements).toBeGreaterThan(0);
-    
+
     return interactiveElements;
   }
 
@@ -210,21 +210,21 @@ export class WidgetTestHelper {
     ];
 
     const results = {};
-    
+
     for (const viewport of viewports) {
       await this.page.setViewportSize(viewport);
       await this.page.waitForTimeout(500); // Attendre le reflow
-      
+
       const widgetRect = await this.page.locator('[data-testid="trustboost-widget"]').boundingBox();
       const isVisible = await this.page.locator('[data-testid="trustboost-widget"]').isVisible();
-      
+
       results[`${viewport.width}x${viewport.height}`] = {
         visible: isVisible,
         dimensions: widgetRect,
         responsive: widgetRect && widgetRect.width <= viewport.width
       };
     }
-    
+
     return results;
   }
 }
@@ -242,13 +242,13 @@ export class DashboardTestHelper {
    */
   async navigateToSection(sectionName) {
     const sectionSelector = `[data-testid="nav-${sectionName}"]`;
-    
+
     await this.page.click(sectionSelector);
     await this.page.waitForURL(`**/${sectionName}`, { timeout: 10000 });
-    
+
     // Vérifier que la section est active
     await expect(this.page.locator(sectionSelector)).toHaveClass(/active/);
-    
+
     // Attendre le chargement du contenu
     await this.page.waitForSelector(`[data-testid="${sectionName}-content"]`, { timeout: 15000 });
   }
@@ -259,13 +259,13 @@ export class DashboardTestHelper {
   async testSearchFunctionality(query) {
     await this.page.fill('[data-testid="search-input"]', query);
     await this.page.keyboard.press('Enter');
-    
+
     // Attendre les résultats
     await this.page.waitForSelector('[data-testid="search-results"]', { timeout: 10000 });
-    
+
     const resultsCount = await this.page.locator('[data-testid="search-result"]').count();
     expect(resultsCount).toBeGreaterThan(0);
-    
+
     return resultsCount;
   }
 
@@ -276,11 +276,11 @@ export class DashboardTestHelper {
     const userPermissions = await this.page.evaluate(() => {
       return window.userPermissions || [];
     });
-    
+
     for (const permission of expectedPermissions) {
       expect(userPermissions).toContain(permission);
     }
-    
+
     return userPermissions;
   }
 }
@@ -297,11 +297,11 @@ export class PerformanceAssertions {
         domContentLoaded: navigation.domContentLoadedEventEnd - navigation.navigationStart
       };
     });
-    
+
     expect(performanceMetrics.loadTime).toBeLessThan(maxTime);
     return performanceMetrics;
   }
-  
+
   static async assertNoConsoleErrors(page) {
     const errors = [];
     page.on('console', msg => {
@@ -309,10 +309,10 @@ export class PerformanceAssertions {
         errors.push(msg.text());
       }
     });
-    
+
     // Attendre un moment pour capturer les erreurs
     await page.waitForTimeout(2000);
-    
+
     expect(errors).toHaveLength(0);
     return errors;
   }
@@ -336,7 +336,7 @@ export class CrossBrowserTestHelper {
       'firefox': 15000,
       'webkit': 20000  // Safari plus lent
     };
-    
+
     return timeouts[this.browserName] || 10000;
   }
 

@@ -2,10 +2,10 @@
 
 /**
  * 🤖 GEMINI PRE-VALIDATOR
- * 
+ *
  * Utilise Gemini pour détecter les problèmes AVANT le build
  * Prévient les erreurs de compilation en analysant le code en amont
- * 
+ *
  * Usage:
  *   node gemini-prevalidator.js                    # Validation complète
  *   node gemini-prevalidator.js --file src/auth.js # Fichier spécifique
@@ -29,13 +29,13 @@ class GeminiPreValidator {
       feature: options.feature || process.argv.find(arg => arg.startsWith('--feature='))?.split('=')[1],
       quick: process.argv.includes('--quick'),
       verbose: process.argv.includes('--verbose'),
-      autoFix: process.argv.includes('--autofix'),
+      autoFix: process.argv.includes('--autofix')
     };
-    
+
     this.issues = [];
     this.suggestions = [];
     this.criticalErrors = [];
-    
+
     // Configuration Gemini Bridge
     this.geminiUrl = process.env.GEMINI_API_URL || 'http://127.0.0.1:7777';
   }
@@ -45,7 +45,7 @@ class GeminiPreValidator {
    */
   collectFiles() {
     const files = [];
-    
+
     if (this.options.file) {
       // Un fichier spécifique
       if (existsSync(this.options.file)) {
@@ -64,8 +64,8 @@ class GeminiPreValidator {
       const recentFiles = this.getRecentlyModifiedFiles();
       files.push(...recentFiles);
     }
-    
-    return files.filter(f => 
+
+    return files.filter(f =>
       ['.js', '.jsx', '.ts', '.tsx'].includes(extname(f))
     );
   }
@@ -75,11 +75,11 @@ class GeminiPreValidator {
    */
   findFeatureFiles(dir, feature, files) {
     const items = readdirSync(dir);
-    
+
     for (const item of items) {
       const fullPath = join(dir, item);
       const stat = statSync(fullPath);
-      
+
       if (stat.isDirectory() && !item.startsWith('.') && item !== 'node_modules') {
         this.findFeatureFiles(fullPath, feature, files);
       } else if (stat.isFile()) {
@@ -102,7 +102,7 @@ class GeminiPreValidator {
         'grep -v node_modules | xargs ls -lt | head -20',
         { encoding: 'utf8' }
       );
-      
+
       return stdout.split('\n')
         .filter(line => line.trim())
         .map(line => {
@@ -120,19 +120,19 @@ class GeminiPreValidator {
    */
   async validateFile(filePath) {
     const spinner = ora(`Validation de ${filePath}`).start();
-    
+
     try {
       const content = readFileSync(filePath, 'utf8');
-      
+
       // Créer le prompt pour Gemini
       const prompt = this.createValidationPrompt(filePath, content);
-      
+
       // Appeler Gemini via le bridge ou CLI
       const result = await this.callGemini(prompt);
-      
+
       // Parser la réponse
       const validation = this.parseGeminiResponse(result, filePath);
-      
+
       if (validation.critical.length > 0) {
         spinner.fail(`${filePath} - ${validation.critical.length} erreurs critiques`);
         this.criticalErrors.push(...validation.critical);
@@ -142,13 +142,13 @@ class GeminiPreValidator {
       } else {
         spinner.succeed(`${filePath} - OK`);
       }
-      
+
       if (validation.suggestions.length > 0) {
         this.suggestions.push(...validation.suggestions);
       }
-      
+
       return validation;
-      
+
     } catch (error) {
       spinner.fail(`${filePath} - Erreur de validation`);
       console.error(chalk.red(`Erreur: ${error.message}`));
@@ -222,7 +222,7 @@ class GeminiPreValidator {
         body: JSON.stringify({ prompt }),
         timeout: 10000
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         return data.response || data.text || '';
@@ -232,13 +232,13 @@ class GeminiPreValidator {
         console.log(chalk.gray('Bridge non disponible, utilisation du CLI...'));
       }
     }
-    
+
     // Fallback sur CLI
     const { stdout } = await execAsync(
       `gemini -p "${prompt.replace(/"/g, '\\"')}"`,
       { maxBuffer: 1024 * 1024 * 10 }
     );
-    
+
     return stdout;
   }
 
@@ -253,9 +253,9 @@ class GeminiPreValidator {
         // Fallback: analyse textuelle
         return this.parseTextResponse(response, filePath);
       }
-      
+
       const data = JSON.parse(jsonMatch[0]);
-      
+
       return {
         critical: (data.critical || []).map(e => ({
           ...e,
@@ -269,7 +269,7 @@ class GeminiPreValidator {
         buildWillFail: data.buildWillFail || false,
         score: data.score || 5
       };
-      
+
     } catch (error) {
       // Fallback sur analyse textuelle
       return this.parseTextResponse(response, filePath);
@@ -283,13 +283,13 @@ class GeminiPreValidator {
     const critical = [];
     const issues = [];
     const suggestions = [];
-    
+
     const lines = response.split('\n');
-    
+
     lines.forEach(line => {
       const lowerLine = line.toLowerCase();
-      
-      if (lowerLine.includes('error') || lowerLine.includes('undefined') || 
+
+      if (lowerLine.includes('error') || lowerLine.includes('undefined') ||
           lowerLine.includes('missing') || lowerLine.includes('cannot find')) {
         critical.push({
           file: filePath,
@@ -309,7 +309,7 @@ class GeminiPreValidator {
         });
       }
     });
-    
+
     return {
       critical,
       issues,
@@ -326,7 +326,7 @@ class GeminiPreValidator {
     console.log(chalk.yellow('\n' + '='.repeat(60)));
     console.log(chalk.yellow.bold('🤖 RAPPORT DE PRÉ-VALIDATION GEMINI'));
     console.log(chalk.yellow('='.repeat(60)));
-    
+
     // Erreurs critiques
     if (this.criticalErrors.length > 0) {
       console.log(chalk.red.bold('\n❌ ERREURS CRITIQUES (Build va échouer):'));
@@ -339,7 +339,7 @@ class GeminiPreValidator {
         }
       });
     }
-    
+
     // Problèmes non critiques
     if (this.issues.length > 0) {
       console.log(chalk.yellow.bold('\n⚠️  PROBLÈMES DÉTECTÉS:'));
@@ -352,7 +352,7 @@ class GeminiPreValidator {
         console.log(chalk.gray(`... et ${this.issues.length - 5} autres`));
       }
     }
-    
+
     // Suggestions
     if (this.suggestions.length > 0 && this.options.verbose) {
       console.log(chalk.cyan.bold('\n💡 SUGGESTIONS:'));
@@ -360,14 +360,14 @@ class GeminiPreValidator {
         console.log(chalk.cyan(`• ${sugg.message}`));
       });
     }
-    
+
     // Résumé
     console.log(chalk.white.bold('\n📊 RÉSUMÉ:'));
     console.log(`  Fichiers analysés: ${this.filesAnalyzed || 0}`);
     console.log(`  Erreurs critiques: ${this.criticalErrors.length}`);
     console.log(`  Problèmes: ${this.issues.length}`);
     console.log(`  Suggestions: ${this.suggestions.length}`);
-    
+
     // Verdict
     console.log(chalk.yellow('\n' + '='.repeat(60)));
     if (this.criticalErrors.length > 0) {
@@ -381,7 +381,7 @@ class GeminiPreValidator {
       console.log(chalk.green('Le code semble prêt pour le build'));
     }
     console.log(chalk.yellow('='.repeat(60) + '\n'));
-    
+
     return this.criticalErrors.length === 0;
   }
 
@@ -390,19 +390,19 @@ class GeminiPreValidator {
    */
   saveSuggestions() {
     if (this.criticalErrors.length === 0) return;
-    
+
     const fixes = {
       timestamp: new Date().toISOString(),
       critical: this.criticalErrors,
       suggestions: this.suggestions,
       autoFixAvailable: this.criticalErrors.filter(e => e.fix).length
     };
-    
+
     const filename = `gemini-fixes-${Date.now()}.json`;
     require('fs').writeFileSync(filename, JSON.stringify(fixes, null, 2));
-    
+
     console.log(chalk.gray(`\nCorrections sauvegardées dans: ${filename}`));
-    
+
     if (this.options.autoFix && fixes.autoFixAvailable > 0) {
       console.log(chalk.cyan('Pour appliquer les corrections automatiques:'));
       console.log(chalk.cyan(`node apply-gemini-fixes.js ${filename}`));
@@ -415,38 +415,38 @@ class GeminiPreValidator {
   async run() {
     console.log(chalk.cyan.bold('\n🤖 GEMINI PRE-VALIDATOR'));
     console.log(chalk.cyan('Détection proactive des erreurs de build\n'));
-    
+
     // Collecter les fichiers
     const files = this.collectFiles();
-    
+
     if (files.length === 0) {
       console.log(chalk.yellow('Aucun fichier à valider trouvé'));
       console.log(chalk.gray('Utilisez --file=<path> ou --feature=<name>'));
       return;
     }
-    
+
     console.log(chalk.blue(`📁 ${files.length} fichier(s) à analyser\n`));
     this.filesAnalyzed = files.length;
-    
+
     // Valider chaque fichier
     for (const file of files) {
       await this.validateFile(file);
-      
+
       // En mode quick, arrêter à la première erreur critique
       if (this.options.quick && this.criticalErrors.length > 0) {
         console.log(chalk.red('\n⛔ Arrêt en mode quick - erreur critique détectée'));
         break;
       }
     }
-    
+
     // Générer le rapport
     const success = this.generateReport();
-    
+
     // Sauvegarder les suggestions si nécessaire
     if (!success) {
       this.saveSuggestions();
     }
-    
+
     // Exit code approprié
     process.exit(success ? 0 : 1);
   }

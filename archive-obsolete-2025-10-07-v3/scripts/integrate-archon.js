@@ -6,10 +6,10 @@ import { logger } from '../src/utils/logger.js';
 
 async function integrateWithArchon() {
   logger.info('🔧 Integrating Orchestra with Archon...\n');
-  
+
   const archonPath = '/Users/manu/Documents/DEV/archon';
   const orchestraPath = process.cwd();
-  
+
   try {
     // Step 1: Check if Archon exists
     logger.info('Step 1: Checking Archon installation...');
@@ -21,7 +21,7 @@ async function integrateWithArchon() {
       logger.info('Please ensure Archon is installed at the correct path');
       process.exit(1);
     }
-    
+
     // Step 2: Create MCP config for Archon
     logger.info('\nStep 2: Creating MCP configuration...');
     const mcpConfig = {
@@ -38,7 +38,7 @@ async function integrateWithArchon() {
         }
       }
     };
-    
+
     // Check if Archon has a config directory
     const archonConfigDir = path.join(archonPath, 'config');
     try {
@@ -46,12 +46,12 @@ async function integrateWithArchon() {
     } catch (error) {
       // Directory might already exist
     }
-    
+
     // Write Orchestra MCP config
     const mcpConfigPath = path.join(archonConfigDir, 'mcp-orchestra.json');
     await fs.writeFile(mcpConfigPath, JSON.stringify(mcpConfig, null, 2));
     logger.info(`✅ MCP config written to ${mcpConfigPath}`);
-    
+
     // Step 3: Create startup script
     logger.info('\nStep 3: Creating startup script...');
     const startupScript = `#!/bin/bash
@@ -83,12 +83,12 @@ echo ""
 echo "To stop Orchestra, run: kill $(cat orchestra.pid)"
 echo "To test connection: node src/test/test-mcp-server.js"
 `;
-    
+
     const startScriptPath = path.join(orchestraPath, 'start-orchestra.sh');
     await fs.writeFile(startScriptPath, startupScript);
     await fs.chmod(startScriptPath, '755');
     logger.info(`✅ Startup script created at ${startScriptPath}`);
-    
+
     // Step 4: Create Archon integration instructions
     logger.info('\nStep 4: Creating integration instructions...');
     const instructions = `
@@ -164,11 +164,11 @@ Edit \`.env\` file to configure:
    - Check WebSocket connection in browser console
    - Verify MCP config in Archon
 `;
-    
+
     const instructionsPath = path.join(orchestraPath, 'ARCHON_INTEGRATION.md');
     await fs.writeFile(instructionsPath, instructions);
     logger.info(`✅ Instructions written to ${instructionsPath}`);
-    
+
     // Step 5: Create .env file if it doesn't exist
     logger.info('\nStep 5: Setting up environment...');
     const envPath = path.join(orchestraPath, '.env');
@@ -182,7 +182,7 @@ Edit \`.env\` file to configure:
       logger.info('✅ Created .env file from example');
       logger.info('⚠️  Please edit .env to add your API keys');
     }
-    
+
     // Summary
     logger.info('\n' + '='.repeat(50));
     logger.info('✅ INTEGRATION COMPLETE!');
@@ -193,7 +193,7 @@ Edit \`.env\` file to configure:
     logger.info('3. Configure Archon to connect to ws://localhost:3456');
     logger.info('4. Test with: node src/test/test-mcp-server.js');
     logger.info('\nSee ARCHON_INTEGRATION.md for detailed instructions');
-    
+
   } catch (error) {
     logger.error('Integration failed:', error);
     process.exit(1);

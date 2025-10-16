@@ -1,7 +1,7 @@
 /**
  * 🎭 Archon MCP Façade - Type Contracts
  * Version: archon-mcp-contract/0.1.1
- * 
+ *
  * Generated types for contract consistency between workflow and façade
  */
 
@@ -9,7 +9,7 @@
 
 export const ArchonProject = {
   id: String,
-  title: String, 
+  title: String,
   description: String,
   github_repo: String,
   created_at: String,
@@ -34,7 +34,7 @@ export const ArchonTask = {
 
 export const EnsureProjectInput = {
   id: String,           // Optional: existing project ID
-  name: String,         // Optional: project name for lookup/creation  
+  name: String,         // Optional: project name for lookup/creation
   title: String         // Optional: alias for name
 };
 
@@ -111,15 +111,15 @@ export const TOOL_ALIASES = {
   // Project management
   'ensure_project': ['manage_project', 'project.ensure'],
   'explore_project': ['explore', 'project.explore'],
-  
-  // Data access  
+
+  // Data access
   'get': ['read', 'fetch', 'retrieve'],
   'perform_rag_query': ['rag_query', 'rag', 'query'],
   'search_code_examples': ['search.examples.code', 'code.search'],
-  
+
   // Task management
   'manageTask': ['manage_task', 'task.create', 'task.update', 'task.close'],
-  
+
   // Meta
   'capabilities': ['list_tools', 'get_capabilities'],
   'agents.capabilities': ['agents_capabilities', 'get_agents']
@@ -128,11 +128,11 @@ export const TOOL_ALIASES = {
 export const ARGUMENT_ALIASES = {
   // Project identifiers
   project_id: ['projectId', 'projectID', 'pid'],
-  
+
   // Query parameters
   query: ['q', 'search', 'text'],
   top_k: ['match_count', 'k', 'limit', 'topK', 'n'],
-  
+
   // Task data
   description: ['desc'],
   task_order: ['order', 'priority_order']
@@ -142,7 +142,7 @@ export const ARGUMENT_ALIASES = {
 
 export const ERROR_TYPES = {
   VALIDATION_ERROR: 'validation_error',
-  TOOL_UNAVAILABLE: 'tool_unavailable', 
+  TOOL_UNAVAILABLE: 'tool_unavailable',
   UNKNOWN_ACTION: 'unknown_action',
   NETWORK_ERROR: 'network_error',
   API_ERROR: 'api_error',

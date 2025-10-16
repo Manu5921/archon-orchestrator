@@ -1,7 +1,7 @@
 /**
  * AGENT 6: Performance & Optimization Engineer
  * TrustBoost Phase 4 - Performance Configuration
- * 
+ *
  * Configuration centralisée pour tous les composants performance
  * Basée sur les patterns Context7 et requirements TrustBoost Phase 4
  */
@@ -16,7 +16,7 @@ export const PERFORMANCE_CONFIG = {
       seo: 95,
       pwa: 90
     },
-    
+
     coreWebVitals: {
       FCP: 2000,         // First Contentful Paint <2s
       LCP: 2500,         // Largest Contentful Paint <2.5s
@@ -25,13 +25,13 @@ export const PERFORMANCE_CONFIG = {
       TTFB: 600,         // Time to First Byte <600ms
       INP: 200           // Interaction to Next Paint <200ms
     },
-    
+
     bundleSize: {
       widget: 20 * 1024,     // <20KB widget gzipped requirement
       total: 100 * 1024,     // <100KB total bundle
       chunks: 50 * 1024      // <50KB per chunk
     },
-    
+
     database: {
       p50: 15,           // <15ms median
       p95: 30,           // <30ms p95
@@ -39,20 +39,20 @@ export const PERFORMANCE_CONFIG = {
       errorRate: 0.01,   // <1% error rate
       connectionPool: 20  // Max connections
     },
-    
+
     cache: {
       hitRatio: 0.9,     // >90% hit ratio requirement
       responseTime: 50,   // <50ms cache response
       memoryLimit: 100,   // 100 entries max
       ttl: 300000        // 5 minutes TTL
     },
-    
+
     api: {
       responseTime: 100,  // <100ms p95 requirement
       throughput: 1000,   // 1000 RPS target
       availability: 0.999 // 99.9% uptime
     },
-    
+
     widget: {
       loadTime: 3000,    // <3s load time on 3G requirement
       interactionDelay: 50, // <50ms interaction delay
@@ -70,7 +70,7 @@ export const PERFORMANCE_CONFIG = {
       maxClients: 10,
       retentionPeriod: 3600000  // 1 hour
     },
-    
+
     webVitals: {
       enabled: true,
       reportingEndpoint: '/api/performance-metrics',
@@ -78,7 +78,7 @@ export const PERFORMANCE_CONFIG = {
       flushInterval: 5000,      // 5 seconds
       enableAttribution: true    // For debugging
     },
-    
+
     lighthouse: {
       enabled: true,
       schedule: '0 */6 * * *',  // Every 6 hours
@@ -87,7 +87,7 @@ export const PERFORMANCE_CONFIG = {
       throttling: 'simulate',
       device: 'mobile'
     },
-    
+
     alerts: {
       enabled: true,
       thresholds: {
@@ -104,20 +104,20 @@ export const PERFORMANCE_CONFIG = {
   // CACHE STRATEGY CONFIGURATION
   cache: {
     strategy: 'swr',  // SWR requirement
-    
+
     swr: {
       maxAge: 60,              // 1 minute fresh
       staleWhileRevalidate: 300, // 5 minutes stale
       maxAttempts: 3,
       retryDelay: 1000
     },
-    
+
     isr: {
       revalidateTime: 3600,    // 1 hour revalidation
       fallback: 'blocking',
       maxConcurrentBuilds: 3
     },
-    
+
     cdn: {
       enabled: true,
       provider: 'vercel',
@@ -125,14 +125,14 @@ export const PERFORMANCE_CONFIG = {
       purgeEndpoint: '/api/cache/purge',
       geoDistribution: true
     },
-    
+
     memory: {
       max: 100,                // 100 entries
       maxAge: 600000,          // 10 minutes
       updateAgeOnGet: true,
       updateAgeOnHas: true
     },
-    
+
     redis: {
       enabled: false,          // Disabled for simplicity
       host: 'localhost',
@@ -151,7 +151,7 @@ export const PERFORMANCE_CONFIG = {
       queryAnalysis: true,
       indexRecommendations: true
     },
-    
+
     pool: {
       min: 5,                  // Minimum connections
       max: 20,                 // Maximum connections
@@ -159,7 +159,7 @@ export const PERFORMANCE_CONFIG = {
       idle: 30000,             // 30s idle timeout
       evict: 1000             // Eviction check interval
     },
-    
+
     queryCache: {
       enabled: true,
       size: 1000,              // 1000 queries
@@ -169,7 +169,7 @@ export const PERFORMANCE_CONFIG = {
         'NOW()', 'RAND()', 'CURRENT_TIMESTAMP'
       ]
     },
-    
+
     monitoring: {
       slowQueryThreshold: 25,   // Log queries >25ms
       enableExplainPlan: true,
@@ -181,14 +181,14 @@ export const PERFORMANCE_CONFIG = {
   // BUNDLE OPTIMIZATION CONFIGURATION
   bundleOptimization: {
     enabled: true,
-    
+
     analysis: {
       analyzeImports: true,
       detectUnusedCode: true,
       trackDependencies: true,
       generateRecommendations: true
     },
-    
+
     optimization: {
       enableTreeShaking: true,
       enableCodeSplitting: true,
@@ -196,14 +196,14 @@ export const PERFORMANCE_CONFIG = {
       minification: 'aggressive',
       sourceMaps: false        // Disabled in production
     },
-    
+
     widget: {
       maxSize: 15 * 1024,      // Stricter 15KB for widget
       compressionTarget: 3.5,   // 3.5x compression ratio
       criticalCSS: true,
       inlineSmallAssets: true
     },
-    
+
     thresholds: {
       warningSize: 18 * 1024,  // Warning at 18KB
       errorSize: 20 * 1024,    // Error at 20KB
@@ -221,14 +221,14 @@ export const PERFORMANCE_CONFIG = {
       includeCharts: true,
       retention: 12            // Keep 12 weeks
     },
-    
+
     daily: {
       enabled: false,
       schedule: '0 9 * * *',   // Daily 9 AM
       format: 'json',
       lightweight: true
     },
-    
+
     realTime: {
       dashboard: {
         enabled: true,
@@ -237,7 +237,7 @@ export const PERFORMANCE_CONFIG = {
         autoRefresh: 5000,     // 5 seconds
         maxDataPoints: 100
       },
-      
+
       notifications: {
         enabled: true,
         channels: ['console', 'webhook'],
@@ -256,14 +256,14 @@ export const PERFORMANCE_CONFIG = {
       debug: false,
       beforeSend: null         // Custom filter function
     },
-    
+
     lighthouse: {
       ci: true,
       githubIntegration: true,
       statusContext: 'trustboost-performance',
       temporaryStorage: true
     },
-    
+
     nextjs: {
       webVitalsAttribution: ['CLS', 'LCP'],
       experimentalFlags: {
@@ -271,7 +271,7 @@ export const PERFORMANCE_CONFIG = {
         webVitalsAttribution: true
       }
     },
-    
+
     cicd: {
       failOnRegression: true,
       performanceThreshold: 90,
@@ -286,14 +286,14 @@ export const PERFORMANCE_CONFIG = {
     enablePerformanceMarks: true,
     enableMemoryProfiling: false,
     enableCPUProfiling: false,
-    
+
     mockData: {
       enabled: false,
       webVitals: true,
       databaseQueries: true,
       cacheOperations: true
     },
-    
+
     testing: {
       enableE2EPerformance: true,
       enableLighthouseTests: true,
@@ -319,7 +319,7 @@ export const PERFORMANCE_CONFIG = {
         alerts: { enabled: false }        // Disabled in dev
       }
     },
-    
+
     staging: {
       targets: {
         lighthouse: { performance: 85 },  // Intermediate targets
@@ -334,7 +334,7 @@ export const PERFORMANCE_CONFIG = {
         alerts: { enabled: true }
       }
     },
-    
+
     production: {
       // Use default strict targets
       monitoring: {
@@ -355,7 +355,7 @@ export const PERFORMANCE_CONFIG = {
 export function getEnvironmentConfig(env = 'production') {
   const baseConfig = { ...PERFORMANCE_CONFIG };
   const envOverrides = PERFORMANCE_CONFIG.environments[env] || {};
-  
+
   return deepMerge(baseConfig, envOverrides);
 }
 
@@ -364,7 +364,7 @@ export function getEnvironmentConfig(env = 'production') {
  */
 function deepMerge(target, source) {
   const result = { ...target };
-  
+
   for (const key in source) {
     if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
       result[key] = deepMerge(result[key] || {}, source[key]);
@@ -372,7 +372,7 @@ function deepMerge(target, source) {
       result[key] = source[key];
     }
   }
-  
+
   return result;
 }
 
@@ -381,24 +381,24 @@ function deepMerge(target, source) {
  */
 export function validateConfig(config) {
   const errors = [];
-  
+
   // Validate core targets
   if (config.targets.lighthouse.performance < 95) {
     errors.push('Lighthouse performance target must be >= 95');
   }
-  
+
   if (config.targets.bundleSize.widget > 20 * 1024) {
     errors.push('Widget bundle size target must be <= 20KB');
   }
-  
+
   if (config.targets.database.p99 > 50) {
     errors.push('Database P99 target must be <= 50ms');
   }
-  
+
   if (config.targets.cache.hitRatio < 0.9) {
     errors.push('Cache hit ratio target must be >= 90%');
   }
-  
+
   return {
     valid: errors.length === 0,
     errors

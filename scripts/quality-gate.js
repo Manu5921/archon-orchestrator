@@ -38,7 +38,7 @@ const QUALITY_THRESHOLDS = {
     maxVulnerabilities: 0,
     requiredHeaders: [
       'content-security-policy',
-      'x-frame-options', 
+      'x-frame-options',
       'x-content-type-options',
       'strict-transport-security'
     ]
@@ -58,11 +58,11 @@ class QualityGateValidator {
 
   async validateCoverage() {
     console.log('📊 Validating code coverage...');
-    
+
     try {
       const coverageFile = path.join(__dirname, '../coverage/coverage-summary.json');
       const coverageData = JSON.parse(await fs.readFile(coverageFile, 'utf8'));
-      
+
       const total = coverageData.total;
       const details = {
         lines: total.lines.pct,
@@ -70,26 +70,26 @@ class QualityGateValidator {
         branches: total.branches.pct,
         statements: total.statements.pct
       };
-      
-      const passed = 
+
+      const passed =
         details.lines >= QUALITY_THRESHOLDS.coverage.lines &&
         details.functions >= QUALITY_THRESHOLDS.coverage.functions &&
         details.branches >= QUALITY_THRESHOLDS.coverage.branches &&
         details.statements >= QUALITY_THRESHOLDS.coverage.statements;
-      
+
       this.results.coverage = { passed, details };
-      
+
       console.log(`  Lines: ${details.lines}% (>= ${QUALITY_THRESHOLDS.coverage.lines}%) ${details.lines >= QUALITY_THRESHOLDS.coverage.lines ? '✅' : '❌'}`);
       console.log(`  Functions: ${details.functions}% (>= ${QUALITY_THRESHOLDS.coverage.functions}%) ${details.functions >= QUALITY_THRESHOLDS.coverage.functions ? '✅' : '❌'}`);
       console.log(`  Branches: ${details.branches}% (>= ${QUALITY_THRESHOLDS.coverage.branches}%) ${details.branches >= QUALITY_THRESHOLDS.coverage.branches ? '✅' : '❌'}`);
       console.log(`  Statements: ${details.statements}% (>= ${QUALITY_THRESHOLDS.coverage.statements}%) ${details.statements >= QUALITY_THRESHOLDS.coverage.statements ? '✅' : '❌'}`);
-      
+
       if (passed) {
         console.log('✅ Coverage validation PASSED');
       } else {
         console.log('❌ Coverage validation FAILED');
       }
-      
+
     } catch (error) {
       console.log(`❌ Coverage validation ERROR: ${error.message}`);
       this.results.coverage = { passed: false, details: { error: error.message } };
@@ -98,39 +98,39 @@ class QualityGateValidator {
 
   async validateWebVitals() {
     console.log('⚡ Validating Core Web Vitals...');
-    
+
     try {
       // Chercher les résultats de performance dans les test results
       const performanceResults = await this.findPerformanceResults();
-      
+
       if (!performanceResults) {
         throw new Error('Performance results not found');
       }
-      
+
       const details = {
         lcp: performanceResults.lcp || null,
         fid: performanceResults.fid || null,
         cls: performanceResults.cls || null
       };
-      
+
       const lcpPassed = !details.lcp || details.lcp <= QUALITY_THRESHOLDS.webVitals.lcp;
       const fidPassed = !details.fid || details.fid <= QUALITY_THRESHOLDS.webVitals.fid;
       const clsPassed = !details.cls || details.cls <= QUALITY_THRESHOLDS.webVitals.cls;
-      
+
       const passed = lcpPassed && fidPassed && clsPassed;
-      
+
       this.results.webVitals = { passed, details };
-      
+
       console.log(`  LCP: ${details.lcp}ms (<= ${QUALITY_THRESHOLDS.webVitals.lcp}ms) ${lcpPassed ? '✅' : '❌'}`);
       console.log(`  FID: ${details.fid}ms (<= ${QUALITY_THRESHOLDS.webVitals.fid}ms) ${fidPassed ? '✅' : '❌'}`);
       console.log(`  CLS: ${details.cls} (<= ${QUALITY_THRESHOLDS.webVitals.cls}) ${clsPassed ? '✅' : '❌'}`);
-      
+
       if (passed) {
         console.log('✅ Web Vitals validation PASSED');
       } else {
         console.log('❌ Web Vitals validation FAILED');
       }
-      
+
     } catch (error) {
       console.log(`❌ Web Vitals validation ERROR: ${error.message}`);
       this.results.webVitals = { passed: false, details: { error: error.message } };
@@ -139,34 +139,34 @@ class QualityGateValidator {
 
   async validatePerformance() {
     console.log('🚀 Validating performance metrics...');
-    
+
     try {
       const testResults = await this.findTestResults();
-      
+
       if (!testResults) {
         throw new Error('Test results not found');
       }
-      
+
       // Calculer le temps d'exécution total des tests
       const totalExecutionTime = this.calculateTotalExecutionTime(testResults);
-      
+
       // Vérifier la taille des bundles si disponible
       const bundleSize = await this.checkBundleSize();
-      
+
       const details = {
         executionTime: totalExecutionTime,
         bundleSize: bundleSize,
         memoryUsage: await this.checkMemoryUsage()
       };
-      
+
       const executionPassed = totalExecutionTime <= QUALITY_THRESHOLDS.performance.maxExecutionTime;
       const bundlePassed = !bundleSize || bundleSize <= QUALITY_THRESHOLDS.performance.maxBundleSize;
       const memoryPassed = !details.memoryUsage || details.memoryUsage <= QUALITY_THRESHOLDS.performance.maxMemoryUsage;
-      
+
       const passed = executionPassed && bundlePassed && memoryPassed;
-      
+
       this.results.performance = { passed, details };
-      
+
       console.log(`  Execution Time: ${Math.round(totalExecutionTime/1000)}s (<= ${Math.round(QUALITY_THRESHOLDS.performance.maxExecutionTime/1000)}s) ${executionPassed ? '✅' : '❌'}`);
       if (bundleSize) {
         console.log(`  Bundle Size: ${Math.round(bundleSize)}KB (<= ${QUALITY_THRESHOLDS.performance.maxBundleSize}KB) ${bundlePassed ? '✅' : '❌'}`);
@@ -174,13 +174,13 @@ class QualityGateValidator {
       if (details.memoryUsage) {
         console.log(`  Memory Usage: ${Math.round(details.memoryUsage)}MB (<= ${QUALITY_THRESHOLDS.performance.maxMemoryUsage}MB) ${memoryPassed ? '✅' : '❌'}`);
       }
-      
+
       if (passed) {
         console.log('✅ Performance validation PASSED');
       } else {
         console.log('❌ Performance validation FAILED');
       }
-      
+
     } catch (error) {
       console.log(`❌ Performance validation ERROR: ${error.message}`);
       this.results.performance = { passed: false, details: { error: error.message } };
@@ -189,42 +189,42 @@ class QualityGateValidator {
 
   async validateSecurity() {
     console.log('🔒 Validating security compliance...');
-    
+
     try {
       const securityResults = await this.findSecurityResults();
-      
+
       if (!securityResults) {
         throw new Error('Security test results not found');
       }
-      
+
       // Compter les vulnérabilités et échecs de tests de sécurité
       const vulnerabilities = this.countSecurityIssues(securityResults);
       const headers = await this.validateSecurityHeaders();
-      
+
       const details = {
         vulnerabilities: vulnerabilities,
         headers: headers,
         testsResults: securityResults.summary
       };
-      
+
       const vulnPassed = vulnerabilities <= QUALITY_THRESHOLDS.security.maxVulnerabilities;
       const headersPassed = this.checkRequiredHeaders(headers);
       const testsPassed = securityResults.passed;
-      
+
       const passed = vulnPassed && headersPassed && testsPassed;
-      
+
       this.results.security = { passed, details };
-      
+
       console.log(`  Vulnerabilities: ${vulnerabilities} (<= ${QUALITY_THRESHOLDS.security.maxVulnerabilities}) ${vulnPassed ? '✅' : '❌'}`);
       console.log(`  Security Headers: ${Object.keys(headers).length} present ${headersPassed ? '✅' : '❌'}`);
       console.log(`  Security Tests: ${testsPassed ? 'PASSED' : 'FAILED'} ${testsPassed ? '✅' : '❌'}`);
-      
+
       if (passed) {
         console.log('✅ Security validation PASSED');
       } else {
         console.log('❌ Security validation FAILED - PHASE 3 REGRESSION DETECTED');
       }
-      
+
     } catch (error) {
       console.log(`❌ Security validation ERROR: ${error.message}`);
       this.results.security = { passed: false, details: { error: error.message } };
@@ -233,15 +233,15 @@ class QualityGateValidator {
 
   async generateReport() {
     console.log('\n📋 Generating Quality Gate Report...');
-    
+
     const allPassed = Object.values(this.results)
       .filter(r => r !== this.results.overall)
       .every(r => r.passed);
-    
+
     const score = this.calculateQualityScore();
-    
+
     this.results.overall = { passed: allPassed, score };
-    
+
     const report = {
       timestamp: new Date().toISOString(),
       phase: 'Phase 4 TrustBoost',
@@ -249,24 +249,24 @@ class QualityGateValidator {
       details: this.results,
       thresholds: QUALITY_THRESHOLDS
     };
-    
+
     // Sauvegarder le rapport
     const reportPath = path.join(__dirname, '../test-results/quality-gate-report.json');
     await fs.mkdir(path.dirname(reportPath), { recursive: true });
     await fs.writeFile(reportPath, JSON.stringify(report, null, 2));
-    
+
     // Générer rapport markdown
     const markdownReport = this.generateMarkdownReport(report);
     const markdownPath = path.join(__dirname, '../test-results/quality-gate-report.md');
     await fs.writeFile(markdownPath, markdownReport);
-    
-    console.log(`\n📊 QUALITY GATE REPORT`);
-    console.log(`====================`);
+
+    console.log('\n📊 QUALITY GATE REPORT');
+    console.log('====================');
     console.log(`Overall Status: ${allPassed ? '✅ PASSED' : '❌ FAILED'}`);
     console.log(`Quality Score: ${score}/100`);
     console.log(`Report saved: ${reportPath}`);
     console.log(`Markdown report: ${markdownPath}`);
-    
+
     if (allPassed) {
       console.log('\n🚀 PHASE 4 TRUSTBOOST READY FOR PRODUCTION DEPLOYMENT');
       process.exit(0);
@@ -283,13 +283,13 @@ class QualityGateValidator {
       '../performance-results/performance-results.json',
       '../test-results/results.json'
     ];
-    
+
     for (const relativePath of possiblePaths) {
       try {
         const fullPath = path.join(__dirname, relativePath);
         const data = await fs.readFile(fullPath, 'utf8');
         const parsed = JSON.parse(data);
-        
+
         // Chercher les métriques de performance dans la structure
         if (parsed.webVitals) return parsed.webVitals;
         if (parsed.suites) {
@@ -304,11 +304,11 @@ class QualityGateValidator {
             }
           }
         }
-      } catch (error) {
+      } catch {
         // Continue searching
       }
     }
-    
+
     return null;
   }
 
@@ -326,16 +326,16 @@ class QualityGateValidator {
     try {
       const securityPath = path.join(__dirname, '../security-results/junit-report.xml');
       const xmlData = await fs.readFile(securityPath, 'utf8');
-      
+
       // Parser XML simple pour extraire les résultats
       const testsMatch = xmlData.match(/tests="(\d+)"/);
       const failuresMatch = xmlData.match(/failures="(\d+)"/);
       const errorsMatch = xmlData.match(/errors="(\d+)"/);
-      
+
       const total = testsMatch ? parseInt(testsMatch[1]) : 0;
       const failures = failuresMatch ? parseInt(failuresMatch[1]) : 0;
       const errors = errorsMatch ? parseInt(errorsMatch[1]) : 0;
-      
+
       return {
         total,
         failures,
@@ -350,7 +350,7 @@ class QualityGateValidator {
 
   calculateTotalExecutionTime(testResults) {
     if (testResults.duration) return testResults.duration;
-    
+
     // Calculer à partir des specs si disponible
     let totalTime = 0;
     if (testResults.suites) {
@@ -364,7 +364,7 @@ class QualityGateValidator {
         }
       }
     }
-    
+
     return totalTime;
   }
 
@@ -373,14 +373,14 @@ class QualityGateValidator {
       const distPath = path.join(__dirname, '../dist');
       const files = await fs.readdir(distPath);
       let totalSize = 0;
-      
+
       for (const file of files) {
         if (file.endsWith('.js') || file.endsWith('.css')) {
           const stats = await fs.stat(path.join(distPath, file));
           totalSize += stats.size;
         }
       }
-      
+
       return totalSize / 1024; // Convert to KB
     } catch {
       return null;
@@ -400,7 +400,7 @@ class QualityGateValidator {
     // Simuler validation des headers depuis les résultats de tests
     return {
       'content-security-policy': 'present',
-      'x-frame-options': 'DENY', 
+      'x-frame-options': 'DENY',
       'x-content-type-options': 'nosniff',
       'strict-transport-security': 'max-age=31536000'
     };
@@ -418,14 +418,14 @@ class QualityGateValidator {
       performance: 25,
       security: 20
     };
-    
+
     let score = 0;
     for (const [category, weight] of Object.entries(weights)) {
       if (this.results[category]?.passed) {
         score += weight;
       }
     }
-    
+
     return score;
   }
 
@@ -470,9 +470,9 @@ class QualityGateValidator {
 - **Test Execution:** ≤5min
 - **Security Vulnerabilities:** 0
 
-${report.overall.passed ? 
-  '## ✅ Ready for Production Deployment\n\nAll quality gates have been passed. Phase 4 TrustBoost is ready for production deployment.' :
-  '## ❌ Deployment Blocked\n\nOne or more quality gates have failed. Please address the issues before proceeding with deployment.'
+${report.overall.passed ?
+    '## ✅ Ready for Production Deployment\n\nAll quality gates have been passed. Phase 4 TrustBoost is ready for production deployment.' :
+    '## ❌ Deployment Blocked\n\nOne or more quality gates have failed. Please address the issues before proceeding with deployment.'
 }
 `;
   }
@@ -485,7 +485,7 @@ ${report.overall.passed ?
         const lcpMatch = annotation.description.match(/LCP:\s*(\d+)/);
         const fidMatch = annotation.description.match(/FID:\s*(\d+)/);
         const clsMatch = annotation.description.match(/CLS:\s*([\d.]+)/);
-        
+
         if (lcpMatch) webVitals.lcp = parseInt(lcpMatch[1]);
         if (fidMatch) webVitals.fid = parseInt(fidMatch[1]);
         if (clsMatch) webVitals.cls = parseFloat(clsMatch[1]);
@@ -498,9 +498,9 @@ ${report.overall.passed ?
 // Exécution principale
 async function main() {
   console.log('🚀 Starting Phase 4 TrustBoost Quality Gate Validation...\n');
-  
+
   const validator = new QualityGateValidator();
-  
+
   await validator.validateCoverage();
   await validator.validateWebVitals();
   await validator.validatePerformance();

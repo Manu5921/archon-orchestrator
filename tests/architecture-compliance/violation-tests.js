@@ -1,7 +1,7 @@
 /**
  * Architecture-Compliance V2 - Intentional Violation Tests
  * Tests the architecture compliance system with deliberate violations
- * 
+ *
  * CRITICAL: Validates that the system correctly catches architecture violations
  */
 
@@ -20,7 +20,7 @@ describe('Architecture Compliance Violation Detection', () => {
     // Create test architecture document
     testProjectPath = path.join(process.cwd(), 'tests', 'fixtures', 'test-project');
     await fs.mkdir(testProjectPath, { recursive: true });
-    
+
     testArchitectureDoc = `# Test Architecture Document
 
 ## Technology Stack - IMMUTABLE DECISIONS
@@ -71,7 +71,7 @@ src/
     } catch (error) {
       console.warn('Cleanup warning:', error.message);
     }
-    
+
     // Clear system state
     architectureValidationPipeline.resetMetrics();
     architectureContextInjection.clearInjectionLog();
@@ -114,7 +114,7 @@ if __name__ == '__main__':
 
       expect(result.success).toBe(false);
       expect(parseFloat(result.complianceScore)).toBeLessThan(50);
-      
+
       const violations = result.violations.map(v => v.violations).flat();
       expect(violations.some(v => v.includes('Flask') || v.includes('Python'))).toBe(true);
       expect(violations.some(v => v.includes('Node.js') || v.includes('Express'))).toBe(true);
@@ -159,7 +159,7 @@ export async function getUsers() {
 
       expect(result.success).toBe(false);
       expect(parseFloat(result.complianceScore)).toBeLessThan(60);
-      
+
       const violations = result.violations.map(v => v.violations).flat();
       expect(violations.some(v => v.includes('MongoDB') || v.includes('mongoose'))).toBe(true);
       expect(violations.some(v => v.includes('Supabase'))).toBe(true);
@@ -216,7 +216,7 @@ export default defineComponent({
       );
 
       expect(result.success).toBe(false);
-      
+
       const violations = result.violations.map(v => v.violations).flat();
       expect(violations.some(v => v.toLowerCase().includes('vue'))).toBe(true);
       expect(violations.some(v => v.includes('Next.js') || v.includes('React'))).toBe(true);
@@ -226,7 +226,7 @@ export default defineComponent({
   describe('File Structure Violations', () => {
     it('should detect naming convention violations', async () => {
       const violatingTaskResult = {
-        code: `export default function user_profile() { return <div>Profile</div>; }`,
+        code: 'export default function user_profile() { return <div>Profile</div>; }',
         filePaths: [
           'src/components/user_profile.jsx', // Should be UserProfile.tsx
           'src/pages/UserDashboard.tsx', // Should be user-dashboard.tsx
@@ -246,7 +246,7 @@ export default defineComponent({
       );
 
       expect(result.success).toBe(false);
-      
+
       const violations = result.violations.map(v => v.violations).flat();
       expect(violations.some(v => v.includes('naming convention') || v.includes('structure'))).toBe(true);
     });
@@ -272,7 +272,7 @@ export default defineComponent({
       );
 
       expect(result.success).toBe(false);
-      
+
       const violations = result.violations.map(v => v.violations).flat();
       expect(violations.some(v => v.includes('structure') || v.includes('directory'))).toBe(true);
     });
@@ -313,7 +313,7 @@ db.query(query, (err, results) => {
       );
 
       expect(result.success).toBe(false);
-      
+
       const violations = result.violations.map(v => v.violations).flat();
       // Note: Security detection is basic in our current implementation
       // This test validates that the security gate runs, even if detection is limited
@@ -349,7 +349,7 @@ def get_users():
         `,
         filePaths: [
           'backend/django_app.py', // Wrong directory structure
-          'frontend/vue_component.vue', // Wrong framework
+          'frontend/vue_component.vue' // Wrong framework
         ],
         files: {
           'backend/django_app.py': 'Django instead of Express',
@@ -374,7 +374,7 @@ def get_users():
 
         // Pipeline should fail with multiple violations
         expect(pipelineResult.success).toBe(false);
-        
+
       } catch (error) {
         // Pipeline should throw due to multiple blocking violations
         expect(error.message).toContain('ARCHITECTURE');
@@ -429,11 +429,11 @@ export default app;
   describe('Context Injection Validation', () => {
     it('should properly inject architecture context before validation', async () => {
       const originalPrompt = 'Create a user authentication system';
-      
+
       // Change to test project directory
       const originalCwd = process.cwd();
       process.chdir(testProjectPath);
-      
+
       try {
         const contextResult = await architectureContextInjection.injectArchitectureContext(
           'backend',
@@ -447,7 +447,7 @@ export default app;
         expect(contextResult.enhancedPrompt).toContain('Express.js');
         expect(contextResult.architectureContext.techStack.backend).toContain('Node.js');
         expect(contextResult.architectureContext.techStack.database).toContain('Supabase');
-        
+
       } finally {
         process.chdir(originalCwd);
       }
@@ -457,10 +457,10 @@ export default app;
       // Create project without architecture document
       const noArchProjectPath = path.join(process.cwd(), 'tests', 'fixtures', 'no-arch-project');
       await fs.mkdir(noArchProjectPath, { recursive: true });
-      
+
       const originalCwd = process.cwd();
       process.chdir(noArchProjectPath);
-      
+
       try {
         await expect(
           architectureContextInjection.injectArchitectureContext(
@@ -469,7 +469,7 @@ export default app;
             'Task without architecture'
           )
         ).rejects.toThrow('ARCHITECTURE COMPLIANCE VIOLATION');
-        
+
       } finally {
         process.chdir(originalCwd);
         await fs.rm(noArchProjectPath, { recursive: true, force: true });
@@ -494,7 +494,7 @@ export default app;
       }
 
       const stats = architectureValidationPipeline.getExecutionStats();
-      
+
       expect(stats.totalExecutions).toBeGreaterThanOrEqual(3);
       expect(stats.averageExecutionTime).toBeGreaterThan(0);
       expect(stats.recentExecutions.length).toBeGreaterThan(0);
@@ -508,9 +508,9 @@ export default app;
       };
 
       await architectureValidationPipeline.quickValidation(taskResult, 'backend', 'Simple test');
-      
+
       const gateStats = architectureQualityGates.getExecutionStats();
-      
+
       expect(gateStats.totalExecutions).toBeGreaterThan(0);
       expect(gateStats.mostRecentExecution).toBeDefined();
       expect(parseFloat(gateStats.failureRate)).toBeGreaterThanOrEqual(0);

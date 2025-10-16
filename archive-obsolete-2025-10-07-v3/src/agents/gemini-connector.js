@@ -10,13 +10,13 @@ export class GeminiConnector extends EventEmitter {
     this.contexts = new Map();
     this.initialized = false;
   }
-  
+
   async healthCheck() {
     // SOLUTION ESM: Utiliser le wrapper au lieu d'appel direct
     if (!this.initialized) {
       const initResult = await this.cliWrapper.initialize();
       this.initialized = true;
-      
+
       if (initResult.success) {
         this.healthy = true;
         return {
@@ -38,18 +38,18 @@ export class GeminiConnector extends EventEmitter {
     // Check wrapper health for already initialized instance
     const wrapperHealth = await this.cliWrapper.healthCheck();
     this.healthy = wrapperHealth.healthy;
-    
+
     return wrapperHealth;
   }
-  
+
   async execute(taskId, command, args = []) {
     const startTime = Date.now();
     logger.debug(`🚀 Gemini executing task ${taskId}: ${command}`);
-    
+
     try {
       // 🌉 HYBRID APPROACH: Try Bridge first, fallback to CLI wrapper
       let result;
-      
+
       // Check if Bridge is available
       const bridgeUrl = process.env.GEMINI_API_URL;
       if (bridgeUrl) {
@@ -64,7 +64,7 @@ export class GeminiConnector extends EventEmitter {
         // Direct CLI wrapper fallback
         result = await this.executeCLI(command, args);
       }
-      
+
       // Emit output events for compatibility
       if (result.stdout) {
         this.emit('output', { taskId, data: result.stdout, stream: 'stdout' });
@@ -72,9 +72,9 @@ export class GeminiConnector extends EventEmitter {
       if (result.stderr) {
         this.emit('output', { taskId, data: result.stderr, stream: 'stderr' });
       }
-      
+
       const duration = Date.now() - startTime;
-      
+
       return {
         success: result.success,
         output: result.stdout || result.output || 'No output',
@@ -83,10 +83,10 @@ export class GeminiConnector extends EventEmitter {
         mode: result.mode || 'normal',
         fallback_reason: result.fallback_reason
       };
-      
+
     } catch (error) {
       logger.error(`❌ Gemini execution failed for task ${taskId}:`, error);
-      
+
       return {
         success: false,
         output: '',
@@ -95,11 +95,11 @@ export class GeminiConnector extends EventEmitter {
       };
     }
   }
-  
+
   async exportContext(taskId) {
     // Get context for a specific task
     const context = this.contexts.get(taskId) || {};
-    
+
     return {
       agent: 'gemini',
       task_id: taskId,
@@ -109,7 +109,7 @@ export class GeminiConnector extends EventEmitter {
       timestamp: new Date().toISOString()
     };
   }
-  
+
   async importContext(taskId, context) {
     // Import context from another agent
     this.contexts.set(taskId, {
@@ -117,33 +117,33 @@ export class GeminiConnector extends EventEmitter {
       imported_from: context.previous_agent,
       imported_at: new Date().toISOString()
     });
-    
+
     logger.debug(`Gemini imported context for task ${taskId}`);
-    
+
     return { success: true };
   }
-  
+
   async syncContext(contextType, data) {
     // Sync specific context type
     logger.debug(`Gemini syncing ${contextType} context`);
-    
+
     // Store in internal cache
     this.contexts.set(`sync_${contextType}`, data);
-    
+
     return { success: true };
   }
-  
+
   async exploreApproaches(taskDescription, count = 3) {
     // Gemini's special ability: rapid exploration
     const approaches = [];
-    
+
     for (let i = 0; i < count; i++) {
       const result = await this.execute(
         `explore_${i}`,
         'explore',
         [`"${taskDescription}"`, '--quick', '--creative']
       );
-      
+
       if (result.success) {
         approaches.push({
           approach_id: i + 1,
@@ -152,48 +152,48 @@ export class GeminiConnector extends EventEmitter {
         });
       }
     }
-    
+
     return approaches;
   }
-  
+
   async iterate(taskId, previousResult, refinement) {
     // Gemini's iterative refinement
     const context = this.contexts.get(taskId) || { iterations: 0 };
     context.iterations++;
-    
+
     const result = await this.execute(
       taskId,
       'refine',
       [`"${refinement}"`, '--previous', JSON.stringify(previousResult)]
     );
-    
+
     context.last_iteration = result;
     this.contexts.set(taskId, context);
-    
+
     return result;
   }
-  
+
   /**
    * Execute via Bridge HTTP API (preferred)
    */
   async executeBridge(command, args, bridgeUrl) {
     const prompt = this.buildPrompt(command, args);
-    
+
     const response = await fetch(`${bridgeUrl}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt })
     });
-    
+
     if (!response.ok) {
       throw new Error(`Bridge HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     const result = await response.json();
     if (!result.ok) {
       throw new Error(result.error || 'Bridge execution failed');
     }
-    
+
     return {
       success: true,
       stdout: result.text,
@@ -202,46 +202,46 @@ export class GeminiConnector extends EventEmitter {
       timestamp: result.timestamp
     };
   }
-  
+
   /**
    * Execute via CLI wrapper (fallback)
    */
   async executeCLI(command, args) {
     switch (command) {
-      case 'explore_project':
-        const projectDescription = args[0]?.prompt || args[0] || 'Unknown project';
-        return await this.cliWrapper.exploreProject(projectDescription, {
-          quick: args[0]?.exploration_type === 'quick',
-          creative: args[0]?.exploration_type === 'creative' || true
-        });
-        
-      case 'review_code':
-        const code = args[0] || 'No code provided';
-        const requirements = args[1] || 'Basic requirements';
-        return await this.cliWrapper.reviewCode(code, requirements);
-        
-      case 'explore':
-        const description = args[0] || 'No description provided';
-        return await this.cliWrapper.exploreProject(description, {
-          quick: args.includes('--quick'),
-          creative: args.includes('--creative')
-        });
-        
-      default:
-        // Fallback pour les commandes non spécialisées
-        return await this.cliWrapper.executeCommand([command, ...args]);
+    case 'explore_project':
+      const projectDescription = args[0]?.prompt || args[0] || 'Unknown project';
+      return await this.cliWrapper.exploreProject(projectDescription, {
+        quick: args[0]?.exploration_type === 'quick',
+        creative: args[0]?.exploration_type === 'creative' || true
+      });
+
+    case 'review_code':
+      const code = args[0] || 'No code provided';
+      const requirements = args[1] || 'Basic requirements';
+      return await this.cliWrapper.reviewCode(code, requirements);
+
+    case 'explore':
+      const description = args[0] || 'No description provided';
+      return await this.cliWrapper.exploreProject(description, {
+        quick: args.includes('--quick'),
+        creative: args.includes('--creative')
+      });
+
+    default:
+      // Fallback pour les commandes non spécialisées
+      return await this.cliWrapper.executeCommand([command, ...args]);
     }
   }
-  
+
   /**
    * Build prompt for both Bridge and CLI
    */
   buildPrompt(command, args) {
     const [mainArg, ...contextArgs] = args;
-    
+
     switch (command) {
-      case 'explore_project':
-        return `🚀 **Creative Project Exploration**
+    case 'explore_project':
+      return `🚀 **Creative Project Exploration**
 
 Project: ${mainArg?.prompt || mainArg || 'Unknown project'}
 Context: ${contextArgs.join(', ')}
@@ -256,8 +256,8 @@ Please provide multiple innovative approaches with:
 
 Focus on creative problem-solving and innovative thinking.`;
 
-      case 'review_code':
-        return `🎨 **Creative Code Review**
+    case 'review_code':
+      return `🎨 **Creative Code Review**
 
 Code to review: ${mainArg || 'No code provided'}
 Requirements: ${contextArgs[0] || 'General enhancement'}
@@ -269,8 +269,8 @@ Please provide:
 4. **Alternative Approaches** (different ways to solve)
 5. **Future Evolution** (how this could grow)`;
 
-      default:
-        return `🌟 **Creative Gemini Task**
+    default:
+      return `🌟 **Creative Gemini Task**
 
 Command: ${command}
 Input: ${mainArg || 'No input provided'}

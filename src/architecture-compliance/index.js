@@ -1,510 +1,776 @@
-/**
- * Architecture-Compliance V2 - Main Integration Module
- * Central orchestration for complete architecture compliance system
- * 
- * CRITICAL: Single entry point for all architecture compliance operations
- */
-
-import { architectureContextInjection } from './context-injection.js';
-import { architectureQualityGates } from './quality-gates.js';
-import { architectureValidationPipeline } from './validation-pipeline.js';
-import { Logger } from '../utils/logger.js';
-
-const logger = new Logger('ArchCompliance');
+#!/usr/bin/env node
 
 /**
- * Architecture Compliance V2 System
- * Complete integration of context injection, quality gates, and validation pipeline
+ * GDPR COMPLIANCE SYSTEM - MAIN INTEGRATION MODULE
+ *
+ * Phase 4 TrustBoost - Complete GDPR compliance system
+ * Integrates all compliance components for full regulatory compliance
+ *
+ * Components:
+ * - Granular consent management system
+ * - Automated data export/deletion (<24h SLA)
+ * - Comprehensive audit trail (WHO, WHAT, WHEN)
+ * - Legally validated documents (CGU/CGV, Privacy Policy)
+ * - GDPR certification and validation system
  */
-export class ArchitectureComplianceSystem {
+
+import { EventEmitter } from 'events';
+import { logger } from '../utils/logger.js';
+
+// Import GDPR compliance components
+import { consentManager } from './consent-manager.js';
+import { dataProcessor } from './data-processor.js';
+import { auditTrailSystem } from './audit-trail-system.js';
+import { legalDocumentsGenerator } from './legal-documents.js';
+import { gdprValidator } from './gdpr-validator.js';
+
+/**
+ * Main GDPR Compliance System Integration
+ */
+export class GDPRComplianceSystem extends EventEmitter {
   constructor(options = {}) {
-    this.logger = new Logger('ArchComplianceSystem');
-    this.options = {
-      strictMode: true,
-      enableContinuousValidation: false,
-      enableReporting: true,
+    super();
+
+    this.config = {
+      // System configuration
+      environment: process.env.NODE_ENV || 'production',
+      systemName: 'TrustBoost GDPR Compliance System',
+      version: '2024.1',
+
+      // Component configuration
+      components: {
+        consentManager: { enabled: true, required: true },
+        dataProcessor: { enabled: true, required: true },
+        auditTrailSystem: { enabled: true, required: true },
+        legalDocuments: { enabled: true, required: true },
+        gdprValidator: { enabled: true, required: false }
+      },
+
+      // Integration settings
+      integration: {
+        autoInitialize: true,
+        healthCheckInterval: 30000, // 30 seconds
+        complianceCheckInterval: 24 * 60 * 60 * 1000, // 24 hours
+        reportingInterval: 7 * 24 * 60 * 60 * 1000 // Weekly
+      },
+
       ...options
     };
-    
-    this.systemMetrics = {
-      totalOperations: 0,
-      successfulOperations: 0,
-      systemStartTime: new Date().toISOString(),
-      lastOperation: null
+
+    this.components = {};
+    this.systemHealth = {
+      status: 'initializing',
+      components: {},
+      lastCheck: null,
+      uptime: Date.now()
     };
+
+    this.complianceStatus = {
+      score: null,
+      certification: null,
+      lastAudit: null,
+      nextAuditDue: null
+    };
+
+    this.initialized = false;
+
+    // Auto-initialize if enabled
+    if (this.config.integration.autoInitialize) {
+      this.init();
+    }
   }
 
   /**
-   * Execute complete architecture compliance workflow for agent task
-   * This is the main entry point for integrating architecture compliance
-   * 
-   * @param {Object} agentTask - Agent task configuration
-   * @param {string} agentTask.agentType - Type of agent (backend, frontend, etc.)
-   * @param {string} agentTask.originalPrompt - Original task prompt
-   * @param {string} agentTask.taskDescription - Task description
-   * @param {Function} agentTask.taskExecutor - Function to execute the actual task
-   * @param {Object} options - Execution options
-   * @returns {Promise<Object>} Complete compliance workflow result
+   * Initialize the complete GDPR compliance system
    */
-  async executeCompliantAgentTask(agentTask, options = {}) {
-    const operationId = `compliance-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const startTime = Date.now();
-    
-    this.logger.info(`Starting compliant agent task execution: ${operationId}`);
-    
+  async init() {
     try {
-      // Phase 1: Architecture Context Injection (Pre-Task)
-      this.logger.debug('Phase 1: Injecting architecture context');
-      const contextResult = await architectureContextInjection.injectArchitectureContext(
-        agentTask.agentType,
-        agentTask.originalPrompt,
-        agentTask.taskDescription
-      );
+      logger.info('🚀 Initializing GDPR Compliance System...');
+      logger.info('═══════════════════════════════════════════════');
 
-      // Phase 2: Task Execution with Architecture Context
-      this.logger.debug('Phase 2: Executing task with architecture context');
-      let taskResult = null;
-      
-      if (agentTask.taskExecutor) {
-        taskResult = await agentTask.taskExecutor(
-          contextResult.enhancedPrompt,
-          agentTask.agentType,
-          agentTask.taskDescription,
-          contextResult.architectureContext
-        );
-      } else {
-        // Return enhanced prompt for manual execution
-        this.logger.info('No task executor provided - returning enhanced prompt for manual execution');
-        return {
-          success: true,
-          operationId,
-          phase: 'context_injection_only',
-          contextInjection: contextResult,
-          enhancedPrompt: contextResult.enhancedPrompt,
-          nextSteps: [
-            'Execute task using the enhanced prompt with architecture context',
-            'Run quality gates validation on task results',
-            'Generate compliance report'
-          ]
-        };
-      }
+      const startTime = Date.now();
 
-      // Phase 3: Quality Gates Validation (Post-Task)
-      this.logger.debug('Phase 3: Running quality gates validation');
-      const qualityGatesResult = await architectureQualityGates.executeQualityGates(
-        contextResult.injectionId,
-        taskResult,
-        agentTask.agentType,
-        agentTask.taskDescription
-      );
+      // Initialize core components
+      await this.initializeComponents();
 
-      // Phase 4: Compliance Reporting
-      this.logger.debug('Phase 4: Generating compliance report');
-      const complianceReport = await this.generateSystemComplianceReport(
-        operationId,
-        contextResult,
-        taskResult,
-        qualityGatesResult
-      );
+      // Set up component event listeners
+      this.setupEventListeners();
 
-      // Record successful operation
-      const operationRecord = {
-        operationId,
+      // Generate legal documents
+      await this.generateLegalDocuments();
+
+      // Start monitoring processes
+      this.startHealthMonitoring();
+      this.startComplianceMonitoring();
+      this.startReporting();
+
+      // Perform initial compliance check
+      await this.performInitialComplianceCheck();
+
+      this.initialized = true;
+      const initTime = Date.now() - startTime;
+
+      logger.info('✅ GDPR Compliance System initialized successfully');
+      logger.info(`⏱️ Initialization time: ${initTime}ms`);
+      logger.info('═══════════════════════════════════════════════');
+
+      // Emit system ready event
+      this.emit('systemReady', {
+        initTime,
+        components: Object.keys(this.components).length,
+        complianceScore: this.complianceStatus.score
+      });
+
+      return {
         success: true,
-        executionTime: Date.now() - startTime,
-        agentType: agentTask.agentType,
-        taskDescription: agentTask.taskDescription,
-        complianceScore: qualityGatesResult.complianceScore,
-        phases: {
-          contextInjection: 'completed',
-          taskExecution: 'completed',
-          qualityGates: qualityGatesResult.success ? 'passed' : 'failed',
-          complianceReport: 'generated'
+        initTime,
+        components: this.getComponentStatus(),
+        complianceStatus: this.complianceStatus
+      };
+
+    } catch (error) {
+      logger.error(`❌ Failed to initialize GDPR Compliance System: ${error.message}`);
+      this.systemHealth.status = 'failed';
+      this.emit('systemError', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Initialize all GDPR compliance components
+   */
+  async initializeComponents() {
+    logger.info('🔧 Initializing GDPR compliance components...');
+
+    // Initialize consent manager
+    if (this.config.components.consentManager.enabled) {
+      try {
+        if (!consentManager.initialized) {
+          await consentManager.init();
         }
-      };
-
-      this.recordOperation(operationRecord);
-
-      this.logger.info(`Compliant agent task completed successfully: ${operationId} (${qualityGatesResult.complianceScore}% compliance)`);
-
-      return {
-        success: true,
-        operationId,
-        contextInjection: contextResult,
-        taskResult,
-        qualityGates: qualityGatesResult,
-        complianceReport,
-        operation: operationRecord,
-        // Convenience fields for downstream use
-        complianceScore: qualityGatesResult.complianceScore,
-        compliancePassed: qualityGatesResult.success,
-        architectureContext: contextResult.architectureContext
-      };
-
-    } catch (error) {
-      // Record failed operation
-      const failedOperation = {
-        operationId,
-        success: false,
-        executionTime: Date.now() - startTime,
-        agentType: agentTask.agentType,
-        taskDescription: agentTask.taskDescription,
-        error: error.message
-      };
-
-      this.recordOperation(failedOperation);
-
-      this.logger.error(`Compliant agent task failed: ${operationId} - ${error.message}`);
-      throw new Error(`ARCHITECTURE COMPLIANCE SYSTEM FAILURE [${operationId}]: ${error.message}`);
-    }
-  }
-
-  /**
-   * Quick compliance check for existing task results
-   * Useful for validating already-completed tasks
-   * 
-   * @param {Object} taskResult - Completed task result
-   * @param {string} agentType - Agent type
-   * @param {string} taskDescription - Task description
-   * @returns {Promise<Object>} Quick compliance check result
-   */
-  async quickComplianceCheck(taskResult, agentType, taskDescription) {
-    const checkId = `quick-check-${Date.now()}`;
-    
-    this.logger.info(`Running quick compliance check: ${checkId}`);
-    
-    try {
-      const validationResult = await architectureValidationPipeline.quickValidation(
-        taskResult,
-        agentType,
-        taskDescription
-      );
-
-      this.logger.info(`Quick compliance check completed: ${checkId} (${validationResult.complianceScore}% compliance)`);
-      
-      return {
-        success: validationResult.success,
-        checkId,
-        complianceScore: validationResult.complianceScore,
-        violations: validationResult.violations || [],
-        recommendations: validationResult.recommendations || [],
-        passed: validationResult.success,
-        timestamp: new Date().toISOString()
-      };
-
-    } catch (error) {
-      this.logger.error(`Quick compliance check failed: ${checkId} - ${error.message}`);
-      return {
-        success: false,
-        checkId,
-        complianceScore: '0.00',
-        error: error.message,
-        passed: false,
-        timestamp: new Date().toISOString()
-      };
-    }
-  }
-
-  /**
-   * Get architecture context for manual use
-   * Allows getting architecture context without full task execution
-   * 
-   * @param {string} projectPath - Project path (optional)
-   * @returns {Promise<Object>} Architecture context
-   */
-  async getArchitectureContext(projectPath = process.cwd()) {
-    this.logger.info('Loading architecture context');
-    
-    try {
-      const context = await architectureContextInjection.loadArchitectureContext(projectPath);
-      
-      return {
-        success: true,
-        context,
-        projectPath,
-        documentFound: !!context.documentPath,
-        techStack: context.techStack,
-        constraints: context.constraints,
-        compliance: context.compliance
-      };
-
-    } catch (error) {
-      this.logger.error(`Failed to load architecture context: ${error.message}`);
-      return {
-        success: false,
-        error: error.message,
-        projectPath
-      };
-    }
-  }
-
-  /**
-   * Generate enhanced prompt with architecture context
-   * For use when you want to manually handle task execution
-   * 
-   * @param {string} agentType - Agent type
-   * @param {string} originalPrompt - Original prompt
-   * @param {string} taskDescription - Task description
-   * @returns {Promise<Object>} Enhanced prompt result
-   */
-  async generateEnhancedPrompt(agentType, originalPrompt, taskDescription) {
-    const promptId = `prompt-${Date.now()}`;
-    
-    this.logger.info(`Generating enhanced prompt: ${promptId}`);
-    
-    try {
-      const contextResult = await architectureContextInjection.injectArchitectureContext(
-        agentType,
-        originalPrompt,
-        taskDescription
-      );
-
-      return {
-        success: true,
-        promptId,
-        enhancedPrompt: contextResult.enhancedPrompt,
-        injectionId: contextResult.injectionId,
-        architectureContext: contextResult.architectureContext,
-        complianceChecks: contextResult.complianceChecks,
-        qualityGates: contextResult.qualityGates
-      };
-
-    } catch (error) {
-      this.logger.error(`Failed to generate enhanced prompt: ${promptId} - ${error.message}`);
-      throw new Error(`ENHANCED PROMPT GENERATION FAILURE: ${error.message}`);
-    }
-  }
-
-  /**
-   * Validate task result against quality gates
-   * For use after manual task execution
-   * 
-   * @param {string} injectionId - Context injection ID from enhanced prompt generation
-   * @param {Object} taskResult - Task execution result
-   * @param {string} agentType - Agent type
-   * @param {string} taskDescription - Task description
-   * @returns {Promise<Object>} Quality gates validation result
-   */
-  async validateTaskResult(injectionId, taskResult, agentType, taskDescription) {
-    const validationId = `validation-${Date.now()}`;
-    
-    this.logger.info(`Validating task result: ${validationId}`);
-    
-    try {
-      const gatesResult = await architectureQualityGates.executeQualityGates(
-        injectionId,
-        taskResult,
-        agentType,
-        taskDescription
-      );
-
-      return {
-        success: gatesResult.success,
-        validationId,
-        complianceScore: gatesResult.complianceScore,
-        results: gatesResult.results,
-        violations: gatesResult.results.gateResults.filter(g => !g.passed),
-        recommendations: gatesResult.results.gateResults.flatMap(g => g.recommendations || [])
-      };
-
-    } catch (error) {
-      this.logger.error(`Task result validation failed: ${validationId} - ${error.message}`);
-      throw new Error(`TASK VALIDATION FAILURE: ${error.message}`);
-    }
-  }
-
-  /**
-   * Generate system-level compliance report
-   * @param {string} operationId - Operation ID
-   * @param {Object} contextResult - Context injection result
-   * @param {Object} taskResult - Task result
-   * @param {Object} qualityGatesResult - Quality gates result
-   * @returns {Promise<Object>} System compliance report
-   */
-  async generateSystemComplianceReport(operationId, contextResult, taskResult, qualityGatesResult) {
-    return {
-      operationId,
-      timestamp: new Date().toISOString(),
-      system: {
-        version: '2.0',
-        components: ['context-injection', 'quality-gates', 'validation-pipeline'],
-        strictMode: this.options.strictMode
-      },
-      compliance: {
-        overallScore: qualityGatesResult.complianceScore,
-        status: qualityGatesResult.success ? 'COMPLIANT' : 'VIOLATIONS_DETECTED',
-        contextInjected: !!contextResult.injectionId,
-        qualityGatesPassed: qualityGatesResult.success,
-        violationsCount: qualityGatesResult.results?.failedGates || 0,
-        blockingViolations: qualityGatesResult.results?.blockingFailures || 0
-      },
-      details: {
-        architectureDocument: contextResult.architectureContext?.documentPath || 'NOT_FOUND',
-        techStack: contextResult.architectureContext?.techStack || {},
-        constraintsChecked: contextResult.architectureContext?.constraints?.length || 0,
-        qualityGatesExecuted: qualityGatesResult.results?.totalGates || 0
-      },
-      recommendations: this.generateSystemRecommendations(contextResult, qualityGatesResult)
-    };
-  }
-
-  /**
-   * Generate system-level recommendations
-   * @param {Object} contextResult - Context result
-   * @param {Object} qualityGatesResult - Quality gates result
-   * @returns {Array} System recommendations
-   */
-  generateSystemRecommendations(contextResult, qualityGatesResult) {
-    const recommendations = [];
-
-    if (!contextResult?.architectureContext?.documentPath) {
-      recommendations.push({
-        priority: 'CRITICAL',
-        category: 'ARCHITECTURE_DOCUMENTATION',
-        message: 'Create comprehensive architecture document',
-        action: 'Use provided template to create ARCHITECTURE.md in project root'
-      });
-    }
-
-    if (qualityGatesResult?.results?.blockingFailures > 0) {
-      recommendations.push({
-        priority: 'CRITICAL',
-        category: 'QUALITY_GATES',
-        message: `${qualityGatesResult.results.blockingFailures} blocking quality gates failed`,
-        action: 'Resolve all blocking violations before proceeding with deployment'
-      });
-    }
-
-    if (parseFloat(qualityGatesResult?.complianceScore || '0') < 80) {
-      recommendations.push({
-        priority: 'HIGH',
-        category: 'COMPLIANCE_SCORE',
-        message: 'Architecture compliance score below recommended threshold (80%)',
-        action: 'Review and address architecture violations to improve compliance'
-      });
-    }
-
-    return recommendations;
-  }
-
-  /**
-   * Get comprehensive system statistics
-   * @returns {Object} System statistics
-   */
-  getSystemStats() {
-    const contextStats = architectureContextInjection.getComplianceStats();
-    const gatesStats = architectureQualityGates.getExecutionStats();
-    const pipelineStats = architectureValidationPipeline.getExecutionStats();
-
-    return {
-      system: {
-        ...this.systemMetrics,
-        uptime: this.calculateUptime(),
-        successRate: this.systemMetrics.totalOperations > 0 ? 
-          (this.systemMetrics.successfulOperations / this.systemMetrics.totalOperations * 100).toFixed(2) : '0.00'
-      },
-      contextInjection: contextStats,
-      qualityGates: gatesStats,
-      validationPipeline: pipelineStats,
-      summary: {
-        totalCompliantOperations: this.systemMetrics.successfulOperations,
-        averageComplianceScore: this.calculateAverageComplianceScore(),
-        mostCommonViolations: this.getMostCommonViolations(),
-        systemHealth: this.getSystemHealth()
+        this.components.consentManager = consentManager;
+        logger.info('✅ Consent Manager initialized');
+      } catch (error) {
+        logger.error(`❌ Consent Manager failed: ${error.message}`);
+        if (this.config.components.consentManager.required) {
+          throw error;
+        }
       }
-    };
-  }
-
-  /**
-   * Record system operation
-   * @param {Object} operation - Operation record
-   */
-  recordOperation(operation) {
-    this.systemMetrics.totalOperations++;
-    if (operation.success) {
-      this.systemMetrics.successfulOperations++;
     }
-    this.systemMetrics.lastOperation = operation;
+
+    // Initialize data processor
+    if (this.config.components.dataProcessor.enabled) {
+      try {
+        if (!dataProcessor.initialized) {
+          await dataProcessor.init();
+        }
+        this.components.dataProcessor = dataProcessor;
+        logger.info('✅ Data Processor initialized');
+      } catch (error) {
+        logger.error(`❌ Data Processor failed: ${error.message}`);
+        if (this.config.components.dataProcessor.required) {
+          throw error;
+        }
+      }
+    }
+
+    // Initialize audit trail system
+    if (this.config.components.auditTrailSystem.enabled) {
+      try {
+        if (!auditTrailSystem.initialized) {
+          await auditTrailSystem.init();
+        }
+        this.components.auditTrailSystem = auditTrailSystem;
+        logger.info('✅ Audit Trail System initialized');
+      } catch (error) {
+        logger.error(`❌ Audit Trail System failed: ${error.message}`);
+        if (this.config.components.auditTrailSystem.required) {
+          throw error;
+        }
+      }
+    }
+
+    // Initialize GDPR validator
+    if (this.config.components.gdprValidator.enabled) {
+      try {
+        if (!gdprValidator.initialized) {
+          await gdprValidator.init();
+        }
+        this.components.gdprValidator = gdprValidator;
+        logger.info('✅ GDPR Validator initialized');
+      } catch (error) {
+        logger.error(`❌ GDPR Validator failed: ${error.message}`);
+        if (this.config.components.gdprValidator.required) {
+          throw error;
+        }
+      }
+    }
   }
 
   /**
-   * Calculate system uptime
-   * @returns {string} Uptime in human readable format
+   * Set up event listeners for component coordination
    */
-  calculateUptime() {
-    const startTime = new Date(this.systemMetrics.systemStartTime);
-    const uptime = Date.now() - startTime.getTime();
-    const hours = Math.floor(uptime / (1000 * 60 * 60));
-    const minutes = Math.floor((uptime % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
+  setupEventListeners() {
+    logger.info('🔗 Setting up component event listeners...');
+
+    // Consent Manager events
+    if (this.components.consentManager) {
+      this.components.consentManager.on('consentChanged', async (event) => {
+        await this.handleConsentChanged(event);
+      });
+
+      this.components.consentManager.on('consentWithdrawn', async (event) => {
+        await this.handleConsentWithdrawn(event);
+      });
+    }
+
+    // Data Processor events
+    if (this.components.dataProcessor) {
+      this.components.dataProcessor.on('exportCompleted', async (event) => {
+        await this.handleExportCompleted(event);
+      });
+
+      this.components.dataProcessor.on('deletionCompleted', async (event) => {
+        await this.handleDeletionCompleted(event);
+      });
+
+      this.components.dataProcessor.on('slaBreached', async (event) => {
+        await this.handleSLABreach(event);
+      });
+    }
+
+    // Audit Trail System events
+    if (this.components.auditTrailSystem) {
+      this.components.auditTrailSystem.on('criticalEvent', async (event) => {
+        await this.handleCriticalAuditEvent(event);
+      });
+
+      this.components.auditTrailSystem.on('dataBreachDetected', async (event) => {
+        await this.handleDataBreach(event);
+      });
+    }
+
+    logger.info('✅ Event listeners configured');
   }
 
   /**
-   * Calculate average compliance score across operations
-   * @returns {string} Average compliance score
+   * Generate legal documents
    */
-  calculateAverageComplianceScore() {
-    // This would need to be implemented based on stored operation history
-    return this.systemMetrics.lastOperation?.complianceScore || '0.00';
+  async generateLegalDocuments() {
+    if (this.config.components.legalDocuments.enabled) {
+      try {
+        logger.info('📄 Generating legal documents...');
+
+        const result = await legalDocumentsGenerator.generateAllDocuments();
+        this.components.legalDocuments = legalDocumentsGenerator;
+
+        logger.info(`✅ Legal documents generated: ${result.documents.join(', ')}`);
+
+        // Log document generation in audit trail
+        if (this.components.auditTrailSystem) {
+          await this.components.auditTrailSystem.logSystemEvent('legal_documents_generated', {
+            documents: result.documents,
+            outputPath: result.outputPath
+          });
+        }
+
+      } catch (error) {
+        logger.error(`❌ Legal documents generation failed: ${error.message}`);
+        if (this.config.components.legalDocuments.required) {
+          throw error;
+        }
+      }
+    }
   }
 
   /**
-   * Get most common violations (placeholder)
-   * @returns {Array} Common violations
+   * Perform initial compliance check
    */
-  getMostCommonViolations() {
-    return [
-      'Technology stack violations',
-      'File naming convention violations',
-      'Architecture constraint violations'
-    ];
+  async performInitialComplianceCheck() {
+    if (this.components.gdprValidator) {
+      try {
+        logger.info('🔍 Performing initial GDPR compliance audit...');
+
+        const audit = await this.components.gdprValidator.performComplianceAudit({
+          type: 'initial_system_audit',
+          triggeredBy: 'system_initialization'
+        });
+
+        this.complianceStatus = {
+          score: audit.overallCompliance.score,
+          status: audit.overallCompliance.status,
+          certification: audit.overallCompliance.certification,
+          lastAudit: audit.startTime,
+          nextAuditDue: audit.nextAuditDate,
+          auditId: audit.id
+        };
+
+        logger.info(`✅ Initial compliance check completed: ${audit.overallCompliance.score}% (${audit.overallCompliance.status})`);
+
+        // Log compliance check
+        if (this.components.auditTrailSystem) {
+          await this.components.auditTrailSystem.logSystemEvent('compliance_check_completed', {
+            auditId: audit.id,
+            score: audit.overallCompliance.score,
+            status: audit.overallCompliance.status,
+            certification: audit.overallCompliance.certification?.certificationLevel
+          });
+        }
+
+        // Emit compliance event
+        this.emit('complianceChecked', {
+          score: audit.overallCompliance.score,
+          status: audit.overallCompliance.status,
+          audit
+        });
+
+      } catch (error) {
+        logger.error(`❌ Initial compliance check failed: ${error.message}`);
+      }
+    }
   }
 
   /**
-   * Get overall system health status
-   * @returns {string} System health
+   * Event handlers for component coordination
    */
-  getSystemHealth() {
-    const successRate = this.systemMetrics.totalOperations > 0 ? 
-      this.systemMetrics.successfulOperations / this.systemMetrics.totalOperations : 1;
 
-    if (successRate >= 0.95) return 'EXCELLENT';
-    if (successRate >= 0.80) return 'GOOD';
-    if (successRate >= 0.60) return 'FAIR';
-    return 'NEEDS_ATTENTION';
+  async handleConsentChanged(event) {
+    const { userId, consentRecord, changedCategories } = event;
+
+    // Log consent change in audit trail
+    if (this.components.auditTrailSystem) {
+      await this.components.auditTrailSystem.logAuditEvent(
+        'consent_updated',
+        userId,
+        {
+          consentId: consentRecord.id,
+          changedCategories,
+          preferences: consentRecord.preferences,
+          legalBasis: consentRecord.legalBasis,
+          processingActivity: 'consent_management'
+        }
+      );
+    }
+
+    // Check if consent changes affect data processing
+    await this.checkConsentImpactOnProcessing(userId, changedCategories);
+
+    this.emit('userConsentChanged', { userId, changedCategories });
+  }
+
+  async handleConsentWithdrawn(event) {
+    const { userId, withdrawalData } = event;
+
+    // Log consent withdrawal
+    if (this.components.auditTrailSystem) {
+      await this.components.auditTrailSystem.logAuditEvent(
+        'consent_withdrawn',
+        userId,
+        {
+          withdrawnCategories: withdrawalData.withdrawnCategories,
+          withdrawalReason: withdrawalData.withdrawalReason,
+          withdrawnAt: withdrawalData.withdrawnAt,
+          processingActivity: 'consent_management'
+        }
+      );
+    }
+
+    // Automatically trigger data deletion if required
+    await this.handleConsentWithdrawalDataImpact(userId, withdrawalData);
+
+    this.emit('userConsentWithdrawn', { userId, withdrawalData });
+  }
+
+  async handleExportCompleted(event) {
+    const { request } = event;
+
+    logger.info(`📤 Data export completed for user ${request.userId} (Request: ${request.id})`);
+
+    // Log export completion
+    if (this.components.auditTrailSystem) {
+      await this.components.auditTrailSystem.logAuditEvent(
+        'data_export_completed',
+        request.userId,
+        {
+          requestId: request.id,
+          exportFiles: request.exportFiles.length,
+          totalSize: request.totalDataSize,
+          format: request.format,
+          completedAt: request.actualCompletionTime,
+          slaStatus: request.slaStatus,
+          processingActivity: 'data_portability'
+        }
+      );
+    }
+
+    this.emit('userDataExported', { userId: request.userId, request });
+  }
+
+  async handleDeletionCompleted(event) {
+    const { request } = event;
+
+    logger.info(`🗑️ Data deletion completed for user ${request.userId} (Request: ${request.id})`);
+
+    // Log deletion completion
+    if (this.components.auditTrailSystem) {
+      await this.components.auditTrailSystem.logAuditEvent(
+        'data_deletion_completed',
+        request.userId,
+        {
+          requestId: request.id,
+          deletedSources: request.deletedDataSources,
+          retainedSources: request.retainedDataSources,
+          completedAt: request.actualCompletionTime,
+          slaStatus: request.slaStatus,
+          processingActivity: 'data_erasure'
+        }
+      );
+    }
+
+    this.emit('userDataDeleted', { userId: request.userId, request });
+  }
+
+  async handleSLABreach(event) {
+    const { request } = event;
+
+    logger.error(`🚨 SLA BREACH: Request ${request.id} (${request.type}) - User ${request.userId}`);
+
+    // Log SLA breach as critical event
+    if (this.components.auditTrailSystem) {
+      await this.components.auditTrailSystem.logAuditEvent(
+        'sla_breach',
+        request.userId,
+        {
+          requestId: request.id,
+          requestType: request.type,
+          slaDeadline: request.slaDeadline,
+          actualTime: new Date().toISOString(),
+          severity: 'critical',
+          processingActivity: 'sla_monitoring'
+        }
+      );
+    }
+
+    this.emit('slaBreached', { request, severity: 'critical' });
+  }
+
+  async handleCriticalAuditEvent(event) {
+    logger.error(`🚨 CRITICAL AUDIT EVENT: ${event.eventType} - ${event.id}`);
+
+    // Escalate critical events
+    this.emit('criticalEvent', {
+      eventType: event.eventType,
+      eventId: event.id,
+      subjectId: event.subjectId,
+      timestamp: event.timestamp,
+      severity: 'critical'
+    });
+  }
+
+  async handleDataBreach(event) {
+    logger.error(`🚨 DATA BREACH DETECTED: ${event.eventData.breachId}`);
+
+    // Immediate breach response
+    await this.initiateBreachResponse(event);
+
+    this.emit('dataBreachDetected', {
+      breachId: event.eventData.breachId,
+      breachType: event.eventData.breachType,
+      affectedSubjects: event.eventData.affectedSubjects,
+      timestamp: event.timestamp
+    });
   }
 
   /**
-   * Reset all system metrics and clear histories
+   * Supporting methods
    */
-  resetSystem() {
-    this.systemMetrics = {
-      totalOperations: 0,
-      successfulOperations: 0,
-      systemStartTime: new Date().toISOString(),
-      lastOperation: null
+
+  async checkConsentImpactOnProcessing(userId, changedCategories) {
+    // Check if withdrawn consent affects ongoing processing
+    if (this.components.consentManager && this.components.dataProcessor) {
+      const consent = this.components.consentManager.getConsent(userId);
+
+      for (const category of changedCategories) {
+        if (!consent.preferences[category]) {
+          // Consent withdrawn for this category - check for data retention requirements
+          logger.info(`🔄 Checking data processing impact for user ${userId}, category: ${category}`);
+
+          // Could trigger automatic data cleanup or processing restriction
+          // Implementation depends on specific business rules
+        }
+      }
+    }
+  }
+
+  async handleConsentWithdrawalDataImpact(userId, withdrawalData) {
+    // Automatically handle data processing changes when consent is withdrawn
+    const { withdrawnCategories } = withdrawalData;
+
+    // Check if any withdrawn categories require data deletion
+    const deletionRequiredCategories = withdrawnCategories.filter(category =>
+      ['marketing', 'analytics'].includes(category) // Example categories that require deletion
+    );
+
+    if (deletionRequiredCategories.length > 0 && this.components.dataProcessor) {
+      logger.info(`🗑️ Initiating automatic data deletion for user ${userId} due to consent withdrawal`);
+
+      // Request automatic data deletion
+      await this.components.dataProcessor.requestDataDeletion(userId, {
+        deletionScope: 'specific',
+        specificDataSources: deletionRequiredCategories,
+        reason: 'consent_withdrawal_automatic',
+        urgency: 'high'
+      });
+    }
+  }
+
+  async initiateBreachResponse(breachEvent) {
+    // Immediate breach response procedures
+    const breachId = breachEvent.eventData.breachId;
+
+    logger.error(`🚨 Initiating breach response for: ${breachId}`);
+
+    // 1. Containment measures
+    // 2. Impact assessment
+    // 3. Notification preparation (72h deadline)
+    // 4. Communication planning
+
+    // This would trigger actual breach response procedures
+  }
+
+  /**
+   * Monitoring and reporting
+   */
+
+  startHealthMonitoring() {
+    setInterval(async () => {
+      try {
+        await this.performHealthCheck();
+      } catch (error) {
+        logger.error(`❌ Health check failed: ${error.message}`);
+      }
+    }, this.config.integration.healthCheckInterval);
+  }
+
+  startComplianceMonitoring() {
+    setInterval(async () => {
+      try {
+        await this.performComplianceCheck();
+      } catch (error) {
+        logger.error(`❌ Compliance check failed: ${error.message}`);
+      }
+    }, this.config.integration.complianceCheckInterval);
+  }
+
+  startReporting() {
+    setInterval(async () => {
+      try {
+        await this.generateSystemReport();
+      } catch (error) {
+        logger.error(`❌ System reporting failed: ${error.message}`);
+      }
+    }, this.config.integration.reportingInterval);
+  }
+
+  async performHealthCheck() {
+    const healthCheck = {
+      timestamp: new Date().toISOString(),
+      status: 'healthy',
+      components: {}
     };
 
-    architectureContextInjection.clearInjectionLog();
-    architectureQualityGates.clearExecutionHistory();
-    architectureValidationPipeline.resetMetrics();
+    // Check each component
+    for (const [name, component] of Object.entries(this.components)) {
+      healthCheck.components[name] = {
+        status: component && component.initialized ? 'healthy' : 'unhealthy',
+        lastActivity: new Date().toISOString(),
+        memoryUsage: process.memoryUsage()
+      };
+    }
 
-    this.logger.info('Architecture Compliance System reset completed');
+    // Overall system status
+    const unhealthyComponents = Object.values(healthCheck.components)
+      .filter(comp => comp.status === 'unhealthy').length;
+
+    if (unhealthyComponents > 0) {
+      healthCheck.status = 'degraded';
+    }
+
+    this.systemHealth = healthCheck;
+
+    // Emit health status
+    this.emit('healthCheck', healthCheck);
+  }
+
+  async performComplianceCheck() {
+    if (this.components.gdprValidator) {
+      const audit = await this.components.gdprValidator.performComplianceAudit({
+        type: 'scheduled_compliance_check',
+        triggeredBy: 'automated_monitoring'
+      });
+
+      this.complianceStatus = {
+        score: audit.overallCompliance.score,
+        status: audit.overallCompliance.status,
+        certification: audit.overallCompliance.certification,
+        lastAudit: audit.startTime,
+        nextAuditDue: audit.nextAuditDate,
+        auditId: audit.id
+      };
+
+      this.emit('complianceChecked', {
+        score: audit.overallCompliance.score,
+        status: audit.overallCompliance.status,
+        audit
+      });
+    }
+  }
+
+  async generateSystemReport() {
+    const report = {
+      timestamp: new Date().toISOString(),
+      systemInfo: {
+        name: this.config.systemName,
+        version: this.config.version,
+        uptime: Date.now() - this.systemHealth.uptime,
+        environment: this.config.environment
+      },
+      healthStatus: this.systemHealth,
+      complianceStatus: this.complianceStatus,
+      componentStatus: this.getComponentStatus()
+    };
+
+    logger.info(`📊 System report generated - Compliance: ${this.complianceStatus.score || 'N/A'}%, Health: ${this.systemHealth.status}`);
+
+    this.emit('systemReport', report);
+
+    return report;
+  }
+
+  /**
+   * Public API methods
+   */
+
+  getSystemStatus() {
+    return {
+      initialized: this.initialized,
+      health: this.systemHealth,
+      compliance: this.complianceStatus,
+      components: this.getComponentStatus()
+    };
+  }
+
+  getComponentStatus() {
+    const status = {};
+
+    for (const [name, component] of Object.entries(this.components)) {
+      status[name] = {
+        initialized: component && component.initialized,
+        active: Boolean(component),
+        lastActivity: new Date().toISOString()
+      };
+    }
+
+    return status;
+  }
+
+  async requestDataExport(userId, options = {}) {
+    if (!this.components.dataProcessor) {
+      throw new Error('Data processor not available');
+    }
+
+    return await this.components.dataProcessor.requestDataExport(userId, options);
+  }
+
+  async requestDataDeletion(userId, options = {}) {
+    if (!this.components.dataProcessor) {
+      throw new Error('Data processor not available');
+    }
+
+    return await this.components.dataProcessor.requestDataDeletion(userId, options);
+  }
+
+  async setUserConsent(userId, consentData, userContext = {}) {
+    if (!this.components.consentManager) {
+      throw new Error('Consent manager not available');
+    }
+
+    return await this.components.consentManager.setConsent(userContext, {
+      ...consentData,
+      userId
+    });
+  }
+
+  async getUserConsent(userId) {
+    if (!this.components.consentManager) {
+      throw new Error('Consent manager not available');
+    }
+
+    return this.components.consentManager.getConsent(userId);
+  }
+
+  async generateComplianceReport() {
+    if (!this.components.gdprValidator) {
+      throw new Error('GDPR validator not available');
+    }
+
+    return await this.components.gdprValidator.generateComplianceReport();
   }
 }
 
-// Export main system instance
-export const architectureComplianceSystem = new ArchitectureComplianceSystem({
-  strictMode: true,
-  enableReporting: true
-});
+// Export singleton instance
+export const gdprComplianceSystem = new GDPRComplianceSystem();
 
-// Export individual components for advanced usage
+// Export all components
 export {
-  architectureContextInjection,
-  architectureQualityGates,
-  architectureValidationPipeline
+  consentManager,
+  dataProcessor,
+  auditTrailSystem,
+  legalDocumentsGenerator,
+  gdprValidator
 };
 
-// Export main system as default
-export default architectureComplianceSystem;
+// Main initialization function
+export async function initializeGDPRCompliance(options = {}) {
+  const system = new GDPRComplianceSystem(options);
+  await system.init();
+  return system;
+}
+
+// Quick start function for simple integration
+export async function quickStartGDPR() {
+  logger.info('🚀 GDPR Quick Start - Initializing TrustBoost Phase 4...');
+
+  const system = await initializeGDPRCompliance({
+    environment: process.env.NODE_ENV || 'production',
+    integration: {
+      autoInitialize: true,
+      healthCheckInterval: 30000,
+      complianceCheckInterval: 24 * 60 * 60 * 1000
+    }
+  });
+
+  logger.info('✅ TrustBoost Phase 4 - GDPR Compliance System ready!');
+  logger.info('🎯 Features: Consent Management, Data Processing, Audit Trail, Legal Docs, Validation');
+  logger.info(`📊 Compliance Score: ${system.complianceStatus.score || 'Calculating...'}%`);
+
+  return system;
+}
+
+// CLI execution
+if (import.meta.url === `file://${process.argv[1]}`) {
+  quickStartGDPR()
+    .then(_system => {
+      logger.info('🎉 GDPR Compliance System started successfully!');
+
+      // Keep process alive for monitoring
+      process.on('SIGINT', async () => {
+        logger.info('👋 Shutting down GDPR Compliance System...');
+        process.exit(0);
+      });
+    })
+    .catch(error => {
+      logger.error(`💥 Failed to start GDPR Compliance System: ${error.message}`);
+      process.exit(1);
+    });
+}

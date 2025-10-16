@@ -21,7 +21,7 @@ class JulesSecurityGuardian {
       'LOW': 4,
       'INFO': 5
     };
-    
+
     this.securityPatterns = {
       // Secrets et credentials
       hardcodedSecrets: [
@@ -30,15 +30,15 @@ class JulesSecurityGuardian {
         /(?:token|jwt)\s*[:=]\s*['"]\w+['"]/gi,
         /(?:database_url|db_url)\s*[:=]\s*['"]\w+['"]/gi
       ],
-      
-      // SQL Injection vulnerabilities  
+
+      // SQL Injection vulnerabilities
       sqlInjection: [
         /query\s*\+=?\s*['"]/gi,
         /exec(ute)?\s*\(\s*['"]/gi,
         /\$\{[^}]*\}/g, // Template literals in queries
         /WHERE\s+\w+\s*=\s*['"]\s*\+/gi
       ],
-      
+
       // XSS vulnerabilities
       xssVulnerabilities: [
         /innerHTML\s*=\s*[^;]*(user|input|param)/gi,
@@ -46,7 +46,7 @@ class JulesSecurityGuardian {
         /eval\s*\(/gi,
         /dangerouslySetInnerHTML/gi
       ],
-      
+
       // Cryptography issues
       weakCrypto: [
         /MD5|SHA1/gi,
@@ -54,7 +54,7 @@ class JulesSecurityGuardian {
         /btoa|atob.*password/gi,
         /crypto\.createHash\(['"]md5/gi
       ],
-      
+
       // Authentication/Authorization
       authIssues: [
         /localStorage\.setItem.*token/gi,
@@ -62,7 +62,7 @@ class JulesSecurityGuardian {
         /cookie.*secure.*false/gi,
         /jwt\.sign\([^,]*,\s*null/gi // JWT without secret
       ],
-      
+
       // CORS misconfigurations
       corsIssues: [
         /Access-Control-Allow-Origin.*\*/g,
@@ -78,7 +78,7 @@ class JulesSecurityGuardian {
   async init() {
     // Create reports directory
     await fs.mkdir(this.securityReportsDir, { recursive: true });
-    
+
     // Load last scan data
     try {
       const data = await fs.readFile(this.lastScanFile, 'utf8');
@@ -86,7 +86,7 @@ class JulesSecurityGuardian {
     } catch (error) {
       this.lastScan = { timestamp: 0, issues: [] };
     }
-    
+
     logger.info('🛡️ Jules Security Guardian initialized');
   }
 
@@ -94,16 +94,16 @@ class JulesSecurityGuardian {
    * Run comprehensive security scan
    */
   async runSecurityScan(options = {}) {
-    const { 
+    const {
       scanType = 'full',
       priority = 'all',
       saveReport = true,
       paths = null
     } = options;
-    
+
     logger.info('🔍 Starting security scan...');
     const startTime = Date.now();
-    
+
     const results = {
       timestamp: new Date().toISOString(),
       scanType,
@@ -117,37 +117,37 @@ class JulesSecurityGuardian {
         lowIssues: 0
       }
     };
-    
+
     try {
       // 1. Code pattern security scan
       const codeIssues = await this.scanCodePatterns({ paths });
       results.issues.push(...codeIssues);
-      
-      // 2. Dependency vulnerability scan  
+
+      // 2. Dependency vulnerability scan
       const depIssues = await this.scanDependencies();
       results.issues.push(...depIssues);
-      
+
       // 3. Configuration security scan
       const configIssues = await this.scanConfigurations();
       results.issues.push(...configIssues);
-      
+
       // 4. OWASP compliance check
       const owaspIssues = await this.checkOWASPCompliance();
       results.issues.push(...owaspIssues);
-      
+
       // 5. Authentication security review
       const authIssues = await this.scanAuthentication();
       results.issues.push(...authIssues);
-      
+
       // Calculate stats
       results.stats = this.calculateSecurityStats(results.issues);
       results.duration = Date.now() - startTime;
-      
+
       // Save results
       if (saveReport) {
         await this.saveSecurityReport(results);
       }
-      
+
       // Update last scan
       this.lastScan = {
         timestamp: Date.now(),
@@ -155,12 +155,12 @@ class JulesSecurityGuardian {
         critical: results.stats.criticalIssues
       };
       await fs.writeFile(this.lastScanFile, JSON.stringify(this.lastScan, null, 2));
-      
+
       logger.info(`✅ Security scan completed in ${results.duration}ms`);
       logger.info(`🚨 Found ${results.issues.length} security issues`);
-      
+
       return results;
-      
+
     } catch (error) {
       logger.error(`❌ Security scan failed: ${error.message}`);
       throw error;
@@ -172,10 +172,10 @@ class JulesSecurityGuardian {
    */
   async scanCodePatterns(options = {}) {
     const { paths = null } = options;
-    
+
     logger.info('🔍 Scanning code patterns...');
     const issues = [];
-    
+
     // Get files from custom paths or default source files
     let files;
     if (paths && paths.length > 0) {
@@ -202,11 +202,11 @@ class JulesSecurityGuardian {
         '**/*.vue', '**/*.py', '**/*.php'
       ]);
     }
-    
+
     for (const file of files) {
       try {
         const content = await fs.readFile(file, 'utf8');
-        
+
         // Check each security pattern
         for (const [category, patterns] of Object.entries(this.securityPatterns)) {
           for (const pattern of patterns) {
@@ -225,12 +225,12 @@ class JulesSecurityGuardian {
             }
           }
         }
-        
+
       } catch (error) {
         logger.warn(`⚠️ Could not scan file ${file}: ${error.message}`);
       }
     }
-    
+
     logger.info(`📊 Found ${issues.length} code pattern issues`);
     return issues;
   }
@@ -241,15 +241,15 @@ class JulesSecurityGuardian {
   async scanDependencies() {
     logger.info('📦 Scanning dependencies...');
     const issues = [];
-    
+
     try {
       // Check if package.json exists
       const packagePath = 'package.json';
       await fs.access(packagePath);
-      
+
       // Run npm audit
       const auditResult = await this.runCommand('npm', ['audit', '--json']);
-      
+
       if (auditResult.vulnerabilities) {
         for (const [pkg, vuln] of Object.entries(auditResult.vulnerabilities)) {
           issues.push({
@@ -265,11 +265,11 @@ class JulesSecurityGuardian {
           });
         }
       }
-      
+
     } catch (error) {
       logger.warn(`⚠️ Dependency scan failed: ${error.message}`);
     }
-    
+
     logger.info(`📊 Found ${issues.length} dependency vulnerabilities`);
     return issues;
   }
@@ -280,28 +280,28 @@ class JulesSecurityGuardian {
   async scanConfigurations() {
     logger.info('⚙️ Scanning configurations...');
     const issues = [];
-    
+
     const configFiles = [
       '.env', '.env.local', '.env.production',
       'config.js', 'config.json',
       'docker-compose.yml', 'Dockerfile',
       'nginx.conf', 'apache.conf'
     ];
-    
+
     for (const file of configFiles) {
       try {
         await fs.access(file);
         const content = await fs.readFile(file, 'utf8');
-        
+
         // Check for common config security issues
         const configIssues = this.checkConfigSecurity(file, content);
         issues.push(...configIssues);
-        
+
       } catch (error) {
         // File doesn't exist, skip
       }
     }
-    
+
     logger.info(`📊 Found ${issues.length} configuration issues`);
     return issues;
   }
@@ -312,7 +312,7 @@ class JulesSecurityGuardian {
   async checkOWASPCompliance() {
     logger.info('🛡️ Checking OWASP compliance...');
     const issues = [];
-    
+
     const owaspChecks = {
       'A01_Broken_Access_Control': () => this.checkAccessControl(),
       'A02_Cryptographic_Failures': () => this.checkCryptography(),
@@ -325,7 +325,7 @@ class JulesSecurityGuardian {
       'A09_Logging_Failures': () => this.checkLoggingFailures(),
       'A10_SSRF': () => this.checkSSRF()
     };
-    
+
     for (const [check, fn] of Object.entries(owaspChecks)) {
       try {
         const checkIssues = await fn();
@@ -338,7 +338,7 @@ class JulesSecurityGuardian {
         logger.warn(`⚠️ OWASP check ${check} failed: ${error.message}`);
       }
     }
-    
+
     logger.info(`📊 Found ${issues.length} OWASP compliance issues`);
     return issues;
   }
@@ -349,14 +349,14 @@ class JulesSecurityGuardian {
   async scanAuthentication() {
     logger.info('🔐 Scanning authentication...');
     const issues = [];
-    
+
     // Find auth-related files
     const authFiles = await this.getSourceFiles([
       '**/auth/**/*.js', '**/auth/**/*.ts',
       '**/login/**/*.js', '**/login/**/*.ts',
       '**/middleware/**/*.js', '**/middleware/**/*.ts'
     ]);
-    
+
     for (const file of authFiles) {
       try {
         const content = await fs.readFile(file, 'utf8');
@@ -366,7 +366,7 @@ class JulesSecurityGuardian {
         logger.warn(`⚠️ Could not scan auth file ${file}: ${error.message}`);
       }
     }
-    
+
     logger.info(`📊 Found ${issues.length} authentication issues`);
     return issues;
   }
@@ -376,9 +376,9 @@ class JulesSecurityGuardian {
    */
   async generateSecurityReport(scanData = null) {
     logger.info('📋 Generating security report...');
-    
+
     const scan = scanData || await this.runSecurityScan();
-    
+
     const report = {
       executiveSummary: this.generateExecutiveSummary(scan),
       detailedFindings: this.groupIssuesByCategory(scan.issues),
@@ -387,16 +387,16 @@ class JulesSecurityGuardian {
       complianceStatus: this.checkComplianceStatus(scan.issues),
       actionPlan: this.createActionPlan(scan.issues)
     };
-    
+
     // Save comprehensive report
     const reportPath = path.join(this.securityReportsDir, `security-report-${new Date().toISOString().split('T')[0]}.json`);
     await fs.writeFile(reportPath, JSON.stringify(report, null, 2));
-    
+
     // Generate markdown report
     const markdownReport = this.generateMarkdownReport(report);
     const mdPath = path.join(this.securityReportsDir, `security-report-${new Date().toISOString().split('T')[0]}.md`);
     await fs.writeFile(mdPath, markdownReport);
-    
+
     logger.info(`✅ Security report saved to ${reportPath}`);
     return report;
   }
@@ -413,15 +413,15 @@ class JulesSecurityGuardian {
       const process = spawn(command, args);
       let stdout = '';
       let stderr = '';
-      
+
       process.stdout.on('data', (data) => {
         stdout += data.toString();
       });
-      
+
       process.stderr.on('data', (data) => {
         stderr += data.toString();
       });
-      
+
       process.on('close', (code) => {
         if (code === 0) {
           try {
@@ -439,7 +439,7 @@ class JulesSecurityGuardian {
   getSeverityForPattern(category) {
     const severityMap = {
       'hardcodedSecrets': 'CRITICAL',
-      'sqlInjection': 'CRITICAL', 
+      'sqlInjection': 'CRITICAL',
       'xssVulnerabilities': 'HIGH',
       'weakCrypto': 'HIGH',
       'authIssues': 'MEDIUM',
@@ -480,16 +480,16 @@ class JulesSecurityGuardian {
       mediumIssues: 0,
       lowIssues: 0
     };
-    
+
     issues.forEach(issue => {
       switch (issue.severity) {
-        case 'CRITICAL': stats.criticalIssues++; break;
-        case 'HIGH': stats.highIssues++; break;
-        case 'MEDIUM': stats.mediumIssues++; break;
-        case 'LOW': stats.lowIssues++; break;
+      case 'CRITICAL': stats.criticalIssues++; break;
+      case 'HIGH': stats.highIssues++; break;
+      case 'MEDIUM': stats.mediumIssues++; break;
+      case 'LOW': stats.lowIssues++; break;
       }
     });
-    
+
     return stats;
   }
 
@@ -517,7 +517,7 @@ class JulesSecurityGuardian {
   }
 
   checkAuthenticationSecurity(file, content) {
-    // Placeholder for auth security checks  
+    // Placeholder for auth security checks
     return [];
   }
 
@@ -550,13 +550,13 @@ class JulesSecurityGuardian {
 
   generateExecutiveSummary(scan) {
     const criticalCount = scan.stats?.criticalIssues || scan.issues.filter(i => i.severity === 'CRITICAL').length;
-    
+
     return {
       totalIssues: scan.issues.length,
       criticalIssues: criticalCount,
       riskLevel: criticalCount > 0 ? 'HIGH' : 'MEDIUM',
       scanDuration: scan.duration || 0,
-      recommendation: criticalCount > 0 ? 
+      recommendation: criticalCount > 0 ?
         'Immediate attention required for critical issues' :
         'Continue monitoring and address medium/low issues'
     };
@@ -588,7 +588,7 @@ class JulesSecurityGuardian {
   assessSecurityRisk(issues) {
     const critical = issues.filter(i => i.severity === 'CRITICAL').length;
     const high = issues.filter(i => i.severity === 'HIGH').length;
-    
+
     if (critical > 0) return 'CRITICAL';
     if (high > 3) return 'HIGH';
     return 'MEDIUM';
@@ -606,7 +606,7 @@ class JulesSecurityGuardian {
   createActionPlan(issues) {
     const critical = issues.filter(i => i.severity === 'CRITICAL');
     const high = issues.filter(i => i.severity === 'HIGH');
-    
+
     return {
       immediate: critical.map(i => `Fix ${i.file}: ${i.recommendation}`),
       thisWeek: high.slice(0, 5).map(i => `Fix ${i.file}: ${i.recommendation}`),
@@ -643,25 +643,25 @@ ${report.actionPlan.thisMonth.map(item => `- ${item}`).join('\n')}
 async function main() {
   const guardian = new JulesSecurityGuardian();
   await guardian.init();
-  
+
   const command = process.argv[2];
-  
+
   switch (command) {
-    case 'scan':
-      const scanResult = await guardian.runSecurityScan();
-      console.log(`\n🛡️ Security scan completed`);
-      console.log(`📊 Issues found: ${scanResult.issues.length}`);
-      console.log(`🚨 Critical: ${scanResult.stats.criticalIssues}`);
-      break;
-      
-    case 'report':
-      const report = await guardian.generateSecurityReport();
-      console.log(`\n📋 Security report generated`);
-      console.log(`🎯 Risk Level: ${report.riskAssessment}`);
-      break;
-      
-    default:
-      console.log(`
+  case 'scan':
+    const scanResult = await guardian.runSecurityScan();
+    console.log('\n🛡️ Security scan completed');
+    console.log(`📊 Issues found: ${scanResult.issues.length}`);
+    console.log(`🚨 Critical: ${scanResult.stats.criticalIssues}`);
+    break;
+
+  case 'report':
+    const report = await guardian.generateSecurityReport();
+    console.log('\n📋 Security report generated');
+    console.log(`🎯 Risk Level: ${report.riskAssessment}`);
+    break;
+
+  default:
+    console.log(`
 Jules Security Guardian
 
 Commands:

@@ -1,7 +1,7 @@
 /**
  * Architecture-Compliance V2 - Context Injection System
  * Ensures all agents receive architecture context BEFORE task execution
- * 
+ *
  * CRITICAL: This system prevents architecture violations by mandatory context injection
  */
 
@@ -14,7 +14,7 @@ export class ArchitectureContextInjection {
     this.logger = new Logger('ArchContextInjection');
     this.architectureDocPaths = [
       'ARCHITECTURE.md',
-      'docs/ARCHITECTURE.md', 
+      'docs/ARCHITECTURE.md',
       'docs/architecture.md',
       'CLAUDE.md',
       'CLAUDE2.md'
@@ -24,7 +24,7 @@ export class ArchitectureContextInjection {
       cacheDuration: 300000, // 5 minutes cache
       ...options
     };
-    
+
     this.architectureCache = new Map();
     this.injectionLog = [];
   }
@@ -36,7 +36,7 @@ export class ArchitectureContextInjection {
    */
   async loadArchitectureContext(projectPath = process.cwd()) {
     const cacheKey = `arch-${projectPath}`;
-    
+
     // Check cache first
     if (this.architectureCache.has(cacheKey)) {
       const cached = this.architectureCache.get(cacheKey);
@@ -58,14 +58,14 @@ export class ArchitectureContextInjection {
         documentPath = fullPath;
         this.logger.info(`Found architecture document: ${archPath}`);
         break;
-      } catch (error) {
+      } catch {
         // Continue searching
       }
     }
 
     if (!architectureDoc) {
       const message = `No architecture document found in ${projectPath}. Searched: ${this.architectureDocPaths.join(', ')}`;
-      
+
       if (this.options.strictMode) {
         throw new Error(`ARCHITECTURE COMPLIANCE VIOLATION: ${message}`);
       } else {
@@ -76,7 +76,7 @@ export class ArchitectureContextInjection {
 
     // Parse architecture document
     const architectureContext = await this.parseArchitectureDocument(architectureDoc, documentPath);
-    
+
     // Cache the result
     this.architectureCache.set(cacheKey, {
       context: architectureContext,
@@ -151,11 +151,11 @@ export class ArchitectureContextInjection {
    */
   extractConstraints(content) {
     const constraints = [];
-    
+
     // Look for constraint sections
     const constraintRegex = /⚠️.*?IMMUTABLE.*?NO.*?VIOLATIONS?.*?\n(.*?)(?=\n\n|\n#|$)/gis;
     let match;
-    
+
     while ((match = constraintRegex.exec(content)) !== null) {
       const constraintText = match[1].trim();
       if (constraintText) {
@@ -198,7 +198,7 @@ export class ArchitectureContextInjection {
     if (structureMatch) {
       const structureText = structureMatch[1];
       const dirMatches = structureText.match(/├──.*?📁\s*(.+?)\//g) || [];
-      structure.directories = dirMatches.map(match => 
+      structure.directories = dirMatches.map(match =>
         match.replace(/.*📁\s*/, '').replace('/', '')
       );
     }
@@ -213,11 +213,11 @@ export class ArchitectureContextInjection {
    */
   extractDecisions(content) {
     const decisions = [];
-    
+
     // Look for decision rationale tables
     const decisionTableRegex = /\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|/g;
     let match;
-    
+
     while ((match = decisionTableRegex.exec(content)) !== null) {
       if (!match[1].includes('Decision') && !match[1].includes('---')) {
         decisions.push({
@@ -239,11 +239,11 @@ export class ArchitectureContextInjection {
    */
   extractQualityGates(content) {
     const gates = [];
-    
+
     // Look for quality gate definitions
     const gateRegex = /\*\*Gate\s*(\d+):\*\*\s*(.+)/gi;
     let match;
-    
+
     while ((match = gateRegex.exec(content)) !== null) {
       gates.push({
         id: `gate${match[1]}`,
@@ -270,7 +270,7 @@ export class ArchitectureContextInjection {
    * @param {string} projectPath - Project path
    * @returns {Object} Empty architecture context
    */
-  createEmptyArchitectureContext(projectPath) {
+  createEmptyArchitectureContext(_projectPath) {
     return {
       documentPath: null,
       lastModified: new Date().toISOString(),
@@ -300,7 +300,7 @@ export class ArchitectureContextInjection {
     try {
       // Load architecture context
       const architectureContext = await this.loadArchitectureContext(projectPath);
-      
+
       // Create context injection log entry
       const injectionId = `inject-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       const logEntry = {
@@ -312,7 +312,7 @@ export class ArchitectureContextInjection {
         techStack: architectureContext.techStack,
         constraintsCount: architectureContext.constraints.length
       };
-      
+
       this.injectionLog.push(logEntry);
       this.logger.info(`Architecture context injected for ${agentType} agent: ${injectionId}`);
 
@@ -346,7 +346,7 @@ export class ArchitectureContextInjection {
    * @param {string} taskDescription - Task description
    * @returns {string} Enhanced prompt
    */
-  buildEnhancedPrompt(originalPrompt, architectureContext, agentType, taskDescription) {
+  buildEnhancedPrompt(originalPrompt, architectureContext, _agentType, _taskDescription) {
     const contextSection = `
 ## 🏗️ ARCHITECTURE COMPLIANCE CONTEXT - MANDATORY
 
@@ -363,14 +363,14 @@ ${architectureContext.techStack.frontend ? `- **Frontend**: ${architectureContex
 ${architectureContext.techStack.database ? `- **Database**: ${architectureContext.techStack.database}` : ''}
 
 ### Architecture Constraints - NO VIOLATIONS ALLOWED
-${architectureContext.constraints.map(constraint => 
-  `- **${constraint.category || 'Constraint'}**: ${constraint.description}`
-).join('\n')}
+${architectureContext.constraints.map(constraint =>
+    `- **${constraint.category || 'Constraint'}**: ${constraint.description}`
+  ).join('\n')}
 
 ### Quality Gates for This Task
-${architectureContext.compliance.qualityGates.map(gate => 
-  `- **${gate.id}**: ${gate.description}`
-).join('\n')}
+${architectureContext.compliance.qualityGates.map(gate =>
+    `- **${gate.id}**: ${gate.description}`
+  ).join('\n')}
 
 ## ⚠️ MANDATORY COMPLIANCE REQUIREMENTS
 
@@ -424,41 +424,41 @@ After completing your task, verify:
 
     // Agent-specific checks
     switch (agentType.toLowerCase()) {
-      case 'backend':
-        if (architectureContext.techStack.backend) {
-          checks.push({
-            id: 'backend-tech-compliance',
-            description: `Must use ${architectureContext.techStack.backend}`,
-            severity: 'critical',
-            automated: true,
-            validation: `technology === "${architectureContext.techStack.backend}"`
-          });
-        }
-        break;
-        
-      case 'frontend':
-        if (architectureContext.techStack.frontend) {
-          checks.push({
-            id: 'frontend-tech-compliance',
-            description: `Must use ${architectureContext.techStack.frontend}`,
-            severity: 'critical',
-            automated: true,
-            validation: `framework === "${architectureContext.techStack.frontend}"`
-          });
-        }
-        break;
-        
-      case 'database':
-        if (architectureContext.techStack.database) {
-          checks.push({
-            id: 'database-tech-compliance', 
-            description: `Must use ${architectureContext.techStack.database}`,
-            severity: 'critical',
-            automated: true,
-            validation: `database === "${architectureContext.techStack.database}"`
-          });
-        }
-        break;
+    case 'backend':
+      if (architectureContext.techStack.backend) {
+        checks.push({
+          id: 'backend-tech-compliance',
+          description: `Must use ${architectureContext.techStack.backend}`,
+          severity: 'critical',
+          automated: true,
+          validation: `technology === "${architectureContext.techStack.backend}"`
+        });
+      }
+      break;
+
+    case 'frontend':
+      if (architectureContext.techStack.frontend) {
+        checks.push({
+          id: 'frontend-tech-compliance',
+          description: `Must use ${architectureContext.techStack.frontend}`,
+          severity: 'critical',
+          automated: true,
+          validation: `framework === "${architectureContext.techStack.frontend}"`
+        });
+      }
+      break;
+
+    case 'database':
+      if (architectureContext.techStack.database) {
+        checks.push({
+          id: 'database-tech-compliance',
+          description: `Must use ${architectureContext.techStack.database}`,
+          severity: 'critical',
+          automated: true,
+          validation: `database === "${architectureContext.techStack.database}"`
+        });
+      }
+      break;
     }
 
     return checks;
@@ -486,7 +486,7 @@ After completing your task, verify:
   getComplianceStats() {
     const totalInjections = this.injectionLog.length;
     const successfulInjections = this.injectionLog.filter(entry => entry.architectureFound).length;
-    
+
     return {
       totalInjections,
       successfulInjections,

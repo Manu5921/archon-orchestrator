@@ -8,7 +8,7 @@ export class MockConnector extends EventEmitter {
     this.healthy = true;
     this.contexts = new Map();
   }
-  
+
   async healthCheck() {
     return {
       healthy: true,
@@ -16,17 +16,17 @@ export class MockConnector extends EventEmitter {
       message: `${this.agentName} mock connector available`
     };
   }
-  
+
   async execute(taskId, command, args = []) {
     const startTime = Date.now();
-    
+
     logger.debug(`[MOCK] ${this.agentName} executing task ${taskId}: ${command}`);
-    
+
     // Simulate processing time
     await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 400));
-    
+
     const duration = Date.now() - startTime;
-    
+
     // SOLUTION: Simuler des réponses spécifiques selon le command
     if (command === 'manage_project' && args[0]?.action === 'create') {
       return {
@@ -37,7 +37,7 @@ export class MockConnector extends EventEmitter {
         duration_ms: duration
       };
     }
-    
+
     if (command === 'manage_task' && args[0]?.action === 'create') {
       return {
         success: true,
@@ -48,11 +48,11 @@ export class MockConnector extends EventEmitter {
         duration_ms: duration
       };
     }
-    
+
     // Simulate different responses based on agent type
     const responses = {
       gemini: {
-        exploration: `Found 3 approaches:\n1. WebSocket implementation\n2. Server-sent events\n3. Long polling with fallback`,
+        exploration: 'Found 3 approaches:\n1. WebSocket implementation\n2. Server-sent events\n3. Long polling with fallback',
         default: 'Rapid iteration completed with 5 variations tested'
       },
       claude: {
@@ -66,27 +66,27 @@ export class MockConnector extends EventEmitter {
         default: 'Architectural synthesis complete with patterns identified'
       }
     };
-    
+
     const agentResponses = responses[this.agentName] || {};
-    const output = agentResponses[command] || agentResponses.default || 
+    const output = agentResponses[command] || agentResponses.default ||
                    `${this.agentName} mock response for ${command}`;
-    
-    this.emit('output', { 
-      taskId, 
-      data: output, 
-      stream: 'stdout' 
+
+    this.emit('output', {
+      taskId,
+      data: output,
+      stream: 'stdout'
     });
-    
+
     return {
       success: true,
       output,
       duration_ms: duration
     };
   }
-  
+
   async exportContext(taskId) {
     const context = this.contexts.get(taskId) || {};
-    
+
     return {
       agent: this.agentName,
       task_id: taskId,
@@ -94,25 +94,25 @@ export class MockConnector extends EventEmitter {
       timestamp: new Date().toISOString()
     };
   }
-  
+
   async importContext(taskId, context) {
     this.contexts.set(taskId, {
       ...context,
       imported_from: context.previous_agent,
       imported_at: new Date().toISOString()
     });
-    
+
     logger.debug(`[MOCK] ${this.agentName} imported context for task ${taskId}`);
-    
+
     return { success: true };
   }
-  
+
   async syncContext(contextType, data) {
     logger.debug(`[MOCK] ${this.agentName} syncing ${contextType} context`);
     this.contexts.set(`sync_${contextType}`, data);
     return { success: true };
   }
-  
+
   async close() {
     this.contexts.clear();
     logger.debug(`[MOCK] ${this.agentName} connector closed`);

@@ -7,9 +7,9 @@ import { getCapabilities } from './archon-mcp-connector/rest/capabilities.js';
  * Connects to Archon's MCP server using Server-Sent Events instead of WebSocket
  */
 export class ArchonMCPConnector {
-  
+
   // Identity for ChatGPT debugging strategy
-  static __id = "archon-facade@1.0.1";
+  static __id = 'archon-facade@1.0.1';
   constructor(config = {}) {
     this.config = {
       mcpUrl: config.mcpUrl || 'http://localhost:8051',
@@ -20,7 +20,7 @@ export class ArchonMCPConnector {
     this.sessionId = null;
     this.requestCounter = 0;
     this.pendingRequests = new Map();
-    
+
     // Instance identity
     this.__id = ArchonMCPConnector.__id;
   }
@@ -32,7 +32,7 @@ export class ArchonMCPConnector {
 
     try {
       logger.info(`🔌 Connecting to Archon MCP server: ${this.config.mcpUrl}`);
-      
+
       // Initialize MCP session first
       const initMessage = {
         jsonrpc: '2.0',
@@ -54,7 +54,7 @@ export class ArchonMCPConnector {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json, text/event-stream',
+          'Accept': 'application/json, text/event-stream'
         },
         body: JSON.stringify(initMessage)
       });
@@ -69,10 +69,10 @@ export class ArchonMCPConnector {
       if (!dataLine) {
         throw new Error('No data in SSE response');
       }
-      
+
       const initResult = JSON.parse(dataLine.substring(6));
       logger.info(`MCP Initialized: ${initResult.result.serverInfo.name} v${initResult.result.serverInfo.version}`);
-      
+
       this.connected = true;
       logger.info('✅ Connected to Archon MCP server via HTTP/SSE');
       return true;
@@ -102,7 +102,7 @@ export class ArchonMCPConnector {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json, text/event-stream',
+          'Accept': 'application/json, text/event-stream'
         },
         body: JSON.stringify(message),
         timeout: this.config.timeout
@@ -118,9 +118,9 @@ export class ArchonMCPConnector {
       if (!dataLine) {
         throw new Error('No data in SSE response');
       }
-      
+
       const result = JSON.parse(dataLine.substring(6));
-      
+
       if (result.error) {
         throw new Error(result.error.message || 'MCP request failed');
       }
@@ -136,8 +136,8 @@ export class ArchonMCPConnector {
   async manageProject(action, params = {}) {
     try {
       // Use REST API fallback for reliability
-      const url = `http://localhost:3737/api/projects`;
-      
+      const url = 'http://localhost:3737/api/projects';
+
       if (action === 'get' && params.id) {
         const response = await fetch(`${url}/${params.id}`);
         if (!response.ok) {
@@ -177,7 +177,7 @@ export class ArchonMCPConnector {
           projects
         };
       }
-      
+
       throw new Error(`Unknown action: ${action}`);
     } catch (error) {
       logger.error(`Archon manage_project failed: ${error.message}`);
@@ -191,8 +191,8 @@ export class ArchonMCPConnector {
   async manageTask(action, params = {}) {
     try {
       // Use REST API fallback for reliability
-      const url = `http://localhost:3737/api/tasks`;
-      
+      const url = 'http://localhost:3737/api/tasks';
+
       if (action === 'create') {
         const response = await fetch(url, {
           method: 'POST',
@@ -215,8 +215,8 @@ export class ArchonMCPConnector {
           task
         };
       } else if (action === 'list') {
-        const projectUrl = params.project_id ? 
-          `http://localhost:3737/api/projects/${params.project_id}/tasks` : 
+        const projectUrl = params.project_id ?
+          `http://localhost:3737/api/projects/${params.project_id}/tasks` :
           url;
         const response = await fetch(projectUrl);
         if (!response.ok) {
@@ -228,7 +228,7 @@ export class ArchonMCPConnector {
           tasks
         };
       }
-      
+
       throw new Error(`Unknown task action: ${action}`);
     } catch (error) {
       logger.error(`Archon manage_task failed: ${error.message}`);
@@ -245,7 +245,7 @@ export class ArchonMCPConnector {
         name: 'archon:perform_rag_query',
         arguments: { query, match_count: matchCount }
       });
-      
+
       return {
         success: true,
         query,
@@ -269,7 +269,7 @@ export class ArchonMCPConnector {
         name: 'archon:search_code_examples',
         arguments: { query, match_count: matchCount }
       });
-      
+
       return {
         success: true,
         query,
@@ -293,7 +293,7 @@ export class ArchonMCPConnector {
         name: 'archon:get_available_sources',
         arguments: {}
       });
-      
+
       return {
         success: true,
         sources: result.sources || []
@@ -311,11 +311,11 @@ export class ArchonMCPConnector {
   // Universal execute method for compatibility (now uses facade)
   async execute(taskId, action, args = []) {
     logger.debug(`🎯 Archon MCP execute: ${action}`, { taskId, args });
-    
+
     try {
       // Use new facade for better compatibility and error handling
       const result = await executeAdapter(taskId, action, args);
-      
+
       // Convert facade response to legacy format for backward compatibility
       if (result.ok) {
         return {
@@ -331,7 +331,7 @@ export class ArchonMCPConnector {
           retry: result.retry || false
         };
       }
-      
+
     } catch (error) {
       logger.error(`Execute failed for action ${action}:`, error);
       return {
@@ -358,7 +358,7 @@ export class ArchonMCPConnector {
       if (facadeHealth.healthy) {
         return facadeHealth;
       }
-      
+
       // Fallback to connection test
       if (!this.connected) {
         await this.connect();

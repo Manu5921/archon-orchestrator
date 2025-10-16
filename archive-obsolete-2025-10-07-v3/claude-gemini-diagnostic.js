@@ -33,7 +33,7 @@ class ClaudeGeminiDiagnostic {
   async checkEnvironment() {
     console.log('\n🔍 STEP 1: Environment Detection');
     console.log('═'.repeat(50));
-    
+
     const env = {
       GEMINI_API_URL: process.env.GEMINI_API_URL || 'not_set',
       GEMINI_CLI_PATH: process.env.GEMINI_CLI_PATH || 'gemini',
@@ -42,12 +42,12 @@ class ClaudeGeminiDiagnostic {
     };
 
     this.results.environment = env;
-    
+
     console.log(`📍 GEMINI_API_URL: ${env.GEMINI_API_URL}`);
     console.log(`📍 GEMINI_CLI_PATH: ${env.GEMINI_CLI_PATH}`);
     console.log(`🔐 GEMINI_API_KEY: ${env.GEMINI_API_KEY}`);
     console.log(`🛤️ PATH contains gemini: ${env.PATH_includes_gemini}`);
-    
+
     // Check if Gemini CLI is accessible
     try {
       const { stdout } = await execAsync('which gemini', { timeout: 3000 });
@@ -79,11 +79,11 @@ class ClaudeGeminiDiagnostic {
     console.log('═'.repeat(50));
 
     const BRIDGE = process.env.GEMINI_API_URL;
-    
+
     if (!BRIDGE) {
       console.log('⏸️ Bridge not configured (GEMINI_API_URL not set)');
-      this.results.bridgeTest = { 
-        success: false, 
+      this.results.bridgeTest = {
+        success: false,
         reason: 'not_configured',
         recommendation: 'Set GEMINI_API_URL environment variable'
       };
@@ -91,22 +91,22 @@ class ClaudeGeminiDiagnostic {
     }
 
     console.log(`🔗 Testing Bridge at: ${BRIDGE}`);
-    
+
     const testPrompt = 'Test connection: Reply with exactly "BRIDGE_WORKING" if you can see this message.';
-    
+
     try {
       const ctrl = new AbortController();
       const timeout = setTimeout(() => ctrl.abort(), 10_000);
-      
+
       const response = await fetch(`${BRIDGE}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: testPrompt }),
         signal: ctrl.signal
       });
-      
+
       clearTimeout(timeout);
-      
+
       if (!response.ok) {
         console.log(`❌ Bridge HTTP error: ${response.status} ${response.statusText}`);
         this.results.bridgeTest = {
@@ -116,13 +116,13 @@ class ClaudeGeminiDiagnostic {
         };
         return this.results.bridgeTest;
       }
-      
+
       const result = await response.json();
-      
+
       if (result.ok && result.text) {
         console.log(`✅ Bridge response received: ${result.text.slice(0, 100)}...`);
-        console.log(`📊 Bridge mode: WORKING`);
-        
+        console.log('📊 Bridge mode: WORKING');
+
         this.results.bridgeTest = {
           success: true,
           response: result.text,
@@ -137,7 +137,7 @@ class ClaudeGeminiDiagnostic {
           error: result.error
         };
       }
-      
+
     } catch (error) {
       console.log(`❌ Bridge connection failed: ${error.message}`);
       this.results.bridgeTest = {
@@ -147,7 +147,7 @@ class ClaudeGeminiDiagnostic {
         recommendation: 'Check if Bridge server is running at GEMINI_API_URL'
       };
     }
-    
+
     return this.results.bridgeTest;
   }
 
@@ -160,46 +160,46 @@ class ClaudeGeminiDiagnostic {
 
     const CLI_BIN = process.env.GEMINI_CLI_PATH || 'gemini';
     const testPrompt = 'CLI test: Reply with exactly "CLI_WORKING" if you can process this via command line.';
-    
+
     console.log(`🖥️ Testing CLI: ${CLI_BIN}`);
     console.log(`📝 Test prompt: ${testPrompt.slice(0, 50)}...`);
 
     return new Promise((resolve) => {
       const startTime = Date.now();
       const args = ['-p', testPrompt];
-      
+
       console.log(`🚀 Executing: ${CLI_BIN} ${args.join(' ')}`);
-      
-      const ps = spawn(CLI_BIN, args, { 
+
+      const ps = spawn(CLI_BIN, args, {
         stdio: ['ignore', 'pipe', 'pipe'],
         env: {
           ...process.env,
           // Fix PATH for macOS if needed
-          PATH: process.platform === 'darwin' ? 
-            ["/opt/homebrew/bin", "/usr/local/bin", process.env.PATH || ""].join(":") :
+          PATH: process.platform === 'darwin' ?
+            ['/opt/homebrew/bin', '/usr/local/bin', process.env.PATH || ''].join(':') :
             process.env.PATH
         }
       });
-      
+
       let out = '';
       let err = '';
-      
+
       ps.stdout.on('data', d => {
         const chunk = d.toString();
         out += chunk;
         console.log(`📤 CLI stdout: ${chunk.trim()}`);
       });
-      
+
       ps.stderr.on('data', d => {
         const chunk = d.toString();
         err += chunk;
         console.log(`📥 CLI stderr: ${chunk.trim()}`);
       });
-      
+
       ps.on('error', (error) => {
         const duration = Date.now() - startTime;
         console.log(`❌ CLI spawn error: ${error.message}`);
-        
+
         this.results.cliTest = {
           success: false,
           reason: 'spawn_error',
@@ -207,20 +207,20 @@ class ClaudeGeminiDiagnostic {
           duration_ms: duration,
           recommendation: `Check if ${CLI_BIN} is installed and accessible`
         };
-        
+
         resolve(this.results.cliTest);
       });
-      
+
       ps.on('exit', (code) => {
         const duration = Date.now() - startTime;
-        
+
         console.log(`🏁 CLI exit code: ${code}`);
         console.log(`⏱️ CLI duration: ${duration}ms`);
-        
+
         if (code === 0 && out.trim()) {
           console.log(`✅ CLI response received: ${out.trim().slice(0, 100)}...`);
-          console.log(`📊 CLI mode: WORKING`);
-          
+          console.log('📊 CLI mode: WORKING');
+
           this.results.cliTest = {
             success: true,
             response: out.trim(),
@@ -231,9 +231,9 @@ class ClaudeGeminiDiagnostic {
         } else {
           // Check for deterministic errors
           const deterministic = /invalid|unknown flag|not found|unauthorized|forbidden|missing api key|Quota/i.test(err);
-          
+
           console.log(`❌ CLI failed - Code: ${code}, Deterministic: ${deterministic}`);
-          
+
           this.results.cliTest = {
             success: false,
             reason: 'cli_execution_failed',
@@ -241,27 +241,27 @@ class ClaudeGeminiDiagnostic {
             stderr: err.trim(),
             deterministic,
             duration_ms: duration,
-            recommendation: deterministic ? 
-              'Check API key and authentication' : 
+            recommendation: deterministic ?
+              'Check API key and authentication' :
               'Retry may help (temporary error)'
           };
         }
-        
+
         resolve(this.results.cliTest);
       });
-      
+
       // Timeout safety
       setTimeout(() => {
         ps.kill('SIGTERM');
         console.log('⏰ CLI test timed out after 30s');
-        
+
         this.results.cliTest = {
           success: false,
           reason: 'timeout',
           duration_ms: 30000,
           recommendation: 'Check if Gemini CLI is hanging or slow'
         };
-        
+
         resolve(this.results.cliTest);
       }, 30000);
     });
@@ -287,20 +287,20 @@ This is part of the Archon Orchestrator system testing.`;
 
     console.log('🎯 Testing via geminiSend() function (real integration)');
     console.log('📝 Using orchestrator-style prompt...');
-    
+
     try {
       const startTime = Date.now();
       const result = await geminiSend(orchestratorPrompt);
       const duration = Date.now() - startTime;
-      
+
       console.log(`⏱️ Integration duration: ${duration}ms`);
       console.log(`📊 Result success: ${result.ok}`);
-      
+
       if (result.ok) {
-        console.log(`✅ Orchestrator integration: WORKING`);
+        console.log('✅ Orchestrator integration: WORKING');
         console.log(`🔧 Mode used: ${result.meta?.mode || 'unknown'}`);
         console.log(`💬 Response preview: ${result.text.slice(0, 150)}...`);
-        
+
         this.results.orchestratorTest = {
           success: true,
           mode: result.meta?.mode || 'unknown',
@@ -315,21 +315,21 @@ This is part of the Archon Orchestrator system testing.`;
       } else {
         console.log(`❌ Orchestrator integration failed: ${result.error}`);
         console.log(`🔄 Retry flag: ${result.retry}`);
-        
+
         this.results.orchestratorTest = {
           success: false,
           error: result.error,
           retry_suggested: result.retry,
           duration_ms: duration,
-          recommendation: result.retry ? 
-            'Temporary error - retry may work' : 
+          recommendation: result.retry ?
+            'Temporary error - retry may work' :
             'Check configuration and authentication'
         };
       }
-      
+
     } catch (error) {
       console.log(`💥 Orchestrator test crashed: ${error.message}`);
-      
+
       this.results.orchestratorTest = {
         success: false,
         reason: 'test_crash',
@@ -337,7 +337,7 @@ This is part of the Archon Orchestrator system testing.`;
         recommendation: 'Check if gemini-agent module is properly configured'
       };
     }
-    
+
     return this.results.orchestratorTest;
   }
 
@@ -347,34 +347,34 @@ This is part of the Archon Orchestrator system testing.`;
   generateReport() {
     console.log('\n📋 DIAGNOSTIC REPORT');
     console.log('═'.repeat(50));
-    
+
     // Calculate overall success
     const tests = [
       this.results.bridgeTest?.success || false,
       this.results.cliTest?.success || false,
       this.results.orchestratorTest?.success || false
     ];
-    
+
     const successCount = tests.filter(Boolean).length;
     const totalTests = tests.length;
-    
+
     this.results.overall = {
       success_rate: `${successCount}/${totalTests}`,
       percentage: Math.round((successCount / totalTests) * 100),
       primary_mode: this.results.orchestratorTest?.mode || 'none',
       recommendation: this.generateRecommendation(successCount, totalTests)
     };
-    
+
     console.log(`📊 SUCCESS RATE: ${this.results.overall.success_rate} (${this.results.overall.percentage}%)`);
     console.log(`🎯 PRIMARY MODE: ${this.results.overall.primary_mode}`);
     console.log(`💡 RECOMMENDATION: ${this.results.overall.recommendation}`);
-    
+
     // Detailed breakdown
     console.log('\n📝 DETAILED BREAKDOWN:');
     console.log(`🌉 Bridge API: ${this.results.bridgeTest?.success ? '✅ WORKING' : '❌ FAILED'}`);
     console.log(`⌨️ CLI Mode: ${this.results.cliTest?.success ? '✅ WORKING' : '❌ FAILED'}`);
     console.log(`🎼 Orchestrator: ${this.results.orchestratorTest?.success ? '✅ WORKING' : '❌ FAILED'}`);
-    
+
     return this.results;
   }
 
@@ -394,9 +394,9 @@ This is part of the Archon Orchestrator system testing.`;
   async saveResults() {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const filename = `claude-gemini-diagnostic-${timestamp}.json`;
-    
+
     try {
-      await import('fs/promises').then(fs => 
+      await import('fs/promises').then(fs =>
         fs.writeFile(filename, JSON.stringify(this.results, null, 2))
       );
       console.log(`💾 Results saved to: ${filename}`);
@@ -413,26 +413,26 @@ async function runDiagnostic() {
   console.log('🚀 CLAUDE ↔ GEMINI COMMUNICATION DIAGNOSTIC');
   console.log('Testing complete pipeline for orchestration workflow');
   console.log('═'.repeat(60));
-  
+
   const diagnostic = new ClaudeGeminiDiagnostic();
-  
+
   try {
     // Run all tests
     await diagnostic.checkEnvironment();
     await diagnostic.testBridgeMode();
     await diagnostic.testCliMode();
     await diagnostic.testOrchestratorMode();
-    
+
     // Generate report
     const results = diagnostic.generateReport();
     await diagnostic.saveResults();
-    
+
     // Exit with appropriate code
     const success = results.overall.percentage > 0;
     console.log(`\n${success ? '🎉' : '😞'} Diagnostic ${success ? 'completed successfully' : 'found issues'}`);
-    
+
     process.exit(success ? 0 : 1);
-    
+
   } catch (error) {
     console.error('💥 Diagnostic crashed:', error);
     process.exit(1);

@@ -17,11 +17,11 @@ export function validateGetInput(input) {
   if (!input || typeof input !== 'object') {
     throw new ValidationError('Input must be an object', 'input');
   }
-  
+
   if (!input.resource || !['project', 'task', 'artifact'].includes(input.resource)) {
     throw new ValidationError('resource must be one of: project, task, artifact', 'resource');
   }
-  
+
   if (!input.id || typeof input.id !== 'string' || input.id.trim().length === 0) {
     throw new ValidationError('id must be a non-empty string', 'id');
   }
@@ -39,22 +39,22 @@ export function validateExploreInput(input) {
   if (!input || typeof input !== 'object') {
     throw new ValidationError('Input must be an object', 'input');
   }
-  
+
   if (!input.project_id || typeof input.project_id !== 'string' || input.project_id.trim().length === 0) {
     throw new ValidationError('project_id must be a non-empty string', 'project_id');
   }
 
   const defaultWith = ['tasks', 'events'];
   const validWith = ['tasks', 'events', 'artifacts'];
-  
+
   let withArray = input.with || defaultWith;
   if (!Array.isArray(withArray)) {
     withArray = [withArray];
   }
-  
+
   // Filter valid values
   withArray = withArray.filter(item => validWith.includes(item));
-  
+
   return {
     project_id: input.project_id.trim(),
     with: withArray
@@ -68,11 +68,11 @@ export function validateRagInput(input) {
   if (!input || typeof input !== 'object') {
     throw new ValidationError('Input must be an object', 'input');
   }
-  
+
   if (!input.project_id || typeof input.project_id !== 'string' || input.project_id.trim().length === 0) {
     throw new ValidationError('project_id must be a non-empty string', 'project_id');
   }
-  
+
   if (!input.query || typeof input.query !== 'string' || input.query.trim().length === 0) {
     throw new ValidationError('query must be a non-empty string', 'query');
   }
@@ -96,11 +96,11 @@ export function validateManageTaskInput(input) {
   if (!input || typeof input !== 'object') {
     throw new ValidationError('Input must be an object', 'input');
   }
-  
+
   if (!input.action || !['create', 'update', 'close'].includes(input.action)) {
     throw new ValidationError('action must be one of: create, update, close', 'action');
   }
-  
+
   if (!input.project_id || typeof input.project_id !== 'string' || input.project_id.trim().length === 0) {
     throw new ValidationError('project_id must be a non-empty string', 'project_id');
   }
@@ -113,19 +113,19 @@ export function validateManageTaskInput(input) {
   // Task object validation pour update/create
   if (input.task && typeof input.task === 'object') {
     const task = {};
-    
+
     if (input.task.id) {
       task.id = input.task.id;
     }
-    
+
     if (input.task.title) {
       task.title = input.task.title;
     }
-    
+
     if (input.task.desc || input.task.description) {
       task.desc = input.task.desc || input.task.description;
     }
-    
+
     if (input.task.status) {
       task.status = input.task.status;
     }

@@ -1,6 +1,6 @@
 /**
  * Claude SubAgent Orchestrator
- * 
+ *
  * Coordinates multiple Claude sub-agents with MetaSupervisor integration
  * Optimizes workflow performance and ensures architecture compliance
  */
@@ -12,7 +12,7 @@ export class ClaudeSubAgentOrchestrator {
     this.agentQueue = [];
     this.orchestrationLog = [];
     this.maxConcurrentAgents = 5;
-    
+
     // Agent types disponibles
     this.agentTypes = {
       frontend: {
@@ -65,28 +65,28 @@ export class ClaudeSubAgentOrchestrator {
    */
   async orchestrateProject(projectDescription, requirements, projectContext) {
     console.log('🎼 SubAgent Orchestrator: Starting project orchestration...');
-    
+
     const startTime = Date.now();
-    
+
     try {
       // Phase 1: Initialisation supervision projet
       console.log('📋 Phase 1: Project supervision initialization...');
       await this.initializeProjectSupervision(projectDescription, requirements, projectContext);
-      
+
       // Phase 2: Planification agents
       console.log('🎯 Phase 2: Agent planning and prioritization...');
       const agentPlan = await this.planAgentExecution(requirements);
-      
+
       // Phase 3: Exécution parallèle avec supervision
       console.log('⚡ Phase 3: Parallel agent execution with supervision...');
       const executionResults = await this.executeAgentsWithSupervision(agentPlan, projectContext);
-      
+
       // Phase 4: Intégration et validation finale
       console.log('🔗 Phase 4: Integration and final validation...');
       const integrationResult = await this.integrateAndValidate(executionResults, projectContext);
-      
+
       const totalDuration = Date.now() - startTime;
-      
+
       // Documentation résultats
       await this.documentOrchestrationResult({
         projectDescription,
@@ -95,9 +95,9 @@ export class ClaudeSubAgentOrchestrator {
         success: integrationResult.success,
         complianceScore: integrationResult.complianceScore
       });
-      
+
       console.log(`✅ Project orchestration completed in ${totalDuration}ms`);
-      
+
       return {
         success: true,
         duration: totalDuration,
@@ -105,7 +105,7 @@ export class ClaudeSubAgentOrchestrator {
         integrationResult,
         statistics: this.getOrchestrationStatistics()
       };
-      
+
     } catch (error) {
       console.error('❌ Project orchestration failed:', error.message);
       return {
@@ -121,13 +121,13 @@ export class ClaudeSubAgentOrchestrator {
    */
   async initializeProjectSupervision(projectDescription, requirements, projectContext) {
     const techStack = this.inferTechStack(requirements);
-    
+
     // Initialiser MetaSupervisor avec context projet
     const supervisionRules = await this.metaSupervisor.initializeProjectSupervision(
       projectDescription,
       techStack
     );
-    
+
     // Cache context pour tous les agents
     this.projectSupervisionContext = {
       projectId: projectContext.projectId,
@@ -136,7 +136,7 @@ export class ClaudeSubAgentOrchestrator {
       rules: supervisionRules,
       requirements
     };
-    
+
     return supervisionRules;
   }
 
@@ -145,15 +145,15 @@ export class ClaudeSubAgentOrchestrator {
    */
   async planAgentExecution(requirements) {
     const requiredAgents = this.determineRequiredAgents(requirements);
-    
+
     // Tri par priorité et dépendances
     const sortedAgents = this.prioritizeAgents(requiredAgents);
-    
+
     // Optimisation pour exécution parallèle
     const executionPlan = this.optimizeForParallelExecution(sortedAgents);
-    
+
     console.log(`📊 Agent execution plan: ${executionPlan.length} agents in ${executionPlan.phases} phases`);
-    
+
     return executionPlan;
   }
 
@@ -163,19 +163,19 @@ export class ClaudeSubAgentOrchestrator {
   async executeAgentsWithSupervision(agentPlan, projectContext) {
     const results = [];
     const phases = this.groupAgentsByPhase(agentPlan);
-    
+
     for (let phaseIndex = 0; phaseIndex < phases.length; phaseIndex++) {
       const phase = phases[phaseIndex];
       console.log(`🔄 Executing Phase ${phaseIndex + 1}: ${phase.length} agents`);
-      
+
       // Exécution parallèle des agents de la phase
       const phasePromises = phase.map(agent => {
         console.log(`🔧 Preparing agent: ${agent.name} (Type: ${agent.type || agent.name.toLowerCase().replace(' agent', '')})`);
         return this.executeAgentWithSupervision(agent, projectContext, results);
       });
-      
+
       const phaseResults = await Promise.allSettled(phasePromises);
-      
+
       // Traiter résultats de la phase
       phaseResults.forEach((result, index) => {
         if (result.status === 'fulfilled') {
@@ -189,13 +189,13 @@ export class ClaudeSubAgentOrchestrator {
           });
         }
       });
-      
+
       // Validation inter-phase si nécessaire
       if (phaseIndex < phases.length - 1) {
         await this.validatePhaseIntegration(results, phaseIndex + 1);
       }
     }
-    
+
     return results;
   }
 
@@ -206,14 +206,14 @@ export class ClaudeSubAgentOrchestrator {
     if (!agent || !agent.name) {
       throw new Error(`Invalid agent provided to executeAgentWithSupervision: ${JSON.stringify(agent)}`);
     }
-    
+
     const agentType = agent.type || agent.name.toLowerCase().replace(' agent', '');
     const agentId = `${agentType}-${Date.now()}`;
     const startTime = Date.now();
     const agentName = agent.name;
-    
+
     console.log(`🤖 Executing ${agentName}...`);
-    
+
     try {
       // Marquer agent comme actif
       this.activeAgents.set(agentId, {
@@ -221,19 +221,19 @@ export class ClaudeSubAgentOrchestrator {
         startTime,
         status: 'executing'
       });
-      
+
       // Générer code avec context
       const generatedCode = await this.generateCodeWithAgent(agent, projectContext, previousResults);
-      
+
       // Supervision MetaSupervisor
       const supervisionResult = await this.metaSupervisor.superviseCodeGeneration(
         generatedCode,
         agent,
         this.projectSupervisionContext
       );
-      
+
       const duration = Date.now() - startTime;
-      
+
       // Résultat final
       const result = {
         agentId,
@@ -244,21 +244,21 @@ export class ClaudeSubAgentOrchestrator {
         success: supervisionResult.approved,
         timestamp: new Date().toISOString()
       };
-      
+
       // Nettoyer agent actif
       this.activeAgents.delete(agentId);
-      
+
       // Logger résultat
       this.orchestrationLog.push(result);
-      
+
       console.log(`✅ ${agentName} completed in ${duration}ms (${supervisionResult.approved ? 'APPROVED' : 'NEEDS_REVIEW'})`);
-      
+
       return result;
-      
+
     } catch (error) {
       this.activeAgents.delete(agentId);
       console.error(`❌ ${agentName} execution failed:`, error.message);
-      
+
       return {
         agentId,
         agent,
@@ -275,32 +275,32 @@ export class ClaudeSubAgentOrchestrator {
   async generateCodeWithAgent(agent, projectContext, previousResults) {
     // Simulation de génération de code par agent
     // En réalité, ici on appellerait l'agent Claude spécialisé
-    
+
     if (!agent || !agent.name) {
       throw new Error('Invalid agent provided to generateCodeWithAgent');
     }
-    
+
     const agentType = agent.type || agent.name.toLowerCase().replace(' agent', '');
-    
+
     // Délai simulé basé sur complexité agent
     await new Promise(resolve => setTimeout(resolve, (agent.averageDuration || 5000) * 0.1));
-    
+
     // Generate code based on agent type
     switch (agentType) {
-      case 'frontend':
-        return this.generateFrontendCode(projectContext, previousResults);
-      case 'backend':
-        return this.generateBackendCode(projectContext, previousResults);
-      case 'database':
-        return this.generateDatabaseCode(projectContext, previousResults);
-      case 'testing':
-        return this.generateTestingCode(projectContext, previousResults);
-      case 'devops':
-        return this.generateDevOpsCode(projectContext, previousResults);
-      case 'security':
-        return this.generateSecurityCode(projectContext, previousResults);
-      default:
-        return this.generateGenericCode(agent, projectContext);
+    case 'frontend':
+      return this.generateFrontendCode(projectContext, previousResults);
+    case 'backend':
+      return this.generateBackendCode(projectContext, previousResults);
+    case 'database':
+      return this.generateDatabaseCode(projectContext, previousResults);
+    case 'testing':
+      return this.generateTestingCode(projectContext, previousResults);
+    case 'devops':
+      return this.generateDevOpsCode(projectContext, previousResults);
+    case 'security':
+      return this.generateSecurityCode(projectContext, previousResults);
+    default:
+      return this.generateGenericCode(agent, projectContext);
     }
   }
 
@@ -309,23 +309,23 @@ export class ClaudeSubAgentOrchestrator {
    */
   async integrateAndValidate(executionResults, projectContext) {
     console.log('🔗 Starting final integration and validation...');
-    
+
     const approvedResults = executionResults.filter(r => r.success && r.supervision?.approved);
     const failedResults = executionResults.filter(r => !r.success || !r.supervision?.approved);
-    
+
     // Calculer score de compliance global
     const complianceScore = approvedResults.length / executionResults.length;
-    
+
     // Intégration des codes approuvés
     const integratedCode = await this.integrateApprovedCode(approvedResults);
-    
+
     // Validation finale du système complet
     const finalValidation = await this.metaSupervisor.superviseCodeGeneration(
       integratedCode,
       { type: 'integration', name: 'System Integration' },
       this.projectSupervisionContext
     );
-    
+
     return {
       success: complianceScore >= 0.8 && finalValidation.approved,
       complianceScore,
@@ -346,64 +346,64 @@ export class ClaudeSubAgentOrchestrator {
   inferTechStack(requirements) {
     const techStack = [];
     const reqText = requirements.join(' ').toLowerCase();
-    
+
     // Frontend
     if (reqText.includes('react') || reqText.includes('frontend') || reqText.includes('ui')) {
       techStack.push('React', 'TypeScript', 'Next.js');
     }
-    
+
     // Backend
     if (reqText.includes('api') || reqText.includes('backend') || reqText.includes('server')) {
       techStack.push('Node.js', 'Express');
     }
-    
+
     // Database
     if (reqText.includes('database') || reqText.includes('data') || reqText.includes('storage')) {
       techStack.push('Supabase', 'PostgreSQL');
     }
-    
+
     // Default stack si rien détecté
     if (techStack.length === 0) {
       techStack.push('Node.js', 'Express', 'React', 'Supabase');
     }
-    
+
     return [...new Set(techStack)]; // Remove duplicates
   }
 
   determineRequiredAgents(requirements) {
     const requiredAgents = [];
     const reqText = requirements.join(' ').toLowerCase();
-    
+
     // Analyse des requirements pour déterminer agents nécessaires
     if (reqText.includes('frontend') || reqText.includes('ui') || reqText.includes('react')) {
       requiredAgents.push(this.agentTypes.frontend);
     }
-    
+
     if (reqText.includes('backend') || reqText.includes('api') || reqText.includes('server')) {
       requiredAgents.push(this.agentTypes.backend);
     }
-    
+
     if (reqText.includes('database') || reqText.includes('data') || reqText.includes('storage')) {
       requiredAgents.push(this.agentTypes.database);
     }
-    
+
     if (reqText.includes('security') || reqText.includes('auth') || reqText.includes('login')) {
       requiredAgents.push(this.agentTypes.security);
     }
-    
+
     if (reqText.includes('test') || reqText.includes('testing') || reqText.includes('quality')) {
       requiredAgents.push(this.agentTypes.testing);
     }
-    
+
     if (reqText.includes('deploy') || reqText.includes('cicd') || reqText.includes('docker')) {
       requiredAgents.push(this.agentTypes.devops);
     }
-    
+
     // Au moins frontend + backend par défaut
     if (requiredAgents.length === 0) {
       requiredAgents.push(this.agentTypes.frontend, this.agentTypes.backend);
     }
-    
+
     return requiredAgents;
   }
 
@@ -427,40 +427,40 @@ export class ClaudeSubAgentOrchestrator {
       testing: ['frontend', 'backend'], // Dépend de frontend et backend
       devops: ['frontend', 'backend', 'testing'] // Dernière phase
     };
-    
+
     // Grouper par phases basées sur dépendances
     const phaseMap = new Map();
-    
+
     sortedAgents.forEach(agent => {
       const agentType = agent.type || agent.name.toLowerCase().replace(' agent', '');
       const deps = dependencies[agentType] || [];
       let phase = 0;
-      
+
       // Calculer phase basée sur dépendances
       deps.forEach(dep => {
         const depPhase = this.findAgentPhase(phaseMap, dep);
         phase = Math.max(phase, depPhase + 1);
       });
-      
+
       if (!phaseMap.has(phase)) {
         phaseMap.set(phase, []);
       }
       phaseMap.get(phase).push(agent);
     });
-    
+
     // Convertir en array de phases
     for (let i = 0; i < phaseMap.size; i++) {
       if (phaseMap.has(i)) {
         phases.push(phaseMap.get(i));
       }
     }
-    
+
     const executionPlan = sortedAgents.map((agent, index) => ({
       ...agent,
       executionOrder: index,
       phase: this.findAgentPhase(phaseMap, agent.type || agent.name.toLowerCase().replace(' agent', ''))
     }));
-    
+
     executionPlan.phases = phases.length;
     return executionPlan;
   }
@@ -477,14 +477,14 @@ export class ClaudeSubAgentOrchestrator {
   groupAgentsByPhase(agentPlan) {
     const phases = [];
     const maxPhase = Math.max(...agentPlan.map(agent => agent.phase || 0));
-    
+
     for (let i = 0; i <= maxPhase; i++) {
       const phaseAgents = agentPlan.filter(agent => (agent.phase || 0) === i);
       if (phaseAgents.length > 0) {
         phases.push(phaseAgents);
       }
     }
-    
+
     return phases;
   }
 
@@ -625,7 +625,7 @@ export const securityHeaders = helmet({
     const agentType = agent?.type || 'generic';
     const technologies = agent?.technologies || [];
     const projectDesc = projectContext?.description || 'Unnamed Project';
-    
+
     return `
 // ${agentName} - Generated Code
 // Project: ${projectDesc}
@@ -654,7 +654,7 @@ export default class ${agentType.charAt(0).toUpperCase() + agentType.slice(1)}Im
       .filter(result => result.code)
       .map(result => `// ${result.agent.name}\n${result.code}`)
       .join('\n\n// ---\n\n');
-    
+
     return `
 // Integrated System Code
 // Generated by Claude SubAgent Orchestrator
@@ -673,12 +673,12 @@ export const systemStatus = {
 
   async validatePhaseIntegration(results, nextPhase) {
     console.log(`🔍 Validating phase integration before Phase ${nextPhase}...`);
-    
+
     const phaseResults = results.filter(r => r.success);
     if (phaseResults.length === 0) {
       throw new Error(`Phase validation failed: No successful results for Phase ${nextPhase}`);
     }
-    
+
     // Validation simple - en production, plus complexe
     return true;
   }
@@ -692,9 +692,9 @@ export const systemStatus = {
       ...result,
       orchestrationId: `orch-${Date.now()}`
     };
-    
+
     this.orchestrationLog.push(logEntry);
-    
+
     try {
       // Log pour analytics
       const fs = await import('fs/promises');
@@ -710,13 +710,13 @@ export const systemStatus = {
   getOrchestrationStatistics() {
     const totalOrchestrations = this.orchestrationLog.length;
     const successfulOrchestrations = this.orchestrationLog.filter(log => log.success).length;
-    
-    const avgDuration = totalOrchestrations > 0 ? 
+
+    const avgDuration = totalOrchestrations > 0 ?
       this.orchestrationLog.reduce((sum, log) => sum + log.totalDuration, 0) / totalOrchestrations : 0;
-    
+
     const avgAgentsPerProject = totalOrchestrations > 0 ?
       this.orchestrationLog.reduce((sum, log) => sum + log.agentsUsed, 0) / totalOrchestrations : 0;
-    
+
     return {
       totalOrchestrations,
       successRate: totalOrchestrations > 0 ? successfulOrchestrations / totalOrchestrations : 0,
@@ -754,16 +754,16 @@ export const systemStatus = {
    */
   async emergencyStop(reason = 'Manual stop requested') {
     console.log(`🚨 Emergency stop triggered: ${reason}`);
-    
+
     // Stop tous les agents actifs
     for (const [agentId, agent] of this.activeAgents.entries()) {
       agent.status = 'stopped';
       this.activeAgents.delete(agentId);
     }
-    
+
     // Clear queue
     this.agentQueue = [];
-    
+
     // Log emergency stop
     this.orchestrationLog.push({
       timestamp: new Date().toISOString(),
@@ -771,7 +771,7 @@ export const systemStatus = {
       reason,
       stoppedAgents: this.activeAgents.size
     });
-    
+
     return { success: true, message: `Emergency stop completed. Stopped ${this.activeAgents.size} agents.` };
   }
 }

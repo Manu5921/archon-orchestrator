@@ -1,30 +1,30 @@
 /** @type {import('next').NextConfig} */
 
 // Import required modules
-const { withSentryConfig } = require('@sentry/nextjs')
-const path = require('path')
+const { withSentryConfig } = require('@sentry/nextjs');
+const path = require('path');
 
 // Build configuration
 const nextConfig = {
   // Output configuration for standalone deployment
   output: 'standalone',
-  
+
   // Enable experimental features
   experimental: {
     // Enable server components logging
     logging: {
       level: process.env.NODE_ENV === 'production' ? 'error' : 'info',
-      fullUrl: true,
+      fullUrl: true
     },
     // Optimize server-side rendering
     optimizePackageImports: ['@trustboost/ui', 'lucide-react', 'date-fns'],
     // Enable partial pre-rendering
-    ppr: false, // Disable until stable
+    ppr: false // Disable until stable
   },
 
   // Build ID for consistent deployments
   generateBuildId: async () => {
-    return process.env.GITHUB_SHA || process.env.VERCEL_GIT_COMMIT_SHA || 'local-build'
+    return process.env.GITHUB_SHA || process.env.VERCEL_GIT_COMMIT_SHA || 'local-build';
   },
 
   // Power by header removal
@@ -50,11 +50,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**.vercel.app',
+        hostname: '**.vercel.app'
       },
       {
         protocol: 'https',
-        hostname: 'cdn.trustboost.com',
+        hostname: 'cdn.trustboost.com'
       }
     ]
   },
@@ -90,12 +90,12 @@ const nextConfig = {
         key: 'Referrer-Policy',
         value: 'strict-origin-when-cross-origin'
       }
-    ]
+    ];
 
     return [
       {
         source: '/(.*)',
-        headers: securityHeaders,
+        headers: securityHeaders
       },
       {
         source: '/api/(.*)',
@@ -107,7 +107,7 @@ const nextConfig = {
           }
         ]
       }
-    ]
+    ];
   },
 
   // Redirects
@@ -116,9 +116,9 @@ const nextConfig = {
       {
         source: '/home',
         destination: '/',
-        permanent: true,
+        permanent: true
       }
-    ]
+    ];
   },
 
   // Rewrites for API routes
@@ -130,7 +130,7 @@ const nextConfig = {
           destination: '/api/health'
         }
       ]
-    }
+    };
   },
 
   // Webpack configuration
@@ -140,19 +140,19 @@ const nextConfig = {
       config.optimization = {
         ...config.optimization,
         moduleIds: 'deterministic',
-        minimize: true,
-      }
+        minimize: true
+      };
     }
 
     // Bundle analyzer in development
     if (dev && process.env.ANALYZE === 'true') {
-      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
       config.plugins.push(
         new BundleAnalyzerPlugin({
           analyzerMode: 'server',
-          openAnalyzer: true,
+          openAnalyzer: true
         })
-      )
+      );
     }
 
     // Ignore certain files in production builds
@@ -160,21 +160,21 @@ const nextConfig = {
       config.module.rules.push({
         test: /\.(test|spec)\.(js|jsx|ts|tsx)$/,
         loader: 'ignore-loader'
-      })
+      });
     }
 
-    return config
+    return config;
   },
 
   // Environment variables validation
   env: {
     CUSTOM_BUILD_ID: process.env.GITHUB_SHA || process.env.VERCEL_GIT_COMMIT_SHA || 'development',
-    BUILD_TIME: new Date().toISOString(),
+    BUILD_TIME: new Date().toISOString()
   },
 
   // TypeScript configuration
   typescript: {
-    ignoreBuildErrors: process.env.NODE_ENV === 'development',
+    ignoreBuildErrors: process.env.NODE_ENV === 'development'
   },
 
   // ESLint configuration
@@ -188,52 +188,52 @@ const nextConfig = {
     // Remove console logs in production
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error', 'warn']
-    } : false,
+    } : false
   },
 
   // Server runtime configuration
   serverRuntimeConfig: {
     // Will only be available on the server side
-    mySecret: process.env.SECRET_KEY,
+    mySecret: process.env.SECRET_KEY
   },
 
   // Public runtime configuration
   publicRuntimeConfig: {
     // Will be available on both server and client
     version: process.env.NEXT_PUBLIC_VERSION || '1.0.0',
-    buildId: process.env.GITHUB_SHA || 'local',
+    buildId: process.env.GITHUB_SHA || 'local'
   },
 
   // Logging
   logging: {
     fetches: {
-      fullUrl: true,
-    },
-  },
-}
+      fullUrl: true
+    }
+  }
+};
 
 // Sentry configuration
 const sentryOptions = {
   org: process.env.SENTRY_ORG || 'trustboost-phase4',
   project: process.env.SENTRY_PROJECT || 'trustboost-frontend',
-  
+
   // Upload source maps in production
   silent: process.env.NODE_ENV !== 'production',
   widenClientFileUpload: true,
   reactComponentAnnotation: {
-    enabled: true,
+    enabled: true
   },
   hideSourceMaps: true,
   disableLogger: process.env.NODE_ENV === 'production',
-  
+
   // Tunnel through Next.js rewrite for better reliability
   tunnelRoute: '/monitoring',
-  
+
   // Additional Sentry options
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-}
+  authToken: process.env.SENTRY_AUTH_TOKEN
+};
 
 // Export with Sentry wrapper if in production
-module.exports = process.env.NODE_ENV === 'production' && process.env.SENTRY_AUTH_TOKEN 
+module.exports = process.env.NODE_ENV === 'production' && process.env.SENTRY_AUTH_TOKEN
   ? withSentryConfig(nextConfig, sentryOptions)
-  : nextConfig
+  : nextConfig;

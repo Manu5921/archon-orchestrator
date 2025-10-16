@@ -2,10 +2,10 @@
 
 /**
  * GDPR COMPLIANCE SYSTEM - MAIN INTEGRATION MODULE
- * 
+ *
  * Phase 4 TrustBoost - Complete GDPR compliance system
  * Integrates all compliance components for full regulatory compliance
- * 
+ *
  * Components:
  * - Granular consent management system
  * - Automated data export/deletion (<24h SLA)
@@ -30,13 +30,13 @@ import { gdprValidator } from './gdpr-validator.js';
 export class GDPRComplianceSystem extends EventEmitter {
   constructor(options = {}) {
     super();
-    
+
     this.config = {
       // System configuration
       environment: process.env.NODE_ENV || 'production',
       systemName: 'TrustBoost GDPR Compliance System',
       version: '2024.1',
-      
+
       // Component configuration
       components: {
         consentManager: { enabled: true, required: true },
@@ -45,7 +45,7 @@ export class GDPRComplianceSystem extends EventEmitter {
         legalDocuments: { enabled: true, required: true },
         gdprValidator: { enabled: true, required: false }
       },
-      
+
       // Integration settings
       integration: {
         autoInitialize: true,
@@ -53,10 +53,10 @@ export class GDPRComplianceSystem extends EventEmitter {
         complianceCheckInterval: 24 * 60 * 60 * 1000, // 24 hours
         reportingInterval: 7 * 24 * 60 * 60 * 1000 // Weekly
       },
-      
+
       ...options
     };
-    
+
     this.components = {};
     this.systemHealth = {
       status: 'initializing',
@@ -64,16 +64,16 @@ export class GDPRComplianceSystem extends EventEmitter {
       lastCheck: null,
       uptime: Date.now()
     };
-    
+
     this.complianceStatus = {
       score: null,
       certification: null,
       lastAudit: null,
       nextAuditDue: null
     };
-    
+
     this.initialized = false;
-    
+
     // Auto-initialize if enabled
     if (this.config.integration.autoInitialize) {
       this.init();
@@ -87,47 +87,47 @@ export class GDPRComplianceSystem extends EventEmitter {
     try {
       logger.info('🚀 Initializing GDPR Compliance System...');
       logger.info('═══════════════════════════════════════════════');
-      
+
       const startTime = Date.now();
-      
+
       // Initialize core components
       await this.initializeComponents();
-      
+
       // Set up component event listeners
       this.setupEventListeners();
-      
+
       // Generate legal documents
       await this.generateLegalDocuments();
-      
+
       // Start monitoring processes
       this.startHealthMonitoring();
       this.startComplianceMonitoring();
       this.startReporting();
-      
+
       // Perform initial compliance check
       await this.performInitialComplianceCheck();
-      
+
       this.initialized = true;
       const initTime = Date.now() - startTime;
-      
+
       logger.info('✅ GDPR Compliance System initialized successfully');
       logger.info(`⏱️ Initialization time: ${initTime}ms`);
       logger.info('═══════════════════════════════════════════════');
-      
+
       // Emit system ready event
       this.emit('systemReady', {
         initTime,
         components: Object.keys(this.components).length,
         complianceScore: this.complianceStatus.score
       });
-      
+
       return {
         success: true,
         initTime,
         components: this.getComponentStatus(),
         complianceStatus: this.complianceStatus
       };
-      
+
     } catch (error) {
       logger.error(`❌ Failed to initialize GDPR Compliance System: ${error.message}`);
       this.systemHealth.status = 'failed';
@@ -141,7 +141,7 @@ export class GDPRComplianceSystem extends EventEmitter {
    */
   async initializeComponents() {
     logger.info('🔧 Initializing GDPR compliance components...');
-    
+
     // Initialize consent manager
     if (this.config.components.consentManager.enabled) {
       try {
@@ -157,7 +157,7 @@ export class GDPRComplianceSystem extends EventEmitter {
         }
       }
     }
-    
+
     // Initialize data processor
     if (this.config.components.dataProcessor.enabled) {
       try {
@@ -173,7 +173,7 @@ export class GDPRComplianceSystem extends EventEmitter {
         }
       }
     }
-    
+
     // Initialize audit trail system
     if (this.config.components.auditTrailSystem.enabled) {
       try {
@@ -189,7 +189,7 @@ export class GDPRComplianceSystem extends EventEmitter {
         }
       }
     }
-    
+
     // Initialize GDPR validator
     if (this.config.components.gdprValidator.enabled) {
       try {
@@ -212,44 +212,44 @@ export class GDPRComplianceSystem extends EventEmitter {
    */
   setupEventListeners() {
     logger.info('🔗 Setting up component event listeners...');
-    
+
     // Consent Manager events
     if (this.components.consentManager) {
       this.components.consentManager.on('consentChanged', async (event) => {
         await this.handleConsentChanged(event);
       });
-      
+
       this.components.consentManager.on('consentWithdrawn', async (event) => {
         await this.handleConsentWithdrawn(event);
       });
     }
-    
+
     // Data Processor events
     if (this.components.dataProcessor) {
       this.components.dataProcessor.on('exportCompleted', async (event) => {
         await this.handleExportCompleted(event);
       });
-      
+
       this.components.dataProcessor.on('deletionCompleted', async (event) => {
         await this.handleDeletionCompleted(event);
       });
-      
+
       this.components.dataProcessor.on('slaBreached', async (event) => {
         await this.handleSLABreach(event);
       });
     }
-    
+
     // Audit Trail System events
     if (this.components.auditTrailSystem) {
       this.components.auditTrailSystem.on('criticalEvent', async (event) => {
         await this.handleCriticalAuditEvent(event);
       });
-      
+
       this.components.auditTrailSystem.on('dataBreachDetected', async (event) => {
         await this.handleDataBreach(event);
       });
     }
-    
+
     logger.info('✅ Event listeners configured');
   }
 
@@ -260,12 +260,12 @@ export class GDPRComplianceSystem extends EventEmitter {
     if (this.config.components.legalDocuments.enabled) {
       try {
         logger.info('📄 Generating legal documents...');
-        
+
         const result = await legalDocumentsGenerator.generateAllDocuments();
         this.components.legalDocuments = legalDocumentsGenerator;
-        
+
         logger.info(`✅ Legal documents generated: ${result.documents.join(', ')}`);
-        
+
         // Log document generation in audit trail
         if (this.components.auditTrailSystem) {
           await this.components.auditTrailSystem.logSystemEvent('legal_documents_generated', {
@@ -273,7 +273,7 @@ export class GDPRComplianceSystem extends EventEmitter {
             outputPath: result.outputPath
           });
         }
-        
+
       } catch (error) {
         logger.error(`❌ Legal documents generation failed: ${error.message}`);
         if (this.config.components.legalDocuments.required) {
@@ -290,12 +290,12 @@ export class GDPRComplianceSystem extends EventEmitter {
     if (this.components.gdprValidator) {
       try {
         logger.info('🔍 Performing initial GDPR compliance audit...');
-        
+
         const audit = await this.components.gdprValidator.performComplianceAudit({
           type: 'initial_system_audit',
           triggeredBy: 'system_initialization'
         });
-        
+
         this.complianceStatus = {
           score: audit.overallCompliance.score,
           status: audit.overallCompliance.status,
@@ -304,9 +304,9 @@ export class GDPRComplianceSystem extends EventEmitter {
           nextAuditDue: audit.nextAuditDate,
           auditId: audit.id
         };
-        
+
         logger.info(`✅ Initial compliance check completed: ${audit.overallCompliance.score}% (${audit.overallCompliance.status})`);
-        
+
         // Log compliance check
         if (this.components.auditTrailSystem) {
           await this.components.auditTrailSystem.logSystemEvent('compliance_check_completed', {
@@ -316,14 +316,14 @@ export class GDPRComplianceSystem extends EventEmitter {
             certification: audit.overallCompliance.certification?.certificationLevel
           });
         }
-        
+
         // Emit compliance event
         this.emit('complianceChecked', {
           score: audit.overallCompliance.score,
           status: audit.overallCompliance.status,
           audit
         });
-        
+
       } catch (error) {
         logger.error(`❌ Initial compliance check failed: ${error.message}`);
       }
@@ -336,7 +336,7 @@ export class GDPRComplianceSystem extends EventEmitter {
 
   async handleConsentChanged(event) {
     const { userId, consentRecord, changedCategories } = event;
-    
+
     // Log consent change in audit trail
     if (this.components.auditTrailSystem) {
       await this.components.auditTrailSystem.logAuditEvent(
@@ -351,16 +351,16 @@ export class GDPRComplianceSystem extends EventEmitter {
         }
       );
     }
-    
+
     // Check if consent changes affect data processing
     await this.checkConsentImpactOnProcessing(userId, changedCategories);
-    
+
     this.emit('userConsentChanged', { userId, changedCategories });
   }
 
   async handleConsentWithdrawn(event) {
     const { userId, withdrawalData } = event;
-    
+
     // Log consent withdrawal
     if (this.components.auditTrailSystem) {
       await this.components.auditTrailSystem.logAuditEvent(
@@ -374,18 +374,18 @@ export class GDPRComplianceSystem extends EventEmitter {
         }
       );
     }
-    
+
     // Automatically trigger data deletion if required
     await this.handleConsentWithdrawalDataImpact(userId, withdrawalData);
-    
+
     this.emit('userConsentWithdrawn', { userId, withdrawalData });
   }
 
   async handleExportCompleted(event) {
     const { request } = event;
-    
+
     logger.info(`📤 Data export completed for user ${request.userId} (Request: ${request.id})`);
-    
+
     // Log export completion
     if (this.components.auditTrailSystem) {
       await this.components.auditTrailSystem.logAuditEvent(
@@ -402,15 +402,15 @@ export class GDPRComplianceSystem extends EventEmitter {
         }
       );
     }
-    
+
     this.emit('userDataExported', { userId: request.userId, request });
   }
 
   async handleDeletionCompleted(event) {
     const { request } = event;
-    
+
     logger.info(`🗑️ Data deletion completed for user ${request.userId} (Request: ${request.id})`);
-    
+
     // Log deletion completion
     if (this.components.auditTrailSystem) {
       await this.components.auditTrailSystem.logAuditEvent(
@@ -426,15 +426,15 @@ export class GDPRComplianceSystem extends EventEmitter {
         }
       );
     }
-    
+
     this.emit('userDataDeleted', { userId: request.userId, request });
   }
 
   async handleSLABreach(event) {
     const { request } = event;
-    
+
     logger.error(`🚨 SLA BREACH: Request ${request.id} (${request.type}) - User ${request.userId}`);
-    
+
     // Log SLA breach as critical event
     if (this.components.auditTrailSystem) {
       await this.components.auditTrailSystem.logAuditEvent(
@@ -450,13 +450,13 @@ export class GDPRComplianceSystem extends EventEmitter {
         }
       );
     }
-    
+
     this.emit('slaBreached', { request, severity: 'critical' });
   }
 
   async handleCriticalAuditEvent(event) {
     logger.error(`🚨 CRITICAL AUDIT EVENT: ${event.eventType} - ${event.id}`);
-    
+
     // Escalate critical events
     this.emit('criticalEvent', {
       eventType: event.eventType,
@@ -469,10 +469,10 @@ export class GDPRComplianceSystem extends EventEmitter {
 
   async handleDataBreach(event) {
     logger.error(`🚨 DATA BREACH DETECTED: ${event.eventData.breachId}`);
-    
+
     // Immediate breach response
     await this.initiateBreachResponse(event);
-    
+
     this.emit('dataBreachDetected', {
       breachId: event.eventData.breachId,
       breachType: event.eventData.breachType,
@@ -489,12 +489,12 @@ export class GDPRComplianceSystem extends EventEmitter {
     // Check if withdrawn consent affects ongoing processing
     if (this.components.consentManager && this.components.dataProcessor) {
       const consent = this.components.consentManager.getConsent(userId);
-      
+
       for (const category of changedCategories) {
         if (!consent.preferences[category]) {
           // Consent withdrawn for this category - check for data retention requirements
           logger.info(`🔄 Checking data processing impact for user ${userId}, category: ${category}`);
-          
+
           // Could trigger automatic data cleanup or processing restriction
           // Implementation depends on specific business rules
         }
@@ -505,15 +505,15 @@ export class GDPRComplianceSystem extends EventEmitter {
   async handleConsentWithdrawalDataImpact(userId, withdrawalData) {
     // Automatically handle data processing changes when consent is withdrawn
     const { withdrawnCategories } = withdrawalData;
-    
+
     // Check if any withdrawn categories require data deletion
-    const deletionRequiredCategories = withdrawnCategories.filter(category => 
+    const deletionRequiredCategories = withdrawnCategories.filter(category =>
       ['marketing', 'analytics'].includes(category) // Example categories that require deletion
     );
-    
+
     if (deletionRequiredCategories.length > 0 && this.components.dataProcessor) {
       logger.info(`🗑️ Initiating automatic data deletion for user ${userId} due to consent withdrawal`);
-      
+
       // Request automatic data deletion
       await this.components.dataProcessor.requestDataDeletion(userId, {
         deletionScope: 'specific',
@@ -527,14 +527,14 @@ export class GDPRComplianceSystem extends EventEmitter {
   async initiateBreachResponse(breachEvent) {
     // Immediate breach response procedures
     const breachId = breachEvent.eventData.breachId;
-    
+
     logger.error(`🚨 Initiating breach response for: ${breachId}`);
-    
+
     // 1. Containment measures
     // 2. Impact assessment
     // 3. Notification preparation (72h deadline)
     // 4. Communication planning
-    
+
     // This would trigger actual breach response procedures
   }
 
@@ -578,7 +578,7 @@ export class GDPRComplianceSystem extends EventEmitter {
       status: 'healthy',
       components: {}
     };
-    
+
     // Check each component
     for (const [name, component] of Object.entries(this.components)) {
       healthCheck.components[name] = {
@@ -587,17 +587,17 @@ export class GDPRComplianceSystem extends EventEmitter {
         memoryUsage: process.memoryUsage()
       };
     }
-    
+
     // Overall system status
     const unhealthyComponents = Object.values(healthCheck.components)
       .filter(comp => comp.status === 'unhealthy').length;
-    
+
     if (unhealthyComponents > 0) {
       healthCheck.status = 'degraded';
     }
-    
+
     this.systemHealth = healthCheck;
-    
+
     // Emit health status
     this.emit('healthCheck', healthCheck);
   }
@@ -608,7 +608,7 @@ export class GDPRComplianceSystem extends EventEmitter {
         type: 'scheduled_compliance_check',
         triggeredBy: 'automated_monitoring'
       });
-      
+
       this.complianceStatus = {
         score: audit.overallCompliance.score,
         status: audit.overallCompliance.status,
@@ -617,7 +617,7 @@ export class GDPRComplianceSystem extends EventEmitter {
         nextAuditDue: audit.nextAuditDate,
         auditId: audit.id
       };
-      
+
       this.emit('complianceChecked', {
         score: audit.overallCompliance.score,
         status: audit.overallCompliance.status,
@@ -639,11 +639,11 @@ export class GDPRComplianceSystem extends EventEmitter {
       complianceStatus: this.complianceStatus,
       componentStatus: this.getComponentStatus()
     };
-    
+
     logger.info(`📊 System report generated - Compliance: ${this.complianceStatus.score || 'N/A'}%, Health: ${this.systemHealth.status}`);
-    
+
     this.emit('systemReport', report);
-    
+
     return report;
   }
 
@@ -662,7 +662,7 @@ export class GDPRComplianceSystem extends EventEmitter {
 
   getComponentStatus() {
     const status = {};
-    
+
     for (const [name, component] of Object.entries(this.components)) {
       status[name] = {
         initialized: component && component.initialized,
@@ -670,7 +670,7 @@ export class GDPRComplianceSystem extends EventEmitter {
         lastActivity: new Date().toISOString()
       };
     }
-    
+
     return status;
   }
 
@@ -678,7 +678,7 @@ export class GDPRComplianceSystem extends EventEmitter {
     if (!this.components.dataProcessor) {
       throw new Error('Data processor not available');
     }
-    
+
     return await this.components.dataProcessor.requestDataExport(userId, options);
   }
 
@@ -686,7 +686,7 @@ export class GDPRComplianceSystem extends EventEmitter {
     if (!this.components.dataProcessor) {
       throw new Error('Data processor not available');
     }
-    
+
     return await this.components.dataProcessor.requestDataDeletion(userId, options);
   }
 
@@ -694,7 +694,7 @@ export class GDPRComplianceSystem extends EventEmitter {
     if (!this.components.consentManager) {
       throw new Error('Consent manager not available');
     }
-    
+
     return await this.components.consentManager.setConsent(userContext, {
       ...consentData,
       userId
@@ -705,7 +705,7 @@ export class GDPRComplianceSystem extends EventEmitter {
     if (!this.components.consentManager) {
       throw new Error('Consent manager not available');
     }
-    
+
     return this.components.consentManager.getConsent(userId);
   }
 
@@ -713,7 +713,7 @@ export class GDPRComplianceSystem extends EventEmitter {
     if (!this.components.gdprValidator) {
       throw new Error('GDPR validator not available');
     }
-    
+
     return await this.components.gdprValidator.generateComplianceReport();
   }
 }
@@ -740,7 +740,7 @@ export async function initializeGDPRCompliance(options = {}) {
 // Quick start function for simple integration
 export async function quickStartGDPR() {
   logger.info('🚀 GDPR Quick Start - Initializing TrustBoost Phase 4...');
-  
+
   const system = await initializeGDPRCompliance({
     environment: process.env.NODE_ENV || 'production',
     integration: {
@@ -749,20 +749,20 @@ export async function quickStartGDPR() {
       complianceCheckInterval: 24 * 60 * 60 * 1000
     }
   });
-  
+
   logger.info('✅ TrustBoost Phase 4 - GDPR Compliance System ready!');
   logger.info('🎯 Features: Consent Management, Data Processing, Audit Trail, Legal Docs, Validation');
   logger.info(`📊 Compliance Score: ${system.complianceStatus.score || 'Calculating...'}%`);
-  
+
   return system;
 }
 
 // CLI execution
 if (import.meta.url === `file://${process.argv[1]}`) {
   quickStartGDPR()
-    .then(system => {
+    .then(_system => {
       logger.info('🎉 GDPR Compliance System started successfully!');
-      
+
       // Keep process alive for monitoring
       process.on('SIGINT', async () => {
         logger.info('👋 Shutting down GDPR Compliance System...');

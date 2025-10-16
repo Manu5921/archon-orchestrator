@@ -86,10 +86,10 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('❌ Erreur API create-checkout-session:', error);
-    
+
     // Log pour debugging
     console.error('Stack trace:', error.stack);
-    
+
     res.status(500).json({
       error: 'Erreur serveur lors de la création de la session',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
@@ -103,7 +103,7 @@ export default async function handler(req, res) {
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '1mb',
-    },
-  },
+      sizeLimit: '1mb'
+    }
+  }
 };

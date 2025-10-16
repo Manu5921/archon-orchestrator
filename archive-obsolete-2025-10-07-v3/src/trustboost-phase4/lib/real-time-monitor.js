@@ -1,10 +1,10 @@
 /**
  * AGENT 6: Performance & Optimization Engineer
  * TrustBoost Phase 4 - Real-Time Performance Monitoring Dashboard
- * 
+ *
  * Dashboard temps réel pour monitoring performance
  * - Core Web Vitals en live
- * - Database performance metrics  
+ * - Database performance metrics
  * - Cache hit ratios
  * - Bundle size monitoring
  * - Alerts automatiques
@@ -19,13 +19,13 @@ import { performance } from 'perf_hooks';
 export class RealTimeMonitor extends EventEmitter {
   constructor(options = {}) {
     super();
-    
+
     this.options = {
       // Update intervals
       metricsInterval: 1000, // 1 second
       dashboardInterval: 5000, // 5 seconds
       reportInterval: 60000, // 1 minute
-      
+
       // Performance thresholds
       coreWebVitals: {
         FCP: { good: 1800, poor: 3000 },
@@ -34,7 +34,7 @@ export class RealTimeMonitor extends EventEmitter {
         CLS: { good: 0.1, poor: 0.25 },
         TTFB: { good: 800, poor: 1800 }
       },
-      
+
       // Alert thresholds
       alertThresholds: {
         errorRate: 0.05, // 5% error rate
@@ -42,12 +42,12 @@ export class RealTimeMonitor extends EventEmitter {
         cacheHitRatio: 0.8, // 80% cache hit ratio
         memoryUsage: 0.8 // 80% memory usage
       },
-      
+
       // Dashboard configuration
       maxDataPoints: 100,
       enableWebSocket: true,
       dashboardPort: 3001,
-      
+
       ...options
     };
 
@@ -97,7 +97,7 @@ export class RealTimeMonitor extends EventEmitter {
    */
   collectSystemMetrics() {
     const timestamp = Date.now();
-    
+
     // Memory usage
     if (typeof process !== 'undefined' && process.memoryUsage) {
       const memUsage = process.memoryUsage();
@@ -130,7 +130,7 @@ export class RealTimeMonitor extends EventEmitter {
   recordWebVital(metric) {
     const { name, value, rating } = metric;
     const timestamp = Date.now();
-    
+
     this.recordMetric('webVitals', name, {
       value,
       rating,
@@ -143,7 +143,7 @@ export class RealTimeMonitor extends EventEmitter {
 
     // Emit real-time update
     this.emit('webvital', { name, value, rating, timestamp });
-    
+
     // Send to connected clients
     this.broadcastToClients('webvital', { name, value, rating, timestamp });
   }
@@ -153,7 +153,7 @@ export class RealTimeMonitor extends EventEmitter {
    */
   recordDatabaseMetric(queryId, duration, status) {
     const timestamp = Date.now();
-    
+
     this.recordMetric('database', 'query', {
       queryId,
       duration,
@@ -180,7 +180,7 @@ export class RealTimeMonitor extends EventEmitter {
    */
   recordCacheMetric(operation, result, duration) {
     const timestamp = Date.now();
-    
+
     this.recordMetric('cache', operation, {
       result, // 'hit' or 'miss'
       duration,
@@ -262,13 +262,13 @@ export class RealTimeMonitor extends EventEmitter {
    */
   getWebVitalsSummary() {
     const summary = {};
-    
+
     ['FCP', 'LCP', 'FID', 'CLS', 'TTFB'].forEach(metric => {
       const recent = this.getRecentMetrics('webVitals', metric, 10);
       if (recent.length > 0) {
         const latest = recent[recent.length - 1];
         const average = recent.reduce((sum, m) => sum + m.value, 0) / recent.length;
-        
+
         summary[metric] = {
           current: latest.value,
           average: Math.round(average),
@@ -287,7 +287,7 @@ export class RealTimeMonitor extends EventEmitter {
    */
   getDatabaseSummary() {
     const queries = this.getRecentMetrics('database', 'query', 100);
-    
+
     if (queries.length === 0) {
       return { status: 'no-data' };
     }
@@ -311,7 +311,7 @@ export class RealTimeMonitor extends EventEmitter {
    */
   getCacheSummary() {
     const operations = this.getRecentMetrics('cache', 'operation', 100);
-    
+
     if (operations.length === 0) {
       return { status: 'no-data' };
     }
@@ -402,7 +402,7 @@ export class RealTimeMonitor extends EventEmitter {
    */
   checkWebVitalsAlert(metric) {
     const threshold = this.options.coreWebVitals[metric.name];
-    
+
     if (threshold && metric.value > threshold.poor) {
       this.createAlert('webvitals', 'poor-performance', {
         metric: metric.name,
@@ -456,7 +456,7 @@ export class RealTimeMonitor extends EventEmitter {
     const webVitals = this.getWebVitalsSummary();
     const database = this.getDatabaseSummary();
     const cache = this.getCacheSummary();
-    
+
     let score = 100;
     const issues = [];
 
@@ -516,7 +516,7 @@ export class RealTimeMonitor extends EventEmitter {
 
     // Emit report
     this.emit('report', report);
-    
+
     // Log performance summary
     console.log('Performance Report:', {
       score: report.overall.score,
@@ -636,7 +636,7 @@ export class RealTimeMonitor extends EventEmitter {
     if (this.clients.size === 0) return;
 
     const message = JSON.stringify({ type, data, timestamp: Date.now() });
-    
+
     this.clients.forEach(client => {
       if (client.readyState === 1) { // WebSocket.OPEN
         try {
@@ -654,15 +654,15 @@ export class RealTimeMonitor extends EventEmitter {
    */
   handleClientMessage(ws, message) {
     switch (message.type) {
-      case 'acknowledge-alert':
-        this.acknowledgeAlert(message.alertId);
-        break;
-      case 'get-detailed-metrics':
-        ws.send(JSON.stringify({
-          type: 'detailed-metrics',
-          data: this.getDetailedMetrics(message.category)
-        }));
-        break;
+    case 'acknowledge-alert':
+      this.acknowledgeAlert(message.alertId);
+      break;
+    case 'get-detailed-metrics':
+      ws.send(JSON.stringify({
+        type: 'detailed-metrics',
+        data: this.getDetailedMetrics(message.category)
+      }));
+      break;
     }
   }
 
@@ -705,10 +705,10 @@ export class RealTimeMonitor extends EventEmitter {
     if (values.length < 2) return 'stable';
     const recent = values.slice(-5);
     const older = values.slice(-10, -5);
-    
+
     const recentAvg = recent.reduce((sum, v) => sum + v, 0) / recent.length;
     const olderAvg = older.reduce((sum, v) => sum + v, 0) / older.length;
-    
+
     if (recentAvg > olderAvg * 1.1) return 'increasing';
     if (recentAvg < olderAvg * 0.9) return 'decreasing';
     return 'stable';
@@ -718,17 +718,17 @@ export class RealTimeMonitor extends EventEmitter {
     // Simplified CPU usage estimation
     const start = process.hrtime();
     const startUsage = process.cpuUsage();
-    
+
     // Small computation to measure
     let i = 0;
     while (i < 100000) i++;
-    
+
     const delta = process.hrtime(start);
     const deltaUsage = process.cpuUsage(startUsage);
-    
+
     const totalTime = delta[0] * 1000000 + delta[1] / 1000; // microseconds
     const cpuTime = (deltaUsage.user + deltaUsage.system); // microseconds
-    
+
     return Math.min(cpuTime / totalTime, 1);
   }
 

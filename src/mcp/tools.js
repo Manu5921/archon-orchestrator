@@ -7,12 +7,12 @@ export class MCPTools {
     // Nouveaux outils pour orchestration Claude Code
     this.claudeCodeTools = new ClaudeCodeOrchestrationTools(orchestrator);
   }
-  
+
   getToolsList() {
     return [
       // NOUVEAUX OUTILS CLAUDE CODE ORCHESTRATION (CONCEPT ORIGINAL)
       ...this.claudeCodeTools.getToolsList(),
-      
+
       // ANCIEN WORKFLOW HYBRIDE (À GARDER POUR COMPATIBILITÉ)
       {
         name: 'orchestra:start_hybrid_workflow',
@@ -21,8 +21,8 @@ export class MCPTools {
           type: 'object',
           properties: {
             project_description: { type: 'string', description: 'Description of the project to develop' },
-            constraints: { 
-              type: 'array', 
+            constraints: {
+              type: 'array',
               items: { type: 'string' },
               description: 'Project constraints and requirements'
             },
@@ -39,8 +39,8 @@ export class MCPTools {
           type: 'object',
           properties: {
             project_description: { type: 'string', description: 'Project to explore' },
-            constraints: { 
-              type: 'array', 
+            constraints: {
+              type: 'array',
               items: { type: 'string' },
               description: 'Constraints and requirements'
             },
@@ -118,8 +118,8 @@ export class MCPTools {
           type: 'object',
           properties: {
             task_description: { type: 'string', description: 'Description of the task to route' },
-            task_type: { 
-              type: 'string', 
+            task_type: {
+              type: 'string',
               enum: ['debugging', 'exploration', 'implementation', 'architecture', 'optimization', 'review', 'testing'],
               description: 'Type of task'
             },
@@ -154,12 +154,12 @@ export class MCPTools {
         inputSchema: {
           type: 'object',
           properties: {
-            agents: { 
-              type: 'array', 
+            agents: {
+              type: 'array',
               items: { type: 'string', enum: ['archon', 'gemini', 'claude'] },
               description: 'Agents to synchronize'
             },
-            context_type: { 
+            context_type: {
               type: 'string',
               enum: ['code', 'documentation', 'architecture', 'requirements'],
               description: 'Type of context to sync'
@@ -175,8 +175,8 @@ export class MCPTools {
         inputSchema: {
           type: 'object',
           properties: {
-            agent: { 
-              type: 'string', 
+            agent: {
+              type: 'string',
               enum: ['archon', 'gemini', 'claude', 'all'],
               description: 'Agent to get stats for'
             },
@@ -212,13 +212,13 @@ export class MCPTools {
       }
     ];
   }
-  
+
   async executeTool(toolName, args) {
     logger.debug(`Executing tool: ${toolName}`, args);
-    
+
     try {
       // NOUVEAUX OUTILS CLAUDE CODE ORCHESTRATION
-      if (toolName.startsWith('orchestra:init_project') || 
+      if (toolName.startsWith('orchestra:init_project') ||
           toolName.startsWith('orchestra:request_gemini') ||
           toolName.startsWith('orchestra:validate_exploration') ||
           toolName.startsWith('orchestra:create_sub_agents') ||
@@ -229,48 +229,48 @@ export class MCPTools {
           toolName.startsWith('orchestra:list_available')) {
         return await this.claudeCodeTools.executeTool(toolName, args);
       }
-      
+
       switch (toolName) {
-        // ANCIEN WORKFLOW HYBRIDE (COMPATIBILITÉ)
-        case 'orchestra:start_hybrid_workflow':
-          return await this.executeHybridWorkflow(args);
-          
-        case 'orchestra:start_project_workflow':
-          return await this.executeProjectWorkflow(args);
-          
-        case 'orchestra:project_exploration':
-          return await this.executeProjectExploration(args);
-          
-        case 'orchestra:technical_validation':
-          return await this.executeTechnicalValidation(args);
-          
-        case 'orchestra:task_orchestration':
-          return await this.executeTaskOrchestration(args);
-          
-        case 'orchestra:code_review_cycle':
-          return await this.executeCodeReviewCycle(args);
-          
-        case 'orchestra:get_project_status':
-          return await this.getProjectStatus(args);
-          
+      // ANCIEN WORKFLOW HYBRIDE (COMPATIBILITÉ)
+      case 'orchestra:start_hybrid_workflow':
+        return await this.executeHybridWorkflow(args);
+
+      case 'orchestra:start_project_workflow':
+        return await this.executeProjectWorkflow(args);
+
+      case 'orchestra:project_exploration':
+        return await this.executeProjectExploration(args);
+
+      case 'orchestra:technical_validation':
+        return await this.executeTechnicalValidation(args);
+
+      case 'orchestra:task_orchestration':
+        return await this.executeTaskOrchestration(args);
+
+      case 'orchestra:code_review_cycle':
+        return await this.executeCodeReviewCycle(args);
+
+      case 'orchestra:get_project_status':
+        return await this.getProjectStatus(args);
+
         // Original tools (enhanced)
-        case 'orchestra:route_task':
-          return await this.orchestrator.routeTask(args);
-          
-        case 'orchestra:agent_handoff':
-          return await this.orchestrator.handoffTask(args);
-          
-        case 'orchestra:sync_context':
-          return await this.orchestrator.syncContext(args);
-          
-        case 'orchestra:performance_stats':
-          return await this.orchestrator.getPerformanceStats(args);
-          
-        case 'orchestra:pattern_learning':
-          return await this.orchestrator.learnPattern(args);
-          
-        default:
-          throw new Error(`Unknown tool: ${toolName}`);
+      case 'orchestra:route_task':
+        return await this.orchestrator.routeTask(args);
+
+      case 'orchestra:agent_handoff':
+        return await this.orchestrator.handoffTask(args);
+
+      case 'orchestra:sync_context':
+        return await this.orchestrator.syncContext(args);
+
+      case 'orchestra:performance_stats':
+        return await this.orchestrator.getPerformanceStats(args);
+
+      case 'orchestra:pattern_learning':
+        return await this.orchestrator.learnPattern(args);
+
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
       }
     } catch (error) {
       logger.error(`Tool execution failed: ${toolName}`, error);
@@ -280,49 +280,49 @@ export class MCPTools {
       };
     }
   }
-  
+
   // HYBRID workflow tool implementation
   async executeHybridWorkflow(args) {
-    const { project_description, constraints = [], deadline, team_size } = args;
-    
+    const { project_description, constraints = [], deadline: _deadline, team_size: _team_size } = args;
+
     logger.info('🚀 Starting HYBRID Revolutionary-Archon Workflow');
-    
+
     // SOLUTION GEMINI: Ajouter executeOrchestratedTask au mock orchestrator
     if (!this.orchestrator.executeOrchestratedTask) {
       this.orchestrator.executeOrchestratedTask = async (taskId, taskType, command, args, context = {}) => {
         logger.info(`🎭 Mock executeOrchestratedTask: ${taskId} (${taskType})`);
-        
+
         // Simuler le routage avec fallback
         const primaryAgent = context.target_agent || 'gemini';
         const agent = this.orchestrator.agents.get(primaryAgent) || this.orchestrator.agents.get('claude') || this.orchestrator.agents.get('archon');
-        
+
         if (agent) {
           const result = await agent.execute(taskId, command, args);
           return { success: result.success, agent: primaryAgent, result };
         }
-        
+
         return { success: false, error: 'No agents available' };
       };
-      
+
       // Ajouter learnPattern pour éviter crash Phase 5
       this.orchestrator.learnPattern = async (patterns) => {
         logger.info(`🎭 Mock learnPattern: ${patterns?.length || 0} patterns learned`);
         return { success: true, patterns_learned: patterns?.length || 0 };
       };
     }
-    
+
     // Initialize workflow if not already present
     if (!this.orchestrator.projectWorkflow) {
       const { ProjectWorkflow } = await import('../workflow/project-workflow.js');
       this.orchestrator.projectWorkflow = new ProjectWorkflow(this.orchestrator);
     }
-    
+
     // Start hybrid workflow (includes Archon setup phase)
     const result = await this.orchestrator.projectWorkflow.startProject(
-      project_description, 
+      project_description,
       constraints
     );
-    
+
     return {
       success: result.success,
       project_id: result.projectId,
@@ -333,7 +333,7 @@ export class MCPTools {
         examples_found: result.archonSetup?.totalExamples || 0,
         tasks_created: result.archonSetup?.createdTasks?.length || 0
       },
-      message: result.success ? 
+      message: result.success ?
         `Hybrid workflow started: Orchestra ${result.projectId} → Archon ${result.archonProjectId}` :
         `Hybrid workflow failed: ${result.error}`,
       duration_ms: result.duration,
@@ -343,64 +343,64 @@ export class MCPTools {
       }
     };
   }
-  
-  // Original workflow tool implementations  
+
+  // Original workflow tool implementations
   async executeProjectWorkflow(args) {
-    const { project_description, constraints = [], deadline, team_size } = args;
-    
+    const { project_description, constraints = [], deadline: _deadline, team_size: _team_size } = args;
+
     logger.info('🚀 Starting Project Workflow');
-    
+
     // Initialize workflow if not already present
     if (!this.orchestrator.projectWorkflow) {
       const { ProjectWorkflow } = await import('../workflow/project-workflow.js');
       this.orchestrator.projectWorkflow = new ProjectWorkflow(this.orchestrator);
     }
-    
+
     const result = await this.orchestrator.projectWorkflow.startProject(
-      project_description, 
+      project_description,
       constraints
     );
-    
+
     return {
       success: result.success,
       project_id: result.projectId,
       workflow_status: result.workflow?.phase || 'unknown',
-      message: result.success ? 
+      message: result.success ?
         `Project workflow started: ${result.projectId}` :
         `Project workflow failed: ${result.error}`,
       duration_ms: result.duration,
       details: result.workflow
     };
   }
-  
+
   async executeProjectExploration(args) {
-    const { project_description, constraints = [], exploration_depth = 'standard' } = args;
-    
+    const { project_description, constraints = [], exploration_depth: _exploration_depth = 'standard' } = args;
+
     logger.info('🎨 Starting Project Exploration');
-    
+
     // Get or create Gemini Explorer
     let geminiExplorer = this.orchestrator.agents.get('gemini_explorer');
     if (!geminiExplorer) {
       const { GeminiExplorer } = await import('../agents/gemini-explorer.js');
       geminiExplorer = new GeminiExplorer();
-      
+
       // Check if real Gemini is available, otherwise use mock
       const healthCheck = await geminiExplorer.healthCheck();
       if (!healthCheck.healthy && process.env.USE_MOCK_AGENTS === 'true') {
         const { MockConnector } = await import('../agents/mock-connector.js');
         geminiExplorer = new MockConnector('gemini_explorer');
       }
-      
+
       this.orchestrator.agents.set('gemini_explorer', geminiExplorer);
     }
-    
+
     const projectId = `exploration_${Date.now()}`;
     const exploration = await geminiExplorer.exploreProject(
       projectId,
       project_description,
       constraints
     );
-    
+
     return {
       success: exploration.success || true,
       project_id: projectId,
@@ -410,30 +410,30 @@ export class MCPTools {
       message: `Exploration completed with ${exploration.exploration?.approaches?.length || 2} approaches`
     };
   }
-  
+
   async executeTechnicalValidation(args) {
-    const { project_id, exploration_results, validation_focus = 'comprehensive' } = args;
-    
+    const { project_id, exploration_results, validation_focus: _validation_focus = 'comprehensive' } = args;
+
     logger.info(`🎯 Starting Technical Validation for ${project_id}`);
-    
+
     // Get or create Claude Orchestrator
     let claudeOrchestrator = this.orchestrator.agents.get('claude_orchestrator');
     if (!claudeOrchestrator) {
       const { ClaudeOrchestrator } = await import('../agents/claude-orchestrator.js');
       claudeOrchestrator = new ClaudeOrchestrator();
-      
+
       // Check if real Claude is available, otherwise use mock
       const healthCheck = await claudeOrchestrator.healthCheck();
       if (!healthCheck.healthy && process.env.USE_MOCK_AGENTS === 'true') {
         const { MockConnector } = await import('../agents/mock-connector.js');
         claudeOrchestrator = new MockConnector('claude_orchestrator');
       }
-      
+
       this.orchestrator.agents.set('claude_orchestrator', claudeOrchestrator);
     }
-    
+
     const validation = await claudeOrchestrator.validateProject(project_id, exploration_results);
-    
+
     return {
       success: validation.success || true,
       project_id,
@@ -443,20 +443,20 @@ export class MCPTools {
       message: `Validation completed with ${validation.validation?.tasks?.length || 4} tasks identified`
     };
   }
-  
+
   async executeTaskOrchestration(args) {
-    const { project_id, validation_results, parallel_execution = true } = args;
-    
+    const { project_id, validation_results, parallel_execution: _parallel_execution = true } = args;
+
     logger.info(`🎼 Starting Task Orchestration for ${project_id}`);
-    
+
     // Get Claude Orchestrator
     const claudeOrchestrator = this.orchestrator.agents.get('claude_orchestrator');
     if (!claudeOrchestrator) {
       throw new Error('Claude Orchestrator not initialized. Run technical_validation first.');
     }
-    
+
     const orchestration = await claudeOrchestrator.orchestrateProject(project_id, validation_results);
-    
+
     return {
       success: true,
       project_id,
@@ -466,20 +466,20 @@ export class MCPTools {
       message: `Orchestration ready: ${orchestration.sub_agents?.size || 3} sub-agents, ${orchestration.execution_plan?.length || 4} steps`
     };
   }
-  
+
   async executeCodeReviewCycle(args) {
     const { project_id, task_id, code, requirements = '', max_iterations = 5 } = args;
-    
+
     logger.info(`🔄 Starting Code Review Cycle for ${task_id}`);
-    
+
     // Get Gemini Explorer for review
     const geminiExplorer = this.orchestrator.agents.get('gemini_explorer');
     const claudeOrchestrator = this.orchestrator.agents.get('claude_orchestrator');
-    
+
     if (!geminiExplorer || !claudeOrchestrator) {
       throw new Error('Both Gemini Explorer and Claude Orchestrator must be initialized');
     }
-    
+
     let currentCode = code;
     const reviewCycle = {
       project_id,
@@ -487,11 +487,11 @@ export class MCPTools {
       iterations: [],
       final_status: 'in_progress'
     };
-    
+
     for (let i = 0; i < max_iterations; i++) {
       // Gemini review
       const review = await geminiExplorer.reviewCode(project_id, task_id, currentCode, requirements);
-      
+
       reviewCycle.iterations.push({
         iteration: i + 1,
         phase: 'review',
@@ -500,19 +500,19 @@ export class MCPTools {
         feedback: review.feedback,
         suggestions: review.suggestions
       });
-      
+
       if (review.approved) {
         reviewCycle.final_status = 'approved';
         reviewCycle.final_code = currentCode;
         break;
       }
-      
+
       // Claude adjustments
       if (i < max_iterations - 1) {
         const adjustment = await claudeOrchestrator.adjustCodeFromReview(
           project_id, task_id, currentCode, review.feedback
         );
-        
+
         currentCode = adjustment.output;
         reviewCycle.iterations.push({
           iteration: i + 1,
@@ -521,12 +521,12 @@ export class MCPTools {
         });
       }
     }
-    
+
     if (reviewCycle.final_status === 'in_progress') {
       reviewCycle.final_status = 'max_iterations_reached';
       reviewCycle.final_code = currentCode;
     }
-    
+
     return {
       success: true,
       project_id,
@@ -537,14 +537,14 @@ export class MCPTools {
       message: `Review cycle completed: ${reviewCycle.final_status} after ${reviewCycle.iterations.length} iterations`
     };
   }
-  
+
   async getProjectStatus(args) {
     const { project_id, include_details = false } = args;
-    
+
     // Check if project workflow exists
     if (this.orchestrator.projectWorkflow) {
       const status = this.orchestrator.projectWorkflow.getProjectStatus(project_id);
-      
+
       if (status) {
         const response = {
           success: true,
@@ -556,26 +556,26 @@ export class MCPTools {
             status: status.phases[phase].status
           }))
         };
-        
+
         if (include_details) {
           response.detailed_status = status;
         }
-        
+
         return response;
       }
     }
-    
+
     return {
       success: false,
       error: `Project ${project_id} not found`
     };
   }
-  
+
   calculateProgress(workflow) {
     const phases = Object.values(workflow.phases);
     const completedPhases = phases.filter(p => p.status === 'completed').length;
     const totalPhases = phases.length;
-    
+
     return {
       percentage: Math.round((completedPhases / totalPhases) * 100),
       completed_phases: completedPhases,

@@ -23,7 +23,7 @@ export class ArchonMCPConnector {
     try {
       // Try to connect via SSE to test availability
       const testSource = new EventSource(this.config.mcpUrl);
-      
+
       return new Promise((resolve) => {
         const timeout = setTimeout(() => {
           testSource.close();
@@ -67,9 +67,9 @@ export class ArchonMCPConnector {
 
     try {
       logger.info(`🔌 Connecting to Archon MCP server via SSE: ${this.config.mcpUrl}`);
-      
+
       this.eventSource = new EventSource(this.config.mcpUrl);
-      
+
       return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
           this.eventSource?.close();
@@ -109,7 +109,7 @@ export class ArchonMCPConnector {
     if (message.id && this.pendingRequests.has(message.id)) {
       const { resolve, reject } = this.pendingRequests.get(message.id);
       this.pendingRequests.delete(message.id);
-      
+
       if (message.error) {
         reject(new Error(message.error.message || 'MCP request failed'));
       } else {
@@ -152,7 +152,7 @@ export class ArchonMCPConnector {
       fetch(`${this.config.mcpUrl}/request`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(request)
       }).catch(error => {
@@ -165,69 +165,69 @@ export class ArchonMCPConnector {
 
   async execute(taskId, command, args = []) {
     const startTime = Date.now();
-    
+
     try {
       logger.debug(`[ARCHON MCP SSE] Executing ${command} for task ${taskId}`, args);
-      
+
       let toolName;
       let toolParams;
       const duration = () => Date.now() - startTime;
 
       switch (command) {
-        case 'manage_project':
-          toolName = 'tools/call';
-          toolParams = {
-            name: 'archon:manage_project',
-            arguments: args[0] || {}
-          };
-          break;
-          
-        case 'manage_task':
-          toolName = 'tools/call';
-          toolParams = {
-            name: 'archon:manage_task',
-            arguments: args[0] || {}
-          };
-          break;
-          
-        case 'perform_rag_query':
-          toolName = 'tools/call';
-          toolParams = {
-            name: 'archon:perform_rag_query',
-            arguments: {
-              query: args[0]?.query || args[0],
-              match_count: args[0]?.match_count || 5
-            }
-          };
-          break;
-          
-        case 'search_code_examples':
-          toolName = 'tools/call';
-          toolParams = {
-            name: 'archon:search_code_examples',
-            arguments: {
-              query: args[0]?.query || args[0],
-              match_count: args[0]?.match_count || 3
-            }
-          };
-          break;
-          
-        default:
-          return {
-            success: false,
-            error: `Command ${command} not supported by SSE connector`,
-            duration_ms: duration()
-          };
+      case 'manage_project':
+        toolName = 'tools/call';
+        toolParams = {
+          name: 'archon:manage_project',
+          arguments: args[0] || {}
+        };
+        break;
+
+      case 'manage_task':
+        toolName = 'tools/call';
+        toolParams = {
+          name: 'archon:manage_task',
+          arguments: args[0] || {}
+        };
+        break;
+
+      case 'perform_rag_query':
+        toolName = 'tools/call';
+        toolParams = {
+          name: 'archon:perform_rag_query',
+          arguments: {
+            query: args[0]?.query || args[0],
+            match_count: args[0]?.match_count || 5
+          }
+        };
+        break;
+
+      case 'search_code_examples':
+        toolName = 'tools/call';
+        toolParams = {
+          name: 'archon:search_code_examples',
+          arguments: {
+            query: args[0]?.query || args[0],
+            match_count: args[0]?.match_count || 3
+          }
+        };
+        break;
+
+      default:
+        return {
+          success: false,
+          error: `Command ${command} not supported by SSE connector`,
+          duration_ms: duration()
+        };
       }
 
       const result = await this.sendRequest(toolName, toolParams);
-      
+
       return {
         success: true,
         ...result,
         duration_ms: duration()
       };
-      
+
     } catch (error) {
       logger.error(`[ARCHON MCP SSE] Error executing ${command}:`, error);
       return {
@@ -237,7 +237,7 @@ export class ArchonMCPConnector {
       };
     }
   }
-  
+
   async exportContext(taskId) {
     return {
       agent: 'archon_mcp_sse',
@@ -246,17 +246,17 @@ export class ArchonMCPConnector {
       timestamp: new Date().toISOString()
     };
   }
-  
+
   async importContext(taskId, context) {
     logger.debug(`[ARCHON MCP SSE] Imported context for task ${taskId}`);
     return { success: true };
   }
-  
+
   async syncContext(contextType, data) {
     logger.debug(`[ARCHON MCP SSE] Syncing ${contextType} context`);
     return { success: true };
   }
-  
+
   async close() {
     if (this.eventSource) {
       this.eventSource.close();

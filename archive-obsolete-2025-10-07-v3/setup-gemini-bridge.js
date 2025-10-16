@@ -26,17 +26,17 @@ class GeminiBridgeServer {
    */
   async startBridge() {
     logger.info('🌉 Starting Gemini Bridge Server...');
-    
+
     this.server = createServer(async (req, res) => {
       // Enhanced error handling with proper socket management
       const handleError = (err, statusCode = 500) => {
         logger.error(`Bridge request error: ${err.message}`);
         if (!res.headersSent) {
           res.writeHead(statusCode, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ 
-            ok: false, 
+          res.end(JSON.stringify({
+            ok: false,
             error: err.message,
-            bridge_mode: true 
+            bridge_mode: true
           }));
         }
       };
@@ -44,25 +44,25 @@ class GeminiBridgeServer {
       // Request error handling
       req.on('error', (err) => handleError(err, 400));
       res.on('error', (err) => logger.error(`Response error: ${err.message}`));
-      
+
       // CORS headers for browser access
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
       res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-      
+
       try {
         if (req.method === 'OPTIONS') {
           res.writeHead(200);
           res.end();
           return;
         }
-        
+
         if (req.method === 'POST' && req.url === '/chat') {
           await this.handleChatRequest(req, res);
         } else if (req.method === 'GET' && req.url === '/health') {
           res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ 
-            status: 'healthy', 
+          res.end(JSON.stringify({
+            status: 'healthy',
             bridge_mode: 'active',
             uptime_ms: process.uptime() * 1000,
             memory: process.memoryUsage(),
@@ -75,7 +75,7 @@ class GeminiBridgeServer {
         handleError(error);
       }
     });
-    
+
     // Enhanced server error handling with Context7 patterns
     this.server.on('clientError', (err, socket) => {
       logger.warn(`Client error: ${err.message}`);
@@ -91,7 +91,7 @@ class GeminiBridgeServer {
         logger.error(`Port ${this.port} is already in use`);
       }
     });
-    
+
     return new Promise((resolve, reject) => {
       this.server.listen(this.port, '127.0.0.1', (error) => {
         if (error) {
@@ -114,14 +114,14 @@ class GeminiBridgeServer {
    */
   async handleChatRequest(req, res) {
     const startTime = Date.now();
-    
+
     try {
       // Enhanced request body parsing with proper stream handling
       let body = '';
       const maxSize = 1024 * 1024; // 1MB limit
-      
+
       req.setEncoding('utf8');
-      
+
       req.on('data', (chunk) => {
         body += chunk;
         if (body.length > maxSize) {
@@ -129,7 +129,7 @@ class GeminiBridgeServer {
           throw new Error('Request body too large');
         }
       });
-      
+
       const requestData = await new Promise((resolve, reject) => {
         req.on('end', () => {
           try {
@@ -139,34 +139,34 @@ class GeminiBridgeServer {
             reject(new Error(`Invalid JSON: ${err.message}`));
           }
         });
-        
+
         req.on('error', reject);
-        
+
         // Timeout for request parsing
         setTimeout(() => {
           reject(new Error('Request parsing timeout'));
         }, 5000);
       });
-      
+
       const { prompt } = requestData;
-      
+
       if (!prompt) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: false, error: 'Missing prompt' }));
         return;
       }
-      
+
       logger.info(`📨 Bridge request: ${prompt.slice(0, 50)}...`);
-      
+
       // Call Gemini CLI (optimized for Bridge mode)
       const result = await this.callGeminiCLI(prompt);
       const duration = Date.now() - startTime;
-      
+
       if (result.success) {
         logger.info(`✅ Bridge response in ${duration}ms`);
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ 
-          ok: true, 
+        res.end(JSON.stringify({
+          ok: true,
           text: result.output,
           bridge_mode: true,
           duration_ms: duration
@@ -174,20 +174,20 @@ class GeminiBridgeServer {
       } else {
         logger.warn(`❌ Bridge CLI error: ${result.error}`);
         res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ 
-          ok: false, 
+        res.end(JSON.stringify({
+          ok: false,
           error: result.error,
           bridge_mode: true
         }));
       }
-      
+
     } catch (error) {
       logger.error(`💥 Bridge request failed: ${error.message}`);
       res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ 
-        ok: false, 
+      res.end(JSON.stringify({
+        ok: false,
         error: error.message,
-        bridge_mode: true 
+        bridge_mode: true
       }));
     }
   }
@@ -198,37 +198,37 @@ class GeminiBridgeServer {
   callGeminiCLI(prompt) {
     return new Promise((resolve) => {
       const args = ['-p', prompt];
-      const ps = spawn('gemini', args, { 
+      const ps = spawn('gemini', args, {
         stdio: ['ignore', 'pipe', 'pipe'],
         env: {
           ...process.env,
-          PATH: process.platform === 'darwin' ? 
-            ["/opt/homebrew/bin", "/usr/local/bin", process.env.PATH || ""].join(":") :
+          PATH: process.platform === 'darwin' ?
+            ['/opt/homebrew/bin', '/usr/local/bin', process.env.PATH || ''].join(':') :
             process.env.PATH
         }
       });
-      
+
       let output = '';
       let error = '';
-      
+
       ps.stdout.on('data', d => (output += d.toString()));
       ps.stderr.on('data', d => (error += d.toString()));
-      
+
       ps.on('error', (err) => {
         resolve({ success: false, error: `Spawn error: ${err.message}` });
       });
-      
+
       ps.on('exit', (code) => {
         if (code === 0 && output.trim()) {
           resolve({ success: true, output: output.trim() });
         } else {
-          resolve({ 
-            success: false, 
-            error: error.trim() || `Exit code ${code}` 
+          resolve({
+            success: false,
+            error: error.trim() || `Exit code ${code}`
           });
         }
       });
-      
+
       // Timeout for Bridge mode (shorter than CLI mode)
       setTimeout(() => {
         ps.kill('SIGTERM');
@@ -243,7 +243,7 @@ class GeminiBridgeServer {
   async stop() {
     if (this.server && this.isRunning) {
       logger.info('🛑 Stopping Bridge server...');
-      
+
       return new Promise((resolve) => {
         this.server.close(() => {
           this.isRunning = false;
@@ -259,43 +259,43 @@ class GeminiBridgeServer {
  * BRIDGE SETUP COMMANDS
  */
 class BridgeSetup {
-  
+
   /**
    * Complete setup: Start Bridge + Configure Environment
    */
   static async setup(options = {}) {
     const port = options.port || 7777;
-    
+
     logger.info('🚀 GEMINI BRIDGE SETUP - Complete Configuration');
     logger.info('═'.repeat(60));
-    
+
     try {
       // 1) Start Bridge Server
       const bridge = new GeminiBridgeServer(port);
       await bridge.startBridge();
-      
+
       // 2) Test Bridge
       const testResult = await BridgeSetup.testBridge(port);
       if (!testResult.success) {
         throw new Error(`Bridge test failed: ${testResult.error}`);
       }
-      
+
       // 3) Generate environment setup
       BridgeSetup.generateEnvSetup(port);
-      
+
       // 4) Keep Bridge running
       logger.info('📡 Bridge server is now ready for orchestration');
       logger.info('✨ Claude ↔ Gemini communication optimized: 7000ms → <100ms');
-      
+
       // Graceful shutdown handling
       process.on('SIGINT', async () => {
         logger.info('🛑 Shutdown signal received');
         await bridge.stop();
         process.exit(0);
       });
-      
+
       return bridge;
-      
+
     } catch (error) {
       logger.error(`💥 Bridge setup failed: ${error.message}`);
       process.exit(1);
@@ -307,25 +307,25 @@ class BridgeSetup {
    */
   static async testBridge(port) {
     const bridgeUrl = `http://127.0.0.1:${port}`;
-    
+
     try {
       const response = await fetch(`${bridgeUrl}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          prompt: 'Bridge test: Reply "BRIDGE_READY" if you can see this.' 
+        body: JSON.stringify({
+          prompt: 'Bridge test: Reply "BRIDGE_READY" if you can see this.'
         })
       });
-      
+
       const result = await response.json();
-      
+
       if (result.ok && result.text.includes('BRIDGE_READY')) {
         logger.info('✅ Bridge test: PASSED');
         return { success: true };
       } else {
         return { success: false, error: 'Bridge response invalid' };
       }
-      
+
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -347,11 +347,11 @@ export GEMINI_CLI_PATH="gemini"
 
 echo "✅ Gemini Bridge Mode configured - Performance: 7000ms → <100ms"
 `;
-    
+
     logger.info('📋 ENVIRONMENT SETUP:');
     logger.info('═'.repeat(40));
     console.log(envConfig);
-    
+
     logger.info('💡 TO ACTIVATE: Add the export commands to your shell profile');
     logger.info('🔄 Then restart terminal or run: source ~/.zshrc');
   }
@@ -363,24 +363,24 @@ echo "✅ Gemini Bridge Mode configured - Performance: 7000ms → <100ms"
 async function main() {
   const command = process.argv[2] || 'setup';
   const port = parseInt(process.argv[3]) || 7777;
-  
+
   switch (command) {
-    case 'setup':
-      await BridgeSetup.setup({ port });
-      break;
-      
-    case 'test':
-      const result = await BridgeSetup.testBridge(port);
-      console.log(result.success ? '✅ Bridge working' : `❌ ${result.error}`);
-      process.exit(result.success ? 0 : 1);
-      break;
-      
-    case 'env':
-      BridgeSetup.generateEnvSetup(port);
-      break;
-      
-    default:
-      console.log(`
+  case 'setup':
+    await BridgeSetup.setup({ port });
+    break;
+
+  case 'test':
+    const result = await BridgeSetup.testBridge(port);
+    console.log(result.success ? '✅ Bridge working' : `❌ ${result.error}`);
+    process.exit(result.success ? 0 : 1);
+    break;
+
+  case 'env':
+    BridgeSetup.generateEnvSetup(port);
+    break;
+
+  default:
+    console.log(`
 🌉 GEMINI BRIDGE SETUP COMMANDS:
 
 node setup-gemini-bridge.js setup [port]  # Complete setup (default port: 7777)
@@ -391,7 +391,7 @@ PERFORMANCE IMPROVEMENT:
 Current: CLI mode (7000ms response time)
 Target:  Bridge mode (<100ms response time)
       `);
-      break;
+    break;
   }
 }
 

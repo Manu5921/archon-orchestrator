@@ -1,61 +1,61 @@
 // Review Service - Smart Review Workflow Phase 1 avec Context Preparation
-import { geminiSend } from "../agents/gemini-agent.js";
-import { logger } from "../utils/logger.js";
-import { contextService } from "./context-service.js";
+import { geminiSend } from '../agents/gemini-agent.js';
+import { logger } from '../utils/logger.js';
+import { contextService } from './context-service.js';
 
 export async function reviewWithGemini(ctx, reviewPrompt) {
   // Gate: n'utiliser Gemini réel que si agents.gemini===true
   const hasGemini = ctx?.agents?.gemini || ctx?.capabilities?.agents?.gemini;
-  
+
   if (!hasGemini) {
-    logger.warn(`⏸️ Gemini review skipped - agent not available`);
-    return { ok: false, error: "gemini_unavailable", used: "fallback" };
+    logger.warn('⏸️ Gemini review skipped - agent not available');
+    return { ok: false, error: 'gemini_unavailable', used: 'fallback' };
   }
 
-  logger.info(`🎨 Starting real Gemini review...`);
-  
+  logger.info('🎨 Starting real Gemini review...');
+
   const startTime = Date.now();
   const result = await geminiSend(reviewPrompt);
-  
+
   if (result.ok) {
     const duration = Date.now() - startTime;
     logger.info(`✅ Gemini review completed via ${result.meta?.mode} in ${duration}ms`);
-    
-    return { 
-      ok: true, 
-      text: result.text, 
-      used: result.meta?.mode || "cli",
+
+    return {
+      ok: true,
+      text: result.text,
+      used: result.meta?.mode || 'cli',
       duration_ms: duration
     };
   }
-  
+
   // Un seul retry light sur les erreurs retryables
   if (result.retry) {
     logger.warn(`🔄 Retrying Gemini review after error: ${result.error}`);
     await new Promise(resolve => setTimeout(resolve, 500));
-    
+
     const retryResult = await geminiSend(reviewPrompt);
     if (retryResult.ok) {
       const duration = Date.now() - startTime;
       logger.info(`✅ Gemini review completed on retry via ${retryResult.meta?.mode} in ${duration}ms`);
-      
-      return { 
-        ok: true, 
-        text: retryResult.text, 
-        used: retryResult.meta?.mode || "cli",
+
+      return {
+        ok: true,
+        text: retryResult.text,
+        used: retryResult.meta?.mode || 'cli',
         duration_ms: duration,
         retry_used: true
       };
     }
   }
-  
+
   // Échec définitif - pas de fallback automatique
   logger.error(`❌ Gemini review failed definitively: ${result.error} (code: ${result.code})`);
-  
-  return { 
-    ok: false, 
-    error: result.error, 
-    used: "failed",
+
+  return {
+    ok: false,
+    error: result.error,
+    used: 'failed',
     code: result.code,
     retry_exhausted: !!result.retry
   };
@@ -67,22 +67,22 @@ export async function reviewWithGemini(ctx, reviewPrompt) {
  */
 export async function smartReviewWithContext(ctx, filePath, task) {
   logger.info(`🧠 Starting Smart Review Phase 1 for: ${filePath}`);
-  
+
   // Gate: n'utiliser Gemini réel que si agents.gemini===true
   const hasGemini = ctx?.agents?.gemini || ctx?.capabilities?.agents?.gemini;
-  
+
   if (!hasGemini) {
-    logger.warn(`⏸️ Smart Gemini review skipped - agent not available`);
-    return { ok: false, error: "gemini_unavailable", used: "fallback" };
+    logger.warn('⏸️ Smart Gemini review skipped - agent not available');
+    return { ok: false, error: 'gemini_unavailable', used: 'fallback' };
   }
 
   const startTime = Date.now();
 
   try {
     // Phase 1: Context Preparation (nouveau)
-    logger.info(`🔍 Phase 1a: Preparing intelligent context...`);
+    logger.info('🔍 Phase 1a: Preparing intelligent context...');
     const contextResult = await contextService.prepareReviewContext(filePath, task);
-    
+
     if (!contextResult.ok) {
       logger.error(`❌ Context preparation failed: ${contextResult.error}`);
       // Fallback to basic review
@@ -91,26 +91,26 @@ export async function smartReviewWithContext(ctx, filePath, task) {
     }
 
     // Phase 1b: Build Smart Review Prompt with Context
-    logger.info(`🎨 Phase 1b: Building context-aware review prompt...`);
+    logger.info('🎨 Phase 1b: Building context-aware review prompt...');
     const smartPrompt = buildSmartReviewPrompt(contextResult.context);
-    
+
     // Phase 1c: Execute Gemini Review with Rich Context
-    logger.info(`🧠 Phase 1c: Executing intelligent Gemini review...`);
+    logger.info('🧠 Phase 1c: Executing intelligent Gemini review...');
     const reviewResult = await geminiSend(smartPrompt);
-    
+
     if (reviewResult.ok) {
       const totalDuration = Date.now() - startTime;
       logger.info(`✅ Smart Review Phase 1 completed in ${totalDuration}ms (context: ${contextResult.duration_ms}ms)`);
-      
+
       return {
         ok: true,
         text: reviewResult.text,
-        used: reviewResult.meta?.mode || "cli",
+        used: reviewResult.meta?.mode || 'cli',
         duration_ms: totalDuration,
         context_duration_ms: contextResult.duration_ms,
         insights: contextResult.insights,
         complexity_score: contextResult.complexity_score,
-        phase: "smart_review_phase_1"
+        phase: 'smart_review_phase_1'
       };
     }
 
@@ -118,18 +118,18 @@ export async function smartReviewWithContext(ctx, filePath, task) {
     if (reviewResult.retry) {
       logger.warn(`🔄 Retrying Smart Review after error: ${reviewResult.error}`);
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
       const retryResult = await geminiSend(smartPrompt);
       if (retryResult.ok) {
         const totalDuration = Date.now() - startTime;
         return {
           ok: true,
           text: retryResult.text,
-          used: retryResult.meta?.mode || "cli",
+          used: retryResult.meta?.mode || 'cli',
           duration_ms: totalDuration,
           context_duration_ms: contextResult.duration_ms,
           retry_used: true,
-          phase: "smart_review_phase_1"
+          phase: 'smart_review_phase_1'
         };
       }
     }
@@ -139,9 +139,9 @@ export async function smartReviewWithContext(ctx, filePath, task) {
     return {
       ok: false,
       error: reviewResult.error,
-      used: "failed",
+      used: 'failed',
       code: reviewResult.code,
-      phase: "smart_review_phase_1"
+      phase: 'smart_review_phase_1'
     };
 
   } catch (error) {
@@ -149,8 +149,8 @@ export async function smartReviewWithContext(ctx, filePath, task) {
     return {
       ok: false,
       error: error.message,
-      used: "failed",
-      phase: "smart_review_phase_1"
+      used: 'failed',
+      phase: 'smart_review_phase_1'
     };
   }
 }

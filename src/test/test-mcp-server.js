@@ -10,30 +10,30 @@ dotenv.config();
 
 async function testMCPServer() {
   logger.info('🧪 Testing MCP Server...\n');
-  
+
   const port = 3457; // Test port
   let server;
   let orchestrator;
   let ws;
-  
+
   try {
     // Start the orchestrator and MCP server
     orchestrator = new OrchestratorCore();
     await orchestrator.initialize();
     server = await startMCPServer(port, orchestrator);
-    
+
     logger.info(`✅ MCP Server started on port ${port}`);
-    
+
     // Connect as a client
     ws = new WebSocket(`ws://localhost:${port}`);
-    
+
     await new Promise((resolve, reject) => {
       ws.on('open', resolve);
       ws.on('error', reject);
     });
-    
+
     logger.info('✅ Connected to MCP server');
-    
+
     // Test 1: List tools
     logger.info('\nTest 1: Listing available tools...');
     const toolsResponse = await sendAndReceive(ws, {
@@ -42,7 +42,7 @@ async function testMCPServer() {
       method: 'tools/list',
       params: {}
     });
-    
+
     if (toolsResponse.result && toolsResponse.result.tools) {
       logger.info(`✅ Found ${toolsResponse.result.tools.length} tools:`);
       toolsResponse.result.tools.forEach(tool => {
@@ -51,7 +51,7 @@ async function testMCPServer() {
     } else {
       logger.error('❌ Failed to list tools');
     }
-    
+
     // Test 2: Call route_task tool
     logger.info('\nTest 2: Calling route_task tool...');
     const routeResponse = await sendAndReceive(ws, {
@@ -67,7 +67,7 @@ async function testMCPServer() {
         }
       }
     });
-    
+
     if (routeResponse.result && routeResponse.result.success) {
       logger.info('✅ Task routed successfully');
       logger.info(`   Agent: ${routeResponse.result.routing_decision.primary_agent}`);
@@ -75,7 +75,7 @@ async function testMCPServer() {
     } else {
       logger.error('❌ Route task failed');
     }
-    
+
     // Test 3: Call performance_stats tool
     logger.info('\nTest 3: Getting performance stats...');
     const statsResponse = await sendAndReceive(ws, {
@@ -91,13 +91,13 @@ async function testMCPServer() {
         }
       }
     });
-    
+
     if (statsResponse.result && statsResponse.result.success) {
       logger.info('✅ Stats retrieved successfully');
     } else {
       logger.error('❌ Stats retrieval failed');
     }
-    
+
     // Test 4: List resources
     logger.info('\nTest 4: Listing resources...');
     const resourcesResponse = await sendAndReceive(ws, {
@@ -106,15 +106,15 @@ async function testMCPServer() {
       method: 'resources/list',
       params: {}
     });
-    
+
     if (resourcesResponse.result && resourcesResponse.result.resources) {
       logger.info(`✅ Found ${resourcesResponse.result.resources.length} resources`);
     } else {
       logger.error('❌ Failed to list resources');
     }
-    
+
     logger.info('\n✅ All MCP server tests completed!');
-    
+
   } catch (error) {
     logger.error('Test failed:', error);
   } finally {
@@ -130,7 +130,7 @@ function sendAndReceive(ws, message) {
     const timeout = setTimeout(() => {
       reject(new Error('Response timeout'));
     }, 5000);
-    
+
     const handler = (data) => {
       const response = JSON.parse(data.toString());
       if (response.id === message.id) {
@@ -139,7 +139,7 @@ function sendAndReceive(ws, message) {
         resolve(response);
       }
     };
-    
+
     ws.on('message', handler);
     ws.send(JSON.stringify(message));
   });

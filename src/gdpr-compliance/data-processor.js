@@ -2,12 +2,12 @@
 
 /**
  * GDPR DATA EXPORT & DELETION PROCESSOR
- * 
+ *
  * Automated system for handling data subject rights:
  * - Article 20: Right to data portability (export)
  * - Article 17: Right to erasure (deletion)
  * - Article 15: Right of access
- * 
+ *
  * Compliance requirement: <24h response time for data exports
  */
 
@@ -26,13 +26,13 @@ import { consentManager } from './consent-manager.js';
 export class GDPRDataProcessor extends EventEmitter {
   constructor(options = {}) {
     super();
-    
+
     this.config = {
       // Processing configuration
       processingPath: options.processingPath || './data/gdpr/processing',
       exportPath: options.exportPath || './data/gdpr/exports',
       deletionPath: options.deletionPath || './data/gdpr/deletions',
-      
+
       // SLA requirements
       slaRequirements: {
         dataExportMaxTime: 24 * 60 * 60 * 1000, // 24 hours
@@ -40,7 +40,7 @@ export class GDPRDataProcessor extends EventEmitter {
         accessRequestMaxTime: 30 * 24 * 60 * 60 * 1000, // 30 days
         confirmationEmailMaxTime: 2 * 60 * 1000 // 2 minutes
       },
-      
+
       // Processing limits
       processingLimits: {
         maxConcurrentExports: 5,
@@ -49,7 +49,7 @@ export class GDPRDataProcessor extends EventEmitter {
         retryAttempts: 3,
         retryDelayMs: 5000
       },
-      
+
       // Data sources to process
       dataSources: {
         consent_data: {
@@ -58,7 +58,7 @@ export class GDPRDataProcessor extends EventEmitter {
           retention: '7_years' // Legal requirement
         },
         user_profiles: {
-          handler: 'processUserProfiles', 
+          handler: 'processUserProfiles',
           priority: 2,
           retention: '3_years'
         },
@@ -83,15 +83,15 @@ export class GDPRDataProcessor extends EventEmitter {
           retention: '3_years'
         }
       },
-      
+
       ...options
     };
-    
+
     this.processingQueue = new Map();
     this.activeWorkers = new Set();
     this.requestHistory = new Map();
     this.initialized = false;
-    
+
     // Initialize processor
     this.init();
   }
@@ -107,24 +107,24 @@ export class GDPRDataProcessor extends EventEmitter {
         fs.mkdir(this.config.exportPath, { recursive: true }),
         fs.mkdir(this.config.deletionPath, { recursive: true })
       ]);
-      
+
       // Load pending requests
       await this.loadPendingRequests();
-      
+
       // Start processing queues
       this.startProcessingLoop();
-      
+
       // Start SLA monitoring
       this.startSLAMonitoring();
-      
+
       this.initialized = true;
       logger.info('✅ GDPR Data Processor initialized');
-      
+
       this.emit('initialized', {
         pendingRequests: this.processingQueue.size,
         dataSources: Object.keys(this.config.dataSources).length
       });
-      
+
     } catch (error) {
       logger.error(`❌ Failed to initialize GDPR Data Processor: ${error.message}`);
       throw error;
@@ -143,13 +143,13 @@ export class GDPRDataProcessor extends EventEmitter {
       reason = 'data_portability_request',
       urgency = 'standard'
     } = options;
-    
+
     // Validate export format
     const supportedFormats = ['json', 'csv', 'xml', 'pdf'];
     if (!supportedFormats.includes(format.toLowerCase())) {
       throw new Error(`Unsupported export format: ${format}. Supported: ${supportedFormats.join(', ')}`);
     }
-    
+
     // Create export request
     const exportRequest = {
       id: requestId,
@@ -157,7 +157,7 @@ export class GDPRDataProcessor extends EventEmitter {
       userId,
       status: 'pending',
       priority: this.calculatePriority('export', urgency),
-      
+
       // Request details
       requestedAt: new Date().toISOString(),
       requestedBy: email || 'user',
@@ -165,35 +165,35 @@ export class GDPRDataProcessor extends EventEmitter {
       includeDataSources,
       reason,
       urgency,
-      
+
       // Processing metadata
       estimatedCompletionTime: new Date(Date.now() + this.config.slaRequirements.dataExportMaxTime).toISOString(),
       actualStartTime: null,
       actualCompletionTime: null,
       processingAttempts: 0,
       lastError: null,
-      
+
       // Output information
       exportFiles: [],
       totalDataSize: 0,
       dataSourceResults: {},
-      
+
       // SLA tracking
       slaDeadline: new Date(Date.now() + this.config.slaRequirements.dataExportMaxTime),
       slaStatus: 'within_sla',
-      
+
       // Compliance metadata
       legalBasis: 'article_20_data_portability',
       retentionPeriod: '30_days_post_completion',
       securityClassification: 'personal_data'
     };
-    
+
     // Add to processing queue
     this.processingQueue.set(requestId, exportRequest);
-    
+
     // Save request
     await this.saveRequestToFile(exportRequest);
-    
+
     // Log audit event
     await consentManager.logAuditEvent('data_export_requested', userId, {
       requestId,
@@ -201,14 +201,14 @@ export class GDPRDataProcessor extends EventEmitter {
       dataSources: includeDataSources,
       estimatedCompletion: exportRequest.estimatedCompletionTime
     });
-    
+
     // Send confirmation email
     await this.sendConfirmationEmail(email, exportRequest);
-    
+
     logger.info(`📤 Data export requested for user ${userId} (ID: ${requestId}, Format: ${format})`);
-    
+
     this.emit('exportRequested', exportRequest);
-    
+
     return {
       requestId,
       status: 'pending',
@@ -230,7 +230,7 @@ export class GDPRDataProcessor extends EventEmitter {
       reason = 'right_to_erasure',
       urgency = 'standard'
     } = options;
-    
+
     // Create deletion request
     const deletionRequest = {
       id: requestId,
@@ -238,7 +238,7 @@ export class GDPRDataProcessor extends EventEmitter {
       userId,
       status: 'pending_verification',
       priority: this.calculatePriority('deletion', urgency),
-      
+
       // Request details
       requestedAt: new Date().toISOString(),
       requestedBy: email || 'user',
@@ -247,47 +247,47 @@ export class GDPRDataProcessor extends EventEmitter {
       retainForLegal,
       reason,
       urgency,
-      
+
       // Verification requirements
       verificationRequired: true,
       verificationToken: crypto.randomBytes(32).toString('hex'),
       verificationDeadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
       verifiedAt: null,
       verifiedBy: null,
-      
+
       // Processing metadata
       estimatedCompletionTime: new Date(Date.now() + this.config.slaRequirements.dataDeletionMaxTime).toISOString(),
       actualStartTime: null,
       actualCompletionTime: null,
       processingAttempts: 0,
       lastError: null,
-      
+
       // Deletion results
       deletedDataSources: [],
       retainedDataSources: [],
       deletionSummary: {},
       irreversibilityWarning: 'This action cannot be undone',
-      
+
       // Legal compliance
       legalRetentionCheck: null,
       complianceApproval: null,
-      
-      // SLA tracking  
+
+      // SLA tracking
       slaDeadline: new Date(Date.now() + this.config.slaRequirements.dataDeletionMaxTime),
       slaStatus: 'within_sla',
-      
+
       // Compliance metadata
       legalBasis: 'article_17_right_to_erasure',
       confirmationRequired: true,
       securityClassification: 'irreversible_operation'
     };
-    
+
     // Add to processing queue (will wait for verification)
     this.processingQueue.set(requestId, deletionRequest);
-    
+
     // Save request
     await this.saveRequestToFile(deletionRequest);
-    
+
     // Log audit event
     await consentManager.logAuditEvent('data_deletion_requested', userId, {
       requestId,
@@ -295,14 +295,14 @@ export class GDPRDataProcessor extends EventEmitter {
       specificDataSources,
       verificationRequired: true
     });
-    
+
     // Send verification email
     await this.sendDeletionVerificationEmail(email, deletionRequest);
-    
+
     logger.info(`🗑️ Data deletion requested for user ${userId} (ID: ${requestId}, Scope: ${deletionScope})`);
-    
+
     this.emit('deletionRequested', deletionRequest);
-    
+
     return {
       requestId,
       status: 'pending_verification',
@@ -318,39 +318,39 @@ export class GDPRDataProcessor extends EventEmitter {
    */
   async verifyDeletionRequest(requestId, verificationToken, verifiedBy = 'user') {
     const request = this.processingQueue.get(requestId);
-    
+
     if (!request || request.type !== 'data_deletion') {
       throw new Error('Deletion request not found');
     }
-    
+
     if (request.verificationToken !== verificationToken) {
       throw new Error('Invalid verification token');
     }
-    
+
     if (new Date() > new Date(request.verificationDeadline)) {
       throw new Error('Verification deadline expired');
     }
-    
+
     // Update request status
     request.status = 'verified_pending_processing';
     request.verifiedAt = new Date().toISOString();
     request.verifiedBy = verifiedBy;
     request.verificationRequired = false;
-    
+
     // Save updated request
     await this.saveRequestToFile(request);
-    
+
     // Log verification
     await consentManager.logAuditEvent('data_deletion_verified', request.userId, {
       requestId,
       verifiedBy,
       verifiedAt: request.verifiedAt
     });
-    
+
     logger.info(`✅ Deletion request verified: ${requestId}`);
-    
+
     this.emit('deletionVerified', request);
-    
+
     return { success: true, status: 'verified' };
   }
 
@@ -359,11 +359,11 @@ export class GDPRDataProcessor extends EventEmitter {
    */
   async getRequestStatus(requestId) {
     const request = this.processingQueue.get(requestId) || await this.loadRequestFromFile(requestId);
-    
+
     if (!request) {
       throw new Error('Request not found');
     }
-    
+
     const status = {
       id: request.id,
       type: request.type,
@@ -375,7 +375,7 @@ export class GDPRDataProcessor extends EventEmitter {
       slaStatus: this.calculateSLAStatus(request),
       progress: this.calculateProgress(request)
     };
-    
+
     // Add type-specific information
     if (request.type === 'data_export') {
       status.exportFiles = request.exportFiles;
@@ -387,7 +387,7 @@ export class GDPRDataProcessor extends EventEmitter {
       status.deletedDataSources = request.deletedDataSources;
       status.retainedDataSources = request.retainedDataSources;
     }
-    
+
     return status;
   }
 
@@ -413,23 +413,23 @@ export class GDPRDataProcessor extends EventEmitter {
         if (a.priority !== b.priority) return a.priority - b.priority;
         return new Date(a.requestedAt) - new Date(b.requestedAt);
       });
-    
+
     // Process exports
     const pendingExports = pendingRequests
       .filter(r => r.type === 'data_export')
       .slice(0, this.config.processingLimits.maxConcurrentExports);
-    
-    // Process deletions  
+
+    // Process deletions
     const pendingDeletions = pendingRequests
       .filter(r => r.type === 'data_deletion' && r.status === 'verified_pending_processing')
       .slice(0, this.config.processingLimits.maxConcurrentDeletions);
-    
+
     // Start processing
     const processingPromises = [
       ...pendingExports.map(request => this.processExportRequest(request)),
       ...pendingDeletions.map(request => this.processDeletionRequest(request))
     ];
-    
+
     if (processingPromises.length > 0) {
       await Promise.allSettled(processingPromises);
     }
@@ -442,21 +442,21 @@ export class GDPRDataProcessor extends EventEmitter {
     if (this.activeWorkers.has(request.id)) {
       return; // Already processing
     }
-    
+
     this.activeWorkers.add(request.id);
-    
+
     try {
       logger.info(`📤 Processing export request: ${request.id}`);
-      
+
       // Update request status
       request.status = 'processing';
       request.actualStartTime = new Date().toISOString();
       request.processingAttempts++;
-      
+
       // Process each data source
       const exportResults = {};
       let totalSize = 0;
-      
+
       for (const dataSource of request.includeDataSources) {
         try {
           const sourceConfig = this.config.dataSources[dataSource];
@@ -464,35 +464,35 @@ export class GDPRDataProcessor extends EventEmitter {
             logger.warn(`⚠️ Unknown data source: ${dataSource}`);
             continue;
           }
-          
+
           logger.info(`📊 Processing data source: ${dataSource} for user ${request.userId}`);
-          
+
           // Use worker thread for data processing
           const sourceData = await this.processDataSourceInWorker(
-            dataSource, 
-            request.userId, 
+            dataSource,
+            request.userId,
             sourceConfig.handler
           );
-          
+
           if (sourceData && sourceData.length > 0) {
             exportResults[dataSource] = sourceData;
             totalSize += Buffer.from(JSON.stringify(sourceData)).length;
           }
-          
+
         } catch (error) {
           logger.error(`❌ Failed to process data source ${dataSource}: ${error.message}`);
           exportResults[dataSource] = { error: error.message };
         }
       }
-      
+
       // Check size limit
       if (totalSize > this.config.processingLimits.exportFileSizeLimit) {
         throw new Error(`Export size (${totalSize} bytes) exceeds limit (${this.config.processingLimits.exportFileSizeLimit} bytes)`);
       }
-      
+
       // Generate export files
       const exportFiles = await this.generateExportFiles(request, exportResults);
-      
+
       // Update request with results
       request.status = 'completed';
       request.actualCompletionTime = new Date().toISOString();
@@ -500,10 +500,10 @@ export class GDPRDataProcessor extends EventEmitter {
       request.totalDataSize = totalSize;
       request.dataSourceResults = exportResults;
       request.slaStatus = this.calculateSLAStatus(request);
-      
+
       // Save completed request
       await this.saveRequestToFile(request);
-      
+
       // Log completion
       await consentManager.logAuditEvent('data_export_completed', request.userId, {
         requestId: request.id,
@@ -512,19 +512,19 @@ export class GDPRDataProcessor extends EventEmitter {
         processingTime: new Date(request.actualCompletionTime) - new Date(request.actualStartTime),
         slaStatus: request.slaStatus
       });
-      
+
       // Send completion notification
       await this.sendCompletionEmail(request);
-      
+
       logger.info(`✅ Export completed: ${request.id} (${exportFiles.length} files, ${totalSize} bytes)`);
-      
+
       this.emit('exportCompleted', request);
-      
+
     } catch (error) {
       request.status = 'failed';
       request.lastError = error.message;
       request.slaStatus = this.calculateSLAStatus(request);
-      
+
       // Retry logic
       if (request.processingAttempts < this.config.processingLimits.retryAttempts) {
         request.status = 'pending';
@@ -532,13 +532,13 @@ export class GDPRDataProcessor extends EventEmitter {
           logger.info(`🔄 Retrying export request: ${request.id} (attempt ${request.processingAttempts + 1})`);
         }, this.config.processingLimits.retryDelayMs * request.processingAttempts);
       }
-      
+
       await this.saveRequestToFile(request);
-      
+
       logger.error(`❌ Export failed: ${request.id} - ${error.message}`);
-      
+
       this.emit('exportFailed', { request, error });
-      
+
     } finally {
       this.activeWorkers.delete(request.id);
     }
@@ -551,30 +551,30 @@ export class GDPRDataProcessor extends EventEmitter {
     if (this.activeWorkers.has(request.id)) {
       return; // Already processing
     }
-    
+
     this.activeWorkers.add(request.id);
-    
+
     try {
       logger.info(`🗑️ Processing deletion request: ${request.id}`);
-      
+
       // Update request status
       request.status = 'processing_deletion';
       request.actualStartTime = new Date().toISOString();
       request.processingAttempts++;
-      
+
       // Check legal retention requirements first
       const legalRetentionCheck = await this.checkLegalRetentionRequirements(request.userId);
       request.legalRetentionCheck = legalRetentionCheck;
-      
+
       // Process deletion for each data source
       const deletionResults = {};
       const deletedSources = [];
       const retainedSources = [];
-      
-      const dataSourcesToProcess = request.deletionScope === 'specific' 
-        ? request.specificDataSources 
+
+      const dataSourcesToProcess = request.deletionScope === 'specific'
+        ? request.specificDataSources
         : Object.keys(this.config.dataSources);
-      
+
       for (const dataSource of dataSourcesToProcess) {
         try {
           const sourceConfig = this.config.dataSources[dataSource];
@@ -582,35 +582,35 @@ export class GDPRDataProcessor extends EventEmitter {
             logger.warn(`⚠️ Unknown data source for deletion: ${dataSource}`);
             continue;
           }
-          
+
           // Check if this data source can be deleted (legal retention)
           const canDelete = !legalRetentionCheck.retained.includes(dataSource) || !request.retainForLegal;
-          
+
           if (canDelete) {
             logger.info(`🗑️ Deleting data source: ${dataSource} for user ${request.userId}`);
-            
+
             // Use worker thread for data deletion
             const deletionResult = await this.deleteDataSourceInWorker(
               dataSource,
               request.userId,
               sourceConfig.handler.replace('process', 'delete')
             );
-            
+
             deletionResults[dataSource] = deletionResult;
             deletedSources.push(dataSource);
-            
+
           } else {
             logger.info(`⚖️ Retaining data source for legal reasons: ${dataSource}`);
             retainedSources.push(dataSource);
             deletionResults[dataSource] = { retained: true, reason: 'legal_requirement' };
           }
-          
+
         } catch (error) {
           logger.error(`❌ Failed to delete data source ${dataSource}: ${error.message}`);
           deletionResults[dataSource] = { error: error.message };
         }
       }
-      
+
       // Update request with results
       request.status = 'completed';
       request.actualCompletionTime = new Date().toISOString();
@@ -618,10 +618,10 @@ export class GDPRDataProcessor extends EventEmitter {
       request.retainedDataSources = retainedSources;
       request.deletionSummary = deletionResults;
       request.slaStatus = this.calculateSLAStatus(request);
-      
+
       // Save completed request
       await this.saveRequestToFile(request);
-      
+
       // Log completion
       await consentManager.logAuditEvent('data_deletion_completed', request.userId, {
         requestId: request.id,
@@ -630,19 +630,19 @@ export class GDPRDataProcessor extends EventEmitter {
         processingTime: new Date(request.actualCompletionTime) - new Date(request.actualStartTime),
         slaStatus: request.slaStatus
       });
-      
+
       // Send completion notification
       await this.sendCompletionEmail(request);
-      
+
       logger.info(`✅ Deletion completed: ${request.id} (${deletedSources.length} deleted, ${retainedSources.length} retained)`);
-      
+
       this.emit('deletionCompleted', request);
-      
+
     } catch (error) {
       request.status = 'failed';
       request.lastError = error.message;
       request.slaStatus = this.calculateSLAStatus(request);
-      
+
       // Retry logic
       if (request.processingAttempts < this.config.processingLimits.retryAttempts) {
         request.status = 'verified_pending_processing';
@@ -650,13 +650,13 @@ export class GDPRDataProcessor extends EventEmitter {
           logger.info(`🔄 Retrying deletion request: ${request.id} (attempt ${request.processingAttempts + 1})`);
         }, this.config.processingLimits.retryDelayMs * request.processingAttempts);
       }
-      
+
       await this.saveRequestToFile(request);
-      
+
       logger.error(`❌ Deletion failed: ${request.id} - ${error.message}`);
-      
+
       this.emit('deletionFailed', { request, error });
-      
+
     } finally {
       this.activeWorkers.delete(request.id);
     }
@@ -675,7 +675,7 @@ export class GDPRDataProcessor extends EventEmitter {
           handler
         }
       });
-      
+
       worker.on('message', resolve);
       worker.on('error', reject);
       worker.on('exit', (code) => {
@@ -696,7 +696,7 @@ export class GDPRDataProcessor extends EventEmitter {
           handler
         }
       });
-      
+
       worker.on('message', resolve);
       worker.on('error', reject);
       worker.on('exit', (code) => {
@@ -719,7 +719,7 @@ export class GDPRDataProcessor extends EventEmitter {
       'standard': 0,
       'low': 25
     };
-    
+
     return basePriority + (urgencyModifier[urgency] || 0);
   }
 
@@ -727,21 +727,21 @@ export class GDPRDataProcessor extends EventEmitter {
     if (request.status === 'completed') {
       return 'met';
     }
-    
+
     const now = new Date();
     const deadline = new Date(request.slaDeadline);
-    
+
     if (now > deadline) {
       return 'breached';
     }
-    
+
     const timeRemaining = deadline.getTime() - now.getTime();
     const totalTime = deadline.getTime() - new Date(request.requestedAt).getTime();
     const percentRemaining = timeRemaining / totalTime;
-    
+
     if (percentRemaining < 0.1) return 'at_risk';
     if (percentRemaining < 0.25) return 'warning';
-    
+
     return 'within_sla';
   }
 
@@ -751,7 +751,7 @@ export class GDPRDataProcessor extends EventEmitter {
     if (request.status === 'pending' || request.status === 'pending_verification') return 0;
     if (request.status === 'verified_pending_processing') return 10;
     if (request.status === 'processing' || request.status === 'processing_deletion') return 50;
-    
+
     return 0;
   }
 
@@ -767,35 +767,35 @@ export class GDPRDataProcessor extends EventEmitter {
   async generateExportFiles(request, exportResults) {
     const files = [];
     const exportDir = path.join(this.config.exportPath, request.id);
-    
+
     await fs.mkdir(exportDir, { recursive: true });
-    
+
     // Generate main export file
     const mainFile = path.join(exportDir, `export.${request.format}`);
     let content = '';
-    
+
     switch (request.format) {
-      case 'json':
-        content = JSON.stringify({
-          exportId: request.id,
-          userId: request.userId,
-          exportedAt: new Date().toISOString(),
-          dataSourceResults: exportResults
-        }, null, 2);
-        break;
-        
-      case 'csv':
-        content = this.convertToCSV(exportResults);
-        break;
-        
-      case 'xml':
-        content = this.convertToXML(exportResults);
-        break;
-        
-      default:
-        throw new Error(`Unsupported export format: ${request.format}`);
+    case 'json':
+      content = JSON.stringify({
+        exportId: request.id,
+        userId: request.userId,
+        exportedAt: new Date().toISOString(),
+        dataSourceResults: exportResults
+      }, null, 2);
+      break;
+
+    case 'csv':
+      content = this.convertToCSV(exportResults);
+      break;
+
+    case 'xml':
+      content = this.convertToXML(exportResults);
+      break;
+
+    default:
+      throw new Error(`Unsupported export format: ${request.format}`);
     }
-    
+
     await fs.writeFile(mainFile, content, 'utf8');
     files.push({
       name: `export.${request.format}`,
@@ -803,7 +803,7 @@ export class GDPRDataProcessor extends EventEmitter {
       size: Buffer.from(content).length,
       type: 'main_export'
     });
-    
+
     // Generate metadata file
     const metadataFile = path.join(exportDir, 'metadata.json');
     const metadata = {
@@ -817,7 +817,7 @@ export class GDPRDataProcessor extends EventEmitter {
       legalBasis: 'article_20_data_portability',
       retentionNotice: 'This export will be automatically deleted after 30 days'
     };
-    
+
     await fs.writeFile(metadataFile, JSON.stringify(metadata, null, 2), 'utf8');
     files.push({
       name: 'metadata.json',
@@ -825,7 +825,7 @@ export class GDPRDataProcessor extends EventEmitter {
       size: Buffer.from(JSON.stringify(metadata)).length,
       type: 'metadata'
     });
-    
+
     return files;
   }
 
@@ -835,20 +835,20 @@ export class GDPRDataProcessor extends EventEmitter {
   }
 
   convertToXML(data) {
-    // Simple XML conversion - implement based on data structure  
+    // Simple XML conversion - implement based on data structure
     return '<?xml version="1.0"?><export>XML format not yet implemented</export>';
   }
 
   async sendConfirmationEmail(email, request) {
     if (!email) return;
-    
+
     // Implementation would send actual email
     logger.info(`📧 Confirmation email sent for request ${request.id} to ${email}`);
   }
 
   async sendDeletionVerificationEmail(email, request) {
     if (!email) return;
-    
+
     // Implementation would send verification email with link
     logger.info(`📧 Deletion verification email sent for request ${request.id} to ${email}`);
   }
@@ -869,14 +869,14 @@ export class GDPRDataProcessor extends EventEmitter {
   }
 
   async checkSLACompliance() {
-    const now = new Date();
-    
+    const _now = new Date();
+
     for (const request of this.processingQueue.values()) {
       const slaStatus = this.calculateSLAStatus(request);
-      
+
       if (slaStatus !== request.slaStatus) {
         request.slaStatus = slaStatus;
-        
+
         if (slaStatus === 'breached') {
           logger.error(`🚨 SLA BREACHED: Request ${request.id} (${request.type})`);
           this.emit('slaBreached', request);
@@ -884,7 +884,7 @@ export class GDPRDataProcessor extends EventEmitter {
           logger.warn(`⚠️ SLA AT RISK: Request ${request.id} (${request.type})`);
           this.emit('slaAtRisk', request);
         }
-        
+
         await this.saveRequestToFile(request);
       }
     }
@@ -908,20 +908,20 @@ export class GDPRDataProcessor extends EventEmitter {
   async loadPendingRequests() {
     try {
       const files = await fs.readdir(this.config.processingPath);
-      
+
       for (const file of files) {
         if (file.endsWith('.json')) {
           const requestId = file.replace('.json', '');
           const request = await this.loadRequestFromFile(requestId);
-          
+
           if (request && !['completed', 'failed'].includes(request.status)) {
             this.processingQueue.set(requestId, request);
           }
         }
       }
-      
+
       logger.info(`📂 Loaded ${this.processingQueue.size} pending requests`);
-      
+
     } catch (error) {
       if (error.code !== 'ENOENT') {
         logger.warn(`⚠️ Failed to load pending requests: ${error.message}`);
@@ -949,21 +949,21 @@ export class GDPRDataProcessor extends EventEmitter {
       processingTimes: this.calculateAverageProcessingTimes(),
       dataSourceStats: this.calculateDataSourceStats()
     };
-    
+
     return report;
   }
 
   calculateAverageProcessingTimes() {
     const completed = [...this.processingQueue.values()].filter(r => r.status === 'completed');
-    
+
     const exportTimes = completed
       .filter(r => r.type === 'data_export')
       .map(r => new Date(r.actualCompletionTime) - new Date(r.actualStartTime));
-    
+
     const deletionTimes = completed
       .filter(r => r.type === 'data_deletion')
       .map(r => new Date(r.actualCompletionTime) - new Date(r.actualStartTime));
-    
+
     return {
       averageExportTime: exportTimes.length > 0 ? exportTimes.reduce((a, b) => a + b, 0) / exportTimes.length : 0,
       averageDeletionTime: deletionTimes.length > 0 ? deletionTimes.reduce((a, b) => a + b, 0) / deletionTimes.length : 0
@@ -979,7 +979,7 @@ export class GDPRDataProcessor extends EventEmitter {
 // Worker thread handlers
 if (!isMainThread) {
   const { action, dataSource, userId, handler } = workerData;
-  
+
   // Mock data handlers - replace with actual implementations
   const handlers = {
     processConsentData: async (userId) => ({ consents: ['mock consent data'], count: 1 }),
@@ -988,7 +988,7 @@ if (!isMainThread) {
     processCommunications: async (userId) => ({ messages: ['mock message'], count: 1 }),
     processAnalytics: async (userId) => ({ analytics: 'mock analytics', count: 1 }),
     processMarketing: async (userId) => ({ marketing: 'mock marketing data', count: 1 }),
-    
+
     deleteConsentData: async (userId) => ({ deleted: true, count: 1 }),
     deleteUserProfiles: async (userId) => ({ deleted: true, count: 1 }),
     deleteActivityLogs: async (userId) => ({ deleted: true, count: 1 }),
@@ -996,7 +996,7 @@ if (!isMainThread) {
     deleteAnalytics: async (userId) => ({ deleted: true, count: 1 }),
     deleteMarketing: async (userId) => ({ deleted: true, count: 1 })
   };
-  
+
   if (action === 'process_data' || action === 'delete_data') {
     const handlerFn = handlers[handler];
     if (handlerFn) {

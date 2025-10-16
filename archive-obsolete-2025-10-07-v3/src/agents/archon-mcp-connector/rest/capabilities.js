@@ -19,9 +19,9 @@
 export async function probeCapabilities(base) {
   async function exists(method, path) {
     try {
-      const res = await fetch(base + path, { 
-        method, 
-        headers: { Accept: "application/json" },
+      const res = await fetch(base + path, {
+        method,
+        headers: { Accept: 'application/json' },
         // Timeout court pour probe
         signal: AbortSignal.timeout(2000)
       });
@@ -35,17 +35,17 @@ export async function probeCapabilities(base) {
   console.log(`🔍 Probing Archon capabilities at ${base}...`);
 
   const [ragPost, ragGet, artifacts, tasks, events] = await Promise.all([
-    exists("POST", "/rag/query"),
-    exists("GET", "/rag/query?dry_run=1"),
-    exists("GET", "/artifacts?limit=1"),
-    exists("GET", "/tasks?limit=1"),
-    exists("GET", "/events?limit=1"),
+    exists('POST', '/rag/query'),
+    exists('GET', '/rag/query?dry_run=1'),
+    exists('GET', '/artifacts?limit=1'),
+    exists('GET', '/tasks?limit=1'),
+    exists('GET', '/events?limit=1')
   ]);
 
   // RAG capability gating: check if documents exist
   let ragQuery = ragPost || ragGet;
   let ragDocCount = 'unavailable';
-  
+
   if (ragQuery) {
     try {
       // Test with minimal query to check document presence
@@ -55,7 +55,7 @@ export async function probeCapabilities(base) {
         body: JSON.stringify({ query: 'test', top_k: 1 }),
         signal: AbortSignal.timeout(3000)
       });
-      
+
       if (testRes.ok) {
         const testData = await testRes.json();
         const hasResults = (testData.results && testData.results.length > 0) ||
@@ -78,10 +78,10 @@ export async function probeCapabilities(base) {
     ragDocCount,
     artifacts,
     tasks,
-    events,
+    events
   };
 
-  console.log(`✅ Capabilities detected:`, capabilities);
+  console.log('✅ Capabilities detected:', capabilities);
   return capabilities;
 }
 
@@ -93,7 +93,7 @@ let cachedCapabilities = null;
 /**
  * Get capabilities avec cache
  */
-export async function getCapabilities(base = "http://localhost:3737/api") {
+export async function getCapabilities(base = 'http://localhost:3737/api') {
   if (!cachedCapabilities) {
     cachedCapabilities = await probeCapabilities(base);
   }

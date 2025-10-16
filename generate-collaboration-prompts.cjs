@@ -5,12 +5,12 @@
 const fs = require('fs');
 
 if (process.argv.length < 6) {
-    console.log('🤝 Génération prompts Claude-Gemini personnalisés\n');
-    console.log('📋 USAGE:');
-    console.log('node generate-collaboration-prompts.cjs "ProjectName" "Description" "Stack" "Constraints"\n');
-    console.log('📝 EXEMPLE:');
-    console.log('node generate-collaboration-prompts.cjs "TrustBoost" "Plateforme avis clients TPE/PME" "Next.js 15 + Supabase + Stripe" "RGPD + Rate limiting"\n');
-    process.exit(1);
+  console.log('🤝 Génération prompts Claude-Gemini personnalisés\n');
+  console.log('📋 USAGE:');
+  console.log('node generate-collaboration-prompts.cjs "ProjectName" "Description" "Stack" "Constraints"\n');
+  console.log('📝 EXEMPLE:');
+  console.log('node generate-collaboration-prompts.cjs "TrustBoost" "Plateforme avis clients TPE/PME" "Next.js 15 + Supabase + Stripe" "RGPD + Rate limiting"\n');
+  process.exit(1);
 }
 
 const [, , projectName, projectDesc, stack, constraints] = process.argv;

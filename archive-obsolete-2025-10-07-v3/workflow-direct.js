@@ -6,7 +6,7 @@ import { logger } from './src/utils/logger.js';
 
 /**
  * 🚀 WORKFLOW DIRECT SANS MCP
- * 
+ *
  * Alternative robuste qui bypass les problèmes MCP de Claude Code
  * en exposant directement les fonctionnalités d'Orchestra + Archon
  */
@@ -19,14 +19,14 @@ class WorkflowDirect {
 
   async initialize() {
     logger.info('🚀 Initializing Direct Workflow (bypass MCP)...');
-    
+
     // Initialize Orchestra Core
     this.orchestrator = new OrchestratorCore();
     await this.orchestrator.initialize();
-    
+
     // Initialize MCP Tools (but used directly)
     this.tools = new MCPTools(this.orchestrator);
-    
+
     logger.info('✅ Direct Workflow ready - Orchestra + Archon operational');
     return this;
   }
@@ -85,25 +85,25 @@ class WorkflowDirect {
 if (process.argv[1] && process.argv[1].includes('workflow-direct.js')) {
   const workflow = new WorkflowDirect();
   await workflow.initialize();
-  
+
   const command = process.argv[2];
   const args = process.argv.slice(3);
-  
+
   switch (command) {
-    case 'start':
-      const description = args[0] || 'Test project description';
-      const result = await workflow.startHybridWorkflow(description);
-      console.log(JSON.stringify(result, null, 2));
-      break;
-      
-    case 'explore':
-      const projectDesc = args[0] || 'Test exploration';
-      const exploreResult = await workflow.projectExploration(projectDesc);
-      console.log(JSON.stringify(exploreResult, null, 2));
-      break;
-      
-    default:
-      console.log(`
+  case 'start':
+    const description = args[0] || 'Test project description';
+    const result = await workflow.startHybridWorkflow(description);
+    console.log(JSON.stringify(result, null, 2));
+    break;
+
+  case 'explore':
+    const projectDesc = args[0] || 'Test exploration';
+    const exploreResult = await workflow.projectExploration(projectDesc);
+    console.log(JSON.stringify(exploreResult, null, 2));
+    break;
+
+  default:
+    console.log(`
 🚀 WORKFLOW DIRECT - Usage:
 
 node workflow-direct.js start "Project description"
@@ -117,7 +117,7 @@ Available methods:
 - codeReviewCycle(code, context)
       `);
   }
-  
+
   process.exit(0);
 }
 

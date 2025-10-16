@@ -13,7 +13,7 @@ export class GeminiMCPConnector extends EventEmitter {
     this.contexts = new Map();
     this.conversationHistory = new Map();
   }
-  
+
   async healthCheck() {
     try {
       // Test if Gemini CLI is available
@@ -21,14 +21,14 @@ export class GeminiMCPConnector extends EventEmitter {
         timeout: 5000,
         shell: true
       });
-      
+
       return new Promise((resolve) => {
         let output = '';
-        
+
         testProcess.stdout.on('data', (data) => {
           output += data.toString();
         });
-        
+
         testProcess.on('close', (code) => {
           if (code === 0) {
             this.healthy = true;
@@ -44,7 +44,7 @@ export class GeminiMCPConnector extends EventEmitter {
             });
           }
         });
-        
+
         // Timeout fallback
         setTimeout(() => {
           testProcess.kill();
@@ -61,26 +61,26 @@ export class GeminiMCPConnector extends EventEmitter {
       };
     }
   }
-  
+
   /**
    * Execute a task using Gemini CLI for creative exploration
    */
   async execute(taskId, command, args = []) {
     const startTime = Date.now();
-    
+
     try {
       logger.info(`🌟 Gemini executing: ${command} for task ${taskId}`);
-      
+
       // Build prompt for Gemini's creative capabilities
       const prompt = this.buildCreativePrompt(command, args);
-      
+
       // Execute via Gemini CLI
       const response = await this.executeGeminiCLI(taskId, prompt);
-      
+
       const duration = Date.now() - startTime;
-      
+
       logger.info(`✨ Gemini completed ${command} in ${duration}ms`);
-      
+
       return {
         success: true,
         taskId,
@@ -92,10 +92,10 @@ export class GeminiMCPConnector extends EventEmitter {
           approach_count: response.approach_count
         }
       };
-      
+
     } catch (error) {
       logger.error(`❌ Gemini failed for ${taskId}: ${error.message}`);
-      
+
       return {
         success: false,
         taskId,
@@ -105,16 +105,16 @@ export class GeminiMCPConnector extends EventEmitter {
       };
     }
   }
-  
+
   /**
    * Build creative prompts optimized for Gemini's strengths
    */
   buildCreativePrompt(command, args) {
     const [mainArg, ...contextArgs] = args;
-    
+
     switch (command) {
-      case 'explore_project':
-        return `🚀 **Creative Project Exploration**
+    case 'explore_project':
+      return `🚀 **Creative Project Exploration**
 
 Project: ${mainArg}
 Context: ${contextArgs.join(', ')}
@@ -129,8 +129,8 @@ Please provide multiple innovative approaches with:
 
 Focus on creative problem-solving and innovative thinking.`;
 
-      case 'generate_alternatives':
-        return `💡 **Alternative Approaches Generation**
+    case 'generate_alternatives':
+      return `💡 **Alternative Approaches Generation**
 
 Current approach: ${mainArg}
 Constraints: ${contextArgs[0] || 'None specified'}
@@ -147,8 +147,8 @@ For each alternative, provide:
 - Implementation complexity (1-5)
 - Unique selling points`;
 
-      case 'creative_review':
-        return `🎨 **Creative Review & Enhancement**
+    case 'creative_review':
+      return `🎨 **Creative Review & Enhancement**
 
 Content to review: ${mainArg}
 Goal: ${contextArgs[0] || 'General enhancement'}
@@ -160,8 +160,8 @@ Please provide:
 4. **Alternative Presentations** (different ways to approach)
 5. **Future Evolution** (how this could grow)`;
 
-      default:
-        return `🌟 **Creative Gemini Task**
+    default:
+      return `🌟 **Creative Gemini Task**
 
 Command: ${command}
 Input: ${mainArg}
@@ -170,7 +170,7 @@ Context: ${contextArgs.join(', ')}
 Please provide creative, innovative solutions with multiple approaches and fresh perspectives.`;
     }
   }
-  
+
   /**
    * Execute prompt via Gemini CLI
    */
@@ -180,33 +180,33 @@ Please provide creative, innovative solutions with multiple approaches and fresh
       if (!this.conversationHistory.has(taskId)) {
         this.conversationHistory.set(taskId, []);
       }
-      
+
       const history = this.conversationHistory.get(taskId);
       history.push({ role: 'user', content: prompt, timestamp: new Date().toISOString() });
-      
+
       // Create temporary prompt file for Gemini CLI
       const tempPromptFile = `/tmp/gemini_prompt_${taskId}_${Date.now()}.txt`;
-      
+
       writeFileSync(tempPromptFile, prompt, 'utf8');
-      
+
       const geminiProcess = spawn('gemini', ['chat', '-f', tempPromptFile], {
         shell: true,
         env: process.env
       });
-      
+
       let stdout = '';
       let stderr = '';
-      
+
       geminiProcess.stdout.on('data', (data) => {
         stdout += data.toString();
         this.emit('output', { taskId, data: data.toString(), stream: 'stdout' });
       });
-      
+
       geminiProcess.stderr.on('data', (data) => {
         stderr += data.toString();
         this.emit('output', { taskId, data: data.toString(), stream: 'stderr' });
       });
-      
+
       geminiProcess.on('close', (code) => {
         // Cleanup temp file
         try {
@@ -214,17 +214,17 @@ Please provide creative, innovative solutions with multiple approaches and fresh
         } catch (e) {
           // Ignore cleanup errors
         }
-        
+
         if (code === 0 && stdout.trim()) {
           const response = this.parseGeminiResponse(stdout);
-          
+
           // Store Gemini's response
-          history.push({ 
-            role: 'assistant', 
-            content: response.content, 
-            timestamp: new Date().toISOString() 
+          history.push({
+            role: 'assistant',
+            content: response.content,
+            timestamp: new Date().toISOString()
           });
-          
+
           resolve(response);
         } else {
           // Fallback to simulated response if CLI fails
@@ -232,12 +232,12 @@ Please provide creative, innovative solutions with multiple approaches and fresh
           resolve(this.simulateGeminiResponse(taskId, prompt));
         }
       });
-      
+
       geminiProcess.on('error', (error) => {
         logger.warn(`Gemini CLI error: ${error.message}, using fallback response`);
         resolve(this.simulateGeminiResponse(taskId, prompt));
       });
-      
+
       // Timeout fallback (30 seconds)
       setTimeout(() => {
         geminiProcess.kill();
@@ -246,27 +246,27 @@ Please provide creative, innovative solutions with multiple approaches and fresh
       }, 30000);
     });
   }
-  
+
   /**
    * Parse Gemini CLI response
    */
   parseGeminiResponse(output) {
     const cleanOutput = output.trim();
-    
+
     // Count creative approaches mentioned
     const approachCount = (cleanOutput.match(/approach|solution|method|strategy/gi) || []).length;
-    
+
     // Estimate creativity score based on content variety
     const uniqueWords = new Set(cleanOutput.toLowerCase().split(/\s+/)).size;
     const creativity_score = Math.min(1.0, uniqueWords / 100);
-    
+
     return {
       content: cleanOutput,
       creativity_score,
       approach_count: Math.min(approachCount, 10)
     };
   }
-  
+
   /**
    * Simulate Gemini response when CLI is not available
    */
@@ -329,23 +329,23 @@ Create a system that learns and adapts to each user's unique patterns and prefer
 - Predictive automation
 - Cross-device continuity`
     ];
-    
+
     const selectedResponse = responses[Math.floor(Math.random() * responses.length)];
-    
+
     return {
       content: selectedResponse,
       creativity_score: 0.8 + Math.random() * 0.2,
       approach_count: 3 + Math.floor(Math.random() * 3)
     };
   }
-  
+
   /**
    * Get conversation history for a task
    */
   getConversationHistory(taskId) {
     return this.conversationHistory.get(taskId) || [];
   }
-  
+
   /**
    * Clear conversation history
    */

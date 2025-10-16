@@ -44,16 +44,16 @@ class SecurityAutomationScheduler {
 
     // Schedule security scans
     this.scheduleSecurityScans();
-    
+
     // Schedule compliance checks
     this.scheduleComplianceChecks();
-    
+
     // Schedule dependency audits
     this.scheduleDependencyAudits();
-    
+
     // Schedule performance security monitoring
     this.schedulePerformanceSecurityMonitoring();
-    
+
     // Schedule threat intelligence updates
     this.scheduleThreatIntelligence();
 
@@ -68,9 +68,9 @@ class SecurityAutomationScheduler {
     const dailyScan = cron.schedule('0 7 * * *', async () => {
       logger.info('🌅 Running daily security scan...');
       try {
-        const results = await this.guardian.runSecurityScan({ 
+        const results = await this.guardian.runSecurityScan({
           scanType: 'quick',
-          priority: 'high' 
+          priority: 'high'
         });
         await this.handleScanResults('daily', results);
       } catch (error) {
@@ -83,9 +83,9 @@ class SecurityAutomationScheduler {
     const weeklyScan = cron.schedule('0 2 * * 0', async () => {
       logger.info('📊 Running weekly comprehensive scan...');
       try {
-        const results = await this.guardian.runSecurityScan({ 
+        const results = await this.guardian.runSecurityScan({
           scanType: 'comprehensive',
-          priority: 'all' 
+          priority: 'all'
         });
         await this.handleScanResults('weekly', results);
         await this.generateWeeklySecurityReport(results);
@@ -99,11 +99,11 @@ class SecurityAutomationScheduler {
     const criticalMonitoring = cron.schedule('0 */2 8-20 * * *', async () => {
       logger.info('🚨 Running critical pattern monitoring...');
       try {
-        const results = await this.guardian.runSecurityScan({ 
+        const results = await this.guardian.runSecurityScan({
           scanType: 'critical_only',
-          priority: 'critical' 
+          priority: 'critical'
         });
-        
+
         if (results.stats.criticalIssues > 0) {
           await this.notifySecurityTeam('CRITICAL_ISSUES_DETECTED', {
             count: results.stats.criticalIssues,
@@ -187,7 +187,7 @@ class SecurityAutomationScheduler {
       try {
         const recommendations = await this.generateUpdateRecommendations();
         await this.saveDependencyRecommendations(recommendations);
-        
+
         if (recommendations.critical.length > 0) {
           await this.notifySecurityTeam('CRITICAL_DEPS_UPDATE', recommendations.critical);
         }
@@ -245,7 +245,7 @@ class SecurityAutomationScheduler {
    */
   async handleScanResults(scanType, results) {
     const timestamp = new Date().toISOString();
-    
+
     // Save results
     const reportPath = `security-reports/scan-${scanType}-${timestamp.split('T')[0]}.json`;
     await fs.writeFile(reportPath, JSON.stringify(results, null, 2));
@@ -253,7 +253,7 @@ class SecurityAutomationScheduler {
     // Check for critical issues requiring immediate attention
     if (results.stats.criticalIssues > 0) {
       const criticalIssues = results.issues.filter(i => i.severity === 'CRITICAL');
-      
+
       await this.notifySecurityTeam('CRITICAL_SECURITY_ISSUES', {
         scanType,
         count: results.stats.criticalIssues,
@@ -276,23 +276,23 @@ class SecurityAutomationScheduler {
    */
   async generateWeeklySecurityReport(scanResults) {
     logger.info('📋 Generating weekly security report...');
-    
+
     const report = await this.guardian.generateSecurityReport();
-    
+
     // Add trend analysis
     report.trendAnalysis = await this.generateSecurityTrends();
-    
+
     // Add risk assessment
     report.riskAssessment = await this.assessCurrentRisk();
-    
+
     // Add recommendations for Claude/Gemini
     report.aiRecommendations = this.generateAIRecommendations(report);
-    
+
     // Save comprehensive report
     const timestamp = new Date().toISOString().split('T')[0];
     const reportPath = `security-reports/weekly-report-${timestamp}.json`;
     await fs.writeFile(reportPath, JSON.stringify(report, null, 2));
-    
+
     // Notify stakeholders
     await this.notifySecurityTeam('WEEKLY_SECURITY_REPORT', {
       reportPath,
@@ -325,7 +325,7 @@ class SecurityAutomationScheduler {
     // Save to action items queue
     const actionItemsPath = 'security-action-items.json';
     let existingItems = [];
-    
+
     try {
       const data = await fs.readFile(actionItemsPath, 'utf8');
       existingItems = JSON.parse(data);
@@ -344,18 +344,18 @@ class SecurityAutomationScheduler {
    */
   async notifySecurityTeam(type, data) {
     const message = this.formatSecurityNotification(type, data);
-    
+
     // Send to configured notification channels
     const promises = [];
-    
+
     if (this.notifications.slack) {
       promises.push(this.sendSlackNotification(message));
     }
-    
+
     if (this.notifications.discord) {
       promises.push(this.sendDiscordNotification(message));
     }
-    
+
     if (this.notifications.email) {
       promises.push(this.sendEmailNotification(message));
     }
@@ -371,18 +371,18 @@ class SecurityAutomationScheduler {
         Time: ${new Date().toISOString()}
         Top Issues: ${data.issues.slice(0, 3).map(i => i.description).join(', ')}
         Action Required: Immediate`,
-        
+
       'WEEKLY_SECURITY_REPORT': `📊 **Weekly Security Report**
         Report: ${data.reportPath}
         Critical Issues: ${data.summary.criticalIssues}
         Risk Level: ${data.summary.riskLevel}
         Trend: ${data.trends.direction}`,
-        
+
       'CRITICAL_DEPS_UPDATE': `📦 **Critical Dependencies Update Required**
         Count: ${data.length}
         Packages: ${data.slice(0, 3).map(d => d.package).join(', ')}`
     };
-    
+
     return templates[type] || `Security Alert: ${type}`;
   }
 
@@ -450,15 +450,15 @@ class SecurityAutomationScheduler {
    */
   stop() {
     logger.info('⏹️ Stopping security automation schedules...');
-    
+
     for (const [name, schedule] of this.schedules.entries()) {
       schedule.destroy();
       logger.info(`✅ Stopped ${name} schedule`);
     }
-    
+
     this.schedules.clear();
     this.isRunning = false;
-    
+
     logger.info('🛑 All security schedules stopped');
   }
 
@@ -486,38 +486,38 @@ class SecurityAutomationScheduler {
 async function main() {
   const scheduler = new SecurityAutomationScheduler();
   await scheduler.init();
-  
+
   const command = process.argv[2];
-  
+
   switch (command) {
-    case 'start':
-      await scheduler.start();
-      console.log('🚀 Security automation started. Press Ctrl+C to stop.');
-      
-      // Keep process alive
-      process.on('SIGINT', async () => {
-        console.log('\n⏹️ Shutting down security automation...');
-        scheduler.stop();
-        process.exit(0);
-      });
-      
-      // Keep running
-      await new Promise(() => {});
-      break;
-      
-    case 'status':
-      const status = scheduler.getStatus();
-      console.log('\n📊 SECURITY AUTOMATION STATUS');
-      console.log('══════════════════════════════');
-      console.log(`🔄 Running: ${status.isRunning}`);
-      console.log(`📅 Active Schedules: ${status.activeSchedules.length}`);
-      status.activeSchedules.forEach(name => {
-        console.log(`   - ${name}: ${status.nextRuns[name] || 'N/A'}`);
-      });
-      break;
-      
-    default:
-      console.log(`
+  case 'start':
+    await scheduler.start();
+    console.log('🚀 Security automation started. Press Ctrl+C to stop.');
+
+    // Keep process alive
+    process.on('SIGINT', async () => {
+      console.log('\n⏹️ Shutting down security automation...');
+      scheduler.stop();
+      process.exit(0);
+    });
+
+    // Keep running
+    await new Promise(() => {});
+    break;
+
+  case 'status':
+    const status = scheduler.getStatus();
+    console.log('\n📊 SECURITY AUTOMATION STATUS');
+    console.log('══════════════════════════════');
+    console.log(`🔄 Running: ${status.isRunning}`);
+    console.log(`📅 Active Schedules: ${status.activeSchedules.length}`);
+    status.activeSchedules.forEach(name => {
+      console.log(`   - ${name}: ${status.nextRuns[name] || 'N/A'}`);
+    });
+    break;
+
+  default:
+    console.log(`
 Security Automation Scheduler
 
 Commands:

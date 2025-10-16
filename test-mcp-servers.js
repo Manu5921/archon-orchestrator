@@ -11,7 +11,7 @@ import { Logger } from './src/utils/logger.js';
 const logger = new Logger('MCP-Servers-Test');
 
 class MCPServersTest {
-  
+
   constructor() {
     this.mcpConfigPath = './.mcp.json';
     this.claudeSettingsPath = process.env.HOME + '/.claude/settings.json';
@@ -22,7 +22,7 @@ class MCPServersTest {
    */
   testMcpJsonConfig() {
     logger.info('🔍 Testing .mcp.json configuration...');
-    
+
     if (!existsSync(this.mcpConfigPath)) {
       logger.error('❌ .mcp.json not found');
       return false;
@@ -30,12 +30,12 @@ class MCPServersTest {
 
     try {
       const mcpConfig = JSON.parse(readFileSync(this.mcpConfigPath, 'utf8'));
-      
+
       // Check Archon MCP
       if (mcpConfig.mcpServers?.archon) {
         const archon = mcpConfig.mcpServers.archon;
         logger.info(`✅ Archon MCP: ${archon.transport}://${archon.url}`);
-        
+
         if (archon.transport === 'http' && archon.url === 'http://localhost:8051/mcp') {
           logger.info('   📡 Archon configuration: CORRECT');
         } else {
@@ -46,7 +46,7 @@ class MCPServersTest {
         return false;
       }
 
-      // Check Context7 MCP  
+      // Check Context7 MCP
       if (mcpConfig.mcpServers?.context7) {
         const context7 = mcpConfig.mcpServers.context7;
         logger.info(`✅ Context7 MCP: ${context7.transport}://${context7.url}`);
@@ -66,7 +66,7 @@ class MCPServersTest {
 
   /**
    * Vérifie les paramètres Claude
-   */  
+   */
   testClaudeSettings() {
     logger.info('🔍 Testing Claude settings...');
 
@@ -77,7 +77,7 @@ class MCPServersTest {
 
     try {
       const settings = JSON.parse(readFileSync(this.claudeSettingsPath, 'utf8'));
-      
+
       // Check enableAllProjectMcpServers
       if (settings.enableAllProjectMcpServers === true) {
         logger.info('✅ enableAllProjectMcpServers: true');
@@ -87,7 +87,7 @@ class MCPServersTest {
 
       // Check enabled servers
       if (settings.enabledMcpjsonServers?.includes('archon')) {
-        logger.info('✅ Archon MCP enabled in Claude settings');  
+        logger.info('✅ Archon MCP enabled in Claude settings');
       } else {
         logger.warn('⚠️ Archon MCP not explicitly enabled');
       }
@@ -154,7 +154,7 @@ class MCPServersTest {
           description: 'Archon Orchestrator MCP Server'
         },
         context7: {
-          url: 'mcp+sse://context7.ai', 
+          url: 'mcp+sse://context7.ai',
           transport: 'sse',
           description: 'Context7 Code Quality MCP Server'
         }
@@ -176,14 +176,14 @@ class MCPServersTest {
 
     const results = {
       mcp_json: false,
-      claude_settings: false, 
+      claude_settings: false,
       archon_connectivity: false,
       overall: false
     };
 
     // Test 1: .mcp.json configuration
     results.mcp_json = this.testMcpJsonConfig();
-    
+
     // Test 2: Claude settings
     results.claude_settings = this.testClaudeSettings();
 
@@ -202,7 +202,7 @@ class MCPServersTest {
 
     // Configuration summary
     const summary = this.generateConfigSummary();
-    
+
     logger.info('\n📋 CONFIGURATION SUMMARY:');
     logger.info('═'.repeat(35));
     logger.info(`📄 Project MCP: ${summary.project_mcp_config}`);
@@ -219,7 +219,7 @@ class MCPServersTest {
     } else {
       logger.info('\n🔧 Next steps to fix issues:');
       logger.info('   1. Restart Claude Code to load MCP configuration');
-      logger.info('   2. Ensure Archon is running on port 8051');  
+      logger.info('   2. Ensure Archon is running on port 8051');
       logger.info('   3. Approve MCP servers when prompted');
     }
 
@@ -232,11 +232,11 @@ class MCPServersTest {
  */
 async function main() {
   const test = new MCPServersTest();
-  
+
   try {
     const results = await test.runCompleteTest();
     process.exit(results.overall ? 0 : 1);
-    
+
   } catch (error) {
     logger.error(`Test crashed: ${error.message}`);
     process.exit(1);
