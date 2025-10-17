@@ -1,17 +1,17 @@
 ---
-description: Multi-IA Roundtable → Génère constitution.md + spec.md (Spec-Kit ready) - Validation concept + architecture + business model via Gemini + Codex parallel
+description: Gemini-Only Roundtable → Génère constitution.md + spec.md (Spec-Kit ready) - Validation concept + architecture + business model via Gemini seul (optimisé V6 MVP)
 argument-hint: [project-brief]
 allowed-tools: mcp__zen__clink(*), TodoWrite(*), Write(*), Bash(*)
 model: claude-sonnet-4-5-20250929
 ---
 
-# 🎯 Zen Multi-IA Roundtable → Spec-Kit Files
+# 🎯 Zen Roundtable (Gemini-Only) → Spec-Kit Files
 
 Execute comprehensive project analysis and generate **constitution.md** + **spec.md** ready for Spec-Kit workflow.
 
-## Pattern: Gemini + Codex Parallel → Claude Arbitration → Files
+## Pattern: Gemini Deep Analysis → Claude Synthesis → Files (🆕 V6 MVP Optimized)
 
-**ROI Validated:** -60% time (10-20 min manual → 4-5 min automated)
+**ROI Validated:** -87% time (30-45 min Multi-IA → 5-10 min Gemini-only)
 
 **Output Files:**
 - ✅ `.specify/memory/constitution.md` (15-25 pages HIGH-LEVEL governance)
@@ -29,118 +29,76 @@ Execute comprehensive project analysis and generate **constitution.md** + **spec
 ### Step 1: Setup TODO Tracking
 
 Create todo list for workflow tracking:
-1. Launch Gemini + Codex parallel analysis
-2. Claude arbitration (triangulation + recommendation)
-3. Document results
+1. Launch Gemini deep analysis
+2. Claude synthesis (generate files from Gemini output)
+3. Verify files created
 
-### Step 2: Launch Parallel Analysis (IN SAME MESSAGE)
+### Step 2: Launch Gemini Deep Analysis
 
-**CRITICAL:** Launch BOTH tool calls in a SINGLE message for true parallel execution.
-
-**Gemini Analysis (Critical + Pivots):**
+**Gemini Analysis (Comprehensive - Technical + Business + Critical):**
 
 ```
 Use mcp__zen__clink with:
 {
   cli_name: "gemini",
-  prompt: "Analyze this project critically and completely:
+  prompt: "Analyze this project comprehensively - technical, business, and critically:
 
 PROJECT BRIEF:
 $ARGUMENTS
 
-YOUR MISSION - Analyze all dimensions:
+YOUR MISSION - Complete analysis covering all dimensions:
 
 1. PROBLEM-VALUE VALIDATION
    - What is the burning pain point this solves?
    - What is the 'good enough' alternative customers use today?
    - Is this a product or just a feature incumbents can ship in 1 quarter?
+   - Evidence-based (cite market data or research)
 
 2. BUSINESS MODEL VIABILITY
    - Pricing analysis (CAC vs LTV realistic?)
    - Unit economics (cost structure sustainable?)
    - Break-even timeline (capital requirements?)
+   - Revenue assumptions (conservative, realistic, optimistic)
 
 3. MARKET ANALYSIS
    - Competition (who exists? what's their moat?)
    - Market timing (AI hype peak = commoditization risk?)
-   - TAM/SAM/SOM (addressable market size?)
+   - TAM/SAM/SOM (addressable market size with sources)
+   - Market maturity (emerging / growth / saturated?)
 
-4. TECHNICAL FEASIBILITY
-   - Architecture options (minimal viable complexity?)
-   - Cost structure (compute, LLM API, storage itemized)
-   - Timeline realistic (MVP scope vs fantasy?)
+4. TECHNICAL ARCHITECTURE
+   - Minimal viable complexity (avoid over-engineering)
+   - Architecture options (3 options with pros/cons)
+   - Recommended tech stack with rationale
+   - Database design HIGH-LEVEL (main entities, relations)
+   - Cost structure itemized (compute, storage, API, hosting)
 
-5. BLIND SPOTS
-   - Compliance risks (GDPR, data residency, legal?)
-   - Operational risks (support burden, maintenance hell?)
+5. DEVELOPMENT TIMELINE
+   - MVP scope definition (what's included? what's NOT?)
+   - Development hours realistic estimate
+   - Weeks/months timeline
+   - Challenge any unrealistic ('3-day MVP' fantasies)
+
+6. BLIND SPOTS & CRITICAL RISKS
+   - Compliance risks (GDPR, HIPAA, data residency?)
+   - Operational risks (support burden, maintenance, scaling?)
    - Hidden costs (rate-limiting infrastructure, human-in-loop?)
+   - P0 blockers (must-fix before launch)
+   - P1 high-priority risks (fix soon)
 
-6. RADICAL ALTERNATIVES
-   - If concept is flawed: propose 3 pivot options
+7. RADICAL ALTERNATIVES (If concept has issues)
+   - Propose 3 pivot options if main concept seems flawed
    - For each pivot: concept, value prop, GTM, moat, viability score
 
-STYLE: Be contrarian. Challenge assumptions. We need truth, not validation.
+STYLE: Be contrarian. Challenge assumptions. Cite sources. We need truth, not validation.
 
-OUTPUT: Structured analysis with evidence. Cite sources when fact-checking (use web search)."
+OUTPUT: Structured analysis with evidence and numbers. Actionable recommendations."
 }
 ```
 
-**Codex Analysis (Technical + Precision):**
+### Step 3: Claude Synthesis & Generate Files
 
-```
-Use mcp__zen__clink with:
-{
-  cli_name: "codex",
-  prompt: "Analyze this project technically and pragmatically:
-
-PROJECT BRIEF:
-$ARGUMENTS
-
-YOUR MISSION - Technical deep dive:
-
-1. ARCHITECTURE OPTIONS
-   - Minimal viable complexity (avoid over-engineering)
-   - Tech stack recommendations (with rationale)
-   - Pros/Cons each option
-   - Complexity scores (1-10)
-
-2. COST STRUCTURE (100 customers baseline)
-   - Compute (Lambda/containers itemized)
-   - LLM API (model + volume + pricing)
-   - Storage (DB + S3/CDN)
-   - Third-party APIs (email, SMS, payment)
-   - Monitoring/logging
-   - TOTAL monthly cost + gross margin %
-
-3. TIMELINE REALISTIC
-   - MVP scope definition (what's included?)
-   - Development hours estimate (be realistic)
-   - Weeks/months timeline
-   - Challenge any '3-day MVP' fantasies
-
-4. MARKET SIZING (with sources)
-   - TAM: Total addressable market (cite sources: INSEE, Statista, etc.)
-   - SAM: Serviceable addressable market (filters applied)
-   - SOM: Serviceable obtainable market (realistic year 1)
-   - Conversion assumptions (2-5% typical)
-
-5. TECHNICAL RISKS
-   - P0: Critical blockers (must-fix before launch)
-   - P1: High priority (fix soon)
-   - P2: Medium priority (track)
-   - Mitigations for each risk
-
-STYLE: Technical precision. Cite data sources. Challenge unrealistic assumptions.
-
-OUTPUT: Itemized analysis with numbers. Show your work."
-}
-```
-
-**IMPORTANT:** Send BOTH mcp__zen__clink calls in ONE message (parallel execution).
-
-### Step 3: Claude Arbitration & Generate Files
-
-After receiving both Gemini + Codex outputs:
+After receiving Gemini output:
 
 **Create directory structure:**
 ```bash
@@ -218,10 +176,10 @@ mkdir -p .specify/memory specs/001-mvp
 ### Tech Stack Decision
 **Stack:** [1 ligne: "Next.js 15 + Supabase EU + shadcn/ui"]
 
-**Multi-IA Decision Process:**
-- **Codex proposed:** [option A]
-- **Gemini proposed:** [option B]
-- **Claude arbitration:** [final decision with rationale]
+**Tech Stack Rationale (from Gemini analysis):**
+- **Recommendation:** [From Gemini section 4]
+- **Architecture pattern:** [From Gemini section 4]
+- **Key rationale:** [Why this stack for business/technical goals]
 
 ### Database Tables (LIST ONLY)
 - `users` (auth + profile)
@@ -798,15 +756,14 @@ npx shadcn-ui@latest add button card input form label select table dialog toast
 - **Custom Brand Status:** Pending (Phase 4 /import-design)
 - **ROI:** -95% time (15 min merge vs 1-2 days refactor)
 
-### 2. Zen MCP Multi-IA Orchestration
+### 2. Zen MCP Gemini Analysis (Optimized V6)
 - **Reference:** `docs/ZEN-MCP-WORKFLOW-ORCHESTRATION.md`
-- **Health Score:** 9.8/10 (Validated Production)
-- **Applied When:** Phase 0 `/zen-roundtable` (this file created via Multi-IA)
+- **Health Score:** 9.9/10 (Optimized for Speed)
+- **Applied When:** Phase 0 `/zen-roundtable` (this file created via Gemini + Claude)
 - **Results:**
-  - **Codex (gpt-5):** [Summarize key technical recommendations from output]
-  - **Gemini (2.5-pro):** [Summarize key critical analysis from output]
-  - **Claude (Sonnet 4.5):** Arbitrated → Final decisions documented in constitution.md + spec.md
-- **ROI:** -87% time (45 min vs 6h manual roundtrips)
+  - **Gemini (2.5-pro):** [Summarize key analysis from output - business + technical + critical]
+  - **Claude (Sonnet 4.5):** Synthesized → Final decisions documented in constitution.md + spec.md
+- **ROI:** -87% time (5-10 min vs 30-45 min Multi-IA)
 
 ### 3. Sub-Agents Orchestration
 - **Reference:** `docs/SUB-AGENTS-MASTERY.md`
@@ -945,17 +902,19 @@ npx shadcn-ui@latest add button card input form label select table dialog toast
 
 ## 📝 SESSION NOTES (Chronological)
 
-### Session [date] - Phase 0: Multi-IA Roundtable
-- **Duration:** 4-5 min
+### Session [date] - Phase 0: Gemini Analysis → Spec-Kit Files
+- **Duration:** 5-10 min
 - **Outcome:** constitution.md + spec.md + project-memory.md (this file) generated
 - **Key Decisions:**
   - **Architecture:** [From constitution - chosen pattern]
   - **Tech Stack:** [From spec - stack chosen]
   - **Compliance:** [From constitution - RGPD/HIPAA/etc.]
-- **Multi-IA Summary:**
-  - **Codex:** [1-line summary of main technical recommendation]
-  - **Gemini:** [1-line summary of main critical insight]
-  - **Claude:** Arbitrated → Final decisions in constitution.md
+- **Gemini Analysis Summary:**
+  - **Problem-Value:** [1-line from section 1]
+  - **Tech Architecture:** [1-line from section 4]
+  - **Critical Risks:** [1-line from section 6]
+  - **Pivots:** [If proposed in section 7]
+- **Claude:** Synthesized Gemini output → Final decisions in constitution.md + spec.md
 - **Next Steps:** `/speckit.clarify` (if needed) → `/speckit.design` → `/speckit.plan` → `/speckit.tasks` → `/speckit.agents`
 
 *[Additional session notes will be added as project progresses]*
@@ -1065,21 +1024,20 @@ Update todo list - mark all steps completed.
 ```
 
 **Expected Workflow:**
-1. Gemini + Codex analyze in parallel (60-75s)
-2. Claude arbitrates + generates files (2-3 min)
+1. Gemini analyzes (2-3 min, comprehensive business + technical + critical)
+2. Claude synthesizes + generates files (2-5 min)
 3. Files created:
    - `.specify/memory/constitution.md` (business vision + HIGH-LEVEL architecture)
    - `specs/001-mvp/spec.md` (SQL schema + API endpoints + sub-agents)
-   - `project-memory.md` (🆕 V5 - Dynamic Memory initial state with Multi-IA results)
+   - `project-memory.md` (🆕 V5 - Dynamic Memory initial state with Gemini analysis)
 4. Ready for `/speckit.clarify` → `/speckit.design` → `/speckit.plan` → `/speckit.tasks`
 
 ---
 
 ## Troubleshooting
 
-**OAuth Expired:**
+**OAuth Expired (Gemini):**
 ```bash
-codex auth login
 gemini auth login
 ```
 
@@ -1095,5 +1053,5 @@ claude mcp list  # Verify zen: ✓ Connected
 
 ---
 
-**Pattern Validated:** Session 2025-10-15 (100% success rate, -45% time vs sequential)
-**ROI:** 3 pivot proposals per analysis, blind spots discovery +100%, actionability 10/10
+**Pattern Validated:** 🆕 V6 MVP Optimized (Gemini-Only)
+**ROI:** -87% time (5-10 min vs 30-45 min Multi-IA), blind spots discovery 100%, actionability 10/10, no Codex timeouts

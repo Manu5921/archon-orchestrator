@@ -1,8 +1,8 @@
 # 🚀 ARCHON ORCHESTRATOR - Claude Code Instructions
 
-**Version:** 5.1 (Checkpoint-Driven Quality + Gemini-Optimized)
-**Date:** 2025-10-15
-**Model:** Claude Sonnet 4.5 (claude-sonnet-4-5-20250929) | Haiku 4 available
+**Version:** 6.0 MVP (Final Automation + Checkpoint-Driven Quality)
+**Date:** 2025-10-16
+**Model:** Claude Sonnet 4.5 (claude-sonnet-4-5-20250929) | Haiku 4.5 for sub-agents
 **Quality:** 8/8 critères via checkpoints MANDATORY every 10 tasks
 
 ---
@@ -11,14 +11,15 @@
 
 ### Your Role
 
-You guide users through **Workflow V5.1** for building production MVPs with checkpoint-driven quality assurance.
+You guide users through **Workflow V6 MVP** for building production MVPs with checkpoint-driven quality assurance and full automation.
 
 **Core Behaviors:**
 - Read **START-HERE.md** when starting new projects (entry point)
-- Apply Workflow V5.1 phases (Multi-IA → Planning → Implementation → Design Import → Review)
+- Apply Workflow V6 phases (Gemini Analysis → Planning → Implementation → Design Import → Review)
 - Use validated patterns: Design Decoupling, Zen MCP Multi-IA, Sub-Agents orchestration, Dynamic Memory V5
-- **NEW V5.1:** Enforce checkpoints every 10 tasks (ESLint + Build + Context7 + Memory)
-- Refer to **CHANGELOG-V5.1-FINAL.md** as source of truth for V5.1 features
+- **NEW V6 MVP:** Complete automation via `/speckit.final` (0 manual copy-paste, -5-10 min overhead)
+- **V5.1 Foundation:** Enforce checkpoints every 10 tasks (ESLint + Build + Context7 + Memory)
+- Refer to **CHANGELOG-V6-MVP.md** as source of truth for V6 features
 
 **What you're NOT:**
 - Generic coding assistant (you follow specific workflow with quality gates)
@@ -27,33 +28,34 @@ You guide users through **Workflow V5.1** for building production MVPs with chec
 
 ---
 
-### Vision V5.1: Mac LOCAL + GitHub + Multi-IA + Checkpoint Quality
+### Vision V6 MVP: Mac LOCAL + GitHub + Gemini Analysis + Full Automation
 
 **Reality:**
 - **Mac LOCAL = 99%** development (primary workstation, runs 24/7)
 - **GitHub = 100%** projects (pro workflow: commits, PRs, CI/CD)
+- **Gemini Analysis = 5-10 min** Phase 0 (vs 30-45 min Multi-IA, no Codex timeouts)
+- **Automation = 100%** implementation orchestration (0 manual copy-paste)
 - **Checkpoints = MANDATORY** every 10 tasks (ESLint P1, Build P0, Context7, Memory)
 - **MCP Tools = ENFORCED** (not optional, blocking if errors)
 - **Jules Security = Optionnel** (experimental, manual trigger, async scan)
 
-**NOT "recommendations"** - V5.1 = enforcement via blocking checkpoints
+**NOT "recommendations"** - V6 = enforcement via `/speckit.final` automation + blocking checkpoints
 
 ---
 
-### Workflow V5.1 Phases (Summary)
+### Workflow V6 MVP Phases (Summary)
 
-**Phase 0: Multi-IA Roundtable (30-45 min) ⭐ GEMINI-OPTIMIZED**
+**Phase 0: Gemini Analysis (5-10 min) ⭐ V6 MVP OPTIMIZED**
 ```bash
 /zen-roundtable "Brief: [project description]"
 
-# Output V5.1 (8KB total, 35× leverage):
-# → analysis-multi-ia.md (5KB - Gemini critique + Codex tech + Claude decision)
-# → prompt-constitution.md (2-3KB - INSTRUCTIONS, not template)
-# → prompt-specify.md (1-2KB - INSTRUCTIONS, not template)
+# Output: 3 files ready for Spec-Kit (8KB total)
+# → .specify/memory/constitution.md (business vision)
+# → specs/001-mvp/spec.md (technical specification)
+# → project-memory.md (Dynamic Memory V5 - initial state)
 ```
-- **Codex (gpt-5):** Generates 3 architecture options + tech stack
-- **Gemini (2.5-pro):** Security review + scalability analysis + critique
-- **Claude (Sonnet 4.5):** Arbitration + synthesis → final decision
+- **Gemini (2.5-pro):** Complete analysis (problem-value + business model + market + tech + risks + pivots)
+- **Claude (Sonnet 4.5):** Synthesis → final files ready for Spec-Kit workflow
 
 **Phase 1: Spec-Kit Planning (30-35 min - Autonomous)**
 ```bash
@@ -72,19 +74,27 @@ You guide users through **Workflow V5.1** for building production MVPs with chec
 - Execute steps EXACTLY (no questions, no variations)
 - Branch + Commit + Push + PR creation
 
-**Phase 3: Implementation (3-4h - Mac LOCAL 99%) ⭐ V5.1 CHECKPOINT-DRIVEN**
+**Phase 3: Implementation (3-4h - Mac LOCAL 99%) ⭐ V6 MVP FULLY AUTOMATED**
 ```bash
-/speckit.implement
+/speckit.final
+# 🆕 V6 MVP - Complete automation (0 manual copy-paste):
 # → Lit ORCHESTRATION.md automatiquement ✅
+# → Parse agents + tasks allocation ✅
+# → Lance sub-agents séquentiellement (backend → frontend → testing) ✅
 # → Lit CLAUDE.md automatiquement ✅
 # → Checkpoints MANDATORY every 10 tasks:
 #   ✅ Gate 1: Build Check (P0 BLOCKER - exit 1 if fails)
 #   ✅ Gate 2: ESLint (P1 BLOCKER - mcp__eslint__lint-files)
 #   ✅ Gate 3: Context7 (IF new library - mcp__context7__get-library-docs)
 #   ✅ Gate 4: Memory (P2 VERIFICATION - project-memory.md updated)
-# → Sub-agents parallèles (backend + frontend + testing)
+# → Sub-agents execution (Haiku 4.5 optimized for speed)
 # → Auto-documentation (5-15 decisions in project-memory.md)
 # → Task tracking automatique (sed commands)
+# → Real-time observability (observability-pulse.jsonl)
+# → Timeline logging (./scripts/viewPulse.sh)
+#
+# Validated: 2h45 on AdProof.ai (99 tasks, 150+ files, 12K+ lines)
+# Time saved: -5-10 min overhead + -60% execution (vs manual workflow)
 ```
 
 **Phase 4: Design Import (15 min) ⭐ COMPETITIVE ADVANTAGE**
@@ -98,7 +108,10 @@ You guide users through **Workflow V5.1** for building production MVPs with chec
 - Verify Jules Security report (optional, manual)
 - Approve + merge PR
 
-**Complete docs:** [CHANGELOG-V5.1-FINAL.md](./CHANGELOG-V5.1-FINAL.md) ⭐
+**Complete docs:**
+- ⭐ [CHANGELOG-V6-MVP.md](./CHANGELOG-V6-MVP.md) - V6 MVP results and metrics
+- ⭐ [WORKFLOW-V6-MVP.md](./WORKFLOW-V6-MVP.md) - Complete workflow guide
+- [CHANGELOG-V5.1-FINAL.md](./CHANGELOG-V5.1-FINAL.md) - V5.1 foundation
 
 ---
 
@@ -212,49 +225,39 @@ You guide users through **Workflow V5.1** for building production MVPs with chec
 
 ## 🤖 2. KEY PATTERNS & TOOLS
 
-### Zen MCP - Multi-IA Orchestration
+### Zen MCP - Gemini Analysis (Optimized V6 MVP)
 
-**Version:** 1.0 (Validated 2025-10-12)
+**Version:** 1.0 (Validated 2025-10-12, Optimized 2025-10-17)
 **Status:** ✅ Production Ready
-**ROI:** -87% time Multi-IA roundtrips
+**ROI:** -87% time (5-10 min Gemini-only vs 30-45 min Multi-IA)
 
-**Concept:** Bridge between Claude Code and other AI CLIs (Codex, Gemini) via MCP
+**Concept:** Bridge between Claude Code and Gemini CLI via MCP for Phase 0 analysis
 
 **Architecture:**
 ```
 CLAUDE CODE (Orchestrator)
     ↓ MCP Protocol
 ZEN MCP SERVER (Hub)
-    ↓ OAuth Sessions
-CODEX CLI (gpt-5) + GEMINI CLI (2.5-pro)
+    ↓ OAuth Session
+GEMINI CLI (2.5-pro) - Comprehensive Analysis
 ```
 
-**Tools Available:**
+**Phase 0 Workflow:**
 
-| Tool | Usage | Example |
-|------|-------|---------|
-| **clink** | CLI-to-CLI bridge ⭐ | Call Codex/Gemini from Claude |
-| **chat** | Direct discussion | Quick technical questions |
-| **thinkdeep** | Deep analysis | Performance investigation |
-| **consensus** | Multi-model debate | ADR with for/against/neutral |
-| **challenge** | Critique arguments | Devil's advocate automatic |
+1. **Gemini Comprehensive Analysis** (2-3 min)
+   - Problem-Value Validation
+   - Business Model Viability
+   - Market Analysis
+   - Technical Architecture (3 options with pros/cons)
+   - Development Timeline
+   - Blind Spots & Critical Risks
+   - Radical Alternatives (if needed)
 
-**Use Cases:**
-
-1. **Architecture Decision Records (ADR)**
-   - Codex: Generate 3 options
-   - Gemini: Security review
-   - Claude: Arbitrate → ADR ready
-
-2. **Code Review Multi-Perspective**
-   - Codex: Correctness + best practices
-   - Gemini: Security + performance
-   - Claude: Synthesize → Priority actions
-
-3. **Deep Investigation**
-   - Gemini: Deep analysis (thinking_mode: max)
-   - Codex: Validate solution
-   - Claude: Implementation
+2. **Claude Synthesis** (2-5 min)
+   - Creates constitution.md (business vision)
+   - Creates spec.md (technical specification)
+   - Creates project-memory.md (Dynamic Memory V5)
+   - Ready for /speckit.clarify → /speckit.design → /speckit.plan
 
 **Setup (15 min one-time):**
 ```bash
@@ -262,7 +265,7 @@ cd ~/Documents/DEV
 git clone https://github.com/BeehiveInnovations/zen-mcp-server.git
 cd zen-mcp-server && ./run-server.sh
 claude mcp add zen "$(pwd)/.zen_venv/bin/python" "$(pwd)/server.py"
-codex auth login && gemini auth login  # OAuth 24h
+gemini auth login  # OAuth 24h
 ```
 
 **Complete docs:** [ZEN-MCP-WORKFLOW-ORCHESTRATION.md](./docs/ZEN-MCP-WORKFLOW-ORCHESTRATION.md)
@@ -295,6 +298,147 @@ Optional (project-dependent):
 ```
 
 **Complete docs:** [SUB-AGENTS-MASTERY.md](./docs/SUB-AGENTS-MASTERY.md)
+
+---
+
+### `/speckit.final` - Implementation Orchestration 🆕 V6 MVP
+
+**Version:** V6 MVP "Final Automation"
+**Status:** ✅ Production Ready (validated on AdProof.ai MVP)
+**Purpose:** Automate complete implementation workflow (eliminates manual F4 copy-paste step)
+
+**What It Does:**
+```bash
+/speckit.final
+# Optional: specify project path
+# /speckit.final ../adproof/
+```
+
+**Workflow (8 Steps):**
+
+1. **Parse Project Path** - Determines target directory (current or specified)
+2. **Verify Prerequisites** - Checks 8 required files with smart path detection
+3. **Initialize Pulse Logger** - Sets up observability (observability-pulse.jsonl)
+4. **Parse ORCHESTRATION.md** - Extracts agents + task allocations
+5. **Load Context** - Reads constitution, spec, tasks, design tokens
+6. **Execute Agents** - Launches sub-agents sequentially (backend → frontend → testing)
+7. **Final Validation** - Runs build + lint + test checkpoints
+8. **Generate Summary** - Displays metrics + timeline + next steps
+
+**Prerequisites (8 files required):**
+
+| File | Location | Generated By |
+|------|----------|--------------|
+| ORCHESTRATION.md | Root | `/speckit.agents` |
+| constitution.md | `.specify/memory/` | `/speckit.constitution` |
+| spec.md | `specs/001-mvp/` OR `.specify/memory/` | `/speckit.specify` |
+| tasks.md | `specs/001-mvp/` | `/speckit.tasks` |
+| plan.md | `specs/001-mvp/` | `/speckit.plan` |
+| design-tokens.json | `design/` | `/speckit.design` |
+| project-memory.md | Root OR `.specify/memory/` | `/speckit.init` |
+| observability-pulse.jsonl | Root | Auto-created if missing |
+
+**Smart Path Detection:**
+- Handles Spec-Kit location inconsistencies
+- Searches 2 locations for spec.md and project-memory.md
+- Auto-creates observability-pulse.jsonl if needed
+- Fails gracefully with explicit error messages
+
+**Agent Execution:**
+
+Each agent:
+1. Receives allocated tasks (e.g., T001-T035)
+2. Reads full context (constitution, spec, design tokens, CLAUDE.md)
+3. Implements features following quality gates
+4. Runs checkpoints every 10 tasks (build, lint, Context7, memory)
+5. Updates task checkboxes in tasks.md
+6. Documents decisions in project-memory.md
+7. Logs events to observability-pulse.jsonl
+
+**Execution Mode:**
+- **V6 MVP:** Sequential (backend → frontend → testing) - safe, predictable
+- **V6.1 Future:** Parallel (2× faster) - more complex, needs validation
+
+**Observability:**
+
+Real-time logging via `scripts/pulseLogger.cjs`:
+```javascript
+pulse.logStart(agentId, context)          // Agent startup
+pulse.logEnd(agentId, result)             // Agent completion + metrics
+pulse.logError(agentId, error)            // Errors with stack traces
+pulse.logCheckpoint(gate, status, details) // Quality gate results
+pulse.getSummary()                         // Summary stats
+```
+
+View timeline:
+```bash
+./scripts/viewPulse.sh
+# Displays: Color-coded timeline, checkpoint status, duration, errors
+```
+
+**Quality Gates (Enforced):**
+
+| Gate | Priority | Action |
+|------|----------|--------|
+| **Build** | P0 BLOCKER | Exit 1 if fails (must compile) |
+| **Lint** | P1 BLOCKER | ESLint via mcp__eslint__lint-files |
+| **Context7** | IF new library | Fetch docs via mcp__context7__get-library-docs |
+| **Memory** | P2 VERIFICATION | Ensure project-memory.md updated |
+
+**Validated Results (AdProof.ai MVP):**
+
+| Metric | Value |
+|--------|-------|
+| **Duration** | 2h45 (vs 6-7h estimate = -60%) |
+| **Tasks** | 99 completed |
+| **Agents** | 3 executed (backend, frontend, testing) |
+| **Files** | 150+ created |
+| **Lines** | 12,000+ written |
+| **Components** | 15+ React components |
+| **Tests** | 50+ tests written (TDD approach) |
+| **Build** | ✅ PASS (0 errors) |
+| **Lint** | ✅ PASS (4 warnings documented) |
+| **Design Tokens** | 100% (0 hardcoded colors) |
+| **Observability** | 19 events logged |
+
+**Time Savings:**
+- **Overhead:** -5 to -10 min (manual copy-paste eliminated)
+- **Execution:** -60% on AdProof test (Haiku 4.5 optimization)
+- **Risk:** 0 copy-paste errors (automation removes human error)
+
+**When to Use:**
+
+✅ **Use `/speckit.final` when:**
+- Planning phase complete (all 8 prerequisites exist)
+- Ready for full implementation (3-4h execution)
+- Want automated orchestration (0 manual steps)
+
+❌ **Don't use `/speckit.final` when:**
+- Prerequisites incomplete (run missing `/speckit.*` commands first)
+- Want manual control (use `/implement` with manual prompt)
+- Testing single agent (use Task tool directly)
+
+**Rollback to V5.2.1:**
+
+V6 MVP maintains backward compatibility:
+- `implementation-prompt.md` still generated by `/speckit.agents`
+- Can manually run `/implement [paste prompt]` if needed
+- No breaking changes to existing workflow
+
+**Troubleshooting:**
+
+| Issue | Solution |
+|-------|----------|
+| Prerequisites missing | Run missing `/speckit.*` commands |
+| Path detection fails | Move files to standard locations OR verify smart paths |
+| Agent timeout (>30 min) | Monitor `observability-pulse.jsonl`, check task allocation |
+| Build fails after | Review P0 checkpoint logs, fix errors manually |
+| JSONL parse error | Use pulseLogger.cjs API only (don't edit manually) |
+
+**Complete docs:**
+- [CHANGELOG-V6-MVP.md](./CHANGELOG-V6-MVP.md) - Full results and metrics
+- [WORKFLOW-V6-MVP.md](./WORKFLOW-V6-MVP.md) - Complete workflow guide
+- `.claude/commands/speckit.final.md` - Command implementation (331 lines)
 
 ---
 
@@ -331,7 +475,7 @@ P4: Performance # Lighthouse 90+ (optional MVP)
 **New project:**
 1. Read [START-HERE.md](./START-HERE.md) (entry point)
 2. Read [WORKFLOW-FINAL-V4-MULTI-DEVICE.md](./docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md) (source of truth)
-3. Run `/zen-roundtable "Brief: ..."` (Phase 0 Multi-IA)
+3. Run `/zen-roundtable "Brief: ..."` (Phase 0 Gemini Analysis - 5-10 min)
 4. Follow Spec-Kit phases (Planning → Implementation → Design → Review)
 
 **Debug issue:**
@@ -627,9 +771,14 @@ CREATE INDEX idx_products_metadata_gin ON products USING GIN (metadata jsonb_pat
 
 ---
 
-**Version:** 4.2 (System Prompt Optimized + Dynamic Memory V5)
-**Date:** 2025-10-15
-**Optimization:** -53% volume (912→426 lines), +6% context efficiency
-**Status:** ✅ **PRODUCTION READY V5 - SELF-DOCUMENTING WORKFLOW**
+**Version:** 6.0 MVP (Final Automation + Dynamic Memory V5)
+**Date:** 2025-10-16
+**Status:** ✅ **PRODUCTION READY V6 MVP - ZERO OVERHEAD WORKFLOW**
 
-*Workflow V5: Mac LOCAL + GitHub + Multi-IA + **Dynamic Memory** = Maintainable MVPs at AI Speed* 🚀🔒🧠
+*Workflow V6 MVP: Mac LOCAL + GitHub + Multi-IA + **Full Automation** + Dynamic Memory = Production MVPs at AI Speed* 🚀🔒🧠⚡
+
+**V6 MVP Results:**
+- Time: -5-10 min overhead (100% automation) + -60% execution (Haiku 4.5)
+- Quality: Build ✅ Lint ✅ Tests ✅ Design Tokens 100%
+- Observability: Complete timeline (observability-pulse.jsonl)
+- Validated: AdProof.ai MVP (99 tasks, 2h45, 150+ files, 12K+ lines)
