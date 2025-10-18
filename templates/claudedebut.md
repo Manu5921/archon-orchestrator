@@ -7,6 +7,30 @@
 
 ---
 
+## 🧠 Session Startup Protocol (Zero Trust)
+
+**BEFORE any work in existing project, ALWAYS:**
+
+1. **Read project-memory.md** (if exists) → Last 3 sessions + runtime decisions
+2. **Read latest CHANGELOG** (if exists) → Recent work (last 48h)
+3. **Apply Zero Trust:** VERIFY current state before PROPOSING changes
+
+**Commands:**
+```bash
+# Check recent work
+git log --oneline --since="2 days ago"
+
+# Read memory
+grep -A 5 "Session.*Phase" project-memory.md 2>/dev/null | tail -20
+
+# Read latest CHANGELOGs
+ls -lt changelogs/V*/CHANGELOG-*.md 2>/dev/null | head -3
+```
+
+**Principle:** Don't trust your own memory. Verify facts before proposing.
+
+---
+
 ## 🎯 Quick Start Commands
 
 Follow these commands **in order** for complete workflow:

@@ -204,6 +204,30 @@ pnpm run build
    - Utilisation `any` TypeScript sans justification
    - Import dépendances non installées
 
+7. **Propositions Workflow Sans Vérification:**
+   - "On devrait implémenter X" → SANS avoir vérifié si X existe déjà
+   - "Opportunité : ajouter Y" → SANS avoir grep les CHANGELOGs
+   - "Phase N devrait être Z" → SANS avoir lu la doc Phase N actuelle
+
+   **✅ Commandes obligatoires AVANT proposition :**
+   ```bash
+   # 1. Vérifier git log récent
+   git log --oneline --since="2 days ago"
+
+   # 2. Lire project-memory.md (SESSION NOTES) si existe
+   grep -A 5 "Session.*Phase" project-memory.md 2>/dev/null | tail -20
+
+   # 3. Lire derniers CHANGELOGs
+   ls -lt changelogs/V*/CHANGELOG-*.md 2>/dev/null | head -3
+   # Puis Read chaque CHANGELOG trouvé
+   ```
+
+   **✅ Règle :**
+   - AVANT "On devrait implémenter X"
+   - FAIRE "git log + grep changelogs + Read latest CHANGELOG"
+   - SI trouvé → NE PAS proposer (déjà implémenté)
+   - SI pas trouvé → Proposer avec preuves
+
 ---
 
 **Version:** 1.0
