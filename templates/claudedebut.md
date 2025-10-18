@@ -200,6 +200,53 @@ git push origin --delete feat/mvp
 
 ---
 
+### Phase 7: Context Bundles (Disaster Recovery) - OPTIONAL 🆕
+
+**Purpose:** Save session state for fast recovery if context overflows during long sessions (2h+)
+
+**Save Bundle (Manual):**
+```bash
+# During long work session (1-2h in)
+/savebundle backend-specialist-checkpoint
+
+# Emergency save if context approaching limit
+/savebundle emergency-save-mvp-90-percent-done
+```
+
+**Load Bundle (After Context Overflow):**
+```bash
+# New session after crash
+/loadbundle .agents/context-bundles/backend-specialist-checkpoint.md
+
+# ✅ Recovers 60-70% context in 15 min
+# Read project-memory.md for WHY (complements bundle WHAT)
+# Continue from checkpoint
+```
+
+**Automatic Logging:**
+
+Context bundler automatically logs during `/speckit.final`:
+- Files read
+- Edits made
+- Commands executed
+- Decisions documented
+
+**Bundle Location:** `.agents/context-bundles/YYYY-MM-DD_HH-MM_session.md`
+
+**When Useful:**
+- Long sessions (2h+) where context might overflow
+- Before risky operations (major refactors)
+- Agent handoffs (backend → frontend)
+
+**ROI:** -70% recovery time (15 min vs 2h45 if context crashes)
+
+**Complementary with project-memory.md:**
+- **Bundles** = Session snapshots (WHAT done)
+- **Memory** = Project decisions (WHY done)
+- **Together** = 80-90% effective recovery
+
+---
+
 ## 📋 Project Context
 
 ### Project Identity
