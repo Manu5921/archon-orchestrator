@@ -1,35 +1,37 @@
-# 🎼 ARCHON ORCHESTRATOR - Workflow V5.1
+# 🎼 ARCHON ORCHESTRATOR - Workflow V6.1.3
 
-**Workflow checkpoint-driven avec Multi-IA + MCP + Dynamic Memory**
+**Workflow complete automation + observability timeline + Multi-IA + MCP + Dynamic Memory**
 
-**Version:** 5.1 (Checkpoint-Driven Quality + Gemini-Optimized)
-**Date:** 2025-10-15
-**Model:** Claude Sonnet 4.5 (claude-sonnet-4-5-20250929) + Haiku 4 available
+**Version:** 6.1.3 (Observability Complete + Full Automation)
+**Date:** 2025-10-17
+**Model:** Claude Sonnet 4.5 (claude-sonnet-4-5-20250929) + Haiku 4.5 for sub-agents
 **Capacité:** 8-12 clients/semaine | €80K-€100K/mois revenue
-**Quality:** 8/8 critères via checkpoints every 10 tasks
+**Quality:** 5 gates enforced (Build P0 + Lint P1 + Context7 P2 + Memory P3 + Observability P4)
 
-**🆕 V5.1 - Nouveautés:**
-- **MCP Checkpoints MANDATORY** - ESLint + Context7 + Build every 10 tasks (BLOCKING)
-- **Memory Triggers Exhaustive** - 7 catégories avec verification script
-- **Zen Roundtable Gemini-Optimized** - Analysis-only (8KB vs 56KB, 35× leverage)
-- **Dynamic Memory V5** - Agent self-documentation avec quality template
-- **CLAUDE.md Pattern** - Project-level agent instructions (100-200 lines)
+**🆕 V6.1.3 - Nouveautés:**
+- **Gate P4 Observability** - Timeline tracking (pulseLogger.cjs CLI + viewPulse.sh viewer + observability-pulse.jsonl)
+- **Complete Automation** - `/speckit.final` orchestrates all agents (0 manual copy-paste)
+- **5 Quality Gates ENFORCED** - Build P0 + Lint P1 + Context7 P2 + Memory P3 + Observability P4
+- **Agent Coordination** - Agents read pulse → know what's completed
+- **Token Savings** - -77% implementation with GLM-4.6 (450K→100K tokens)
+- **Dynamic Memory V5** - Agent self-documentation (WHY decisions)
+- **CLAUDE.md Pattern** - Project-level agent instructions
 
 ---
 
 ## 🚀 QUICK START
 
-### Workflow V5.1 Standard (4-5h par projet)
+### Workflow V6.1.3 Standard (4-5h par projet)
 
 ```bash
-# Phase 0: Multi-IA Roundtable (30-45 min) ⭐ V5.1 GEMINI-OPTIMIZED
+# Phase 0: Multi-IA Roundtable (30-45 min) ⭐ GEMINI-OPTIMIZED
 cd ~/Documents/DEV/clients
 mkdir nouveau-projet && cd nouveau-projet
 git init
 
 /zen-roundtable "Brief: [description projet]"
 # → Gemini + Codex + Claude analysis (3-4 min)
-# → Output V5.1 (8KB total):
+# → Output (8KB total):
 #   ✅ analysis-multi-ia.md (5KB - insights + decisions)
 #   ✅ prompt-constitution.md (2-3KB - instructions)
 #   ✅ prompt-specify.md (1-2KB - instructions)
@@ -48,22 +50,26 @@ git init
 # Lis CLAUDE.md section 2, exécute steps exactement
 # → Branch, commit, push, PR creation
 
-# Phase 3: Implementation (3-4h) ⭐ V5.1 CHECKPOINT-DRIVEN
-/speckit.implement
+# Phase 3: Implementation (2h45-3h) ⭐ V6.1.3 FULL AUTOMATION + OBSERVABILITY
+/speckit.final
+# V6.1.3 - Complete automation + observability:
 # → Lit ORCHESTRATION.md automatiquement ✅
 # → Lit CLAUDE.md automatiquement ✅
-# → Active checkpoints every 10 tasks:
-#   ✅ T010: ESLint + Build + Context7 (if new lib) + Memory verification
-#   ✅ T020: ESLint + Build + Context7 + Memory verification
-#   ✅ T030: ... (repeat until all tasks)
-# → Sub-agents parallèles (backend + frontend + testing)
-# → MCP tools MANDATORY:
-#   - mcp__eslint__lint-files (every 10 tasks P1 BLOCKER)
-#   - mcp__context7__get-library-docs (new libraries verification)
-# → Auto-documentation:
-#   - project-memory.md (5-15 decisions documented)
-#   - Task tracking automatic (sed commands)
-# → Quality: 8/8 critères via checkpoints
+# → Checkpoints MANDATORY every 10 tasks (5 gates):
+#   ✅ Gate P0: Build Check (BLOCKER - exit 1 if fails)
+#   ✅ Gate P1: ESLint (BLOCKER - mcp__eslint__lint-files)
+#   ✅ Gate P2: Context7 (IF new library - mcp__context7__get-library-docs)
+#   ✅ Gate P3: Memory (VERIFICATION - project-memory.md updated)
+#   ✅ Gate P4: Observability (TIMELINE - pulseLogger.cjs logging) 🆕
+# → Sub-agents séquentiels (backend → frontend → testing)
+# → Auto-documentation (5-15 decisions in project-memory.md)
+# → Task tracking automatique (sed commands)
+# → Real-time observability (observability-pulse.jsonl)
+# → Timeline logging (./scripts/viewPulse.sh viewer)
+# → CLI monitoring (node scripts/pulseLogger.cjs summary)
+#
+# Validated: 2h45 on AdProof.ai (99 tasks, 150+ files, 12K+ lines)
+# Token savings: -77% with GLM-4.6
 
 # 4. Review + Merge (Mac OU mobile - 15 min)
 gh pr view 1
@@ -94,9 +100,9 @@ gh pr merge 1 --squash
 
 **Autres docs:**
 - **[START-HERE.md](./START-HERE.md)** - Point d'entrée unique
-- **[INDEX-FILES-V4.md](./INDEX-FILES-V4.md)** - Index fichiers valides (navigation rapide)
-- **[CLAUDE.md](./CLAUDE.md)** - Instructions session Claude Code
-- **[RESUME-SESSION-2025-10-08.md](./RESUME-SESSION-2025-10-08.md)** - Résumé session V4
+- **[INDEX.md](./INDEX.md)** - Index navigation V6.1.3 (navigation rapide)
+- **[CLAUDE.md](./CLAUDE.md)** - Instructions session Claude Code V6.1.3
+- **[changelogs/V6.1.3/](./changelogs/V6.1.3/)** - V6.1.3 changelog (observability)
 
 ---
 
@@ -411,15 +417,18 @@ MIT License - Open source workflow patterns
 
 ---
 
-**Version:** 4.1 (Spec-Kit Enhanced - Workflow Autonome)
-**Date:** 2025-10-10
+**Version:** 6.1.3 (Observability Complete + Full Automation)
+**Date:** 2025-10-17
 **Status:** ✅ Production-Ready
-**Documentation:** ✅ V4.1 complète et validée
-**Source:** docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md
+**Documentation:** ✅ V6.1.3 complète et validée
+**Source:** docs/WORKFLOW-V6-MVP.md + changelogs/V6.1.3/
 
-**🆕 V4.1 - Nouveautés:**
-- `/speckit.design` - Design system automatique
-- `/speckit.agents` - Orchestration prompt automatique
-- **Workflow 100% autonome** - Pas de guidance manuelle
+**🆕 V6.1.3 - Features:**
+- **Gate P4 Observability** - Timeline tracking complete
+- **pulseLogger.cjs CLI** - Agent coordination
+- **viewPulse.sh** - Color-coded timeline viewer
+- **Complete automation** - `/speckit.final` orchestration
+- **5 Quality Gates** - Build + Lint + Context7 + Memory + Observability
+- **Token Savings** - -77% implementation (GLM-4.6)
 
-**Ship 8-12 clients/semaine avec qualité production** 🚀🔒
+**Ship 8-12 clients/semaine avec qualité production + observability complète** 🚀🔒📊

@@ -1,33 +1,36 @@
 # 🚀 ARCHON ORCHESTRATOR - START HERE
 
-**Version:** 4.0 (Multi-Device avec Sécurité)
-**Date:** 2025-10-08
-**Model:** Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
-**Mission:** 8-12 clients/semaine avec sécurité garantie
+**Version:** 6.1.3 (Observability Complete + Full Automation)
+**Date:** 2025-10-17
+**Model:** Claude Sonnet 4.5 (claude-sonnet-4-5-20250929) + Haiku 4.5 for sub-agents
+**Mission:** 8-12 clients/semaine avec qualité garantie + observability complète
 
 ---
 
-## 🎯 WORKFLOW V4 - MULTI-DEVICE
+## 🎯 WORKFLOW V6.1.3 - COMPLETE OBSERVABILITY
 
 ### 📖 **SOURCE DE VÉRITÉ (LIRE EN PREMIER)**
 
-👉 **[docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md](./docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md)** 👈
+👉 **[docs/WORKFLOW-V6-MVP.md](./docs/WORKFLOW-V6-MVP.md)** 👈
 
 **Contient TOUT :**
-- ✅ **Vision workflow** - Mac 24/7 + monitoring mobile (PAS "mobile-first")
-- ✅ **Architecture complète** - Claude Max + GitHub Actions + Jules Security
-- ✅ **Setup one-time** - OAuth 5 min + templates + Jules 15 min
-- ✅ **Workflow standard** - 30 min planning → 4h implementation → livrable
-- ✅ **Multi-projets** - 3-4 simultanés (hybride local + cloud)
-- ✅ **Sécurité Jules** - Asynchrone (0 temps supplémentaire)
+- ✅ **Vision workflow** - Mac 24/7 + automation complète + observability timeline
+- ✅ **Architecture complète** - Claude Sonnet 4.5 + Haiku 4.5 sub-agents + Zen MCP
+- ✅ **Setup one-time** - MCP Context7 + ESLint (5 min)
+- ✅ **Workflow standard** - 30 min planning → 2h45-3h implementation → livrable
+- ✅ **5 Quality Gates** - Build P0 + Lint P1 + Context7 P2 + Memory P3 + **Observability P4** 🆕
+- ✅ **Observability complète** - pulseLogger.cjs CLI + viewPulse.sh viewer + timeline JSONL
+- ✅ **Token Savings** - -77% implementation avec GLM-4.6 (450K→100K)
 - ✅ **Métriques & ROI** - €80-100K/mois revenue avec €140/mois coût
 
-**🔴 VISION IMPORTANTE :**
+**🔴 VISION IMPORTANTE V6.1.3 :**
 - ✅ **Mac 24/7** (station principale de développement)
-- ✅ **Exécution hybride** (local sur Mac OU cloud GitHub Actions)
-- ✅ **GitHub systématique** (workflow pro + commits réguliers)
-- ✅ **Monitoring multi-device** (Mac + mobile pour suivi/alertes)
-- ❌ **PAS "mobile-first"** (Mac peut s'éteindre) - Vision incorrecte archivée
+- ✅ **Full Automation** (`/speckit.final` - 0 manual copy-paste)
+- ✅ **Complete Observability** (pulseLogger.cjs + viewPulse.sh + observability-pulse.jsonl)
+- ✅ **5 Quality Gates ENFORCED** (Build P0 + Lint P1 + Context7 P2 + Memory P3 + Observability P4)
+- ✅ **Agent Coordination** (agents read pulse timeline → know what's completed)
+- ✅ **Token Savings** (-77% implementation with GLM-4.6)
+- ❌ **PAS "mobile-first"** - Mac LOCAL = 99% development
 
 ---
 
@@ -37,12 +40,12 @@
 
 | Je veux... | Lire... | Durée |
 |------------|---------|-------|
-| **🚀 Workflow complet** | [WORKFLOW-FINAL-V4-MULTI-DEVICE.md](./docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md) | 15 min lecture |
-| **📋 Index navigation** | [INDEX-FILES-V4.md](./INDEX-FILES-V4.md) | 5 min |
-| **🔑 Setup OAuth** | [CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md](./docs/CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md) | 5 min setup |
-| **🔒 Setup Jules** | [JULES-SECURITY-GUARDIAN-SETUP.md](./docs/JULES-SECURITY-GUARDIAN-SETUP.md) | 15 min setup |
+| **🚀 Workflow complet V6** | [WORKFLOW-V6-MVP.md](./docs/WORKFLOW-V6-MVP.md) | 15 min lecture |
+| **📊 Observability V6.1.3** | [changelogs/V6.1.3/CHANGELOG-V6.1.3-OBSERVABILITY.md](./changelogs/V6.1.3/CHANGELOG-V6.1.3-OBSERVABILITY.md) | 5 min |
+| **📋 Index navigation** | [INDEX.md](./INDEX.md) | 5 min |
+| **🔧 MCP Setup** | [docs/MCP-SETUP-GUIDE.md](./docs/MCP-SETUP-GUIDE.md) | 5 min |
 | **🛠️ Troubleshooting** | [TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md) | Variable |
-| **🔧 MCP Setup (pnpm)** | [TROUBLESHOOTING-MCP-PNPM.md](./docs/TROUBLESHOOTING-MCP-PNPM.md) | **5 min** |
+| **📚 Golden Patterns** | [GOLDEN-PATTERNS.md](./docs/GOLDEN-PATTERNS.md) | 10 min |
 
 ---
 
@@ -111,54 +114,55 @@ npm install -g jules-security-cli
 
 ---
 
-### **Workflow Standard (4-5h par projet)**
+### **Workflow Standard V6.1.3 (4-5h par projet)**
 
 ```bash
-# PHASE 1: Planning (Mac - 30 min)
+# PHASE 0: Multi-IA Roundtable (30-45 min - OPTIONAL)
+/zen-roundtable "Brief: [project description]"
+# → analysis-multi-ia.md + prompt-constitution.md + prompt-specify.md
+
+# PHASE 1: Planning (Mac - 30-35 min)
 cd ~/Documents/DEV/clients
-./setup-project.sh nouveau-client
-cd nouveau-client
+mkdir nouveau-client && cd nouveau-client
+git init
 
-/speckit.constitution  # → .specify/memory/constitution.md (5 min)
-/speckit.specify       # → specs/001-mvp/spec.md (5 min)
-/speckit.clarify       # → Q&A iteration si ambiguïtés (5 min)
-/speckit.design        # → design-tokens.json + wireframes/ + components-list.md (5 min) 🆕
-/speckit.plan          # → specs/001-mvp/plan.md (5 min)
-/speckit.tasks         # → specs/001-mvp/tasks.md (5 min, 50-100 tasks)
-/speckit.agents        # → Génère prompt orchestration optimisé (2 min) 🆕
+/speckit.constitution  # → constitution.md (60-90s)
+/speckit.specify       # → spec.md (90-120s)
+/speckit.init          # → CLAUDE.md + project-memory.md + ci-template.yml
+/speckit.design        # → design-tokens.json + wireframes (⭐ NEVER SKIP)
+/speckit.plan          # → plan.md (architecture)
+/speckit.tasks         # → tasks.md (50-100 tasks checkboxes)
+/speckit.agents        # → ORCHESTRATION.md (sub-agents strategy)
 
-git add .specify/ specs/ design/
-git commit -m "docs: planning complete with design system"
+git add .
+git commit -m "docs: planning complete V6.1.3"
 git push
 
-# PHASE 2: Setup GitHub (1 min - automatisé)
-mkdir -p .github/workflows
-cp ~/archon-orchestrator/.github/workflows/claude-max-implementation.yml .github/workflows/
-echo $CLAUDE_OAUTH_TOKEN | gh secret set CLAUDE_CODE_OAUTH_TOKEN --repo USER/REPO
-gh label create run-claude --color "0E8A16"
+# PHASE 2: GitHub Setup (2 min - CLAUDE.md guided)
+git checkout -b feat/mvp
+git add .
+git commit -m "feat: init MVP structure
 
-git add .github/workflows/
-git commit -m "feat: add GitHub Actions + Jules Security"
-git push
+- Constitution + Spec + Design system
+- ORCHESTRATION.md with 3 agents
+- Tasks breakdown (50-100 tasks)
 
-# PHASE 3: Implementation (3-4h - choix selon charge)
+🤖 Generated with Claude Code V6.1.3
+Co-Authored-By: Claude <noreply@anthropic.com>"
+git push -u origin feat/mvp
+gh pr create --title "feat: MVP Implementation" --body "..."
 
-# Option A: Local (Mac disponible)
-/implement
-# Copier/coller le prompt généré par /speckit.agents
-# → Sub-agents orchestrés automatiquement
-# → MCP Context7 juste-in-time
-# → ESLint checkpoints
-# → Commits réguliers, Jules scanne async
-
-# Option B: Cloud (parallélisation)
-gh issue create \
-  --title "Implement MVP - T001-T078" \
-  --body "$(cat prompt-orchestration.md)" \
-  --label "run-claude"
-# → GitHub Actions exécute (cloud VM)
-# → Jules scanne async
-# → PR créée après 3-4h
+# PHASE 3: Implementation (2h45-3h) ⭐ V6.1.3 FULL AUTOMATION
+/speckit.final
+# V6.1.3 - Complete automation + observability:
+# → Lit ORCHESTRATION.md + CLAUDE.md automatiquement ✅
+# → Lance 3 agents séquentiellement (backend → frontend → testing) ✅
+# → Checkpoints every 10 tasks (5 gates: Build P0 + Lint P1 + Context7 P2 + Memory P3 + Observability P4) ✅
+# → Timeline logging (observability-pulse.jsonl) ✅
+# → Auto-documentation (project-memory.md) ✅
+#
+# Validated: 2h45 on AdProof.ai (99 tasks, 150+ files)
+# Token savings: -77% with GLM-4.6 (450K→100K)
 
 # PHASE 4: Review + Merge (15 min - Mac OU mobile)
 
@@ -385,14 +389,17 @@ archive-obsolete-2025-10-08-v4/
 
 ---
 
-**Version:** 4.1 (Spec-Kit Enhanced - Workflow Autonome)
-**Date:** 2025-10-10
-**Status:** ✅ Workflow validé et documenté
+**Version:** 6.1.3 (Observability Complete + Full Automation)
+**Date:** 2025-10-17
+**Status:** ✅ Production Ready + Observability Complete
 **Capacité:** 8-12 clients/semaine, €80-100K/mois revenue
 
-**🆕 Nouveautés V4.1:**
-- `/speckit.design` - Design system automatique (tokens + wireframes + components)
-- `/speckit.agents` - Orchestration prompt généré automatiquement
-- **Workflow 100% autonome** - Pas de guidance manuelle nécessaire
+**🆕 V6.1.3 - Features:**
+- **Gate P4 Observability** - pulseLogger.cjs CLI + viewPulse.sh viewer + observability-pulse.jsonl JSONL
+- **Complete Automation** - `/speckit.final` (0 manual copy-paste)
+- **5 Quality Gates ENFORCED** - Build P0 + Lint P1 + Context7 P2 + Memory P3 + Observability P4
+- **Agent Coordination** - Timeline tracking enables multi-agent sync
+- **Token Savings** - -77% implementation (GLM-4.6: 450K→100K)
+- **Validated** - AdProof.ai MVP (99 tasks, 2h45, 150+ files)
 
-*Objectif: Multi-device (Mac 24/7 + mobile monitoring) avec sécurité garantie* 🚀🔒
+*Objectif: Mac LOCAL 99% + Full Automation + Complete Observability = Production MVPs at AI Speed* 🚀🔒📊

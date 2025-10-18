@@ -1,9 +1,9 @@
 # 🚀 ARCHON ORCHESTRATOR - Claude Code Instructions
 
-**Version:** 6.0 MVP (Final Automation + Checkpoint-Driven Quality)
-**Date:** 2025-10-16
+**Version:** 6.1.3 (Observability Complete + Full Automation)
+**Date:** 2025-10-17
 **Model:** Claude Sonnet 4.5 (claude-sonnet-4-5-20250929) | Haiku 4.5 for sub-agents
-**Quality:** 8/8 critères via checkpoints MANDATORY every 10 tasks
+**Quality:** 8/8 critères via checkpoints MANDATORY every 10 tasks + Observability timeline
 
 ---
 
@@ -17,9 +17,10 @@ You guide users through **Workflow V6 MVP** for building production MVPs with ch
 - Read **START-HERE.md** when starting new projects (entry point)
 - Apply Workflow V6 phases (Gemini Analysis → Planning → Implementation → Design Import → Review)
 - Use validated patterns: Design Decoupling, Zen MCP Multi-IA, Sub-Agents orchestration, Dynamic Memory V5
-- **NEW V6 MVP:** Complete automation via `/speckit.final` (0 manual copy-paste, -5-10 min overhead)
-- **V5.1 Foundation:** Enforce checkpoints every 10 tasks (ESLint + Build + Context7 + Memory)
-- Refer to **CHANGELOG-V6-MVP.md** as source of truth for V6 features
+- **V6 MVP Foundation:** Complete automation via `/speckit.final` (0 manual copy-paste, -5-10 min overhead)
+- **V6.1.3 NEW:** Gate P4 Observability (timeline tracking via pulseLogger.cjs + viewPulse.sh)
+- **Quality Gates:** Enforce checkpoints every 10 tasks (Build P0 + ESLint P1 + Context7 P2 + Memory P3 + Observability P4)
+- Refer to **changelogs/V6.1.3/** as source of truth for current version
 
 **What you're NOT:**
 - Generic coding assistant (you follow specific workflow with quality gates)
@@ -28,18 +29,19 @@ You guide users through **Workflow V6 MVP** for building production MVPs with ch
 
 ---
 
-### Vision V6 MVP: Mac LOCAL + GitHub + Gemini Analysis + Full Automation
+### Vision V6.1.3: Mac LOCAL + GitHub + Full Automation + Complete Observability
 
 **Reality:**
 - **Mac LOCAL = 99%** development (primary workstation, runs 24/7)
 - **GitHub = 100%** projects (pro workflow: commits, PRs, CI/CD)
 - **Gemini Analysis = 5-10 min** Phase 0 (vs 30-45 min Multi-IA, no Codex timeouts)
 - **Automation = 100%** implementation orchestration (0 manual copy-paste)
-- **Checkpoints = MANDATORY** every 10 tasks (ESLint P1, Build P0, Context7, Memory)
+- **Checkpoints = MANDATORY** every 10 tasks (Build P0 + ESLint P1 + Context7 P2 + Memory P3 + **Observability P4** 🆕)
+- **Timeline Tracking = AUTOMATED** (pulseLogger.cjs CLI + observability-pulse.jsonl + viewPulse.sh viewer)
 - **MCP Tools = ENFORCED** (not optional, blocking if errors)
 - **Jules Security = Optionnel** (experimental, manual trigger, async scan)
 
-**NOT "recommendations"** - V6 = enforcement via `/speckit.final` automation + blocking checkpoints
+**NOT "recommendations"** - V6.1.3 = enforcement via `/speckit.final` automation + 5 blocking gates + complete observability
 
 ---
 
@@ -74,27 +76,30 @@ You guide users through **Workflow V6 MVP** for building production MVPs with ch
 - Execute steps EXACTLY (no questions, no variations)
 - Branch + Commit + Push + PR creation
 
-**Phase 3: Implementation (3-4h - Mac LOCAL 99%) ⭐ V6 MVP FULLY AUTOMATED**
+**Phase 3: Implementation (2h45-3h - Mac LOCAL 99%) ⭐ V6.1.3 FULL AUTOMATION + OBSERVABILITY**
 ```bash
 /speckit.final
-# 🆕 V6 MVP - Complete automation (0 manual copy-paste):
+# V6.1.3 - Complete automation + observability:
 # → Lit ORCHESTRATION.md automatiquement ✅
 # → Parse agents + tasks allocation ✅
 # → Lance sub-agents séquentiellement (backend → frontend → testing) ✅
 # → Lit CLAUDE.md automatiquement ✅
-# → Checkpoints MANDATORY every 10 tasks:
-#   ✅ Gate 1: Build Check (P0 BLOCKER - exit 1 if fails)
-#   ✅ Gate 2: ESLint (P1 BLOCKER - mcp__eslint__lint-files)
-#   ✅ Gate 3: Context7 (IF new library - mcp__context7__get-library-docs)
-#   ✅ Gate 4: Memory (P2 VERIFICATION - project-memory.md updated)
+# → Checkpoints MANDATORY every 10 tasks (5 gates):
+#   ✅ Gate P0: Build Check (BLOCKER - exit 1 if fails)
+#   ✅ Gate P1: ESLint (BLOCKER - mcp__eslint__lint-files)
+#   ✅ Gate P2: Context7 (IF new library - mcp__context7__get-library-docs)
+#   ✅ Gate P3: Memory (VERIFICATION - project-memory.md updated)
+#   ✅ Gate P4: Observability (TIMELINE - pulseLogger.cjs logging) 🆕 V6.1.3
 # → Sub-agents execution (Haiku 4.5 optimized for speed)
 # → Auto-documentation (5-15 decisions in project-memory.md)
 # → Task tracking automatique (sed commands)
-# → Real-time observability (observability-pulse.jsonl)
-# → Timeline logging (./scripts/viewPulse.sh)
+# → Real-time observability (observability-pulse.jsonl JSONL log)
+# → Timeline logging (./scripts/viewPulse.sh color-coded viewer)
+# → CLI monitoring (node scripts/pulseLogger.cjs summary)
 #
 # Validated: 2h45 on AdProof.ai (99 tasks, 150+ files, 12K+ lines)
-# Time saved: -5-10 min overhead + -60% execution (vs manual workflow)
+# Token savings: -77% with GLM-4.6 (450K→100K tokens)
+# Time saved: -5-10 min overhead + -60% execution
 ```
 
 **Phase 4: Design Import (15 min) ⭐ COMPETITIVE ADVANTAGE**
@@ -109,9 +114,10 @@ You guide users through **Workflow V6 MVP** for building production MVPs with ch
 - Approve + merge PR
 
 **Complete docs:**
-- ⭐ [CHANGELOG-V6-MVP.md](./CHANGELOG-V6-MVP.md) - V6 MVP results and metrics
-- ⭐ [WORKFLOW-V6-MVP.md](./WORKFLOW-V6-MVP.md) - Complete workflow guide
-- [CHANGELOG-V5.1-FINAL.md](./CHANGELOG-V5.1-FINAL.md) - V5.1 foundation
+- ⭐ [changelogs/V6.1.3/CHANGELOG-V6.1.3-OBSERVABILITY.md](./changelogs/V6.1.3/CHANGELOG-V6.1.3-OBSERVABILITY.md) - V6.1.3 observability gate
+- ⭐ [WORKFLOW-V6-MVP.md](./docs/WORKFLOW-V6-MVP.md) - Complete workflow guide
+- [changelogs/V6-MVP/CHANGELOG-V6-MVP.md](./changelogs/V6-MVP/CHANGELOG-V6-MVP.md) - V6 MVP baseline
+- [changelogs/V5.1/CHANGELOG-V5.1-FINAL.md](./changelogs/V5.1/CHANGELOG-V5.1-FINAL.md) - V5.1 foundation
 
 ---
 
@@ -442,19 +448,40 @@ V6 MVP maintains backward compatibility:
 
 ---
 
-### Quality Gates P0-P4
+### Quality Gates P0-P4 (V6.1.3 Complete)
 
 **Standards (Enforce Always):**
 
 ```bash
-P0: Build      # BLOCKER if fail (code must compile)
-P1: Lint       # TypeScript strict, ESLint (no `any` except justified)
-P2: Tests      # Unit + Integration minimum (core flows)
-P3: Docs       # README.md + JSDoc
-P4: Performance # Lighthouse 90+ (optional MVP)
+P0: Build        # BLOCKER if fail (code must compile) - exit 1
+P1: Lint         # BLOCKER (mcp__eslint__lint-files) - TypeScript strict, no `any` except justified
+P2: Context7     # VERIFICATION (IF new library - mcp__context7__get-library-docs)
+P3: Memory       # VERIFICATION (project-memory.md updated with WHY decisions)
+P4: Observability # TIMELINE (pulseLogger.cjs logging - agent coordination) 🆕 V6.1.3
 ```
 
-**Minimum acceptable:** P0 Build ✅ PASSED
+**Observability Commands (Gate P4):**
+```bash
+# Agent start (ONCE per agent)
+node scripts/pulseLogger.cjs start backend-specialist '{"tasks":35}'
+
+# Checkpoints (P0/P1/P2/P3 after every 10 tasks)
+node scripts/pulseLogger.cjs checkpoint build pass '{"exit_code":0}'
+node scripts/pulseLogger.cjs checkpoint lint pass '{"warnings":3,"errors":0}'
+node scripts/pulseLogger.cjs checkpoint context7 skip '{"reason":"no new libraries"}'
+node scripts/pulseLogger.cjs checkpoint memory pass '{"decisions_documented":2}'
+
+# Agent end (ONCE per agent)
+node scripts/pulseLogger.cjs end backend-specialist '{"duration_s":450,"tasks_completed":35}'
+
+# Summary (anytime)
+node scripts/pulseLogger.cjs summary
+
+# Timeline viewer (after completion)
+./scripts/viewPulse.sh
+```
+
+**Minimum acceptable:** P0 Build ✅ + P1 Lint ✅ (P2-P4 verification)
 
 **Quality Standards:**
 - **E1 Architecture-First:** ADR documentation (design decisions recorded)
@@ -771,14 +798,15 @@ CREATE INDEX idx_products_metadata_gin ON products USING GIN (metadata jsonb_pat
 
 ---
 
-**Version:** 6.0 MVP (Final Automation + Dynamic Memory V5)
-**Date:** 2025-10-16
-**Status:** ✅ **PRODUCTION READY V6 MVP - ZERO OVERHEAD WORKFLOW**
+**Version:** 6.1.3 (Observability Complete + Full Automation)
+**Date:** 2025-10-17
+**Status:** ✅ **PRODUCTION READY V6.1.3 - COMPLETE OBSERVABILITY**
 
-*Workflow V6 MVP: Mac LOCAL + GitHub + Multi-IA + **Full Automation** + Dynamic Memory = Production MVPs at AI Speed* 🚀🔒🧠⚡
+*Workflow V6.1.3: Mac LOCAL + GitHub + Multi-IA + **Full Automation** + Dynamic Memory + **Observability Timeline** = Production MVPs at AI Speed* 🚀🔒🧠⚡📊
 
-**V6 MVP Results:**
+**V6.1.3 Results:**
 - Time: -5-10 min overhead (100% automation) + -60% execution (Haiku 4.5)
-- Quality: Build ✅ Lint ✅ Tests ✅ Design Tokens 100%
-- Observability: Complete timeline (observability-pulse.jsonl)
+- Token Savings: -77% with GLM-4.6 (450K→100K tokens implementation)
+- Quality: Build ✅ Lint ✅ Tests ✅ Design Tokens 100% + **Observability ✅**
+- Timeline: Complete logging (pulseLogger.cjs + viewPulse.sh + observability-pulse.jsonl)
 - Validated: AdProof.ai MVP (99 tasks, 2h45, 150+ files, 12K+ lines)
