@@ -7,6 +7,35 @@
 
 ---
 
+## 🧠 SESSION STARTUP PROTOCOL (MANDATORY - Zero Trust)
+
+**BEFORE any work, ALWAYS read:**
+
+1. **project-memory.md** (this file) → Last 3-4 sessions + runtime decisions + WHY documented
+2. **Latest CHANGELOG** → Recent work (changelogs/V6.1.3/)
+3. **git log --since="2 days ago"** → Commits from last 48h
+
+**Commands:**
+```bash
+# Check recent work
+git log --oneline --since="2 days ago"
+
+# Read memory (session notes)
+grep -A 5 "Session.*2025-10" project-memory.md | tail -30
+
+# Read latest CHANGELOG
+ls -lt changelogs/V*/CHANGELOG-*.md | head -1
+```
+
+**Why Critical:**
+- Prevents "forgetting" recent work (V6.1.1 parallelization case solved)
+- Provides fil conducteur (chronological context)
+- Enforces Zero Trust: Don't trust your own memory, VERIFY
+
+**See:** docs/ZERO-TRUST.md (rule #7 - Workflow Verification)
+
+---
+
 ## 🎯 1. CORE MISSION & WORKFLOW
 
 ### Your Role
