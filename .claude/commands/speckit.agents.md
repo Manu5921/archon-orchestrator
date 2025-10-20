@@ -522,9 +522,17 @@ GO! 🚀
 
 ## Step 5: Write Orchestration Files (V5.2.1)
 
+**CRITICAL PATH REQUIREMENT:**
+- All 3 files MUST be created at the PROJECT ROOT
+- Use Write tool with relative path from root: `./ORCHESTRATION.md`, `./implementation-prompt.md`, `./observability-pulse.jsonl`
+- DO NOT create in specs/001-mvp/ or any subdirectory
+- If current directory is not project root, files will still be created at root via relative path
+
 After generating the orchestration prompt above, create these files:
 
 ### File 1: ORCHESTRATION.md (Documentation & Strategy)
+
+**Path:** `./ORCHESTRATION.md` (project root, NOT specs/001-mvp/)
 
 Write comprehensive orchestration documentation:
 
@@ -588,6 +596,8 @@ Write comprehensive orchestration documentation:
 
 ### File 2: implementation-prompt.md (Ready for /implement)
 
+**Path:** `./implementation-prompt.md` (project root)
+
 Write ready-to-paste prompt for `/implement`:
 
 ```markdown
@@ -628,6 +638,8 @@ GO! 🚀
 ```
 
 ### File 3: observability-pulse.jsonl (V6 Foundation)
+
+**Path:** `./observability-pulse.jsonl` (project root)
 
 Create empty JSONL file for V6 Live Pulse Observability:
 
@@ -673,6 +685,36 @@ Workflow: V5.2.1 = Safe improvements without breaking Spec-Kit base 🚀
 
 ---
 
+## Step 6: Verify Files Created ✅
+
+**After generating all files, verify they exist:**
+
+```bash
+ls -lh ORCHESTRATION.md
+ls -lh implementation-prompt.md
+ls -lh observability-pulse.jsonl
+```
+
+**Expected output:**
+```
+-rw-r--r--  1 user  staff  [size] [date] ORCHESTRATION.md
+-rw-r--r--  1 user  staff  [size] [date] implementation-prompt.md
+-rw-r--r--  1 user  staff  [size] [date] observability-pulse.jsonl
+```
+
+**If ANY file missing:**
+- Display error: "❌ File generation incomplete"
+- List which files are missing
+- Suggest: "Re-run /speckit.agents to regenerate missing files"
+- STOP
+
+**If all files exist:**
+- Display: "✅ All 3 files verified"
+- Show file sizes
+- Continue to Summary
+
+---
+
 ## Summary
 
 ✅ **Orchestration prompt generated + 3 files created**
@@ -681,6 +723,11 @@ Workflow: V5.2.1 = Safe improvements without breaking Spec-Kit base 🚀
 **Total Tasks:** [COUNT]
 **Estimated Duration:** [X-Y hours]
 **MCP Strategy:** Context7 (just-in-time) + ESLint (checkpoints)
+
+**Files Verified:**
+- ✅ ORCHESTRATION.md ([X] KB)
+- ✅ implementation-prompt.md ([Y] KB)
+- ✅ observability-pulse.jsonl ([Z] bytes)
 
 **Next Step:** Review implementation-prompt.md → `/implement` (paste content)
 
