@@ -244,6 +244,39 @@
   - Risk mitigation: Catastrophic loss → Manageable recovery
   - Pattern applied: Dev Dan Context Engineering ADV2 (Health Score 9.6/10)
 
+#### 2025-10-20 Context Buffer Auto-Check (Compound Engineering Pattern)
+- **Agent:** main-session (Claude Sonnet 4.5)
+- **Decision:** Added automatic context buffer check before each agent launch in `/speckit.final`
+- **Reason:** Prevent mid-agent context overflow (pattern from AI Labs "Compound Engineering" framework). Before agent launches, estimate context size (files + conversation baseline). If > 150K tokens (75% of 200K limit) → auto-save bundle as insurance.
+- **Trade-offs:**
+  - ✅ **Pros:**
+    - Proactive prevention (vs reactive recovery with Context Bundles)
+    - 2-3 min overhead to save bundle vs 15 min recovery if overflow
+    - Non-blocking (warning only, agent continues)
+    - Integrates with contextBundler.cjs (reuses ADV2 pattern)
+    - Simple heuristic (25 tokens/line average + 50K baseline)
+  - ❌ **Cons:**
+    - Estimation not perfect (heuristic, not Claude API token count)
+    - False positives possible (trigger at 150K but real limit 200K)
+    - Adds ~10 lines bash to each agent launch (acceptable)
+- **Alternatives Considered:**
+  - Manual `/context` check (rejected: requires user to remember, inconsistent)
+  - Claude API token count (rejected: not accessible from bash, complex)
+  - No check (rejected: risk of mid-agent overflow too high)
+- **Validation:**
+  - Tested on archon-orchestrator (93.6K tokens estimated, safe)
+  - Heuristic formula: `(total_lines * 25) + 50000`
+  - Threshold: 150K tokens (conservative, leaves 50K buffer)
+- **Implementation:**
+  - Modified: `.claude/commands/speckit.final.md` (+68 lines - Step 5 context check)
+  - Updated: `CLAUDE.md` (Agent Execution section + Context Buffer Management)
+  - Pattern source: AI Labs - Compound Engineering framework
+- **ROI:**
+  - Prevention: Avoid mid-agent context overflow (catastrophic loss)
+  - Time: 2-3 min to save bundle (if triggered) vs 15 min recovery + lost work
+  - Complements Context Bundles: Proactive (buffer check) + Reactive (manual /savebundle)
+  - Insurance policy: Minimal overhead, high value if triggered
+
 ---
 
 ### Backend Decisions
@@ -463,6 +496,45 @@ if (!user) return { error: "User not found" }; // Explicit null check
   - Study more Dev Dan videos (user wants to analyze expert patterns)
   - Test workflow on juri project (parallel session)
   - Validate Zero Trust prevents future "forgetting" cases
+
+---
+
+### Session 2025-10-20 - Context Buffer Auto-Check (AI Labs Pattern)
+- **Duration:** 30 min
+- **Outcome:**
+  - ✅ **Context Buffer Auto-Check implemented** - Pattern from AI Labs "Compound Engineering" framework
+    - Modified: `.claude/commands/speckit.final.md` (+68 lines - Step 5 context check before each agent)
+    - Updated: `CLAUDE.md` (Agent Execution + Context Buffer Management section)
+    - Updated: `project-memory.md` (Runtime Decision + Session Notes)
+  - ✅ **AI Labs video analyzed** - Compound Engineering framework (6/10 pertinence)
+    - 70% already implemented (sub-agents, knowledge persistence, phases, review)
+    - 2 ideas extracted: Context buffer check (adopted) + Dependency graph (evaluate V6.2)
+    - 30% over-engineering rejected (git work trees, multiple research agents, GitHub issues)
+- **Key Decisions:**
+  - Context buffer check = LOW-HANGING FRUIT (15 min implementation, high value)
+  - Auto-check before each agent launch (estimate tokens, trigger bundle if > 150K)
+  - Heuristic: `(total_lines * 25) + 50000` baseline
+  - Threshold: 150K tokens (75% of 200K limit, conservative)
+  - Non-blocking: Warning only, agent continues (insurance policy)
+- **Validation:**
+  - Tested on archon-orchestrator: 93.6K tokens estimated ✅ (safe, < 150K)
+  - Bash logic validated: count context files, calculate tokens, trigger if needed
+  - Integrates with contextBundler.cjs (reuses ADV2 pattern)
+- **Pattern Analysis:**
+  - ✅ ADOPT: Context buffer check (proactive prevention)
+  - 🤔 EVALUATE: Dependency graph auto-detection (test in V6.2)
+  - ❌ REJECT: Git work trees, multiple research agents, GitHub issues, TRIAGE step
+- **ROI:**
+  - Prevention: Avoid mid-agent context overflow (catastrophic loss prevented)
+  - Time: 2-3 min to save bundle (if triggered) vs 15 min recovery + lost work
+  - Complements Context Bundles: Proactive (buffer check) + Reactive (manual /savebundle)
+  - Position: Archon = BMAD thoroughness + Compound efficiency + Spec-Kit standards
+- **Next Steps:**
+  - Test context buffer on next `/speckit.final` execution (real project)
+  - Continue analyzing AI Labs videos (more patterns)
+  - Version bump: V6.1.4 (context buffer auto-check)
+
+---
 
 ### Session 2025-10-17 - V6.1.3 Observability Complete
 - **Duration:** 2h

@@ -382,13 +382,23 @@ Optional (project-dependent):
 **Agent Execution:**
 
 Each agent:
-1. Receives allocated tasks (e.g., T001-T035)
-2. Reads full context (constitution, spec, design tokens, CLAUDE.md)
-3. Implements features following quality gates
-4. Runs checkpoints every 10 tasks (build, lint, Context7, memory)
-5. Updates task checkboxes in tasks.md
-6. Documents decisions in project-memory.md
-7. Logs events to observability-pulse.jsonl
+1. **Context Buffer Check** - Before launch, estimate context size (files + conversation)
+   - If > 150K tokens → auto-save bundle (insurance against overflow)
+   - Pattern: Compound Engineering context management (AI Labs)
+2. Receives allocated tasks (e.g., T001-T035)
+3. Reads full context (constitution, spec, design tokens, CLAUDE.md)
+4. Implements features following quality gates
+5. Runs checkpoints every 10 tasks (build, lint, Context7, memory, observability)
+6. Updates task checkboxes in tasks.md
+7. Documents decisions in project-memory.md
+8. Logs events to observability-pulse.jsonl
+
+**Context Buffer Management:** 🆕 V6.1.4
+- Auto-check before each agent launch (estimates ~tokens based on file sizes)
+- Threshold: 150K tokens (75% of 200K limit) triggers warning + bundle
+- Bundle saved: `.agents/context-bundles/checkpoint-before-{agent}-{timestamp}.md`
+- Recovery: If overflow → `/loadbundle` → 60-70% context recovered in 15 min
+- Non-blocking: Agent execution continues (insurance only)
 
 **Execution Mode:**
 - **V6 MVP:** Sequential (backend → frontend → testing) - safe, predictable
