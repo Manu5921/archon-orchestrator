@@ -599,6 +599,67 @@ if (!user) return { error: "User not found" }; // Explicit null check
 
 ---
 
+### Session 2025-10-20 (Afternoon) - Spec-Kit Final Improvements (Juri Audit)
+- **Duration:** 1h20
+- **Outcome:**
+  - ✅ **5 MUST HAVE improvements implemented** based on juri audit by GLM 4.6
+    - Modified: `.claude/commands/speckit.final.md` (+120 lines - 4 improvements)
+    - Modified: `.claude/commands/savebundle.md` (+80 lines - robustification)
+    - Commit: `6c14266` - feat(speckit.final): 5 critical improvements from juri audit
+- **Context:**
+  - Juri MVP implemented by GLM 4.6: 42 files created (excellent code quality)
+  - BUT: 0 workflow compliance (0 tasks checked, 0 memory, 0 observability)
+  - Convergence: Claude Sonnet + GLM 4.6 analysis = 100% alignment (6/6 issues identical)
+- **Improvements Implemented:**
+  1. **Gates Bloquants** (15 min) - Progress tracking MANDATORY
+     - New: `COMPLETED=$(grep -c "^\- \[x\]" tasks.md)`
+     - Blocker: `if [ $COMPLETED -eq 0 ]; then exit 1; fi`
+     - Why: Audit juri revealed agents skip task tracking
+  2. **Validation POST Stricte** (15 min) - Exit 1 if 0 tasks after agent
+     - New: Task progress check P0 BLOCKER (before build check)
+     - Exit code: 1 if no tasks marked completed
+     - Error message: Actionable (manual review + mark tasks + re-run)
+  3. **Observability Fallback** (10 min) - Simple JSONL if pulseLogger absent
+     - Fallback: `echo "{\"timestamp\":\"...\",\"event\":\"start\"}" >> observability-pulse.jsonl`
+     - Why: 0 observability in juri = pulseLogger.cjs not called OR missing
+     - Philosophy: SOME timeline better than 0 (grep-friendly JSONL)
+  4. **Agent Handoff Protocol** (20 min) - JSON coordination between agents
+     - New: Step 5.1 in speckit.final (JSON handoff files in /tmp/)
+     - Format: `{"agent":"backend-specialist","status":"completed","tasks_completed":35}`
+     - Purpose: Agent B reads Agent A's handoff → knows prior work state
+     - Benefit: Prevents agents executing "in silo" (juri issue)
+  5. **Robustify /savebundle** (20 min) - Auto-init + fallbacks + error handling
+     - Auto-init: `session.log` created if missing
+     - Git fallback: `GIT_COMMIT="pwd-$(basename "$(pwd)")-$(date +%Y%m%d)"`
+     - contextBundler.cjs fallback: Manual bash/jq extraction if script absent
+     - Error handling: Auto-fallback cascade (no user prompts)
+     - Philosophy: Never fail completely, ALWAYS generate SOME bundle
+- **Key Decisions:**
+  - **Enforcement > Recommendations** - Gates now BLOCKER (not "should")
+  - **Fallbacks > Failures** - Degraded tracking > 0 tracking
+  - **Auto-recovery > User prompts** - Cascade fallbacks automatically
+  - **Agent coordination** - Handoff protocol ensures sequential awareness
+- **Validation:**
+  - Syntax checked: 18 bash blocks in speckit.final, 20 in savebundle
+  - Commit clean: 360 insertions, 58 deletions (net +302 lines)
+  - Files modified correctly (git status confirmed)
+- **Why Critical:**
+  - Juri audit = EXCELLENT code BUT 0 compliance (pattern repeated by GLM 4.6)
+  - Convergence = High confidence (both AIs identified same issues)
+  - Prevention = Future agents FORCED to track (not optional)
+  - Recovery = Graceful degradation (fallbacks ensure data captured)
+- **ROI:**
+  - Prevention: Agents can't skip workflow anymore (exit 1 blockers)
+  - Visibility: 100% tracking enforcement (tasks + observability + handoff)
+  - Recovery: Fallbacks ensure SOME data (better than complete failure)
+  - Time: 1h20 implementation (vs repeated 0-compliance implementations)
+- **Next Steps:**
+  - Test improvements on next real project (validate blocker enforcement)
+  - Monitor juri codebase: Manually mark completed tasks + observability
+  - Version bump: Consider V6.1.4 (5 improvements + context buffer = major)
+
+---
+
 ### Session 2025-10-17 - V6.1.3 Observability Complete
 - **Duration:** 2h
 - **Outcome:**
