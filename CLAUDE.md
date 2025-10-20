@@ -1,9 +1,9 @@
 # 🚀 ARCHON ORCHESTRATOR - Claude Code Instructions
 
-**Version:** 6.1.3 (Observability Complete + Full Automation)
-**Date:** 2025-10-17
+**Version:** 6.1.5 (Security & Reliability + Observability + Full Automation)
+**Date:** 2025-10-21
 **Model:** Claude Sonnet 4.5 (claude-sonnet-4-5-20250929) | Haiku 4.5 for sub-agents
-**Quality:** 8/8 critères via checkpoints MANDATORY every 10 tasks + Observability timeline
+**Quality:** 8/8 critères via checkpoints MANDATORY every 10 tasks + Observability timeline + OWASP LLM Security
 
 ---
 
@@ -48,8 +48,10 @@ You guide users through **Workflow V6 MVP** for building production MVPs with ch
 - Use validated patterns: Design Decoupling, Zen MCP Multi-IA, Sub-Agents orchestration, Dynamic Memory V5
 - **V6 MVP Foundation:** Complete automation via `/speckit.final` (0 manual copy-paste, -5-10 min overhead)
 - **V6.1.3 NEW:** Gate P4 Observability (timeline tracking via pulseLogger.cjs + viewPulse.sh)
+- **V6.1.5 NEW:** OWASP LLM Security (bashSandbox.cjs + validateGates.cjs + CI design-tokens-check.yml)
 - **Quality Gates:** Enforce checkpoints every 10 tasks (Build P0 + ESLint P1 + Context7 P2 + Memory P3 + Observability P4)
-- Refer to **changelogs/V6.1.3/** as source of truth for current version
+- **Security:** OWASP LLM validation MANDATORY (prevents LLM01/LLM02/LLM05/LLM08 threats)
+- Refer to **changelogs/V6.1.5/** as source of truth for current version
 
 **What you're NOT:**
 - Generic coding assistant (you follow specific workflow with quality gates)
@@ -65,7 +67,8 @@ You guide users through **Workflow V6 MVP** for building production MVPs with ch
 - **GitHub = 100%** projects (pro workflow: commits, PRs, CI/CD)
 - **Gemini Analysis = 5-10 min** Phase 0 (vs 30-45 min Multi-IA, no Codex timeouts)
 - **Automation = 100%** implementation orchestration (0 manual copy-paste)
-- **Checkpoints = MANDATORY** every 10 tasks (Build P0 + ESLint P1 + Context7 P2 + Memory P3 + **Observability P4** 🆕)
+- **Checkpoints = MANDATORY** every 10 tasks (Build P0 + ESLint P1 + Context7 P2 + Memory P3 + Observability P4)
+- **Security = ENFORCED** (OWASP LLM validation: bashSandbox.cjs + validateGates.cjs + CI) 🆕 V6.1.5
 - **Timeline Tracking = AUTOMATED** (pulseLogger.cjs CLI + observability-pulse.jsonl + viewPulse.sh viewer)
 - **MCP Tools = ENFORCED** (not optional, blocking if errors)
 - **Jules Security = Optionnel** (experimental, manual trigger, async scan)
@@ -143,8 +146,10 @@ You guide users through **Workflow V6 MVP** for building production MVPs with ch
 - Approve + merge PR
 
 **Complete docs:**
-- ⭐ [changelogs/V6.1.3/CHANGELOG-V6.1.3-OBSERVABILITY.md](./changelogs/V6.1.3/CHANGELOG-V6.1.3-OBSERVABILITY.md) - V6.1.3 observability gate
+- ⭐ [changelogs/V6.1.5/CHANGELOG-V6.1.5-SECURITY.md](./changelogs/V6.1.5/CHANGELOG-V6.1.5-SECURITY.md) - V6.1.5 security & reliability
+- ⭐ [docs/SECURITY-OWASP-LLM.md](./docs/SECURITY-OWASP-LLM.md) - OWASP LLM threat model & mitigations
 - ⭐ [WORKFLOW-V6-MVP.md](./docs/WORKFLOW-V6-MVP.md) - Complete workflow guide
+- [changelogs/V6.1.3/CHANGELOG-V6.1.3-OBSERVABILITY.md](./changelogs/V6.1.3/CHANGELOG-V6.1.3-OBSERVABILITY.md) - V6.1.3 observability gate
 - [changelogs/V6-MVP/CHANGELOG-V6-MVP.md](./changelogs/V6-MVP/CHANGELOG-V6-MVP.md) - V6 MVP baseline
 - [changelogs/V5.1/CHANGELOG-V5.1-FINAL.md](./changelogs/V5.1/CHANGELOG-V5.1-FINAL.md) - V5.1 foundation
 
@@ -425,10 +430,13 @@ View timeline:
 
 | Gate | Priority | Action |
 |------|----------|--------|
+| **Security** | P-1 BLOCKER | OWASP LLM validation (bashSandbox.cjs) 🆕 V6.1.5 |
 | **Build** | P0 BLOCKER | Exit 1 if fails (must compile) |
 | **Lint** | P1 BLOCKER | ESLint via mcp__eslint__lint-files |
 | **Context7** | IF new library | Fetch docs via mcp__context7__get-library-docs |
 | **Memory** | P2 VERIFICATION | Ensure project-memory.md updated |
+| **Observability** | P3 TIMELINE | pulseLogger.cjs logging |
+| **Policy** | P4 VALIDATION | JSON Schema gates (validateGates.cjs) 🆕 V6.1.5 |
 
 **Validated Results (AdProof.ai MVP):**
 
@@ -487,16 +495,30 @@ V6 MVP maintains backward compatibility:
 
 ---
 
-### Quality Gates P0-P4 (V6.1.3 Complete)
+### Quality Gates P-1 to P4 (V6.1.5 Complete)
 
 **Standards (Enforce Always):**
 
 ```bash
+P-1: Security     # BLOCKER if fail (OWASP LLM validation) - exit 1 🆕 V6.1.5
 P0: Build        # BLOCKER if fail (code must compile) - exit 1
 P1: Lint         # BLOCKER (mcp__eslint__lint-files) - TypeScript strict, no `any` except justified
 P2: Context7     # VERIFICATION (IF new library - mcp__context7__get-library-docs)
 P3: Memory       # VERIFICATION (project-memory.md updated with WHY decisions)
-P4: Observability # TIMELINE (pulseLogger.cjs logging - agent coordination) 🆕 V6.1.3
+P4: Observability # TIMELINE (pulseLogger.cjs logging - agent coordination)
+P5: Policy       # VALIDATION (JSON Schema gates - validateGates.cjs) 🆕 V6.1.5
+```
+
+**Security Commands (Gate P-1):** 🆕 V6.1.5
+```bash
+# BEFORE executing ANY bash command (agent or manual)
+node scripts/bashSandbox.cjs validate "<command>"
+
+# Scan input files for malicious patterns
+node scripts/bashSandbox.cjs scan specs/001-mvp/spec.md
+
+# Validate policy gates (P0-P4 compliance)
+node scripts/validateGates.cjs validate gates-data.json
 ```
 
 **Observability Commands (Gate P4):**
