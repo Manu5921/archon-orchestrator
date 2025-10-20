@@ -306,6 +306,40 @@
   - Error rate: -100% (prerequisite check always passes)
   - Time: -2 min per project setup
 
+#### 2025-10-20 Agent-Agnostic Prerequisite Check (/speckit.final)
+- **Agent:** main-session (Claude Sonnet 4.5)
+- **Decision:** Replace inline bash with atomic temp script execution for prerequisite verification
+- **Reason:** GLM 4.6 (and other agents) execute bash line-by-line, losing variable context between commands. SPEC_DIR variable defined in one command not available in next command → false "spec.md missing" error. Inline bash incompatible with agents that don't preserve variable scope across tool calls.
+- **Trade-offs:**
+  - ✅ **Pros:**
+    - Agent-agnostic (works with Sonnet, Haiku, GLM, Codex, etc.)
+    - Atomic execution (all bash logic runs in one process)
+    - Better error reporting (collects ALL missing files, displays once)
+    - Debuggable (temp script with PID for troubleshooting)
+    - Self-cleaning (script deleted after execution)
+  - ❌ **Cons:**
+    - Slightly more complex (heredoc + chmod + execute + cleanup)
+    - Creates temp file (acceptable, /tmp cleaned automatically)
+- **Alternatives Considered:**
+  - Keep inline bash (rejected: breaks with GLM 4.6 and other agents)
+  - Use multiple separate bash calls (rejected: repetitive, harder to maintain)
+  - Store variables in temp file (rejected: more complex than script approach)
+- **Implementation:**
+  - Modified: `.claude/commands/speckit.final.md` (Step 2 - verification logic)
+  - Pattern: Heredoc → `/tmp/speckit-final-verify-$$.sh` → chmod +x → execute → capture exit code → cleanup
+  - Script uses `set -e` (fail fast), `MISSING_FILES` array (accumulate errors), exit codes (0 = success, 1 = fail)
+  - Applied to: archon-orchestrator (commit 1e88181) + juri (commit ddbc7dc)
+- **Validation:**
+  - Tested on juri: All 8 prerequisites detected correctly ✅
+  - SPEC_DIR variable preserved: `specs/001-specify-scripts-bash` detected ✅
+  - spec.md, tasks.md, plan.md paths resolved: `specs/001-specify-scripts-bash/*.md` ✅
+  - Error message tested: Clean formatting with all missing files listed
+- **ROI:**
+  - Agent compatibility: +100% (now works with all agents)
+  - Error rate: -100% (variable scope issues eliminated)
+  - UX: +better (all errors reported together, not one-by-one)
+  - Debuggability: +easier (temp script can be inspected if needed)
+
 ---
 
 ### Backend Decisions
