@@ -50,19 +50,35 @@ mkdir -p .agents/context-bundles
 
 ---
 
-### Step 2: Gather Session Metadata
+### Step 2: Gather Session Metadata (Robustified with Auto-Init + Fallbacks)
 
 ```bash
-# Git info
-GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "no-git")
-GIT_COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "no-commit")
+# Auto-initialize session.log if missing
+if [ ! -f ".agents/session.log" ]; then
+  mkdir -p .agents
+  echo "$(date +%H:%M:%S) session started (auto-init by /savebundle)" > .agents/session.log
+fi
 
-# Session timing
+# Git info (with fallback if git unavailable)
+if command -v git &>/dev/null && [ -d .git ]; then
+  GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "detached")
+  GIT_COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+  FILES_CHANGED=$(git diff --name-only HEAD 2>/dev/null | wc -l | tr -d ' ')
+else
+  # Fallback: Use directory name + timestamp
+  GIT_BRANCH="no-git"
+  GIT_COMMIT="pwd-$(basename "$(pwd)")-$(date +%Y%m%d)"
+  FILES_CHANGED="unknown (no git)"
+fi
+
+# Session timing (read from session.log, fallback to current time)
 SESSION_START=$(grep "session started" .agents/session.log 2>/dev/null | tail -1 | cut -d' ' -f1 || date +%H:%M:%S)
 SESSION_NOW=$(date +%H:%M:%S)
 
-# Files changed this session
-FILES_CHANGED=$(git diff --name-only HEAD 2>/dev/null | wc -l)
+# Calculate duration in minutes
+START_EPOCH=$(date -j -f "%H:%M:%S" "$SESSION_START" +%s 2>/dev/null || date +%s)
+NOW_EPOCH=$(date +%s)
+DURATION_MIN=$(( (NOW_EPOCH - START_EPOCH) / 60 ))
 ```
 
 ---
@@ -257,30 +273,76 @@ Example:
 
 ---
 
-### Step 5: Populate Bundle with Real Data
+### Step 5: Populate Bundle with Real Data (Robustified with Fallbacks)
 
-**Extract data from multiple sources:**
+**Preferred Method: Use contextBundler.cjs (if available)**
+
+```bash
+if [ -f "scripts/contextBundler.cjs" ]; then
+  # Use contextBundler.cjs for structured bundle generation
+  node scripts/contextBundler.cjs generate "$BUNDLE_NAME" 2>&1
+  BUNDLER_EXIT=$?
+
+  if [ $BUNDLER_EXIT -eq 0 ]; then
+    echo "✅ Bundle generated via contextBundler.cjs"
+  else
+    echo "⚠️  contextBundler.cjs failed, using fallback bash generation"
+  fi
+else
+  echo "ℹ️  contextBundler.cjs not found, using fallback bash generation"
+fi
+```
+
+**Fallback Method: Manual Extraction via Bash/Git/jq**
+
+If contextBundler.cjs unavailable OR fails, extract data from multiple sources:
 
 1. **observability-pulse.jsonl** (if exists)
    ```bash
-   # Parse JSONL for tool calls
-   jq -r 'select(.type == "read") | .file' observability-pulse.jsonl 2>/dev/null
+   if [ -f "observability-pulse.jsonl" ]; then
+     # Parse JSONL for tool calls (jq fallback if not available)
+     if command -v jq &>/dev/null; then
+       FILES_READ=$(jq -r 'select(.type == "read") | .file' observability-pulse.jsonl 2>/dev/null | head -20)
+       COMMANDS_RUN=$(jq -r 'select(.type == "bash") | .command' observability-pulse.jsonl 2>/dev/null | head -20)
+     else
+       # jq not available, use grep (less structured but works)
+       FILES_READ=$(grep '"type":"read"' observability-pulse.jsonl 2>/dev/null | head -20)
+       COMMANDS_RUN=$(grep '"type":"bash"' observability-pulse.jsonl 2>/dev/null | head -20)
+     fi
+   else
+     FILES_READ="(observability-pulse.jsonl not found - manual documentation required)"
+     COMMANDS_RUN="(observability-pulse.jsonl not found - manual documentation required)"
+   fi
    ```
 
-2. **Git history this session**
+2. **Git history this session** (if git available)
    ```bash
-   git log --since="2 hours ago" --name-only --pretty=format:"%h %s"
+   if command -v git &>/dev/null && [ -d .git ]; then
+     GIT_CHANGES=$(git log --since="$DURATION_MIN minutes ago" --name-only --pretty=format:"%h %s" 2>/dev/null)
+     FILES_MODIFIED=$(git diff --name-only HEAD 2>/dev/null)
+   else
+     GIT_CHANGES="(git not available - changes not tracked)"
+     FILES_MODIFIED="(git not available)"
+   fi
    ```
 
 3. **Manual context** (agent fills based on memory)
-   - Current understanding
-   - Key decisions
-   - Next steps
+   ```bash
+   # Agent documents from current understanding
+   CURRENT_UNDERSTANDING="[Agent fills: What is currently being worked on]"
+   KEY_DECISIONS="[Agent fills: Significant choices made this session]"
+   NEXT_STEPS="[Agent fills: Planned work after bundle save]"
+   ```
 
-**If observability-pulse.jsonl doesn't exist:**
-- Agent manually lists files read (from memory)
-- Agent manually lists commands (from bash history)
-- Agent documents understanding (current mental model)
+**If ALL data sources unavailable (no contextBundler, no observability, no git):**
+- Bundle will contain minimal metadata (timestamps, session duration)
+- Agent MUST manually document:
+  - Files read (from memory)
+  - Changes made (from memory)
+  - Current understanding (mental model)
+  - Next steps (continuation plan)
+
+**This ensures SOME bundle is saved** (better than 0 recovery)
 
 ---
 
@@ -345,40 +407,93 @@ If context overflows, run:
 
 ---
 
-## Error Handling
+## Error Handling (Robustified - Auto-Fallback)
+
+**All errors trigger automatic fallbacks (NO user input required).**
 
 **If observability-pulse.jsonl missing:**
-```
-⚠️ WARNING: observability-pulse.jsonl not found
+```bash
+# Auto-fallback: Use git history + bash commands
+if [ ! -f "observability-pulse.jsonl" ]; then
+  echo "⚠️  WARNING: observability-pulse.jsonl not found"
+  echo "   Using fallback: git history + manual agent documentation"
+  echo ""
 
-Context bundle will be created from:
-- Git history
-- Manual agent documentation
+  # Fallback sources:
+  # 1. Git log (files modified)
+  # 2. Bash history (commands run)
+  # 3. Agent memory (mental model documentation)
 
-For full automation, ensure observability logger active.
-
-Continue with manual bundle? [Y/n]
+  # Continue automatically with fallback data
+fi
 ```
 
 **If .agents/ directory fails to create:**
-```
-❌ ERROR: Cannot create .agents/context-bundles/ directory
+```bash
+# Auto-fallback: Create bundle in /tmp/ instead
+if ! mkdir -p .agents/context-bundles 2>/dev/null; then
+  echo "⚠️  WARNING: Cannot create .agents/context-bundles/ (permissions)"
+  echo "   Using fallback: /tmp/context-bundles/"
 
-Permissions issue. Try:
-sudo mkdir -p .agents/context-bundles
-sudo chown $(whoami) .agents/
+  BUNDLE_PATH="/tmp/context-bundles/$BUNDLE_NAME"
+  mkdir -p /tmp/context-bundles
 
-Or run /savebundle from project root.
+  echo "   Bundle will save to: $BUNDLE_PATH"
+  echo "   MANUAL ACTION REQUIRED: Move bundle to project later"
+  echo "     mv /tmp/context-bundles/$BUNDLE_NAME .agents/context-bundles/"
+fi
 ```
 
 **If git not available:**
-```
-⚠️ WARNING: Git not detected
+```bash
+# Auto-fallback: Use directory name + timestamp
+if ! command -v git &>/dev/null || [ ! -d .git ]; then
+  echo "ℹ️  Git not detected"
+  echo "   Using fallback: directory name + timestamp for metadata"
 
-Bundle will save without git metadata (branch, commit).
+  # Fallback metadata (from Step 2)
+  GIT_BRANCH="no-git"
+  GIT_COMMIT="pwd-$(basename "$(pwd)")-$(date +%Y%m%d)"
+  FILES_CHANGED="unknown (no git)"
 
-Continue? [Y/n]
+  # Continue with bundle generation
+fi
 ```
+
+**If contextBundler.cjs fails:**
+```bash
+# Auto-fallback: Manual bash generation (Step 5 fallback)
+if [ $BUNDLER_EXIT -ne 0 ]; then
+  echo "⚠️  contextBundler.cjs failed (exit code: $BUNDLER_EXIT)"
+  echo "   Using fallback: manual bash generation"
+
+  # Fallback: Extract data via bash/git/jq (Step 5 fallback method)
+  # Agent manually documents:
+  # - Files read (from memory)
+  # - Commands run (bash history)
+  # - Current understanding (mental model)
+
+  # Bundle still generated (minimal data better than 0 recovery)
+fi
+```
+
+**If jq not available:**
+```bash
+# Auto-fallback: Use grep instead (less structured but works)
+if ! command -v jq &>/dev/null; then
+  echo "ℹ️  jq not available, using grep for JSONL parsing"
+
+  # Fallback: grep patterns instead of jq queries
+  FILES_READ=$(grep '"type":"read"' observability-pulse.jsonl 2>/dev/null)
+  # (less clean but functional)
+fi
+```
+
+**Philosophy:**
+- **Never fail completely** - ALWAYS generate SOME bundle (even minimal)
+- **Auto-fallback cascade** - Try preferred → fallback 1 → fallback 2 → manual
+- **Clear warnings** - User knows what data sources were used
+- **NO blocking prompts** - Agent continues automatically
 
 ---
 

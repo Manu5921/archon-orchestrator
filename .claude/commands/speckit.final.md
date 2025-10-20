@@ -403,10 +403,39 @@ Tasks.md is organized in phases:
 **Final Phase: Polish**
 - Cross-cutting concerns, optimization, docs
 
-### Progress Tracking
-- Mark completed tasks: `- [x]` in tasks.md
-- Update after EACH task completion (not batched)
-- Use Edit tool: replace `- [ ] T001` with `- [x] T001`
+### Progress Tracking (MANDATORY - BLOCKER)
+
+**After EACH task completion:**
+
+1. **Edit tasks.md:** Replace `- [ ] T001` with `- [x] T001`
+2. **Verify edit succeeded:**
+   ```bash
+   grep "^\- \[x\] T001" tasks.md
+   # Must return exactly 1 line
+   ```
+3. **If verification fails:** RETRY edit before continuing
+
+**Checkpoint Validation (every 10 tasks):**
+
+```bash
+# Count completed tasks
+COMPLETED=$(grep -c "^\- \[x\]" tasks.md)
+
+# BLOCKER: Exit 1 if 0 tasks completed
+if [ $COMPLETED -eq 0 ]; then
+  echo "❌ ERROR: No tasks marked completed in tasks.md"
+  echo "   Agent executed but failed to track progress"
+  echo "   REQUIRED: Edit tasks.md to mark completed tasks"
+  exit 1
+fi
+
+echo "✅ Tasks completed: $COMPLETED"
+```
+
+**Why BLOCKER:**
+- Audit juri (GLM 4.6) revealed: 42 files created, 0 tasks checked
+- Without tracking, impossible to verify agent work
+- Memory Pattern V5 requires explicit task tracking for intentionality
 
 ## Quality Gates (MANDATORY Every 10 Tasks)
 
@@ -433,7 +462,10 @@ Tasks.md is organized in phases:
    - Include trade-offs, alternatives, validation
 
 5. **Gate P4: Observability (TIMELINE)**
-   Log agent progress to observability-pulse.jsonl:
+
+   Log agent progress to observability-pulse.jsonl.
+
+   **Preferred:** Use pulseLogger.cjs (structured logging):
    ```bash
    # At agent start (ONCE):
    node scripts/pulseLogger.cjs start [agent-name] '{"tasks":[task-count],"focus":"[description]"}'
@@ -449,6 +481,29 @@ Tasks.md is organized in phases:
    # At agent end (ONCE):
    node scripts/pulseLogger.cjs end [agent-name] '{"duration_s":[seconds],"tasks_completed":[count],"files_modified":[count]}'
    ```
+
+   **Fallback:** If pulseLogger.cjs unavailable, use simple JSONL append:
+   ```bash
+   # Check if pulseLogger exists
+   if [ ! -f "scripts/pulseLogger.cjs" ]; then
+     # Fallback: Simple JSONL append (parseable, grep-friendly)
+     TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+     # Agent start
+     echo "{\"timestamp\":\"$TIMESTAMP\",\"event\":\"start\",\"agent\":\"[agent-name]\",\"tasks\":[count]}" >> observability-pulse.jsonl
+
+     # Checkpoint (P0/P1/P2/P3)
+     echo "{\"timestamp\":\"$TIMESTAMP\",\"event\":\"checkpoint\",\"gate\":\"[gate-name]\",\"status\":\"[pass|fail|skip]\"}" >> observability-pulse.jsonl
+
+     # Agent end
+     echo "{\"timestamp\":\"$TIMESTAMP\",\"event\":\"end\",\"agent\":\"[agent-name]\",\"duration_s\":[seconds],\"tasks_completed\":[count]}" >> observability-pulse.jsonl
+   fi
+   ```
+
+   **Why Fallback Critical:**
+   - Juri audit: 0 observability events logged (pulseLogger.cjs not called OR missing)
+   - Fallback ensures SOME timeline (better than 0)
+   - JSONL = grep-friendly, parseable by jq/scripts later
 
    **Purpose:**
    - Timeline tracking (when each agent started/ended)
@@ -514,25 +569,63 @@ Display:
 Running post-agent validation...
 ```
 
-**Run validation checks:**
+**Run validation checks (STRICT - BLOCKER):**
 
-1. **Build check:**
+1. **Task Progress (P0 BLOCKER):**
    ```bash
-   cd $PROJECT_PATH && pnpm build
-   ```
-   If fails: Display error, STOP execution
+   TASKS_COMPLETED=$(grep -c "^\- \[x\]" "$PROJECT_PATH/$TASKS_PATH" 2>/dev/null || echo 0)
 
-2. **Lint check:**
-   ```bash
-   cd $PROJECT_PATH && pnpm lint
-   ```
-   If errors: Display warnings, continue (non-blocking)
+   if [ "$TASKS_COMPLETED" -eq 0 ]; then
+     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+     echo "❌ VALIDATION FAILED: [agent-name]"
+     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+     echo ""
+     echo "ERROR: No tasks marked completed in $TASKS_PATH"
+     echo ""
+     echo "Agent executed but FAILED to track progress."
+     echo "This indicates agent did not follow workflow (see juri audit)."
+     echo ""
+     echo "REQUIRED ACTIONS:"
+     echo "  1. Manually review agent output above"
+     echo "  2. Verify files were created (git status)"
+     echo "  3. Manually mark completed tasks in $TASKS_PATH"
+     echo "  4. Re-run /speckit.final OR continue manually"
+     echo ""
+     echo "STOP: Cannot proceed to next agent without task tracking."
+     exit 1
+   fi
 
-3. **Task progress:**
-   ```bash
-   grep "^\- \[x\]" $PROJECT_PATH/$TASKS_PATH | wc -l
+   echo "✅ Tasks completed: $TASKS_COMPLETED"
    ```
-   Display: "Tasks completed: X"
+
+2. **Build check (P0 BLOCKER):**
+   ```bash
+   cd "$PROJECT_PATH" && pnpm build
+   BUILD_EXIT=$?
+
+   if [ $BUILD_EXIT -ne 0 ]; then
+     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+     echo "❌ BUILD FAILED: [agent-name]"
+     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+     echo ""
+     echo "STOP: Build must pass before continuing to next agent."
+     exit 1
+   fi
+
+   echo "✅ Build: PASS"
+   ```
+
+3. **Lint check (P1 WARNING):**
+   ```bash
+   cd "$PROJECT_PATH" && pnpm lint
+   LINT_EXIT=$?
+
+   if [ $LINT_EXIT -ne 0 ]; then
+     echo "⚠️  Lint: WARNINGS (non-blocking, review recommended)"
+   else
+     echo "✅ Lint: PASS"
+   fi
+   ```
 
 Display:
 ```
@@ -542,6 +635,100 @@ Display:
 ```
 
 **Repeat for all agents** (backend → frontend → testing → devops if present)
+
+---
+
+### Step 5.1: Agent Handoff Protocol (Inter-Agent Coordination)
+
+**Purpose:** Enable sequential agents to coordinate via standardized JSON handoff files.
+
+**When:** After each agent completes successfully (before proceeding to next agent).
+
+**Create Handoff File:**
+
+```bash
+# At agent completion (after validation passed)
+HANDOFF_FILE="/tmp/agent-handoff-${AGENT_NAME}.json"
+
+cat > "$HANDOFF_FILE" <<EOF
+{
+  "agent": "${AGENT_NAME}",
+  "status": "completed",
+  "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "tasks_allocated": "${TASKS_RANGE}",
+  "tasks_completed": ${TASKS_COMPLETED},
+  "files_created": ${FILES_COUNT},
+  "build_status": "pass",
+  "lint_status": "pass",
+  "next_agent": "${NEXT_AGENT_NAME}"
+}
+EOF
+
+echo "📦 Handoff file created: $HANDOFF_FILE"
+```
+
+**Example handoff sequence:**
+
+1. **Backend specialist completes:**
+   ```json
+   {
+     "agent": "backend-specialist",
+     "status": "completed",
+     "timestamp": "2025-10-20T14:30:00Z",
+     "tasks_allocated": "T001-T035",
+     "tasks_completed": 35,
+     "files_created": 18,
+     "build_status": "pass",
+     "lint_status": "pass",
+     "next_agent": "frontend-specialist"
+   }
+   ```
+   Saved to: `/tmp/agent-handoff-backend-specialist.json`
+
+2. **Frontend specialist starts:**
+   ```bash
+   # Before frontend execution, read backend handoff
+   if [ -f "/tmp/agent-handoff-backend-specialist.json" ]; then
+     echo "✅ Backend handoff found, loading context..."
+     cat /tmp/agent-handoff-backend-specialist.json
+
+     # Frontend can verify backend completed
+     BACKEND_STATUS=$(jq -r '.status' /tmp/agent-handoff-backend-specialist.json)
+     if [ "$BACKEND_STATUS" != "completed" ]; then
+       echo "⚠️  WARNING: Backend status: $BACKEND_STATUS"
+     fi
+   else
+     echo "⚠️  WARNING: No backend handoff found (expected if first agent)"
+   fi
+   ```
+
+3. **Frontend specialist completes:**
+   Creates `/tmp/agent-handoff-frontend-specialist.json` with `"next_agent": "testing-specialist"`
+
+4. **Testing specialist starts:**
+   Reads both backend + frontend handoffs to understand what was implemented
+
+**Benefits:**
+
+- ✅ **Sequential coordination:** Agent B knows Agent A completed successfully
+- ✅ **Context awareness:** Agent B can read what Agent A built (files, tasks)
+- ✅ **Error detection:** If handoff missing/failed → STOP before wasting time
+- ✅ **Audit trail:** Complete agent execution history in /tmp/ files
+- ✅ **Debugging:** Review handoff files to understand agent flow
+
+**Cleanup:**
+
+```bash
+# After ALL agents complete, clean up handoff files
+rm -f /tmp/agent-handoff-*.json
+```
+
+**Why Critical (Juri Audit Insight):**
+
+- GLM 4.6 executed agents "in silo" (no coordination)
+- No awareness of what previous agents completed
+- Handoff protocol ensures agents KNOW prior work state
+- Prevents duplication/conflicts between agents
 
 ---
 
