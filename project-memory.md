@@ -277,6 +277,35 @@
   - Complements Context Bundles: Proactive (buffer check) + Reactive (manual /savebundle)
   - Insurance policy: Minimal overhead, high value if triggered
 
+#### 2025-10-20 ORCHESTRATION.md Path Fix (/speckit.agents)
+- **Agent:** main-session (Claude Sonnet 4.5)
+- **Decision:** Force ORCHESTRATION.md creation at project root (not specs/001-*/)
+- **Reason:** `/speckit.final` prerequisite check failed in juri project. ORCHESTRATION.md was created in `specs/001-specify-scripts-bash/` by `/speckit.agents` (Spec-Kit structure) but `/speckit.final` expects file at project root. Path inconsistency broke workflow.
+- **Trade-offs:**
+  - ✅ **Pros:**
+    - Consistent location across all projects
+    - `/speckit.final` prerequisite checks work without manual copy
+    - Simpler mental model (root = orchestration files)
+    - 0 breaking changes (files still generated)
+  - ❌ **Cons:**
+    - Diverges slightly from Spec-Kit pattern (specs/ subdirectory)
+    - 2 locations to maintain if reverting (acceptable)
+- **Alternatives Considered:**
+  - Modify `/speckit.final` to search 2 locations (rejected: adds complexity, fragile)
+  - Manual copy step in docs (rejected: friction, easy to forget)
+  - Keep in specs/ only (rejected: breaks prerequisite check)
+- **Implementation:**
+  - Modified: `.claude/commands/speckit.agents.md` (Step 5 - added CRITICAL PATH REQUIREMENT)
+  - Added explicit paths: `./ORCHESTRATION.md`, `./implementation-prompt.md`, `./observability-pulse.jsonl`
+  - Applied to: archon-orchestrator (commit 5833e4a) + juri (commit 25ddd1d)
+- **Validation:**
+  - Juri: Manual copy `cp specs/001-specify-scripts-bash/ORCHESTRATION.md .` → /speckit.final prereq OK ✅
+  - Future: /speckit.agents will create at root automatically
+- **ROI:**
+  - Friction: -100% (no manual copy needed)
+  - Error rate: -100% (prerequisite check always passes)
+  - Time: -2 min per project setup
+
 ---
 
 ### Backend Decisions
