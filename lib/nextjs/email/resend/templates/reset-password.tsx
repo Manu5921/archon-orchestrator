@@ -9,13 +9,20 @@ import {
 import * as React from 'react';
 import { EmailLayout } from './layout';
 import type { PasswordResetEmailProps } from '../types';
+import { sanitizeEmailUrl } from '../../../../shared/utils/validate-url';
 
 /**
  * Password reset email template
  *
+ * **Security:** The `resetLink` URL is validated to prevent Open Redirect attacks.
+ * Only URLs pointing to allowed domains (configured via NEXT_PUBLIC_APP_URL) are accepted.
+ *
  * @example
  * import { PasswordResetEmail } from '@/lib/email/templates/reset-password';
  * import { sendEmail } from '@/lib/email/client';
+ *
+ * // resetLink MUST be generated server-side and point to your app domain
+ * const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${token}`;
  *
  * await sendEmail({
  *   to: user.email,
@@ -29,6 +36,8 @@ export function PasswordResetEmail({
   expiresIn = '24 hours',
   appName = process.env.NEXT_PUBLIC_APP_NAME || 'Our App',
 }: PasswordResetEmailProps) {
+  // 🔒 SECURITY: Validate resetLink to prevent Open Redirect attacks
+  const safeResetLink = sanitizeEmailUrl(resetLink, 'password reset');
   return (
     <EmailLayout preview="Reset your password">
       <Section style={box}>
@@ -41,14 +50,14 @@ export function PasswordResetEmail({
           new password:
         </Text>
 
-        <Button style={button} href={resetLink}>
+        <Button style={button} href={safeResetLink}>
           Reset Password
         </Button>
 
         <Text style={smallText}>
           Or copy and paste this link into your browser:{' '}
-          <Link href={resetLink} style={link}>
-            {resetLink}
+          <Link href={safeResetLink} style={link}>
+            {safeResetLink}
           </Link>
         </Text>
 

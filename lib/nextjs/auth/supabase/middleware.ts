@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getRequiredEnv } from '../../../../shared/utils/env';
 
 /**
  * Protected routes configuration
@@ -33,9 +34,13 @@ export async function authMiddleware(request: NextRequest) {
     },
   });
 
+  // ✅ VALIDATION: Explicitly validate environment variables
+  const supabaseUrl = getRequiredEnv('NEXT_PUBLIC_SUPABASE_URL', 'Supabase middleware');
+  const supabaseAnonKey = getRequiredEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'Supabase middleware');
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         get(name: string) {

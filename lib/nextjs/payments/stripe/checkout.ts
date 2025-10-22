@@ -1,11 +1,15 @@
 import Stripe from 'stripe';
 import { redirect } from 'next/navigation';
 import type { CreateCheckoutSessionParams } from './types';
+import { getRequiredEnv } from '../../../../shared/utils/env';
 
 /**
  * Stripe client instance
+ * ✅ VALIDATION: Environment variable validated explicitly
  */
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripeSecretKey = getRequiredEnv('STRIPE_SECRET_KEY', 'Stripe configuration');
+
+export const stripe = new Stripe(stripeSecretKey, {
   apiVersion: '2024-11-20.acacia',
   typescript: true,
 });
