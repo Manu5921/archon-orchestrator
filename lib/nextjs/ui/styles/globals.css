@@ -1,0 +1,238 @@
+/**
+ * Global CSS - Archon UI Library
+ *
+ * CSS variables for shadcn/ui components + dark mode support.
+ * Follows Vercel Next.js SaaS Starter structure (battle-tested patterns).
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * CSS Variables - Light Mode (Default)
+ *
+ * Uses HSL format for shadcn/ui compatibility:
+ * - hsl(H S% L%) where H=hue (0-360), S=saturation (0-100), L=lightness (0-100)
+ * - Variables store ONLY the HSL values (no "hsl()" wrapper)
+ * - Usage: background: hsl(var(--background))
+ */
+@layer base {
+  :root {
+    /* Background & Foreground */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    /* Card Component */
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    /* Popover Component */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* Primary Color (Blue) */
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 98%;
+
+    /* Secondary Color (Purple) */
+    --secondary: 262 83% 58%;
+    --secondary-foreground: 0 0% 98%;
+
+    /* Muted (Subtle backgrounds) */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    /* Accent (Teal) */
+    --accent: 172 66% 50%;
+    --accent-foreground: 0 0% 98%;
+
+    /* Destructive (Red - Errors) */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Success (Green) */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 98%;
+
+    /* Warning (Yellow) */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+
+    /* Info (Blue - same as primary) */
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 98%;
+
+    /* Form Elements */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    /* Charts (5 colors for data viz) */
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+
+    /* Border Radius (shadcn/ui convention) */
+    --radius: 0.5rem;
+  }
+
+  /**
+   * Dark Mode Variables
+   *
+   * Triggered by .dark class on <html> or <body>
+   */
+  .dark {
+    /* Background & Foreground (Inverted) */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    /* Card Component (Dark) */
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    /* Popover Component (Dark) */
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Primary (Inverted for contrast) */
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    /* Secondary (Darker purple) */
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    /* Muted (Dark subtle backgrounds) */
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    /* Accent (Dark teal) */
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    /* Destructive (Darker red) */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Success (Darker green) */
+    --success: 142 71% 35%;
+    --success-foreground: 210 40% 98%;
+
+    /* Warning (Darker yellow) */
+    --warning: 38 92% 40%;
+    --warning-foreground: 210 40% 98%;
+
+    /* Info (Same as primary dark) */
+    --info: 210 40% 98%;
+    --info-foreground: 222.2 47.4% 11.2%;
+
+    /* Form Elements (Dark) */
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+
+    /* Charts (Dark mode colors) */
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+/**
+ * Base Styles
+ *
+ * Applied to all elements for consistency.
+ */
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body, "Inter", system-ui, sans-serif);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading, "Inter", system-ui, sans-serif);
+  }
+}
+
+/**
+ * Utility Classes
+ *
+ * Custom utilities for typography and animations.
+ */
+@layer utilities {
+  /* Typography */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Animations */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes slide-in-from-top {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-in-from-bottom {
+    from {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+  }
+
+  .animate-fade-out {
+    animation: fade-out 0.2s ease-out;
+  }
+
+  .animate-slide-in-from-top {
+    animation: slide-in-from-top 0.3s ease-out;
+  }
+
+  .animate-slide-in-from-bottom {
+    animation: slide-in-from-bottom 0.3s ease-out;
+  }
+}
