@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import type { SendEmailParams, SendEmailResult } from './types';
+import { sanitizeEmailUrl } from '../../../shared/utils/validate-url';
 
 /**
  * Resend client instance

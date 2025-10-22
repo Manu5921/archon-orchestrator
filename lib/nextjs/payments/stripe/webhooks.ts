@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import { stripe } from './checkout';
 import type { WebhookHandlerResult } from './types';
+import { withIdempotency, isEventProcessed } from './idempotency';
 
 /**
  * Verify Stripe webhook signature
@@ -44,33 +45,44 @@ export async function handleWebhook(
   try {
     const event = verifyWebhookSignature(body, signature);
 
-    switch (event.type) {
-      case 'checkout.session.completed':
-        await handleCheckoutSessionCompleted(
-          event.data.object as Stripe.Checkout.Session
-        );
-        break;
-
-      case 'customer.subscription.created':
-      case 'customer.subscription.updated':
-        await handleSubscriptionChange(event.data.object as Stripe.Subscription);
-        break;
-
-      case 'customer.subscription.deleted':
-        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
-        break;
-
-      case 'invoice.paid':
-        await handleInvoicePaid(event.data.object as Stripe.Invoice);
-        break;
-
-      case 'invoice.payment_failed':
-        await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
-        break;
-
-      default:
-        console.log(`Unhandled event type: ${event.type}`);
+    // 🔒 IDEMPOTENCY: Check if event was already processed
+    if (await isEventProcessed(event.id)) {
+      console.log(`Event ${event.id} already processed, returning cached result`);
+      return { received: true, duplicate: true };
     }
+
+    // Process event with idempotency wrapper
+    await withIdempotency(event.id, async () => {
+      switch (event.type) {
+        case 'checkout.session.completed':
+          await handleCheckoutSessionCompleted(
+            event.data.object as Stripe.Checkout.Session
+          );
+          break;
+
+        case 'customer.subscription.created':
+        case 'customer.subscription.updated':
+          await handleSubscriptionChange(event.data.object as Stripe.Subscription);
+          break;
+
+        case 'customer.subscription.deleted':
+          await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
+          break;
+
+        case 'invoice.paid':
+          await handleInvoicePaid(event.data.object as Stripe.Invoice);
+          break;
+
+        case 'invoice.payment_failed':
+          await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
+          break;
+
+        default:
+          console.log(`Unhandled event type: ${event.type}`);
+      }
+
+      return { success: true };
+    });
 
     return { received: true };
   } catch (error) {

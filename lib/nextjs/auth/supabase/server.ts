@@ -8,6 +8,7 @@ import type {
   PasswordResetRequest,
   User,
 } from './types';
+import { getRequiredEnv } from '../../../../shared/utils/env';
 
 /**
  * Create Supabase server client
@@ -16,9 +17,13 @@ import type {
 export async function createClient() {
   const cookieStore = await cookies();
 
+  // ✅ VALIDATION: Explicitly validate environment variables
+  const supabaseUrl = getRequiredEnv('NEXT_PUBLIC_SUPABASE_URL', 'Supabase server configuration');
+  const supabaseAnonKey = getRequiredEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'Supabase server configuration');
+
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         get(name: string) {

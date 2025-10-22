@@ -3,6 +3,7 @@
 import { createBrowserClient } from '@supabase/ssr';
 import { useEffect, useState } from 'react';
 import type { User, Session, AuthError } from './types';
+import { getRequiredEnv } from '../../../../shared/utils/env';
 
 /**
  * Create Supabase browser client
@@ -15,10 +16,11 @@ export function createClient() {
     return client;
   }
 
-  client = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  // ✅ VALIDATION: Explicitly validate environment variables
+  const supabaseUrl = getRequiredEnv('NEXT_PUBLIC_SUPABASE_URL', 'Supabase configuration');
+  const supabaseAnonKey = getRequiredEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'Supabase configuration');
+
+  client = createBrowserClient(supabaseUrl, supabaseAnonKey);
 
   return client;
 }
