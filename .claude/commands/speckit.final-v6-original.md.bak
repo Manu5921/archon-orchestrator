@@ -1,0 +1,665 @@
+---
+description: Execute implementation plan by launching sub-agents automatically (V6 MVP)
+allowed-tools: Task(*), Read(*), Bash(*), TodoWrite(*), Write(*), Edit(*)
+model: claude-sonnet-4-5-20250929
+---
+
+# 🚀 Spec-Kit Final - Automated Implementation
+
+**Version:** V6 MVP (Sequential Execution)
+**Purpose:** Automate F4 delegation by reading ORCHESTRATION.md and launching agents sequentially with checkpoints.
+
+**Context Argument:** $ARGUMENTS (expected: project path, e.g., "test-v6-mvp/")
+
+**Before (V5.2.1):**
+```bash
+/speckit.agents → ORCHESTRATION.md + implementation-prompt.md
+# User copies implementation-prompt.md manually (5-10 min)
+/implement [paste prompt]
+```
+
+**After (V6 MVP):**
+```bash
+/speckit.agents → ORCHESTRATION.md + observability-pulse.jsonl
+/speckit.final  → Reads ORCHESTRATION.md, launches agents automatically
+```
+
+**Time Saved:** -5 to -10 minutes + 0 copy-paste errors
+
+---
+
+## Instructions
+
+**IMPORTANT:** This is a V6 MVP test with MOCK agent execution. Real Task tool delegation will be implemented after validation.
+
+### Step 0: Determine Project Path
+
+**Context:** $ARGUMENTS (e.g., "test-v6-mvp/" or empty for current directory)
+
+Parse project path:
+- If $ARGUMENTS provided: Use as PROJECT_PATH
+- If empty: Use current working directory (.)
+
+Set PROJECT_PATH variable for all subsequent steps.
+
+Example:
+```bash
+# If $ARGUMENTS = "test-v6-mvp/"
+PROJECT_PATH="test-v6-mvp"
+
+# If $ARGUMENTS empty
+PROJECT_PATH="."
+```
+
+### Step 1: Verify Prerequisites
+
+Check that all 8 required files exist in PROJECT_PATH:
+
+Use bash to verify each file:
+
+```bash
+ls -lh $PROJECT_PATH/ORCHESTRATION.md
+ls -lh $PROJECT_PATH/.specify/memory/constitution.md
+ls -lh $PROJECT_PATH/specs/001-mvp/spec.md
+ls -lh $PROJECT_PATH/specs/001-mvp/tasks.md
+ls -lh $PROJECT_PATH/specs/001-mvp/plan.md
+ls -lh $PROJECT_PATH/design/design-tokens.json
+ls -lh $PROJECT_PATH/project-memory.md
+ls -lh $PROJECT_PATH/observability-pulse.jsonl
+```
+
+**Collect results:**
+- If all files exist → Display "✅ Prerequisites verified (8 files)"
+- If ANY file missing → Display error message:
+
+```
+❌ Prerequisites missing:
+
+Missing file(s):
+- [file1] (run /speckit.agents first)
+- [file2] (run /speckit.constitution first)
+...
+
+**STOP:** Cannot proceed without prerequisites.
+**Fix:** Run missing commands above, then retry /speckit.final
+```
+
+**If any prerequisite missing:** STOP immediately. Do not proceed to Step 2.
+
+---
+
+### Step 2: Initialize Pulse Logger
+
+Initialize the observability pulse logger using bash + node:
+
+```bash
+# Clear previous run (if any events exist)
+node -e "
+const pulse = require('./scripts/pulseLogger.cjs');
+pulse.clearPulse();
+console.log('✅ Pulse logger cleared');
+"
+
+# Log orchestration start
+node -e "
+const pulse = require('./scripts/pulseLogger.cjs');
+pulse.logCustom('orchestration_start', {
+  workflow: 'V6-MVP',
+  execution: 'sequential',
+  project_path: '$PROJECT_PATH',
+  timestamp: new Date().toISOString()
+});
+console.log('✅ Orchestration started');
+"
+```
+
+**Display:**
+```
+✅ Pulse logger initialized
+```
+
+---
+
+### Step 3: Parse ORCHESTRATION.md
+
+Read ORCHESTRATION.md using Read tool, then extract agent information.
+
+**Action: Read $PROJECT_PATH/ORCHESTRATION.md**
+
+Parse the file to find agent sections. Look for patterns like:
+
+```markdown
+### backend-specialist
+
+**Tasks:** T001-T004
+**Duration:** 20 min
+**Filesystem Périmètres:**
+- **Allowed:** src/lib/, src/services/
+- **Forbidden:** src/components/
+```
+
+**For this test (simplified parsing):**
+
+Manually identify agents by reading the file:
+1. Find all lines starting with `### ` followed by `-specialist`
+2. For each agent found:
+   - Extract agent name (e.g., `backend-specialist`)
+   - Find `**Tasks:**` line → extract task range (e.g., `T001-T004`)
+   - Find `**Duration:**` line → extract duration (e.g., `20 min`)
+   - Find `**Filesystem Périmètres:**` section → extract allowed/forbidden dirs
+
+**Display parsed agents:**
+
+```
+🔍 Parsing ORCHESTRATION.md...
+
+Found 3 agents:
+1. backend-specialist
+   Tasks: T001-T004 (4 tasks)
+   Duration: 20 min
+
+2. frontend-specialist
+   Tasks: T005-T008 (4 tasks)
+   Duration: 20 min
+
+3. testing-specialist
+   Tasks: T009-T010 (2 tasks)
+   Duration: 10 min
+
+Total: 10 tasks across 3 agents
+```
+
+**Store agent information** for use in Step 5.
+
+---
+
+### Step 4: Load Context Files
+
+Display that you're loading context files:
+
+```
+📚 Loading context files...
+```
+
+**Read the following 8 files using Read tool:**
+
+1. $PROJECT_PATH/.specify/memory/constitution.md
+2. $PROJECT_PATH/specs/001-mvp/spec.md
+3. $PROJECT_PATH/specs/001-mvp/tasks.md
+4. $PROJECT_PATH/specs/001-mvp/plan.md
+5. $PROJECT_PATH/design/design-tokens.json
+6. $PROJECT_PATH/project-memory.md
+7. $PROJECT_PATH/CLAUDE.md (brief scan only, don't read fully - large file)
+8. $PROJECT_PATH/ORCHESTRATION.md (already read in Step 3)
+
+**Extract key metadata:**
+
+From spec.md:
+- Project name (first # header)
+- Tech stack (look for "Tech Stack" section)
+
+From tasks.md:
+- Total task count (count lines starting with `- [ ]`)
+
+**Display:**
+
+```
+   Project: [Project Name]
+   Tasks: [Count] total
+   Tech Stack: [Summary]
+
+✅ Context loaded (8 files)
+```
+
+---
+
+### Step 5: Execute Agents Sequentially (V6 MVP MOCK Mode)
+
+**IMPORTANT:** This is MOCK execution for testing. No real Task tools will be launched.
+
+Display:
+
+```
+🤖 Executing agents sequentially (MOCK mode for testing)...
+```
+
+**For each agent found in Step 3** (backend → frontend → testing), execute in order:
+
+#### Per-Agent Execution Loop
+
+**Agent 1: backend-specialist**
+
+1. **Display agent start:**
+   ```
+   🚀 [1/3] backend-specialist
+      Tasks: T001-T004 (4 tasks)
+      Duration estimate: 20 min
+   ```
+
+2. **Log start event using bash:**
+   ```bash
+   node -e "
+   const pulse = require('./scripts/pulseLogger.cjs');
+   pulse.logStart('backend-specialist', {
+     tasks: 'T001-T004',
+     duration_estimate: '20 min',
+     timestamp: new Date().toISOString()
+   });
+   "
+# ${agent.name} - Implementation
+
+## Mission
+Implement ${PROJECT_NAME} tasks T${agent.tasks.start}-T${agent.tasks.end} following orchestration strategy.
+
+## Context Files
+- Constitution: .specify/memory/constitution.md
+- Spec: specs/001-mvp/spec.md
+- Tasks: specs/001-mvp/tasks.md (focus on T${agent.tasks.start}-T${agent.tasks.end})
+- Plan: specs/001-mvp/plan.md
+- Design: design/design-tokens.json
+- Memory: project-memory.md
+- Orchestration: ORCHESTRATION.md (YOUR SECTION: ${agent.name})
+
+## Filesystem Périmètres
+**ALLOWED:**
+${agent.allowed.map(d => `- ${d}`).join('\n')}
+
+**FORBIDDEN:**
+${agent.forbidden.map(d => `- ${d}`).join('\n')}
+
+**Violation Handling:** STOP immediately + request coordination if you need to touch forbidden files.
+
+## MCP Tools Allowed
+${agent.tools.map(t => `- ${t}`).join('\n')}
+
+## Quality Gates (MANDATORY)
+
+**Every 10 tasks completed:**
+
+1. **Gate P0: Build Check (BLOCKER)**
+   \`\`\`bash
+   pnpm build
+   # Exit 1 if fails (STOP implementation)
+   \`\`\`
+
+2. **Gate P1: ESLint (BLOCKER)**
+   Use \`mcp__eslint__lint-files\` on modified files
+   - If errors → Fix immediately before continuing
+   - If warnings → Document, continue
+
+3. **Gate P2: Context7 (IF new library)**
+   If you're using a library for the first time:
+   - Use \`mcp__context7__resolve-library-id\` → get library ID
+   - Use \`mcp__context7__get-library-docs\` → get latest docs
+   - Don't guess API usage, get authoritative docs
+
+4. **Gate P3: Memory Update (VERIFICATION)**
+   If you made significant decision:
+   - Call /update-memory with WHY (not just WHAT)
+   - Document trade-offs, alternatives, validation
+
+## Critical Rules
+
+**From ORCHESTRATION.md ${agent.name} section:**
+${getAgentCriticalRules(agent.name, ORCHESTRATION)}
+
+## Success Criteria
+
+**Definition of Done:**
+- ✅ All assigned tasks completed (T${agent.tasks.start}-T${agent.tasks.end})
+- ✅ Build passes (pnpm build → exit 0)
+- ✅ ESLint clean (no errors)
+- ✅ Tests pass (pnpm test)
+- ✅ Périmètres respected (no forbidden file writes)
+
+## Error Handling
+
+**3-Strike Rule:**
+- Strike 1: Analyze + attempt fix + retry
+- Strike 2: Document in memory + alternative approach + retry
+- Strike 3: ESCALATE TO HUMAN (create GitHub Issue + STOP)
+
+**Rollback:**
+If critical error breaks build:
+\`\`\`bash
+git revert [last-commit]
+/update-memory "Rolled back [feature] due to [error]"
+\`\`\`
+
+## Execution
+
+Read context files above → Implement tasks → Run checkpoints → Document decisions → Report completion.
+
+**GO!** 🚀
+  `;
+
+  // 3. Launch agent via Task tool
+  const startTime = Date.now();
+
+  await launchAgent({
+    subagent_type: agent.name,
+    description: `Execute ${agent.name} implementation`,
+    prompt: agentPrompt
+  });
+
+  const endTime = Date.now();
+  const durationS = Math.round((endTime - startTime) / 1000);
+
+  // 4. Run checkpoints
+  await runCheckpoints(agent.name, agent.allowed);
+
+  // 5. Log agent end
+  pulse.logEnd(agent.name, {
+    duration_s: durationS,
+    tasks_completed: `T${agent.tasks.start}-T${agent.tasks.end}`,
+    timestamp: new Date().toISOString()
+  });
+
+  console.log(`✅ ${agent.name} completed (${durationS}s)`);
+}
+
+// Helper: Run checkpoints
+async function runCheckpoints(agentName, allowedDirs) {
+  console.log(`\n🔍 Running checkpoints for ${agentName}...`);
+
+  // Checkpoint 1: Build (P0 BLOCKER)
+  console.log('Gate P0: Build Check...');
+  const buildResult = await runBash('pnpm build');
+
+  if (buildResult.exitCode !== 0) {
+    pulse.logCheckpoint('build', 'fail', {
+      agent: agentName,
+      exit_code: buildResult.exitCode,
+      error: buildResult.stderr
+    });
+    throw new Error(`Build failed for ${agentName}. BLOCKING.`);
+  }
+
+  pulse.logCheckpoint('build', 'pass', {
+    agent: agentName,
+    exit_code: 0,
+    duration_ms: buildResult.duration
+  });
+
+  // Checkpoint 2: ESLint (P1 BLOCKER)
+  console.log('Gate P1: ESLint Check...');
+
+  // Get files modified by agent (in allowed dirs)
+  const modifiedFiles = await getModifiedFiles(allowedDirs);
+
+  if (modifiedFiles.length > 0) {
+    const lintResult = await mcpEslintLintFiles(modifiedFiles);
+
+    if (lintResult.errors > 0) {
+      pulse.logCheckpoint('lint', 'fail', {
+        agent: agentName,
+        errors: lintResult.errors,
+        files: modifiedFiles.length
+      });
+      throw new Error(`ESLint errors detected for ${agentName}. BLOCKING.`);
+    }
+
+    pulse.logCheckpoint('lint', 'pass', {
+      agent: agentName,
+      errors: 0,
+      warnings: lintResult.warnings,
+      files: modifiedFiles.length
+    });
+  } else {
+    pulse.logCheckpoint('lint', 'skip', {
+      agent: agentName,
+      reason: 'no_files_modified'
+    });
+  }
+
+  // Checkpoint 3: Tests (P2 VERIFICATION)
+  console.log('Gate P2: Test Check...');
+  const testResult = await runBash('pnpm test');
+
+  if (testResult.exitCode !== 0) {
+    pulse.logCheckpoint('test', 'fail', {
+      agent: agentName,
+      exit_code: testResult.exitCode
+    });
+    console.warn(`⚠️  Tests failed for ${agentName} (non-blocking, document)`);
+  } else {
+    pulse.logCheckpoint('test', 'pass', {
+      agent: agentName,
+      exit_code: 0
+    });
+  }
+
+  console.log(`✅ Checkpoints complete for ${agentName}\n`);
+}
+```
+
+**Agent Execution Order (Sequential V6 MVP):**
+1. backend-specialist (foundation layer)
+2. frontend-specialist (UI layer)
+3. testing-specialist (validation layer)
+4. devops-specialist (if present - deployment layer)
+
+**Between agents:** Wait for completion + checkpoints before starting next.
+
+---
+
+### Step 6: Final Validation
+
+After all agents complete:
+
+```bash
+echo "🔍 Running final validation..."
+
+# 1. Build check
+pnpm build
+if [ $? -ne 0 ]; then
+  pulse.logCheckpoint('final_build', 'fail', { phase: 'final' });
+  echo "❌ Final build failed"
+  exit 1
+fi
+pulse.logCheckpoint('final_build', 'pass', { phase: 'final' });
+
+# 2. Lint check
+pnpm lint
+if [ $? -ne 0 ]; then
+  pulse.logCheckpoint('final_lint', 'fail', { phase: 'final' });
+  echo "⚠️  Final lint has errors (review required)"
+fi
+pulse.logCheckpoint('final_lint', 'pass', { phase: 'final' });
+
+# 3. Test suite
+pnpm test
+if [ $? -ne 0 ]; then
+  pulse.logCheckpoint('final_test', 'fail', { phase: 'final' });
+  echo "⚠️  Final tests have failures (review required)"
+fi
+pulse.logCheckpoint('final_test', 'pass', { phase: 'final' });
+
+echo "✅ Final validation complete"
+```
+
+---
+
+### Step 7: Generate Summary
+
+Log orchestration completion:
+
+```javascript
+pulse.logCustom('orchestration_end', {
+  workflow: 'V6-MVP',
+  execution: 'sequential',
+  agents_count: agents.length,
+  timestamp: new Date().toISOString()
+});
+
+// Get summary
+const summary = pulse.getSummary();
+
+console.log('\n═══════════════════════════════════════════════════');
+console.log('  ORCHESTRATION COMPLETE - V6 MVP');
+console.log('═══════════════════════════════════════════════════\n');
+console.log(`📊 SUMMARY:`);
+console.log(`   Total Events:     ${summary.total_events}`);
+console.log(`   Agents Executed:  ${summary.agents_count}`);
+console.log(`   Errors:           ${summary.errors_count}`);
+console.log(`   Checkpoints:      ${summary.checkpoints.pass} pass | ${summary.checkpoints.fail} fail | ${summary.checkpoints.skip} skip`);
+console.log(`   Duration:         ${Math.floor(summary.duration_s / 60)}m ${summary.duration_s % 60}s (${summary.duration_s}s total)`);
+console.log('');
+console.log('📅 VIEW TIMELINE:');
+console.log('   ./scripts/viewPulse.sh');
+console.log('');
+console.log('📝 LOGS:');
+console.log('   observability-pulse.jsonl');
+console.log('');
+
+if (summary.errors_count > 0) {
+  console.log('⚠️  ERRORS DETECTED - Review timeline for details');
+  console.log('');
+} else {
+  console.log('✅ NO ERRORS - Implementation successful!');
+  console.log('');
+}
+
+console.log('🎯 NEXT STEPS:');
+console.log('   1. Review implementation: git diff');
+console.log('   2. Manual testing: pnpm dev');
+console.log('   3. Create PR: gh pr create');
+console.log('');
+console.log('═══════════════════════════════════════════════════');
+```
+
+---
+
+### Step 8: User Notification
+
+Display completion message:
+
+```
+✅ /speckit.final COMPLETE
+
+**Workflow:** V6 MVP (Sequential Execution)
+**Agents:** ${agents.length} executed
+**Duration:** ${Math.floor(summary.duration_s / 60)}m ${summary.duration_s % 60}s
+**Status:** ${summary.errors_count === 0 ? 'SUCCESS ✅' : 'ERRORS ⚠️'}
+
+**Checkpoints:**
+- Build: ${summary.checkpoints.pass > 0 ? 'PASS ✅' : 'FAIL ❌'}
+- Lint: [see logs]
+- Test: [see logs]
+
+**Observability:**
+- Timeline: ./scripts/viewPulse.sh
+- Logs: observability-pulse.jsonl
+
+**Next Steps:**
+1. Review implementation: git diff
+2. Manual testing: pnpm dev
+3. If satisfied: gh pr create
+4. If issues: Review timeline + fix + re-run
+
+**Time Saved vs V5.2.1:** -5 to -10 minutes (no manual copy-paste) ✅
+**Zero Copy-Paste Errors:** Automation eliminates risk ✅
+
+🚀 V6 MVP - Full Automation Achieved!
+```
+
+---
+
+## Error Handling
+
+### If Prerequisites Missing
+
+```
+❌ Prerequisites missing:
+
+Missing files:
+- ORCHESTRATION.md (run /speckit.agents first)
+- constitution.md (run /speckit.constitution first)
+- tasks.md (run /speckit.tasks first)
+
+**STOP:** Cannot proceed without prerequisites.
+**Fix:** Run missing commands above, then retry /speckit.final
+```
+
+### If Agent Fails
+
+```
+❌ Agent ${agentName} failed
+
+**Error:** ${error.message}
+**Strike:** ${strikeCount}/3
+
+**Attempted Fixes:**
+1. ${fix1}
+2. ${fix2}
+
+**Action:** ${strikeCount < 3 ? 'Retrying with alternative approach...' : 'ESCALATED TO HUMAN'}
+
+**Logs:** observability-pulse.jsonl
+**Timeline:** ./scripts/viewPulse.sh
+```
+
+### If Checkpoint Fails
+
+```
+❌ Checkpoint ${gate} FAILED for ${agentName}
+
+**Gate:** ${gate} (${priority})
+**Exit Code:** ${exitCode}
+**Error:** ${stderr}
+
+**Action:** ${priority === 'P0' ? 'BLOCKING - Fix required before continuing' : 'DOCUMENTED - Continue with caution'}
+
+**Fix Required:**
+${priority === 'P0' ? 'YES - Implementation stopped until resolved' : 'NO - Continue, fix in next iteration'}
+
+**Logs:** observability-pulse.jsonl (checkpoint event logged)
+```
+
+---
+
+## Implementation Notes
+
+**V6 MVP = Sequential Execution:**
+- Agents run one after another (backend → frontend → testing)
+- Simpler to debug, easier to reason about
+- Duration: Same as V5.2.1 (~3-4h) but ZERO manual overhead
+
+**V6.1 Future = Parallel Execution:**
+- Agents run simultaneously (backend || frontend || testing)
+- 2× faster (~1.5-2h) but more complex
+- Requires conflict resolution, filesystem coordination
+- Decision: GO/NO-GO after MVP validation
+
+**Why Sequential First:**
+- Proven pattern (V5.2.1 works)
+- Easier debugging (one agent at a time)
+- Validate automation before optimization
+- Rollback safety (if V6 MVP fails → V5.2.1 still available)
+
+---
+
+## Success Metrics
+
+**Must-Have (P0):**
+- ✅ Reads ORCHESTRATION.md correctly
+- ✅ Launches 3 agents sequentially
+- ✅ Runs checkpoints (build P0, lint P1, test P2)
+- ✅ Logs to observability-pulse.jsonl
+- ✅ Zero manual intervention required
+
+**Should-Have (P1):**
+- ✅ Timeline viewer works (./scripts/viewPulse.sh)
+- ✅ Duration comparable to V5.2.1
+- ✅ Error handling robust (3-strike rule)
+
+**Nice-to-Have (P2):**
+- ⏳ Memory updates automatic (agents call /update-memory)
+- ⏳ Rollback automatic (if checkpoint fails)
+- ⏳ Parallel execution (V6.1 future)
+
+---
+
+**Version:** V6 MVP "Final Automation"
+**Status:** Ready for Jour 2 implementation
+**ROI:** -5 to -10 minutes + 0 copy-paste errors = **100% overhead elimination** ✅

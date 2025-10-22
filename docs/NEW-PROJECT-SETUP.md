@@ -39,16 +39,26 @@ This file:
 
 ---
 
-## Step 3: Copy Scripts & Infrastructure
+## Step 3: Copy Archon Infrastructure (MANDATORY for /speckit.final)
 
 ```bash
+# Copy complete .claude infrastructure (commands + agents)
+cp -r ~/Documents/DEV/archon-orchestrator/.claude ./
+
 # Copy observability infrastructure (optional but recommended)
 cp -r ~/Documents/DEV/archon-orchestrator/scripts ./
 
 # This gives you:
-# - pulseLogger.cjs (observability logging)
-# - viewPulse.sh (timeline viewer)
+# - .claude/commands/ (all /speckit.* commands including /speckit.final)
+# - .claude/agents/ (backend/frontend/prompt-specialist sub-agents)
+# - scripts/pulseLogger.cjs (observability logging)
+# - scripts/viewPulse.sh (timeline viewer)
 ```
+
+**Why .claude/ is MANDATORY:**
+- `/speckit.final` requires project-level `.claude/commands/speckit.final.md`
+- Sub-agents require `.claude/agents/` (backend-specialist, frontend-specialist, etc.)
+- Without this, Terminal B (GLM-4.6) won't have access to automation commands
 
 ---
 
