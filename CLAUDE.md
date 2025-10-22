@@ -111,27 +111,10 @@ You guide users through **Workflow V6 MVP** for building production MVPs with ch
 **Phase 3: Implementation (2h45-3h - Mac LOCAL 99%) ⭐ V6.1.3 FULL AUTOMATION + OBSERVABILITY**
 ```bash
 /speckit.final
-# V6.1.3 - Complete automation + observability:
-# → Lit ORCHESTRATION.md automatiquement ✅
-# → Parse agents + tasks allocation ✅
-# → Lance sub-agents séquentiellement (backend → frontend → testing) ✅
-# → Lit CLAUDE.md automatiquement ✅
-# → Checkpoints MANDATORY every 10 tasks (5 gates):
-#   ✅ Gate P0: Build Check (BLOCKER - exit 1 if fails)
-#   ✅ Gate P1: ESLint (BLOCKER - mcp__eslint__lint-files)
-#   ✅ Gate P2: Context7 (IF new library - mcp__context7__get-library-docs)
-#   ✅ Gate P3: Memory (VERIFICATION - project-memory.md updated)
-#   ✅ Gate P4: Observability (TIMELINE - pulseLogger.cjs logging) 🆕 V6.1.3
-# → Sub-agents execution (Haiku 4.5 optimized for speed)
-# → Auto-documentation (5-15 decisions in project-memory.md)
-# → Task tracking automatique (sed commands)
-# → Real-time observability (observability-pulse.jsonl JSONL log)
-# → Timeline logging (./scripts/viewPulse.sh color-coded viewer)
-# → CLI monitoring (node scripts/pulseLogger.cjs summary)
-#
-# Validated: 2h45 on AdProof.ai (99 tasks, 150+ files, 12K+ lines)
-# Token savings: -77% with GLM-4.6 (450K→100K tokens)
-# Time saved: -5-10 min overhead + -60% execution
+# Auto: ORCHESTRATION.md → Parse agents/tasks → Launch sequential (backend→frontend→testing)
+# Checkpoints every 10 tasks: P-1 Security, P0 Build, P1 Lint, P2 Context7, P3 Memory, P4 Observability
+# Output: Auto-docs (project-memory.md), task tracking, observability-pulse.jsonl, timeline (viewPulse.sh)
+# Validated: AdProof.ai 2h45 (99 tasks, 150+ files, 12K+ lines) | Token -77% | Time -60%
 ```
 
 **Phase 4: Design Import (15 min) ⭐ COMPETITIVE ADVANTAGE**
@@ -158,108 +141,45 @@ You guide users through **Workflow V6 MVP** for building production MVPs with ch
 ### Anti-Hallucination Principles
 
 **Before proposing workflow changes:**
+1. Read sources: ⭐WORKFLOW-V4-MULTI-DEVICE.md | START-HERE.md | CLAUDE.md
+2. Verify: Compatible? Simplification OR over-engineering? Clear ROI?
+3. Reference: Cite file section, show BEFORE/AFTER, justify
+4. Wait approval: Explain → Wait OK → DON'T implement without agreement
 
-1. **Read sources of truth:**
-   - ⭐ WORKFLOW-FINAL-V4-MULTI-DEVICE.md (absolute authority)
-   - START-HERE.md (entry point)
-   - CLAUDE.md (this file)
+**If workflow decided:** ❌ DON'T propose alternatives | ✅ DO apply validated ("Using X per WORKFLOW-V4 Phase Y")
 
-2. **Verify coherence:**
-   - Compatible with existing workflow?
-   - Simplification OR over-engineering?
-   - Clear ROI OR speculation?
+**If native tool exists:** ❌ DON'T create 200-line script | ✅ DO use native (`claude mcp add-from-claude-desktop`)
 
-3. **Reference explicitly:**
-   - Cite file section
-   - Show BEFORE/AFTER
-   - Justify change
-
-4. **Wait for approval:**
-   - Explain proposal to user
-   - Wait explicit OK
-   - DON'T implement without agreement
-
-**If workflow already decided:**
-- ❌ DON'T propose alternatives ("Option A or B?")
-- ✅ DO apply validated workflow ("Using X per WORKFLOW-V4 Phase Y")
-
-**If native tool exists:**
-- ❌ DON'T create 200-line custom script
-- ✅ DO use native command (`claude mcp add-from-claude-desktop`)
-
-**Rule of thumb:** Validated workflow = keep simple. New tool = justify 10× value.
+**Rule:** Validated workflow = keep simple. New tool = justify 10× value.
 
 ---
 
 ## 🎨 DESIGN SYSTEM PHILOSOPHY ⭐
 
-### CRITICAL: Design/Dev Decoupling from Day 1
+**CRITICAL: Design/Dev Decoupling from Day 1 - COMPETITIVE ADVANTAGE vs Lovable/Bolt/v0**
 
-**⭐ COMPETITIVE ADVANTAGE vs Generic AI Tools (Lovable/Bolt/v0)**
+**Philosophy:** "Claude Code = logic. Human = brand. 15-min merge = custom product."
 
-**Core Philosophy:**
-> "Claude Code generates logic. Human crafts brand. 15-minute merge = custom product."
-
-**Problem AI Tools:**
-- Generate functional code BUT generic design (blue buttons, Inter font)
-- Design coupled with code → customization = 1-2 days refactor nightmare
-- Hardcoded `className="bg-blue-600"` → brittle, unmaintainable
+**Problem (Generic AI Tools):** Functional code BUT generic design (blue buttons, Inter font) → Customization = 1-2d refactor nightmare (hardcoded `bg-blue-600`)
 
 **Archon Solution:**
-- **Day 1:** `/speckit.design` → placeholder tokens (blue #3B82F6)
-- **Day 2-3:** Claude develops using CSS variables ONLY (`bg-primary-500`)
-- **Day 4:** Human designs custom brand in parallel (violet #8B5CF6)
-- **Day 4 (15 min):** `/import-design custom-tokens.json` → UI transforms
+- Day 1: `/speckit.design` → placeholder tokens (blue #3B82F6)
+- Day 2-3: Develop with CSS variables ONLY (`bg-primary-500`)
+- Day 4: Designer crafts custom brand in parallel (violet #8B5CF6)
+- Day 4 (15 min): `/import-design` → UI transforms (automatic, 0 code changes)
 
-### Key Rules (ENFORCE ALWAYS)
+**ENFORCE ALWAYS:**
+✅ MUST: Generate design system Day 1 (NEVER skip) | Use CSS variables for ALL (colors, fonts, spacing) | NEVER hardcode (`bg-blue-600` → `bg-primary-500`) | Document tokens in spec.md | Remind user: "Designer can work parallel now"
 
-✅ **YOU MUST:**
-- Generate design system via `/speckit.design` on Day 1 (NEVER skip)
-- Use CSS variables for ALL design decisions (colors, fonts, spacing)
-- NEVER hardcode colors: `bg-blue-600` → use `bg-primary-500`
-- Document tokens in spec.md design section (ALWAYS)
-- Remind user: "Designer can work in parallel now"
+❌ MUST NOT: Skip design system | Hardcode ANY color/font | Mix hardcoded + tokens | Modify tokens during dev
 
-❌ **YOU MUST NOT:**
-- Skip design system in planning phase (causes friction later)
-- Hardcode ANY color/font in components (brittle, unmaintainable)
-- Mix hardcoded + tokens (consistency = critical)
-- Modify tokens during dev (wait for final design merge)
+**Example:**
+✅ `<button className="bg-primary-500 text-neutral-50 font-heading">Submit</button>` → /import-design changes primary-500: #3B82F6 → #8B5CF6 (0 code changes)
+❌ `<button className="bg-blue-600 text-white font-sans">Submit</button>` → Brand change = touch 50+ components (1-2d nightmare)
 
-### Example Code
+**ROI:** Time: 15 min vs 1-2d (-95%) | Risk: 0 breaking changes (production-safe) | Quality: Custom vs generic (client perception: "real product, not template" = deal closer)
 
-**✅ GOOD (Future-proof):**
-```tsx
-<button className="bg-primary-500 text-neutral-50 font-heading rounded-md">
-  Submit
-</button>
-// When /import-design merges violet brand:
-// primary-500: #3B82F6 → #8B5CF6 (automatic, 0 code changes)
-```
-
-**❌ BAD (Coupled design):**
-```tsx
-<button className="bg-blue-600 text-white font-sans rounded-md">
-  Submit
-</button>
-// To change brand: touch 50+ components = 1-2 days nightmare
-```
-
-### Why Competitive Advantage
-
-| AI Tool | Speed | Design | Result |
-|---------|-------|--------|--------|
-| **Lovable/Bolt/v0** | Fast (3-4h) | Generic (blue template) | Commodity |
-| **Archon Workflow** | Fast (3-4h) | Custom (client brand) | Professional |
-
-**Client perception:** "This looks like a real product, not a template" = **deal closer**
-
-**ROI Validated:**
-- Time: 15 min merge vs 1-2 days refactor = **-95%**
-- Risk: 0 breaking changes vs 20-30% components touched = **production-safe**
-- Quality: Custom brand vs generic = **differentiation**
-
-**Complete docs:** [GOLDEN-PATTERNS.md](./docs/GOLDEN-PATTERNS.md) - Section Design/Dev Decoupling
+**Docs:** [GOLDEN-PATTERNS.md](./docs/GOLDEN-PATTERNS.md) - Design/Dev Decoupling
 
 ---
 
@@ -343,216 +263,70 @@ Optional (project-dependent):
 
 ### `/speckit.final` - Implementation Orchestration 🆕 V6 MVP
 
-**Version:** V6 MVP "Final Automation"
-**Status:** ✅ Production Ready (validated on AdProof.ai MVP)
-**Purpose:** Automate complete implementation workflow (eliminates manual F4 copy-paste step)
+**Status:** ✅ Production Ready | **Purpose:** Full automation (0 manual copy-paste)
 
-**What It Does:**
 ```bash
-/speckit.final
-# Optional: specify project path
-# /speckit.final ../adproof/
+/speckit.final [optional-project-path]
 ```
 
-**Workflow (8 Steps):**
+**Prerequisites (8 files):** ORCHESTRATION.md, constitution.md, spec.md, tasks.md, plan.md, design-tokens.json, project-memory.md, observability-pulse.jsonl (auto-created)
 
-1. **Parse Project Path** - Determines target directory (current or specified)
-2. **Verify Prerequisites** - Checks 8 required files with smart path detection
-3. **Initialize Pulse Logger** - Sets up observability (observability-pulse.jsonl)
-4. **Parse ORCHESTRATION.md** - Extracts agents + task allocations
-5. **Load Context** - Reads constitution, spec, tasks, design tokens
-6. **Execute Agents** - Launches sub-agents sequentially (backend → frontend → testing)
-7. **Final Validation** - Runs build + lint + test checkpoints
-8. **Generate Summary** - Displays metrics + timeline + next steps
-
-**Prerequisites (8 files required):**
-
-| File | Location | Generated By |
-|------|----------|--------------|
-| ORCHESTRATION.md | Root | `/speckit.agents` |
-| constitution.md | `.specify/memory/` | `/speckit.constitution` |
-| spec.md | `specs/001-mvp/` OR `.specify/memory/` | `/speckit.specify` |
-| tasks.md | `specs/001-mvp/` | `/speckit.tasks` |
-| plan.md | `specs/001-mvp/` | `/speckit.plan` |
-| design-tokens.json | `design/` | `/speckit.design` |
-| project-memory.md | Root OR `.specify/memory/` | `/speckit.init` |
-| observability-pulse.jsonl | Root | Auto-created if missing |
-
-**Smart Path Detection:**
-- Handles Spec-Kit location inconsistencies
-- Searches 2 locations for spec.md and project-memory.md
-- Auto-creates observability-pulse.jsonl if needed
-- Fails gracefully with explicit error messages
+**Workflow:** Parse path → Verify files → Init logger → Parse agents → Load context → Execute agents (sequential: backend→frontend→testing) → Validate (build/lint/test) → Summary
 
 **Agent Execution:**
+- Context buffer check (>150K tokens → auto-save bundle)
+- Implements allocated tasks (T001-T035)
+- Checkpoints every 10 tasks (P-1 Security, P0 Build, P1 Lint, P2 Context7, P3 Memory, P4 Observability)
+- Updates tasks.md + project-memory.md + observability-pulse.jsonl
 
-Each agent:
-1. **Context Buffer Check** - Before launch, estimate context size (files + conversation)
-   - If > 150K tokens → auto-save bundle (insurance against overflow)
-   - Pattern: Compound Engineering context management (AI Labs)
-2. Receives allocated tasks (e.g., T001-T035)
-3. Reads full context (constitution, spec, design tokens, CLAUDE.md)
-4. Implements features following quality gates
-5. Runs checkpoints every 10 tasks (build, lint, Context7, memory, observability)
-6. Updates task checkboxes in tasks.md
-7. Documents decisions in project-memory.md
-8. Logs events to observability-pulse.jsonl
+**Quality Gates Enforced:**
+- **P-1 Security:** OWASP LLM (bashSandbox.cjs) - BLOCKER
+- **P0 Build:** Exit 1 if fails - BLOCKER
+- **P1 Lint:** mcp__eslint__lint-files - BLOCKER
+- **P2 Context7:** IF new library
+- **P3 Memory:** project-memory.md updated
+- **P4 Observability:** pulseLogger.cjs logging
 
-**Context Buffer Management:** 🆕 V6.1.4
-- Auto-check before each agent launch (estimates ~tokens based on file sizes)
-- Threshold: 150K tokens (75% of 200K limit) triggers warning + bundle
-- Bundle saved: `.agents/context-bundles/checkpoint-before-{agent}-{timestamp}.md`
-- Recovery: If overflow → `/loadbundle` → 60-70% context recovered in 15 min
-- Non-blocking: Agent execution continues (insurance only)
+**Validated (AdProof.ai):** 2h45 duration, 99 tasks, 150+ files, 12K+ lines | Build ✅ Lint ✅ Tests ✅
 
-**Execution Mode:**
-- **V6 MVP:** Sequential (backend → frontend → testing) - safe, predictable
-- **V6.1 Future:** Parallel (2× faster) - more complex, needs validation
+**When to use:** Planning complete, all prerequisites exist | **When NOT:** Prerequisites missing, want manual control
 
-**Observability:**
-
-Real-time logging via `scripts/pulseLogger.cjs`:
-```javascript
-pulse.logStart(agentId, context)          // Agent startup
-pulse.logEnd(agentId, result)             // Agent completion + metrics
-pulse.logError(agentId, error)            // Errors with stack traces
-pulse.logCheckpoint(gate, status, details) // Quality gate results
-pulse.getSummary()                         // Summary stats
-```
-
-View timeline:
-```bash
-./scripts/viewPulse.sh
-# Displays: Color-coded timeline, checkpoint status, duration, errors
-```
-
-**Quality Gates (Enforced):**
-
-| Gate | Priority | Action |
-|------|----------|--------|
-| **Security** | P-1 BLOCKER | OWASP LLM validation (bashSandbox.cjs) 🆕 V6.1.5 |
-| **Build** | P0 BLOCKER | Exit 1 if fails (must compile) |
-| **Lint** | P1 BLOCKER | ESLint via mcp__eslint__lint-files |
-| **Context7** | IF new library | Fetch docs via mcp__context7__get-library-docs |
-| **Memory** | P2 VERIFICATION | Ensure project-memory.md updated |
-| **Observability** | P3 TIMELINE | pulseLogger.cjs logging |
-| **Policy** | P4 VALIDATION | JSON Schema gates (validateGates.cjs) 🆕 V6.1.5 |
-
-**Validated Results (AdProof.ai MVP):**
-
-| Metric | Value |
-|--------|-------|
-| **Duration** | 2h45 (vs 6-7h estimate = -60%) |
-| **Tasks** | 99 completed |
-| **Agents** | 3 executed (backend, frontend, testing) |
-| **Files** | 150+ created |
-| **Lines** | 12,000+ written |
-| **Components** | 15+ React components |
-| **Tests** | 50+ tests written (TDD approach) |
-| **Build** | ✅ PASS (0 errors) |
-| **Lint** | ✅ PASS (4 warnings documented) |
-| **Design Tokens** | 100% (0 hardcoded colors) |
-| **Observability** | 19 events logged |
-
-**Time Savings:**
-- **Overhead:** -5 to -10 min (manual copy-paste eliminated)
-- **Execution:** -60% on AdProof test (Haiku 4.5 optimization)
-- **Risk:** 0 copy-paste errors (automation removes human error)
-
-**When to Use:**
-
-✅ **Use `/speckit.final` when:**
-- Planning phase complete (all 8 prerequisites exist)
-- Ready for full implementation (3-4h execution)
-- Want automated orchestration (0 manual steps)
-
-❌ **Don't use `/speckit.final` when:**
-- Prerequisites incomplete (run missing `/speckit.*` commands first)
-- Want manual control (use `/implement` with manual prompt)
-- Testing single agent (use Task tool directly)
-
-**Rollback to V5.2.1:**
-
-V6 MVP maintains backward compatibility:
-- `implementation-prompt.md` still generated by `/speckit.agents`
-- Can manually run `/implement [paste prompt]` if needed
-- No breaking changes to existing workflow
-
-**Troubleshooting:**
-
-| Issue | Solution |
-|-------|----------|
-| Prerequisites missing | Run missing `/speckit.*` commands |
-| Path detection fails | Move files to standard locations OR verify smart paths |
-| Agent timeout (>30 min) | Monitor `observability-pulse.jsonl`, check task allocation |
-| Build fails after | Review P0 checkpoint logs, fix errors manually |
-| JSONL parse error | Use pulseLogger.cjs API only (don't edit manually) |
-
-**Complete docs:**
-- [CHANGELOG-V6-MVP.md](./CHANGELOG-V6-MVP.md) - Full results and metrics
-- [WORKFLOW-V6-MVP.md](./WORKFLOW-V6-MVP.md) - Complete workflow guide
-- `.claude/commands/speckit.final.md` - Command implementation (331 lines)
+**Docs:** [WORKFLOW-V6-MVP.md](./docs/WORKFLOW-V6-MVP.md) | `.claude/commands/speckit.final.md` (331 lines)
 
 ---
 
-### Quality Gates P-1 to P4 (V6.1.5 Complete)
+### Quality Gates P-1 to P5 (V6.1.5 Complete)
 
 **Standards (Enforce Always):**
+- **P-1 Security:** OWASP LLM (bashSandbox.cjs validate/scan) - BLOCKER 🆕
+- **P0 Build:** Code compiles - BLOCKER (exit 1 if fail)
+- **P1 Lint:** mcp__eslint__lint-files - BLOCKER (TypeScript strict, no `any` except justified)
+- **P2 Context7:** IF new library - mcp__context7__get-library-docs
+- **P3 Memory:** project-memory.md updated (WHY decisions)
+- **P4 Observability:** pulseLogger.cjs logging (agent coordination)
+- **P5 Policy:** validateGates.cjs - JSON Schema compliance 🆕
 
+**Commands:**
 ```bash
-P-1: Security     # BLOCKER if fail (OWASP LLM validation) - exit 1 🆕 V6.1.5
-P0: Build        # BLOCKER if fail (code must compile) - exit 1
-P1: Lint         # BLOCKER (mcp__eslint__lint-files) - TypeScript strict, no `any` except justified
-P2: Context7     # VERIFICATION (IF new library - mcp__context7__get-library-docs)
-P3: Memory       # VERIFICATION (project-memory.md updated with WHY decisions)
-P4: Observability # TIMELINE (pulseLogger.cjs logging - agent coordination)
-P5: Policy       # VALIDATION (JSON Schema gates - validateGates.cjs) 🆕 V6.1.5
-```
-
-**Security Commands (Gate P-1):** 🆕 V6.1.5
-```bash
-# BEFORE executing ANY bash command (agent or manual)
+# Security (P-1)
 node scripts/bashSandbox.cjs validate "<command>"
-
-# Scan input files for malicious patterns
 node scripts/bashSandbox.cjs scan specs/001-mvp/spec.md
 
-# Validate policy gates (P0-P4 compliance)
+# Observability (P4)
+node scripts/pulseLogger.cjs start <agent> '{"tasks":35}'
+node scripts/pulseLogger.cjs checkpoint <gate> <status> '{"data":"..."}'
+node scripts/pulseLogger.cjs end <agent> '{"duration_s":450}'
+./scripts/viewPulse.sh  # Timeline viewer
+
+# Policy (P5)
 node scripts/validateGates.cjs validate gates-data.json
 ```
 
-**Observability Commands (Gate P4):**
-```bash
-# Agent start (ONCE per agent)
-node scripts/pulseLogger.cjs start backend-specialist '{"tasks":35}'
+**Minimum:** P0 Build ✅ + P1 Lint ✅ (P2-P5 verification)
 
-# Checkpoints (P0/P1/P2/P3 after every 10 tasks)
-node scripts/pulseLogger.cjs checkpoint build pass '{"exit_code":0}'
-node scripts/pulseLogger.cjs checkpoint lint pass '{"warnings":3,"errors":0}'
-node scripts/pulseLogger.cjs checkpoint context7 skip '{"reason":"no new libraries"}'
-node scripts/pulseLogger.cjs checkpoint memory pass '{"decisions_documented":2}'
+**Standards:** E1 Architecture-First (ADR) | E2 Types (strict TypeScript) | E3 Tests (TDD) | E8 Gates | E11 Escalation (3-strike) | E16 Zero Trust (proofs)
 
-# Agent end (ONCE per agent)
-node scripts/pulseLogger.cjs end backend-specialist '{"duration_s":450,"tasks_completed":35}'
-
-# Summary (anytime)
-node scripts/pulseLogger.cjs summary
-
-# Timeline viewer (after completion)
-./scripts/viewPulse.sh
-```
-
-**Minimum acceptable:** P0 Build ✅ + P1 Lint ✅ (P2-P4 verification)
-
-**Quality Standards:**
-- **E1 Architecture-First:** ADR documentation (design decisions recorded)
-- **E2 Types Anti-Hallucination:** TypeScript strict mode (types explicit)
-- **E3 Tests Integration First:** TDD strict (core flows tested)
-- **E8 Quality Gates:** P0-P4 enforced
-- **E11 Error Escalation:** 3-strike rule + rollback
-- **E16 Zero Trust:** Proofs required (build logs, test results)
-
-**Complete docs:** [ZERO-TRUST.md](./docs/ZERO-TRUST.md)
+**Docs:** [ZERO-TRUST.md](./docs/ZERO-TRUST.md)
 
 ---
 
@@ -579,45 +353,25 @@ node scripts/pulseLogger.cjs summary
 
 ### Navigation Rapide
 
-| Je veux... | Lire... |
-|------------|---------|
-| **Démarrer session** | [START-HERE.md](./START-HERE.md) |
-| **Workflow complet V4** | [WORKFLOW-FINAL-V4-MULTI-DEVICE.md](./docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md) ⭐ |
-| **Index navigation** | [INDEX-FILES-V4.md](./INDEX-FILES-V4.md) |
-| **Setup OAuth** | [CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md](./docs/CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md) |
-| **Setup Jules** | [JULES-SECURITY-GUARDIAN-SETUP.md](./docs/JULES-SECURITY-GUARDIAN-SETUP.md) |
-| **Leçons apprises** | [RETOUR-EXPERIENCE-REVIEWRESCUE-2025-10-08.md](./docs/RETOUR-EXPERIENCE-REVIEWRESCUE-2025-10-08.md) |
-| **Patterns agentic** | [AGENTIC-PATTERNS.md](./docs/AGENTIC-PATTERNS.md) |
-| **Sub-agents orchestration** | [SUB-AGENTS-MASTERY.md](./docs/SUB-AGENTS-MASTERY.md) |
-| **Quality gates** | [ZERO-TRUST.md](./docs/ZERO-TRUST.md) |
-| **Context management** | [CONTEXT-MANAGEMENT-BEST-PRACTICES.md](./docs/CONTEXT-MANAGEMENT-BEST-PRACTICES.md) |
-| **Debug problème** | [TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md) |
-| **Zen MCP Multi-IA** | [ZEN-MCP-WORKFLOW-ORCHESTRATION.md](./docs/ZEN-MCP-WORKFLOW-ORCHESTRATION.md) |
-| **Design Decoupling** | [GOLDEN-PATTERNS.md](./docs/GOLDEN-PATTERNS.md) - Section Design/Dev Decoupling |
+**Entry points:** [START-HERE.md](./START-HERE.md) | ⭐[WORKFLOW-V4-MULTI-DEVICE.md](./docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md) | [INDEX-FILES-V4.md](./INDEX-FILES-V4.md)
+
+**Setup:** [OAuth Guide](./docs/CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md) | [Jules Security](./docs/JULES-SECURITY-GUARDIAN-SETUP.md)
+
+**Patterns:** [Agentic Patterns](./docs/AGENTIC-PATTERNS.md) | [Golden Patterns](./docs/GOLDEN-PATTERNS.md) | [Sub-Agents Mastery](./docs/SUB-AGENTS-MASTERY.md) | [Zen MCP](./docs/ZEN-MCP-WORKFLOW-ORCHESTRATION.md)
+
+**Quality:** [Zero Trust](./docs/ZERO-TRUST.md) | [Context Mgmt](./docs/CONTEXT-MANAGEMENT-BEST-PRACTICES.md) | [Troubleshooting](./docs/TROUBLESHOOTING.md)
+
+**Lessons:** [ReviewRescue Retex](./docs/RETOUR-EXPERIENCE-REVIEWRESCUE-2025-10-08.md)
 
 ---
 
 ### Sonnet 4.5 Capabilities
 
-**Source:** https://www.anthropic.com/news/claude-sonnet-4-5
+**Source:** https://www.anthropic.com/news/claude-sonnet-4-5 (2025-09-29)
 
-**Key Improvements (2025-09-29):**
-- ✅ **30+ hours focus** - Multi-step tasks without context loss
-- ✅ **+18% planning** - tasks.md breakdown optimized
-- ✅ **+12% end-to-end** - Complete implementation
-- ✅ **0% error rate** (vs 9% before) - Zero code hallucination
-- ✅ **Parallel tool execution** - Bash + Read + Edit simultaneous
-- ✅ **Self-testing** - Agent tests its own code automatically
-- ✅ **Checkpoints + rollback** - Progress saved
+**Key:** 30+ hours focus | +18% planning | +12% end-to-end | 0% error rate (vs 9%) | Parallel tools | Self-testing | Checkpoints
 
-**Impact Workflow:**
-- Bootstrap: 2-3 min → **1-2 min** (-33%)
-- T002 Design: 5-10 min → **2-5 min** (-50%)
-- Implementation: 4-6h → **3-4h** (-33%)
-- Code errors: 9% → **0%** (-100%)
-- Reliability: Baseline → **+12%**
-
-**Result:** Complete MVP **3-4h** (vs 2-3 days manual)
+**Workflow Impact:** Bootstrap -33% | Design -50% | Implementation -33% | Errors -100% | Complete MVP 3-4h (vs 2-3d manual)
 
 ---
 
@@ -665,427 +419,194 @@ node scripts/pulseLogger.cjs summary
 
 ## 🧠 4. DYNAMIC MEMORY V5 (Agent Self-Documentation) 🆕
 
-**Status:** ✅ Production Ready (2025-10-15)
-**Philosophy:** "Code shows WHAT. Comments show HOW. **Memory shows WHY.**"
+**Status:** ✅ Production Ready | **Philosophy:** "Code = WHAT, Comments = HOW, **Memory = WHY**"
 **ROI:** -90% onboarding, -75% refactoring research, -95% audit compliance
 
-### Overview
+**Concept:** Living documentation that evolves with code (Phase 0 creation → Phase 2 agent updates → always current)
 
-**Dynamic Memory = Living documentation that evolves with code.**
+**File:** `project-memory.md` (10 sections: Identity, ADR, Design System, Patterns, Compliance, Critical Context, Runtime Decisions, Issues, Session Notes, References)
 
-**Traditional docs:** Created once → Never updated → Obsolete after 1 month
+**When agents call `/update-memory`:**
+✅ Architecture decisions (DB index, state mgmt, deployment)
+✅ Performance optimizations (caching, query optimization, code splitting)
+✅ Security measures (rate limiting, auth, encryption)
+✅ Trade-offs accepted (simplicity vs performance, tech debt)
+✅ Alternatives rejected (document WHY chosen option)
 
-**Dynamic Memory V5:** Created Phase 0 → **Agents write decisions Phase 2** → Always current
+❌ DON'T document: Trivial changes, code comments, ADR duplicates, WIP
 
-### File: project-memory.md
+**Entry Quality Requirements:**
+1. WHY documented (not just WHAT)
+2. Trade-offs explicit (pros AND cons)
+3. Alternatives considered (+ rejection reasons)
+4. Validation concrete (numbers, tests, evidence)
+5. Code snippet included
+6. Quantified when possible (-80% time, +10% space)
 
-**Created automatically:** `/zen-roundtable` generates initial state (Phase 0)
+**Example entry:** `#### 2025-10-15 GIN Index on JSONB` → Decision, Reason, Trade-offs (✅ -80% query time, ❌ +10% disk), Alternatives (B-tree rejected, ElasticSearch rejected), Validation (tested 100K products, p95 120ms)
 
-**Sections:**
-1. **Project Identity** (vision, client context, timeline)
-2. **Architectural Decisions (ADR)** (tech stack, architecture pattern, auth strategy)
-3. **Design System** (color palette, typography, decoupling status)
-4. **Patterns Applied** (Design Decoupling, Zen MCP, Sub-Agents, this pattern)
-5. **Compliance & Security** (RGPD/HIPAA, security measures, Jules scan)
-6. **Critical Context** (constraints, risks, stakeholders, KPIs)
-7. 🆕 **Runtime Decisions** (agent-writable - WHY behind implementation)
-8. **Issues Encountered** (root cause, solution, prevention)
-9. **Session Notes** (chronological project history)
-10. **External References** (constitution, spec, patterns docs)
+**Benefits:**
+- Self-documenting (never obsolete)
+- Onboarding: 2-3h vs 2-3d (-90%)
+- Refactoring: Skip redundant tests (-75%)
+- Audit: 5 min vs 1-2d (-95%)
+- Intentionality preserved (WHY > WHAT/HOW)
 
-### Phase 2: Implementation (Self-Documentation)
+**Command:** `/update-memory` (interactive prompts: section, decision, reason, trade-offs, alternatives, validation)
 
-**CRITICAL: Agents document significant decisions during implementation.**
-
-**When to call `/update-memory`:**
-
-✅ **Architecture decision made:**
-- Database index strategy (GIN vs B-tree vs Hash)
-- State management approach (Context vs Zustand vs Redux)
-- Deployment strategy (Vercel vs Railway vs AWS)
-
-✅ **Performance optimization implemented:**
-- Caching layer added (Redis, in-memory, edge)
-- Database query optimized (index, denormalization, materialized view)
-- Code splitting implemented (dynamic imports, lazy loading)
-
-✅ **Security measure added:**
-- Rate limiting configured (per-user, per-IP, global)
-- Authentication flow implemented (OAuth, JWT, session)
-- Data encryption added (at-rest, in-transit)
-
-✅ **Trade-off accepted:**
-- Simplicity over performance (acceptable for MVP)
-- Technical debt accepted (documented, estimated repay cost)
-- Speed over optimization (justified by timeline)
-
-✅ **Alternative rejected:**
-- Considered option A, chose option B (document WHY B > A)
-- Evaluated library X, used library Y (concrete reasons)
-
-❌ **DON'T call `/update-memory` for:**
-- Trivial changes (typo fixes, variable renames)
-- Implementation details already in code comments
-- Decisions already documented in ADR section (constitution/spec)
-- Work-in-progress (wait until decision finalized)
-
-### Template Quality Requirements
-
-**Every `/update-memory` entry MUST include:**
-
-1. **WHY documented** (not just WHAT was done)
-2. **Trade-offs explicit** (pros AND cons listed)
-3. **Alternatives considered** (not just default choice)
-4. **Validation concrete** (numbers, tests, evidence)
-5. **Code snippet included** (SQL DDL, TypeScript, config)
-6. **Quantified when possible** (-80% query time, +10% disk space)
-
-**Example GOOD entry:**
-
-```markdown
-#### 2025-10-15 Database Index Optimization
-
-**Agent:** backend-specialist
-
-**Decision:** Added GIN index on `metadata` JSONB column (table: `products`)
-
-```sql
-CREATE INDEX idx_products_metadata_gin ON products USING GIN (metadata jsonb_path_ops);
-```
-
-**Reason:** User search queries were slow (N+1 query pattern). GIN index optimizes JSONB `@>` operator.
-
-**Trade-offs:**
-- ✅ **Pros:** -80% query time (500ms→100ms), scales linearly, zero code changes
-- ❌ **Cons:** +10% disk space (~200MB for 100K products), slightly slower writes
-
-**Alternative Considered:**
-- B-tree index (rejected: not efficient for JSONB `@>`, 2× slower than GIN)
-- ElasticSearch (rejected: overkill for MVP, +€50/month cost)
-
-**Validation:**
-- Tested 100K products dataset
-- Ran `EXPLAIN ANALYZE`: index scan confirmed
-- Load tested 1000 req/s: p95 latency 120ms ✅
-- Monitored 48h: no degradation, cache hit rate 85%
-```
-
-### Workflow Integration
-
-**Phase 0: Multi-IA Roundtable**
-```bash
-/zen-roundtable "Brief: ..."
-# → Auto-creates project-memory.md v1 (initial state)
-# → Sections pre-filled: Identity, ADR, Patterns, Compliance, Critical Context
-```
-
-**Phase 2: Implementation (Agent Self-Documentation)**
-```bash
-[backend-specialist implements auth]
-
-# Agent documents decision
-/update-memory
-
-# Interactive prompts:
-# 1. Select section: Backend / Frontend / Testing / Design / DevOps
-# 2. Fill template: Decision, Reason, Trade-offs, Alternatives, Validation
-
-# Memory updated (append-only, timestamped)
-[project-memory.md now contains runtime decision + WHY]
-```
-
-**Phase 4: Design Import**
-```bash
-/import-design custom-tokens.json
-# Agent can call /update-memory to document design merge decision
-```
-
-**Month 6: New Developer Onboarding**
-```bash
-# New dev reads project-memory.md (2-3 min)
-# Understands:
-# - Why Supabase Auth (built-in security, -90% dev time)
-# - Why GIN index (JSONB performance optimization)
-# - Why TanStack Query (server state caching)
-# - Trade-offs accepted for each decision
-
-# Result: Contributing same day (vs 2-3 days without memory)
-```
-
-### Benefits
-
-**1. Self-Documenting System**
-- Documentation evolves with code (never obsolete)
-- WHY captured in real-time (not reconstructed 6 months later)
-
-**2. Onboarding Acceleration**
-- **Without memory:** 2-3 days (read code, guess intent, ask senior dev)
-- **With memory:** 2-3 hours (read memory, understand WHY, start contributing)
-- **ROI:** -90% onboarding time
-
-**3. Refactoring Safety**
-- **Without memory:** Test all alternatives (4h wasted redoing benchmarks)
-- **With memory:** Read memory → "GIN already tested vs B-tree" → Skip redundant work
-- **ROI:** -75% refactoring research time
-
-**4. Audit Compliance**
-- **Regulatory requirement (HIPAA, SOC2):** "Document security decisions with justification"
-- **Without memory:** Scramble through Git history (1-2 days per audit)
-- **With memory:** Read "Runtime Decisions > Backend > Auth Strategy" (5 min)
-- **ROI:** -95% audit compliance effort
-
-**5. Intentionality Preserved**
-- Code = WHAT (what is built)
-- Comments = HOW (how it's built)
-- **Memory = WHY** (why built this way)
-- **WHY > WHAT/HOW** (enables intelligent refactoring, not mechanical)
-
-### Command Reference
-
-```bash
-# Agent documents decision during implementation
-/update-memory
-
-# Interactive prompts guide agent through quality template
-# Result: Append-only memory entry (timestamped, structured)
-```
-
-### Related Documentation
-
-- **Template:** `templates/project-memory-template.md`
-- **Command:** `.claude/commands/update-memory.md`
-- **Pattern:** `docs/GOLDEN-PATTERNS.md` - Section "Dynamic Memory Pattern V5"
-- **Workflow:** `docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md` - Phase 2 Integration
+**Docs:** [GOLDEN-PATTERNS.md](./docs/GOLDEN-PATTERNS.md) - Dynamic Memory Pattern V5 | `templates/project-memory-template.md`
 
 ---
 
 ## 🔄 5. CONTEXT BUNDLES (Disaster Recovery) 🆕
 
-**Status:** ✅ Production Ready (2025-10-18)
-**Philosophy:** "Automatic save points for long-running agent sessions"
-**ROI:** -70% recovery time (15 min vs 2h45), 60-70% context recovered
-**Pattern Source:** Dev Dan - Context Engineering ADV2
+**Status:** ✅ Production Ready | **Philosophy:** "Automatic save points for long sessions"
+**ROI:** -70% recovery time (15 min vs 2h45), 60-70% context recovered | **Source:** Dev Dan - Context Engineering ADV2
 
-### Overview
+**Problem:** Agent 2h+ → context overflow → crash → ALL work lost (0% recovery)
+**Solution:** Auto-logging → Bundle saved → `/loadbundle` → 60-70% recovery in 15 min
 
-**Context Bundles = Automatic session snapshots for fast recovery after context overflow.**
+**Captured:** Files read (paths + ranges), Edits made, Commands executed, Decisions, Mental model, MCP tools used, Checkpoints passed
+**NOT captured:** Full file contents, Conversation verbatim, Binaries
 
-**Problem:** Agent works 2h+ → context overflow → crash → **ALL work lost** (0% recovery)
-
-**Solution:** Automatic logging of agent actions → Bundle saved → `/loadbundle` → 60-70% recovery in 15 min
-
-### What Context Bundles Save
-
-**Captured automatically:**
-1. **Files Read** - All files accessed (paths + line ranges)
-2. **Edits Made** - Files modified (descriptions + context)
-3. **Commands Executed** - Bash/git/npm commands run
-4. **Decisions Documented** - Key architectural choices
-5. **Current Understanding** - Agent's mental model
-6. **MCP Tools Used** - Context7, ESLint, Zen calls
-7. **Checkpoints Passed** - Quality gates executed
-
-**What's NOT saved:**
-- Full file contents (only paths)
-- Conversation history verbatim
-- Binary files or large outputs
-
-### Commands
-
-**Save Bundle:**
+**Commands:**
 ```bash
-# Auto-named bundle
-/savebundle
-# → .agents/context-bundles/2025-10-18_15-30_session.md
-
-# Named bundle
-/savebundle backend-specialist-auth-implementation
-# → .agents/context-bundles/backend-specialist-auth-implementation.md
-
-# Emergency save (context getting full)
-/savebundle emergency-save-auth-90-percent-done
+/savebundle [name]              # Save checkpoint
+/loadbundle <bundle-path>       # Restore after crash
 ```
 
-**Load Bundle:**
-```bash
-# After context overflow or crash
-/loadbundle .agents/context-bundles/2025-10-18_15-30_session.md
+**When to save:**
+- Session 2h+ (long work)
+- Context >150K tokens (getting full)
+- Before risky ops (refactor, migration)
+- End of day / Agent switch
 
-# Recovery: 60-70% context restored in 15 min
-```
+**When to load:**
+- Context overflow crash
+- New session after long work
+- Agent switch (need prior context)
 
-**Automatic Logging:**
-```javascript
-// In sub-agent or main session
-const bundler = require('./scripts/contextBundler.cjs');
+**Recovery workflow:** Session 1 crashes at T034 → Session 2 loads bundle → 60-70% context recovered (mental model + files + commands) → Continue from T031 (4 tasks vs 35 redo) → Read project-memory.md (WHY) → Time saved: 2h
 
-// Initialize session
-bundler.initSession('backend-specialist');
+**vs project-memory.md:**
+- Memory = WHY (permanent, entire project)
+- Bundles = WHAT (temporary, single session)
+- Use together: 80-90% effective recovery
 
-// Log actions automatically
-bundler.logRead('src/lib/auth.ts', 1, 250, 'Understanding auth flow');
-bundler.logEdit('src/lib/auth.ts', 'Added JWT validation');
-bundler.logBash('pnpm run build', 0, 'BUILD SUCCESSFUL');
-bundler.logDecision('Auth Strategy', 'Supabase Auth', 'Built-in RLS',
-  { pros: 'Fast, secure', cons: 'Vendor lock-in' },
-  ['NextAuth', 'Auth0']);
+**Benefits:**
+1. Disaster recovery: 15 min vs 2h45 restart (-70%)
+2. Agent continuity: Share context across agents
+3. Risk mitigation: 2-3 min save vs 2h loss
 
-// Generate bundle
-bundler.generateBundle('backend-specialist-checkpoint-t030');
-```
+**Integration:** `/speckit.final` auto-enables bundler → Each agent session logged → If overflow: bundle auto-saved → Relaunch with `/loadbundle`
 
-### When to Use
+**Storage:** `.agents/context-bundles/` (commit to git, clean >1 week old)
 
-✅ **Save bundle when:**
-- Session approaching 2h+ (long-running work)
-- Context approaching 150K+ tokens (getting full)
-- Before risky operation (major refactor, database migration)
-- End of work day (save progress)
-- Agent switch (backend → frontend)
-
-✅ **Load bundle when:**
-- Context overflow occurred (conversation crashed)
-- New session after long work (recover yesterday's context)
-- Agent switch (need prior agent's context)
-
-### Recovery Workflow
-
-**Scenario: Context Overflow Mid-Session**
-
-```bash
-# Session 1: backend-specialist implements auth (2h45)
-Task({ subagent: "backend-specialist", tasks: "T001-T035" })
-
-# After 2h, save checkpoint
-/savebundle backend-specialist-checkpoint-t030
-
-# Continue... context overflows at T034
-# Session 1 ENDS (crash)
-
-# --- NEW SESSION ---
-
-# Session 2: Load bundle
-/loadbundle .agents/context-bundles/backend-specialist-checkpoint-t030.md
-
-# ✅ Context recovered (60-70%)
-# - Mental model: Supabase Auth + JWT + RLS
-# - Files: auth.ts, schema.sql, middleware.ts
-# - Commands: pnpm add, build ✅, lint ✅
-# - Next steps: T031-T035 (only 4 tasks to redo vs 35)
-
-# Read project-memory.md (WHY)
-# Continue from T031
-
-# Time saved: 2h45 → 15 min recovery + 30 min work = 2h saved
-```
-
-### Complementary with project-memory.md
-
-**Context Bundles vs Dynamic Memory:**
-
-| | project-memory.md | Context Bundles |
-|---|---|---|
-| **What** | Project memory (WHY) | Session snapshots (WHAT) |
-| **Scope** | Entire project | Single agent session |
-| **Lifecycle** | Permanent | Temporary (1 session) |
-| **Content** | Decisions + trade-offs | Actions + files + commands |
-| **When Read** | Every session (startup) | IF context overflow |
-| **Purpose** | Understand project | Recover crashed session |
-
-**Use Together:**
-
-1. **Load bundle** → Recover WHAT (files, commands, current state)
-2. **Read project-memory.md** → Understand WHY (decisions, trade-offs)
-3. **Result:** 80-90% effective recovery (vs 0% without)
-
-### Benefits
-
-**1. Disaster Recovery**
-- **Without bundles:** Context overflow → 2h45 work lost → start over
-- **With bundles:** Context overflow → 15 min recovery → continue
-- **ROI:** -70% recovery time
-
-**2. Agent Continuity**
-- Backend specialist session saved → Frontend specialist can load → Understand backend decisions
-- Team collaboration: Share bundles across team members
-
-**3. Risk Mitigation**
-- Insurance policy for long sessions (save every 1-2h)
-- 2-3 min to save bundle vs 2h lost if crash
-- Cost: Minimal overhead, Value: Catastrophic loss prevention
-
-### Automatic Integration
-
-**Phase 3: `/speckit.final` Integration**
-
-```bash
-# /speckit.final automatically enables context bundler
-# Each sub-agent session logged:
-# - backend-specialist: Session initialized → Actions logged → Bundle saved
-# - frontend-specialist: Session initialized → Actions logged → Bundle saved
-# - testing-specialist: Session initialized → Actions logged → Bundle saved
-
-# If context overflow during agent execution:
-# 1. Bundle auto-saved at last checkpoint
-# 2. Agent can be relaunched with /loadbundle
-# 3. Continues from checkpoint (not from zero)
-```
-
-### Storage & Management
-
-**Bundle Location:**
-```
-.agents/
-  context-bundles/
-    2025-10-18_14-30_backend-specialist.md
-    2025-10-18_16-45_frontend-specialist.md
-    emergency-save-auth-90-percent.md
-  session.log (current session state)
-```
-
-**Best Practices:**
-- Commit bundles to git (team can recover too)
-- Clean old bundles (> 1 week) if project stable
-- Name bundles descriptively (feature + progress)
-
-### Command Reference
-
-**CLI (manual):**
-```bash
-# Initialize session
-node scripts/contextBundler.cjs init backend-specialist
-
-# Generate bundle manually
-node scripts/contextBundler.cjs generate backend-auth-checkpoint
-
-# View summary
-node scripts/contextBundler.cjs summary
-```
-
-**Slash Commands:**
-```bash
-/savebundle [optional-name]    # Save current session
-/loadbundle <bundle-path>      # Load saved bundle
-```
-
-### Related Documentation
-
-- **Commands:** `.claude/commands/savebundle.md`, `.claude/commands/loadbundle.md`
-- **Script:** `scripts/contextBundler.cjs`
-- **Pattern:** Dev Dan - Context Engineering ADV2
-- **Docs:** `docs/AGENT-INTERACTION-PATTERNS.md` - ADV2 Context Bundles
+**Docs:** `.claude/commands/savebundle.md` | `scripts/contextBundler.cjs` | [AGENT-INTERACTION-PATTERNS.md](./docs/AGENT-INTERACTION-PATTERNS.md) - ADV2
 
 ---
 
-**Version:** 6.1.3 (Observability Complete + Full Automation)
-**Date:** 2025-10-17
-**Status:** ✅ **PRODUCTION READY V6.1.3 - COMPLETE OBSERVABILITY**
+## 📦 6. LIBRARY - REUSABLE COMPONENTS 🆕 V7.0 PLANNED
 
-*Workflow V6.1.3: Mac LOCAL + GitHub + Multi-IA + **Full Automation** + Dynamic Memory + **Observability Timeline** = Production MVPs at AI Speed* 🚀🔒🧠⚡📊
+**Status:** 🚧 In Development | **Philosophy:** "Copy-paste intelligent, not repetitive coding"
+**ROI:** -96% setup time (12h → 25 min), -50% total project time (3-4h → 1h30-2h)
 
-**V6.1.3 Results:**
+**Purpose:** Personal library of battle-tested modules to eliminate repetitive coding across projects.
+
+### Architecture
+
+**Hierarchical: Framework > Feature > Provider**
+```
+lib/
+├── shared/              # Framework-agnostic (types, utils, schemas)
+├── nextjs/              # Next.js 15 modules ⭐ PHASE 1
+│   ├── auth/supabase/   # Supabase Auth
+│   ├── payments/stripe/ # Stripe Payments
+│   ├── email/resend/    # Resend Email
+│   ├── ui/              # Design System + shadcn/ui
+│   └── database/supabase/ # Database + RLS
+├── astro/               # Astro modules (future)
+└── php/                 # PHP modules (future)
+```
+
+### Workflow Integration
+
+**Phase 1.5: Use Modules (NEW)** 🆕
+```bash
+/speckit.specify
+# Auto-detects: "Auth + Payments + Email required"
+# Suggests: /use-modules nextjs/auth/supabase nextjs/payments/stripe nextjs/email/resend
+
+/use-modules nextjs/auth/supabase nextjs/payments/stripe nextjs/email/resend
+# → Copies modules to project (5-10 min)
+# → Updates package.json
+# → Creates .env.example
+# → Updates CLAUDE.md + project-memory.md
+
+/speckit.design  # Merge custom tokens with library
+/speckit.plan    # Plan customizations only (base exists)
+/speckit.tasks   # Tasks = delta (not full build)
+/speckit.final   # Implement customizations (-50% time)
+```
+
+### Time Savings
+
+| Phase | Before Library | After Library | Savings |
+|-------|----------------|---------------|---------|
+| Auth setup | 3h | 5 min | -94% |
+| Payments setup | 4h | 5 min | -96% |
+| Email setup | 2h | 5 min | -96% |
+| UI setup | 2h | 5 min | -96% |
+| Database setup | 1h | 5 min | -92% |
+| **Total setup** | **12h** | **25 min** | **-96%** |
+| **Total project** | **3-4h** | **1h30-2h** | **-50%** |
+
+### Phase 1: Next.js Modules (1 week)
+
+**Priority modules:**
+1. **auth/supabase/** - Sign-in, sign-up, RLS, middleware
+2. **payments/stripe/** - Checkout, webhooks, portal
+3. **email/resend/** - Templates (welcome, reset, invoice)
+4. **ui/** - design-tokens.json + shadcn/ui components
+5. **database/supabase/** - Schema, migrations, RLS policies
+
+**Source:** Fork Vercel Next.js SaaS Starter (MIT) + adapt for Design Decoupling
+
+### Growth Strategy
+
+**YAGNI Principle:** Develop frameworks as needed
+- Phase 1: Next.js (now - 80% of projects)
+- Phase 2: Astro (when first Astro project)
+- Phase 3: PHP (when first PHP project)
+
+### Key Principles
+
+1. **Modular** - Copy only what you need
+2. **Multi-framework** - Next.js, Astro, PHP support
+3. **Provider-flexible** - Supabase/Clerk, Stripe/Lemon Squeezy
+4. **Design Decoupling** - CSS variables (15-min rebrand)
+5. **Battle-tested** - Based on Vercel starter + proven patterns
+
+**Complete docs:** [LIBRARY-ARCHITECTURE.md](./docs/LIBRARY-ARCHITECTURE.md)
+
+---
+
+**Version:** 6.1.5 (Security & Reliability + Observability + Full Automation)
+**Date:** 2025-10-21
+**Status:** ✅ **PRODUCTION READY V6.1.5 - SECURITY & RELIABILITY**
+**Next:** 🚧 **V7.0 PLANNED - LIBRARY INTEGRATION** (Timeline: 1 week)
+
+*Workflow V6.1.5: Mac LOCAL + GitHub + Multi-IA + **Full Automation** + Dynamic Memory + **Observability Timeline** + **OWASP LLM Security** = Production MVPs at AI Speed* 🚀🔒🧠⚡📊🛡️
+
+**V6.1.5 Results:**
 - Time: -5-10 min overhead (100% automation) + -60% execution (Haiku 4.5)
 - Token Savings: -77% with GLM-4.6 (450K→100K tokens implementation)
-- Quality: Build ✅ Lint ✅ Tests ✅ Design Tokens 100% + **Observability ✅**
+- Quality: Build ✅ Lint ✅ Tests ✅ Design Tokens 100% + **Observability ✅** + **OWASP LLM ✅**
+- Security: CVSS 9.8 → 3.2 (67% risk reduction)
 - Timeline: Complete logging (pulseLogger.cjs + viewPulse.sh + observability-pulse.jsonl)
 - Validated: AdProof.ai MVP (99 tasks, 2h45, 150+ files, 12K+ lines)
+
+**V7.0 Target:**
+- Library Integration: -50% total project time (3-4h → 1h30-2h)
+- Setup: -96% time (12h → 25 min)
+- Productivity: 2× projects per month
