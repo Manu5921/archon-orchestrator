@@ -1,0 +1,186 @@
+---
+/**
+ * LogoCloud Component
+ *
+ * Purpose: Display partner/customer logos (social proof)
+ * Philosophy: Design/Dev Decoupling (uses design-tokens.css variables)
+ *
+ * Usage:
+ * ```astro
+ * <LogoCloud
+ *   title="Trusted by Leading Companies"
+ *   logos={[
+ *     { src: '/logos/company1.svg', alt: 'Company 1' },
+ *     { src: '/logos/company2.svg', alt: 'Company 2' }
+ *   ]}
+ *   grayscale={true}
+ * />
+ * ```
+ */
+
+interface Logo {
+  src: string;
+  alt: string;
+  href?: string;  // Optional link
+}
+
+interface Props {
+  title?: string;
+  description?: string;
+  logos: Logo[];
+  grayscale?: boolean;  // Grayscale filter on logos
+  class?: string;
+}
+
+const {
+  title,
+  description,
+  logos,
+  grayscale = true,
+  class: className
+} = Astro.props;
+---
+
+<section class={`logo-cloud ${className || ''}`}>
+  <div class="logo-cloud-container">
+    {/* Header (optional) */}
+    {(title || description) && (
+      <div class="logo-cloud-header">
+        {title && <h2 class="logo-cloud-title">{title}</h2>}
+        {description && <p class="logo-cloud-description">{description}</p>}
+      </div>
+    )}
+
+    {/* Logos Grid */}
+    <div class={`logos-grid ${grayscale ? 'grayscale' : ''}`}>
+      {logos.map((logo) => (
+        logo.href ? (
+          <a href={logo.href} target="_blank" rel="noopener noreferrer" class="logo-link">
+            <img src={logo.src} alt={logo.alt} class="logo-img" />
+          </a>
+        ) : (
+          <div class="logo-item">
+            <img src={logo.src} alt={logo.alt} class="logo-img" />
+          </div>
+        )
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .logo-cloud {
+    padding: var(--space-16) 0;
+    background-color: var(--color-neutral-50);
+  }
+
+  .logo-cloud-container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+  }
+
+  .logo-cloud-header {
+    text-align: center;
+    max-width: 768px;
+    margin: 0 auto var(--space-12);
+  }
+
+  .logo-cloud-title {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+    color: var(--color-neutral-950);
+    margin-bottom: var(--space-4);
+  }
+
+  .logo-cloud-description {
+    font-size: var(--text-lg);
+    color: var(--color-neutral-600);
+    line-height: var(--leading-relaxed);
+  }
+
+  .logos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-8);
+    align-items: center;
+  }
+
+  @media (min-width: 640px) {
+    .logos-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .logos-grid {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+
+  .logo-link,
+  .logo-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-4);
+    transition: var(--transition-all);
+  }
+
+  .logo-link {
+    text-decoration: none;
+  }
+
+  .logo-img {
+    max-width: 120px;
+    max-height: 48px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transition: var(--transition-all);
+  }
+
+  /* Grayscale Effect */
+  .logos-grid.grayscale .logo-img {
+    filter: grayscale(100%);
+    opacity: 0.7;
+  }
+
+  .logos-grid.grayscale .logo-link:hover .logo-img,
+  .logos-grid.grayscale .logo-item:hover .logo-img {
+    filter: grayscale(0%);
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  /* No Grayscale */
+  .logos-grid:not(.grayscale) .logo-link:hover .logo-img,
+  .logos-grid:not(.grayscale) .logo-item:hover .logo-img {
+    transform: scale(1.1);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .logo-cloud {
+      background-color: var(--color-neutral-900);
+    }
+
+    .logo-cloud-title {
+      color: var(--color-neutral-50);
+    }
+
+    .logo-cloud-description {
+      color: var(--color-neutral-400);
+    }
+
+    .logos-grid.grayscale .logo-img {
+      filter: grayscale(100%) brightness(1.5);
+      opacity: 0.6;
+    }
+
+    .logos-grid.grayscale .logo-link:hover .logo-img,
+    .logos-grid.grayscale .logo-item:hover .logo-img {
+      filter: brightness(1.5);
+      opacity: 1;
+    }
+  }
+</style>

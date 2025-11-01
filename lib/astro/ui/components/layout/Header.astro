@@ -1,0 +1,227 @@
+---
+/**
+ * Header Component
+ *
+ * Purpose: Navigation header with logo + links + CTA button
+ * Philosophy: Design/Dev Decoupling (uses design-tokens.css variables)
+ *
+ * Usage:
+ * ```astro
+ * <Header
+ *   logo={{ src: '/logo.svg', alt: 'Company Logo' }}
+ *   links={[
+ *     { label: 'Features', href: '#features' },
+ *     { label: 'Pricing', href: '#pricing' }
+ *   ]}
+ *   cta={{ label: 'Get Started', href: '/signup', variant: 'primary' }}
+ *   sticky={true}
+ * />
+ * ```
+ */
+
+interface Link {
+  label: string;
+  href: string;
+  external?: boolean;
+}
+
+interface CTA {
+  label: string;
+  href: string;
+  variant?: 'primary' | 'secondary';
+}
+
+interface Props {
+  logo: {
+    src: string;
+    alt: string;
+    href?: string;
+  };
+  links: Link[];
+  cta?: CTA;
+  transparent?: boolean;
+  sticky?: boolean;
+  class?: string;
+}
+
+const {
+  logo,
+  links,
+  cta,
+  transparent = false,
+  sticky = false,
+  class: className
+} = Astro.props;
+---
+
+<header
+  class={`header ${sticky ? 'sticky' : ''} ${transparent ? 'transparent' : ''} ${className || ''}`}
+>
+  <nav class="nav-container">
+    <!-- Logo -->
+    <a href={logo.href || '/'} class="logo-link">
+      <img src={logo.src} alt={logo.alt} class="logo-img" />
+    </a>
+
+    <!-- Desktop Navigation -->
+    <div class="nav-links">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          class="nav-link"
+          target={link.external ? '_blank' : undefined}
+          rel={link.external ? 'noopener noreferrer' : undefined}
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+
+    <!-- CTA Button -->
+    {cta && (
+      <a
+        href={cta.href}
+        class={`cta-button ${cta.variant || 'primary'}`}
+      >
+        {cta.label}
+      </a>
+    )}
+
+    <!-- Mobile Menu Button (placeholder, requires JS island) -->
+    <button class="mobile-menu-button" aria-label="Toggle menu">
+      <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 12h18M3 6h18M3 18h18" />
+      </svg>
+    </button>
+  </nav>
+</header>
+
+<style>
+  .header {
+    width: 100%;
+    background-color: var(--color-neutral-50);
+    border-bottom: var(--border-1) solid var(--color-neutral-200);
+    transition: var(--transition-all);
+  }
+
+  .header.transparent {
+    background-color: transparent;
+    border-bottom-color: transparent;
+  }
+
+  .header.sticky {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-40);
+    backdrop-filter: blur(8px);
+    background-color: rgba(250, 250, 250, 0.8);
+  }
+
+  .nav-container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: var(--space-4) var(--container-padding);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+  }
+
+  .logo-link {
+    display: flex;
+    align-items: center;
+  }
+
+  .logo-img {
+    height: 32px;
+    width: auto;
+  }
+
+  .nav-links {
+    display: none;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .nav-links {
+      display: flex;
+    }
+  }
+
+  .nav-link {
+    color: var(--color-neutral-700);
+    text-decoration: none;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    transition: var(--transition-colors);
+  }
+
+  .nav-link:hover {
+    color: var(--color-primary-600);
+  }
+
+  .cta-button {
+    display: none;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    text-decoration: none;
+    transition: var(--transition-all);
+    cursor: pointer;
+    border: none;
+  }
+
+  @media (min-width: 768px) {
+    .cta-button {
+      display: inline-block;
+    }
+  }
+
+  .cta-button.primary {
+    background-color: var(--color-primary-600);
+    color: white;
+  }
+
+  .cta-button.primary:hover {
+    background-color: var(--color-primary-700);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .cta-button.secondary {
+    background-color: transparent;
+    color: var(--color-primary-600);
+    border: var(--border-2) solid var(--color-primary-600);
+  }
+
+  .cta-button.secondary:hover {
+    background-color: var(--color-primary-50);
+  }
+
+  .mobile-menu-button {
+    display: block;
+    background: none;
+    border: none;
+    color: var(--color-neutral-700);
+    cursor: pointer;
+    padding: var(--space-2);
+  }
+
+  @media (min-width: 768px) {
+    .mobile-menu-button {
+      display: none;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .header {
+      background-color: var(--color-neutral-900);
+      border-bottom-color: var(--color-neutral-800);
+    }
+
+    .header.sticky {
+      background-color: rgba(23, 23, 23, 0.8);
+    }
+  }
+</style>

@@ -1,0 +1,51 @@
+---
+/**
+ * Container Component
+ *
+ * Purpose: Content container with max-width and responsive padding
+ * Philosophy: Design/Dev Decoupling (uses design-tokens.css variables)
+ *
+ * Usage:
+ * ```astro
+ * <Container size="default">
+ *   <p>Content here</p>
+ * </Container>
+ * ```
+ */
+
+interface Props {
+  size?: 'sm' | 'default' | 'lg' | 'xl' | 'full';
+  class?: string;
+}
+
+const { size = 'default', class: className } = Astro.props;
+
+const sizeClasses = {
+  sm: 'max-w-3xl',       // 768px
+  default: 'max-w-5xl',  // 1024px
+  lg: 'max-w-6xl',       // 1152px
+  xl: 'max-w-7xl',       // 1280px (matches --container-max-width)
+  full: 'max-w-full'
+};
+---
+
+<div class={`container ${sizeClasses[size]} ${className || ''}`}>
+  <slot />
+</div>
+
+<style>
+  .container {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+  }
+
+  /* Responsive padding */
+  @media (min-width: 640px) {
+    .container {
+      padding-left: var(--space-8);
+      padding-right: var(--space-8);
+    }
+  }
+</style>

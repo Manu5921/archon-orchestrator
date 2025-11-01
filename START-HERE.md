@@ -86,7 +86,7 @@ claude mcp list
 | **Orchestration sub-agents** | [SUB-AGENTS-MASTERY.md](./docs/SUB-AGENTS-MASTERY.md) |
 | **Quality gates** | [ZERO-TRUST.md](./docs/ZERO-TRUST.md) |
 | **Best practices** | [GOLDEN-PATTERNS.md](./docs/GOLDEN-PATTERNS.md) |
-| **Design tokens** | [DESIGN-SYSTEM-SOLO-SIMPLIFIED.md](./docs/DESIGN-SYSTEM-SOLO-SIMPLIFIED.md) |
+| **Design tokens** | [GOLDEN-PATTERNS.md](./docs/GOLDEN-PATTERNS.md) (section Design/Dev Decoupling) |
 
 ---
 
@@ -336,7 +336,7 @@ archive-obsolete-2025-10-08-v4/
 
 **Raison archivage :** Clarification vision (multi-device Mac 24/7, pas mobile-first)
 
-**Voir détails :** [ARCHIVAGE-RAISONS-V4.md](./archive-obsolete-2025-10-08-v4/ARCHIVAGE-RAISONS-V4.md)
+**Note:** Archive folder supprimé après migration V4 complète (workflow V3 obsolète documenté dans CHANGELOGs)
 
 ---
 
@@ -371,14 +371,14 @@ archive-obsolete-2025-10-08-v4/
 | **Sécurité** | Séquentiel | Asynchrone (0 temps) |
 | **Capacité** | 1 projet | 3-4 simultanés |
 
-**Voir détails migration :** [ARCHIVAGE-RAISONS-V4.md](./archive-obsolete-2025-10-08-v4/ARCHIVAGE-RAISONS-V4.md)
+**Migration complète:** V4 opérationnel depuis 2025-10-06, V3 complètement remplacé
 
 ---
 
 ## 📞 SUPPORT & RESSOURCES
 
 **Documentation manquante ?**
-1. [INDEX-FILES-V4.md](./INDEX-FILES-V4.md) - Navigation rapide
+1. [INDEX.md](./INDEX.md) - Navigation rapide (index complet des fichiers)
 2. [TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md) - Debug solutions
 3. [RETOUR-EXPERIENCE-REVIEWRESCUE.md](./docs/RETOUR-EXPERIENCE-REVIEWRESCUE-2025-10-08.md) - Apprentissages
 

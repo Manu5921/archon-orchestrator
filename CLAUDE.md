@@ -353,7 +353,7 @@ node scripts/validateGates.cjs validate gates-data.json
 
 ### Navigation Rapide
 
-**Entry points:** [START-HERE.md](./START-HERE.md) | ⭐[WORKFLOW-V4-MULTI-DEVICE.md](./docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md) | [INDEX-FILES-V4.md](./INDEX-FILES-V4.md)
+**Entry points:** [START-HERE.md](./START-HERE.md) | ⭐[WORKFLOW-V4-MULTI-DEVICE.md](./docs/WORKFLOW-FINAL-V4-MULTI-DEVICE.md) | [INDEX.md](./INDEX.md)
 
 **Setup:** [OAuth Guide](./docs/CLAUDE-MAX-OAUTH-COMPLETE-GUIDE.md) | [Jules Security](./docs/JULES-SECURITY-GUARDIAN-SETUP.md)
 

@@ -1,0 +1,236 @@
+---
+/**
+ * CTA (Call-to-Action) Component
+ *
+ * Purpose: Conversion-focused section with high-contrast design
+ * Philosophy: Design/Dev Decoupling (uses design-tokens.css variables)
+ *
+ * Usage:
+ * ```astro
+ * <CTA
+ *   headline="Ready to Build Faster?"
+ *   subheadline="Join 1,000+ developers using Archon Library"
+ *   cta={{
+ *     primary: { label: 'Get Started Free', href: '/signup' },
+ *     secondary: { label: 'View Docs', href: '/docs' }
+ *   }}
+ *   variant="gradient"
+ * />
+ * ```
+ */
+
+interface CTAButton {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  headline: string;
+  subheadline?: string;
+  cta: {
+    primary: CTAButton;
+    secondary?: CTAButton;
+  };
+  variant?: 'default' | 'gradient' | 'image';
+  backgroundImage?: string;
+  class?: string;
+}
+
+const {
+  headline,
+  subheadline,
+  cta,
+  variant = 'default',
+  backgroundImage,
+  class: className
+} = Astro.props;
+---
+
+<section class={`cta ${variant} ${className || ''}`} style={backgroundImage ? `background-image: url(${backgroundImage})` : ''}>
+  <div class="cta-container">
+    <div class="cta-content">
+      <h2 class="cta-headline">{headline}</h2>
+      {subheadline && (
+        <p class="cta-subheadline">{subheadline}</p>
+      )}
+
+      <div class="cta-buttons">
+        <a href={cta.primary.href} class="cta-button primary">
+          {cta.primary.label}
+        </a>
+        {cta.secondary && (
+          <a href={cta.secondary.href} class="cta-button secondary">
+            {cta.secondary.label}
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    padding: var(--space-20) 0;
+    text-align: center;
+  }
+
+  .cta.default {
+    background-color: var(--color-primary-50);
+  }
+
+  .cta.gradient {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-500),
+      var(--color-primary-700)
+    );
+  }
+
+  .cta.image {
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+
+  .cta.image::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 0;
+  }
+
+  .cta-container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-content {
+    max-width: 768px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .cta-headline {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-bold);
+    margin: 0;
+  }
+
+  .cta.default .cta-headline {
+    color: var(--color-neutral-950);
+  }
+
+  .cta.gradient .cta-headline,
+  .cta.image .cta-headline {
+    color: white;
+  }
+
+  @media (min-width: 768px) {
+    .cta-headline {
+      font-size: var(--text-5xl);
+    }
+  }
+
+  .cta-subheadline {
+    font-size: var(--text-xl);
+    line-height: var(--leading-relaxed);
+    margin: 0;
+  }
+
+  .cta.default .cta-subheadline {
+    color: var(--color-neutral-700);
+  }
+
+  .cta.gradient .cta-subheadline,
+  .cta.image .cta-subheadline {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: var(--space-4);
+  }
+
+  .cta-button {
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: var(--transition-all);
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  /* Default variant buttons */
+  .cta.default .cta-button.primary {
+    background-color: var(--color-primary-600);
+    color: white;
+  }
+
+  .cta.default .cta-button.primary:hover {
+    background-color: var(--color-primary-700);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .cta.default .cta-button.secondary {
+    background-color: transparent;
+    color: var(--color-primary-600);
+    border: var(--border-2) solid var(--color-primary-600);
+  }
+
+  .cta.default .cta-button.secondary:hover {
+    background-color: var(--color-primary-50);
+  }
+
+  /* Gradient/Image variant buttons */
+  .cta.gradient .cta-button.primary,
+  .cta.image .cta-button.primary {
+    background-color: white;
+    color: var(--color-primary-600);
+  }
+
+  .cta.gradient .cta-button.primary:hover,
+  .cta.image .cta-button.primary:hover {
+    background-color: var(--color-neutral-100);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .cta.gradient .cta-button.secondary,
+  .cta.image .cta-button.secondary {
+    background-color: transparent;
+    color: white;
+    border: var(--border-2) solid white;
+  }
+
+  .cta.gradient .cta-button.secondary:hover,
+  .cta.image .cta-button.secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .cta.default {
+      background-color: var(--color-neutral-800);
+    }
+
+    .cta.default .cta-headline {
+      color: var(--color-neutral-50);
+    }
+
+    .cta.default .cta-subheadline {
+      color: var(--color-neutral-300);
+    }
+  }
+</style>

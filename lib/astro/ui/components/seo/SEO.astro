@@ -1,0 +1,84 @@
+---
+/**
+ * SEO Component
+ *
+ * Purpose: Complete SEO meta tags + Open Graph + Twitter Card
+ * Note: Already integrated in Layout.astro, use standalone if needed
+ *
+ * Usage:
+ * ```astro
+ * ---
+ * import SEO from '@/lib/astro/ui/components/seo/SEO.astro';
+ * ---
+ *
+ * <SEO
+ *   title="Landing Page Builder | Archon Library"
+ *   description="Build high-converting landing pages in minutes"
+ *   canonical="https://archon.dev/landing"
+ *   ogImage="https://archon.dev/og-image.png"
+ *   ogType="website"
+ *   twitterCard="summary_large_image"
+ *   noindex={false}
+ * />
+ * ```
+ */
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article' | 'product';
+  twitterCard?: 'summary' | 'summary_large_image';
+  twitterHandle?: string;
+  noindex?: boolean;
+  keywords?: string;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  ogType = 'website',
+  twitterCard = 'summary_large_image',
+  twitterHandle,
+  noindex = false,
+  keywords
+} = Astro.props;
+
+// Construct full URLs
+const canonicalURL = canonical || Astro.url.pathname;
+const fullCanonicalURL = new URL(canonicalURL, Astro.site || 'http://localhost').toString();
+
+const fullOgImage = ogImage
+  ? new URL(ogImage, Astro.site || 'http://localhost').toString()
+  : undefined;
+---
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+{keywords && <meta name="keywords" content={keywords} />}
+
+<!-- Canonical URL -->
+<link rel="canonical" href={fullCanonicalURL} />
+
+<!-- Robots -->
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+<meta property="og:type" content={ogType} />
+<meta property="og:url" content={fullCanonicalURL} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{fullOgImage && <meta property="og:image" content={fullOgImage} />}
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content={twitterCard} />
+<meta name="twitter:url" content={fullCanonicalURL} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{fullOgImage && <meta name="twitter:image" content={fullOgImage} />}
+{twitterHandle && <meta name="twitter:creator" content={twitterHandle} />}

@@ -1,0 +1,251 @@
+---
+/**
+ * Hero Component
+ *
+ * Purpose: Hero section with headline + subheadline + CTA
+ * Philosophy: Design/Dev Decoupling (uses design-tokens.css variables)
+ *
+ * Usage:
+ * ```astro
+ * <Hero
+ *   headline="Build Landing Pages 10× Faster"
+ *   subheadline="Pre-built Astro components optimized for conversions and SEO"
+ *   cta={{
+ *     primary: { label: 'Get Started Free', href: '/signup' },
+ *     secondary: { label: 'View Demo', href: '/demo' }
+ *   }}
+ *   image={{ src: '/hero-image.png', alt: 'Product screenshot', position: 'right' }}
+ *   badge="New: Astro 5 Support"
+ *   variant="split"
+ * />
+ * ```
+ */
+
+interface CTA {
+  label: string;
+  href: string;
+}
+
+interface Image {
+  src: string;
+  alt: string;
+  position?: 'right' | 'left' | 'background';
+}
+
+interface Props {
+  headline: string;
+  subheadline?: string;
+  cta: {
+    primary: CTA;
+    secondary?: CTA;
+  };
+  image?: Image;
+  badge?: string;
+  variant?: 'default' | 'centered' | 'split';
+  class?: string;
+}
+
+const {
+  headline,
+  subheadline,
+  cta,
+  image,
+  badge,
+  variant = 'default',
+  class: className
+} = Astro.props;
+---
+
+<section class={`hero ${variant} ${className || ''}`}>
+  <div class="hero-container">
+    <!-- Content Section -->
+    <div class="hero-content">
+      {badge && (
+        <span class="hero-badge">{badge}</span>
+      )}
+
+      <h1 class="hero-headline">{headline}</h1>
+
+      {subheadline && (
+        <p class="hero-subheadline">{subheadline}</p>
+      )}
+
+      <div class="hero-cta">
+        <a href={cta.primary.href} class="cta-button primary">
+          {cta.primary.label}
+        </a>
+        {cta.secondary && (
+          <a href={cta.secondary.href} class="cta-button secondary">
+            {cta.secondary.label}
+          </a>
+        )}
+      </div>
+    </div>
+
+    <!-- Image Section (if provided) -->
+    {image && variant !== 'centered' && (
+      <div class={`hero-image ${image.position || 'right'}`}>
+        <img src={image.src} alt={image.alt} loading="eager" />
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding: var(--space-16) 0;
+    background-color: var(--color-neutral-50);
+  }
+
+  .hero-container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+  }
+
+  /* Default & Centered Variants */
+  .hero.default .hero-container,
+  .hero.centered .hero-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Split Variant (Image + Content Side-by-Side) */
+  .hero.split .hero-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-12);
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .hero.split .hero-container {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    max-width: 640px;
+  }
+
+  .hero.centered .hero-content {
+    align-items: center;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    padding: var(--space-2) var(--space-4);
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-700);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    border-radius: var(--radius-full);
+    width: fit-content;
+  }
+
+  .hero-headline {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-extrabold);
+    line-height: var(--leading-tight);
+    color: var(--color-neutral-950);
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .hero-headline {
+      font-size: var(--text-6xl);
+    }
+  }
+
+  .hero-subheadline {
+    font-size: var(--text-lg);
+    line-height: var(--leading-relaxed);
+    color: var(--color-neutral-700);
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .hero-subheadline {
+      font-size: var(--text-xl);
+    }
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .cta-button {
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: var(--transition-all);
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .cta-button.primary {
+    background-color: var(--color-primary-600);
+    color: white;
+  }
+
+  .cta-button.primary:hover {
+    background-color: var(--color-primary-700);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .cta-button.secondary {
+    background-color: transparent;
+    color: var(--color-primary-600);
+    border: var(--border-2) solid var(--color-primary-600);
+  }
+
+  .cta-button.secondary:hover {
+    background-color: var(--color-primary-50);
+  }
+
+  .hero-image {
+    width: 100%;
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+  }
+
+  .hero-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Image Position */
+  .hero.split .hero-image.left {
+    order: -1;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .hero {
+      background-color: var(--color-neutral-900);
+    }
+
+    .hero-headline {
+      color: var(--color-neutral-50);
+    }
+
+    .hero-subheadline {
+      color: var(--color-neutral-300);
+    }
+
+    .hero-badge {
+      background-color: var(--color-primary-900);
+      color: var(--color-primary-300);
+    }
+  }
+</style>

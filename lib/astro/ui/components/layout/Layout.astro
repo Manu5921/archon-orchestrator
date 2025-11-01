@@ -1,0 +1,180 @@
+---
+/**
+ * Layout Component (Base Layout Wrapper)
+ *
+ * Purpose: Base layout with SEO meta tags, CSS imports, and HTML structure
+ * Philosophy: Design/Dev Decoupling (uses design-tokens.css variables)
+ *
+ * Usage:
+ * ```astro
+ * <Layout
+ *   title="My Landing Page"
+ *   description="Convert visitors into customers"
+ *   canonical="https://mysite.com/landing"
+ *   ogImage="/og-image.png"
+ * >
+ *   <slot />
+ * </Layout>
+ * ```
+ */
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  twitterCard?: 'summary' | 'summary_large_image';
+  noindex?: boolean;
+  class?: string;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  ogType = 'website',
+  twitterCard = 'summary_large_image',
+  noindex = false,
+  class: className
+} = Astro.props;
+
+// Construct full canonical URL
+const canonicalURL = canonical || Astro.url.pathname;
+const fullCanonicalURL = new URL(canonicalURL, Astro.site || 'http://localhost').toString();
+
+// Construct full OG image URL
+const fullOgImage = ogImage
+  ? new URL(ogImage, Astro.site || 'http://localhost').toString()
+  : undefined;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- SEO Meta Tags -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={fullCanonicalURL} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Open Graph (Facebook, LinkedIn) -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={fullCanonicalURL} />
+    {fullOgImage && <meta property="og:image" content={fullOgImage} />}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {fullOgImage && <meta name="twitter:image" content={fullOgImage} />}
+
+    <!-- Design Tokens (MUST be first for CSS variables) -->
+    <link rel="stylesheet" href="/lib/astro/ui/styles/design-tokens.css" />
+
+    <!-- Optional: Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class={className}>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  /* Global Base Styles */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: var(--leading-normal);
+    color: var(--color-neutral-900);
+    background-color: var(--color-neutral-50);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100vh;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: var(--font-bold);
+    line-height: var(--leading-tight);
+    color: var(--color-neutral-950);
+  }
+
+  h1 {
+    font-size: var(--text-5xl);
+  }
+
+  h2 {
+    font-size: var(--text-4xl);
+  }
+
+  h3 {
+    font-size: var(--text-3xl);
+  }
+
+  h4 {
+    font-size: var(--text-2xl);
+  }
+
+  h5 {
+    font-size: var(--text-xl);
+  }
+
+  h6 {
+    font-size: var(--text-lg);
+  }
+
+  /* Links */
+  a {
+    color: var(--color-primary-600);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* Images */
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Dark Mode */
+  @media (prefers-color-scheme: dark) {
+    html {
+      color: var(--color-neutral-100);
+      background-color: var(--color-neutral-900);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--color-neutral-50);
+    }
+  }
+</style>

@@ -1,0 +1,244 @@
+---
+/**
+ * Footer Component
+ *
+ * Purpose: Site footer with links + social + copyright
+ * Philosophy: Design/Dev Decoupling (uses design-tokens.css variables)
+ *
+ * Usage:
+ * ```astro
+ * <Footer
+ *   columns={[
+ *     { title: 'Product', links: [{ label: 'Features', href: '/features' }] }
+ *   ]}
+ *   social={[
+ *     { platform: 'twitter', url: 'https://twitter.com/company' }
+ *   ]}
+ *   copyright="© 2025 Company Name"
+ * />
+ * ```
+ */
+
+interface Link {
+  label: string;
+  href: string;
+  external?: boolean;
+}
+
+interface Column {
+  title: string;
+  links: Link[];
+}
+
+interface Social {
+  platform: 'twitter' | 'linkedin' | 'github' | 'youtube';
+  url: string;
+}
+
+interface Props {
+  logo?: {
+    src: string;
+    alt: string;
+  };
+  columns: Column[];
+  social?: Social[];
+  copyright?: string;
+  class?: string;
+}
+
+const {
+  logo,
+  columns,
+  social,
+  copyright,
+  class: className
+} = Astro.props;
+
+// Auto-generate copyright with current year if not provided
+const currentYear = new Date().getFullYear();
+const copyrightText = copyright || `© ${currentYear} All rights reserved.`;
+
+// Social icons SVG paths
+const socialIcons = {
+  twitter: 'M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z',
+  linkedin: 'M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z M4 6a2 2 0 100-4 2 2 0 000 4z',
+  github: 'M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22',
+  youtube: 'M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.33z M9.75 15.02l0-6.53 5.75 3.27z'
+};
+---
+
+<footer class={`footer ${className || ''}`}>
+  <div class="footer-container">
+    <!-- Logo Section (optional) -->
+    {logo && (
+      <div class="footer-brand">
+        <img src={logo.src} alt={logo.alt} class="footer-logo" />
+      </div>
+    )}
+
+    <!-- Links Columns -->
+    <div class="footer-columns">
+      {columns.map((column) => (
+        <div class="footer-column">
+          <h3 class="column-title">{column.title}</h3>
+          <ul class="column-links">
+            {column.links.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="column-link"
+                  target={link.external ? '_blank' : undefined}
+                  rel={link.external ? 'noopener noreferrer' : undefined}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <!-- Bottom Section -->
+    <div class="footer-bottom">
+      <!-- Social Links -->
+      {social && social.length > 0 && (
+        <div class="social-links">
+          {social.map((item) => (
+            <a
+              href={item.url}
+              class="social-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={item.platform}
+            >
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d={socialIcons[item.platform]} />
+              </svg>
+            </a>
+          ))}
+        </div>
+      )}
+
+      <!-- Copyright -->
+      <p class="copyright">{copyrightText}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background-color: var(--color-neutral-100);
+    border-top: var(--border-1) solid var(--color-neutral-200);
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-8);
+  }
+
+  .footer-container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+  }
+
+  .footer-brand {
+    margin-bottom: var(--space-8);
+  }
+
+  .footer-logo {
+    height: 32px;
+    width: auto;
+  }
+
+  .footer-columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-8);
+    margin-bottom: var(--space-12);
+  }
+
+  @media (min-width: 768px) {
+    .footer-columns {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .column-title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--color-neutral-900);
+    margin: 0;
+  }
+
+  .column-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .column-link {
+    color: var(--color-neutral-600);
+    text-decoration: none;
+    font-size: var(--text-sm);
+    transition: var(--transition-colors);
+  }
+
+  .column-link:hover {
+    color: var(--color-primary-600);
+  }
+
+  .footer-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding-top: var(--space-8);
+    border-top: var(--border-1) solid var(--color-neutral-200);
+  }
+
+  @media (min-width: 768px) {
+    .footer-bottom {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .social-links {
+    display: flex;
+    gap: var(--space-4);
+  }
+
+  .social-link {
+    color: var(--color-neutral-600);
+    transition: var(--transition-colors);
+  }
+
+  .social-link:hover {
+    color: var(--color-primary-600);
+  }
+
+  .copyright {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--color-neutral-600);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .footer {
+      background-color: var(--color-neutral-900);
+      border-top-color: var(--color-neutral-800);
+    }
+
+    .footer-bottom {
+      border-top-color: var(--color-neutral-800);
+    }
+  }
+</style>

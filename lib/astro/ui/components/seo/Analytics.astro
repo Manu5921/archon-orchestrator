@@ -1,0 +1,84 @@
+---
+/**
+ * Analytics Component
+ *
+ * Purpose: Integrate analytics (Plausible, Google Analytics 4, Fathom, etc.)
+ * Philosophy: Privacy-first (prefer Plausible/Fathom over GA4)
+ *
+ * Usage:
+ * ```astro
+ * ---
+ * import Analytics from '@/lib/astro/ui/components/seo/Analytics.astro';
+ * ---
+ *
+ * <!-- Plausible Analytics -->
+ * <Analytics provider="plausible" domain="archon.dev" />
+ *
+ * <!-- Google Analytics 4 -->
+ * <Analytics provider="ga4" measurementId="G-XXXXXXXXXX" />
+ *
+ * <!-- Fathom Analytics -->
+ * <Analytics provider="fathom" siteId="ABCDEFGH" />
+ * ```
+ */
+
+interface Props {
+  provider: 'plausible' | 'ga4' | 'fathom' | 'none';
+  domain?: string;          // Plausible domain
+  measurementId?: string;   // GA4 measurement ID
+  siteId?: string;          // Fathom site ID
+  enableLocalhost?: boolean; // Track localhost (default: false)
+}
+
+const {
+  provider,
+  domain,
+  measurementId,
+  siteId,
+  enableLocalhost = false
+} = Astro.props;
+
+// Skip analytics on localhost (unless explicitly enabled)
+const isLocalhost = import.meta.env.DEV || Astro.url.hostname === 'localhost';
+if (isLocalhost && !enableLocalhost) {
+  // Skip rendering analytics scripts
+}
+---
+
+{/* Plausible Analytics (Privacy-friendly, GDPR compliant) */}
+{provider === 'plausible' && domain && !isLocalhost && (
+  <script
+    defer
+    data-domain={domain}
+    src="https://plausible.io/js/script.js"
+  />
+)}
+
+{/* Google Analytics 4 */}
+{provider === 'ga4' && measurementId && !isLocalhost && (
+  <>
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`} />
+    <script is:inline define:vars={{ measurementId }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', measurementId);
+    </script>
+  </>
+)}
+
+{/* Fathom Analytics (Privacy-friendly, cookie-free) */}
+{provider === 'fathom' && siteId && !isLocalhost && (
+  <script
+    src="https://cdn.usefathom.com/script.js"
+    data-site={siteId}
+    defer
+  />
+)}
+
+{/* Debug Notice (Development Only) */}
+{isLocalhost && enableLocalhost && (
+  <script is:inline>
+    console.log(`[Analytics] ${provider} tracking enabled on localhost`);
+  </script>
+)}

@@ -1,0 +1,144 @@
+---
+/**
+ * Schema Component (JSON-LD Structured Data)
+ *
+ * Purpose: Generate JSON-LD structured data for rich snippets
+ * Supports: Organization, Product, Article, WebPage, BreadcrumbList
+ *
+ * Usage:
+ * ```astro
+ * ---
+ * import Schema from '@/lib/astro/ui/components/seo/Schema.astro';
+ * ---
+ *
+ * <!-- Organization Schema -->
+ * <Schema
+ *   type="organization"
+ *   data={{
+ *     name: 'Archon',
+ *     url: 'https://archon.dev',
+ *     logo: 'https://archon.dev/logo.png',
+ *     contactPoint: {
+ *       telephone: '+1-555-0100',
+ *       email: 'hello@archon.dev'
+ *     }
+ *   }}
+ * />
+ *
+ * <!-- Product Schema -->
+ * <Schema
+ *   type="product"
+ *   data={{
+ *     name: 'Archon Library',
+ *     description: 'Reusable Astro components',
+ *     image: 'https://archon.dev/product.png',
+ *     price: { amount: 0, currency: 'USD' },
+ *     rating: { value: 4.8, count: 120 }
+ *   }}
+ * />
+ * ```
+ */
+
+interface Props {
+  type: 'organization' | 'product' | 'article' | 'webpage' | 'breadcrumblist';
+  data: any;  // Type depends on schema type
+}
+
+const { type, data } = Astro.props;
+
+// Generate schema based on type
+const generateSchema = () => {
+  const baseContext = 'https://schema.org';
+
+  switch (type) {
+    case 'organization':
+      return {
+        '@context': baseContext,
+        '@type': 'Organization',
+        name: data.name,
+        url: data.url,
+        logo: data.logo,
+        contactPoint: data.contactPoint ? {
+          '@type': 'ContactPoint',
+          telephone: data.contactPoint.telephone,
+          email: data.contactPoint.email,
+          contactType: data.contactPoint.type || 'customer service'
+        } : undefined,
+        sameAs: data.socialProfiles || []
+      };
+
+    case 'product':
+      return {
+        '@context': baseContext,
+        '@type': 'Product',
+        name: data.name,
+        description: data.description,
+        image: data.image,
+        offers: {
+          '@type': 'Offer',
+          price: data.price.amount,
+          priceCurrency: data.price.currency || 'USD',
+          availability: data.availability || 'https://schema.org/InStock'
+        },
+        aggregateRating: data.rating ? {
+          '@type': 'AggregateRating',
+          ratingValue: data.rating.value,
+          reviewCount: data.rating.count
+        } : undefined
+      };
+
+    case 'article':
+      return {
+        '@context': baseContext,
+        '@type': 'Article',
+        headline: data.headline,
+        description: data.description,
+        image: data.image,
+        author: {
+          '@type': 'Person',
+          name: data.author.name
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: data.publisher.name,
+          logo: {
+            '@type': 'ImageObject',
+            url: data.publisher.logo
+          }
+        },
+        datePublished: data.publishedDate,
+        dateModified: data.modifiedDate || data.publishedDate
+      };
+
+    case 'webpage':
+      return {
+        '@context': baseContext,
+        '@type': 'WebPage',
+        name: data.name,
+        description: data.description,
+        url: data.url
+      };
+
+    case 'breadcrumblist':
+      return {
+        '@context': baseContext,
+        '@type': 'BreadcrumbList',
+        itemListElement: data.items.map((item: any, index: number) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: item.name,
+          item: item.url
+        }))
+      };
+
+    default:
+      return null;
+  }
+};
+
+const schema = generateSchema();
+---
+
+{schema && (
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+)}
