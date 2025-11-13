@@ -232,6 +232,56 @@ gemini auth login  # OAuth 24h
 
 ---
 
+### ⚠️ ZEN MCP TOOL USAGE (CRITICAL - READ FIRST)
+
+**MANDATORY:** When using Zen MCP for Gemini analysis, **ALWAYS** use the correct tool:
+
+✅ **CORRECT:** `mcp__zen__clink` with `cli_name: "gemini"`
+- Uses **Gemini CLI OAuth** (24h session, no API key needed)
+- Works with active OAuth session (`gemini auth login`)
+- Configured in `~/Documents/DEV/zen-mcp-server/conf/cli_clients/gemini.json`
+
+❌ **WRONG:** `mcp__zen__chat` with `model: "gemini-2.5-pro"`
+- Uses **Gemini REST API** (requires `GEMINI_API_KEY`)
+- Will fail with "API key not valid" error
+- NOT configured in this project
+
+**Why This Matters:**
+- Zen MCP has TWO interfaces: `chat` (API keys) and `clink` (OAuth CLI)
+- Our setup uses **OAuth-only** (no API keys configured)
+- Using wrong tool = authentication failure
+
+**Example Usage:**
+```typescript
+// ✅ CORRECT
+mcp__zen__clink({
+  cli_name: "gemini",
+  prompt: "Analyze this project..."
+})
+
+// ❌ WRONG (will fail)
+mcp__zen__chat({
+  model: "gemini-2.5-pro",
+  prompt: "Analyze this project..."
+})
+```
+
+**Verification:**
+```bash
+# Check OAuth session active
+gemini auth status  # Should show: "Loaded cached credentials"
+
+# Check Zen MCP connected
+claude mcp list | grep zen  # Should show: "zen: ... ✓ Connected"
+```
+
+**Troubleshooting:**
+- If OAuth expired: `gemini auth login`
+- If Zen MCP disconnected: Restart Claude Code session
+- See [ZEN-MCP-WORKFLOW-ORCHESTRATION.md](./docs/ZEN-MCP-WORKFLOW-ORCHESTRATION.md) for complete setup
+
+---
+
 ### Sub-Agents & Spec-Kit
 
 **Agents Generated Automatically (3-4 agents):**
