@@ -1,5 +1,5 @@
 ---
-description: Initialize project structure (CLAUDE.md + project-memory.md + ci-template.yml)
+description: Initialize project structure (CLAUDE.md + project-memory.md + slash commands + agents + scripts + CI/CD)
 argument-hint: [optional-project-path]
 allowed-tools: Write(*), Read(*), Bash(*), Edit(*)
 model: claude-sonnet-4-5-20250929
@@ -13,8 +13,11 @@ Initialize project structure with CLAUDE.md, project-memory.md, and CI/CD templa
 1. `CLAUDE.md` (enriched from claudedebut.md template)
 2. `project-memory.md` (initialized from template)
 3. `ci-template.yml` (GitHub Actions workflow)
+4. `.claude/commands/` (all slash commands including /savebundle, /loadbundle)
+5. `.claude/agents/` (sub-agents templates)
+6. `scripts/` (quality gates: pulseLogger.cjs, bashSandbox.cjs, etc.)
 
-**Purpose:** Complete project bootstrap with session startup protocol + dynamic memory.
+**Purpose:** Complete project bootstrap with session startup protocol + dynamic memory + context bundles.
 
 ---
 
@@ -66,9 +69,9 @@ Read these files to extract project metadata:
 
 ---
 
-### Step 2: Copy Templates
+### Step 2: Copy Templates and Essential Files
 
-**Copy from archon-orchestrator templates:**
+**Copy from archon-orchestrator:**
 
 ```bash
 # Get archon-orchestrator path (common locations)
@@ -90,6 +93,50 @@ cp "$ARCHON_PATH/templates/claudedebut.md" CLAUDE.md
 cp "$ARCHON_PATH/templates/project-memory-template.md" project-memory.md
 
 echo "✅ Templates copied"
+
+# Copy slash commands if not already present
+if [ ! -d ".claude/commands" ]; then
+  echo "📂 Copying slash commands..."
+  mkdir -p .claude/commands
+  cp -r "$ARCHON_PATH/.claude/commands/"* .claude/commands/
+  COMMANDS_COUNT=$(ls -1 .claude/commands | wc -l | xargs)
+  echo "✅ $COMMANDS_COUNT slash commands copied (including /savebundle, /loadbundle)"
+else
+  echo "⏭️  .claude/commands/ already exists, skipping"
+fi
+
+# Copy agents templates if not already present
+if [ ! -d ".claude/agents" ]; then
+  echo "🤖 Copying sub-agents templates..."
+  mkdir -p .claude/agents
+  for agent in backend-specialist.md frontend-specialist.md design-specialist.md testing-specialist.md prompt-specialist.md; do
+    if [ -f "$ARCHON_PATH/.claude/agents/$agent" ]; then
+      cp "$ARCHON_PATH/.claude/agents/$agent" .claude/agents/
+    fi
+  done
+  AGENTS_COUNT=$(ls -1 .claude/agents | wc -l | xargs)
+  echo "✅ $AGENTS_COUNT sub-agents copied"
+else
+  echo "⏭️  .claude/agents/ already exists, skipping"
+fi
+
+# Copy scripts if not already present
+if [ ! -d "scripts" ]; then
+  echo "📜 Copying quality gates scripts..."
+  mkdir -p scripts
+  for script in pulseLogger.cjs bashSandbox.cjs validateGates.cjs contextBundler.cjs viewPulse.sh; do
+    if [ -f "$ARCHON_PATH/scripts/$script" ]; then
+      cp "$ARCHON_PATH/scripts/$script" scripts/
+      if [[ "$script" == *.sh ]]; then
+        chmod +x "scripts/$script"
+      fi
+    fi
+  done
+  SCRIPTS_COUNT=$(ls -1 scripts | wc -l | xargs)
+  echo "✅ $SCRIPTS_COUNT scripts copied"
+else
+  echo "⏭️  scripts/ already exists, skipping"
+fi
 ```
 
 **If archon-orchestrator not found:** Tell user exact path and ask them to provide it.
@@ -335,6 +382,9 @@ Files created:
 - CLAUDE.md (enriched with project data)
 - project-memory.md (Phase 0 + Phase 1 session logged)
 - .github/workflows/ci-template.yml (CI/CD ready)
+- .claude/commands/ ([COUNT] slash commands - includes /savebundle, /loadbundle)
+- .claude/agents/ ([COUNT] sub-agents templates)
+- scripts/ ([COUNT] quality gates scripts)
 
 Project Identity:
 - Name: [PROJECT_NAME]
@@ -344,6 +394,11 @@ Project Identity:
 Session Logged:
 - Session [DATE] - Phase 0 + Phase 1 Complete
 - Documented in project-memory.md (SESSION NOTES section)
+
+Context Bundles Available:
+- /savebundle [name] - Save checkpoint for disaster recovery
+- /loadbundle <bundle-path> - Restore after crash (60-70% context recovery)
+- See CLAUDE.md Section 5 for complete Context Bundles documentation
 
 Next Steps:
 1. /speckit.design (generate design-tokens.json)
