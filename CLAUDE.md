@@ -7,6 +7,54 @@
 
 ---
 
+## 🆕 NEW PROJECT SETUP (Quick Start)
+
+**Creating a new Archon-powered project? Use ONE of these methods:**
+
+### **Method 1: CLI Command (Recommended - 30 sec)**
+
+```bash
+# Install archon CLI (one-time setup)
+cd ~/Documents/DEV/archon-orchestrator
+./install.sh
+
+# Create new project
+archon init <project-name>
+
+# Example
+archon init ai-scraping-pro
+# → Creates ~/Documents/DEV/ai-scraping-pro with full Archon setup
+```
+
+**What it does:**
+- ✅ Git init
+- ✅ CLAUDE.md copied (27KB workflow instructions)
+- ✅ .claude/commands/ (15 slash commands)
+- ✅ .claude/agents/ (5 sub-agents templates)
+- ✅ scripts/ (Quality gates P0-P5)
+- ✅ templates/ (project-memory-template.md)
+- ✅ .gitignore configured
+- ✅ Initial commit created
+
+**Time:** 30 seconds vs 5 min manual setup (-90%)
+
+### **Method 2: Slash Command (In Claude Code)**
+
+```bash
+/archon.init <project-name>
+
+# Example
+/archon.init ai-scraping-pro
+```
+
+Same output as CLI method, runs from within Claude Code session.
+
+### **Method 3: Manual (Fallback)**
+
+See section 3 (Navigation & References) → Setup Manual
+
+---
+
 ## 🧠 SESSION STARTUP PROTOCOL (MANDATORY - Zero Trust)
 
 **BEFORE any work, ALWAYS read:**

@@ -1,0 +1,383 @@
+#!/usr/bin/env node
+// @ts-check
+
+/**
+ * Archon CLI - Bootstrapping tool for new projects
+ * Usage: archon init <project-name>
+ */
+
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const ARCHON_ROOT = path.join(__dirname, '..');
+const DEV_ROOT = path.join(process.env.HOME, 'Documents', 'DEV');
+
+// ANSI colors
+const colors = {
+  reset: '\x1b[0m',
+  bright: '\x1b[1m',
+  green: '\x1b[32m',
+  blue: '\x1b[34m',
+  yellow: '\x1b[33m',
+  red: '\x1b[31m',
+  cyan: '\x1b[36m',
+};
+
+const log = {
+  info: (msg) => console.log(`${colors.blue}ℹ${colors.reset} ${msg}`),
+  success: (msg) => console.log(`${colors.green}✓${colors.reset} ${msg}`),
+  warn: (msg) => console.log(`${colors.yellow}⚠${colors.reset} ${msg}`),
+  error: (msg) => console.log(`${colors.red}✗${colors.reset} ${msg}`),
+  step: (msg) => console.log(`${colors.cyan}▸${colors.reset} ${msg}`),
+  header: (msg) => console.log(`\n${colors.bright}${msg}${colors.reset}\n`),
+};
+
+function showHelp() {
+  console.log(`
+${colors.bright}Archon CLI${colors.reset} - Project Bootstrapping Tool v6.1.5
+
+${colors.bright}USAGE:${colors.reset}
+  archon init <project-name>     Create new Archon-powered project
+  archon --help                  Show this help message
+  archon --version               Show version
+
+${colors.bright}EXAMPLES:${colors.reset}
+  archon init ai-scraping-pro    Create new project "ai-scraping-pro"
+  archon init my-saas            Create new project "my-saas"
+
+${colors.bright}WHAT IT DOES:${colors.reset}
+  1. Creates project directory in ~/Documents/DEV/<project-name>
+  2. Initializes git repository
+  3. Copies CLAUDE.md (Archon workflow instructions)
+  4. Copies .claude/commands/ (Spec-Kit slash commands)
+  5. Copies .claude/agents/ (Sub-agents templates)
+  6. Copies scripts/ (Quality gates: P0-P5)
+  7. Copies templates/ (project-memory-template.md)
+  8. Creates .gitignore
+  9. Creates initial commit
+  10. Opens in Claude Code (if available)
+
+${colors.bright}NEXT STEPS AFTER INIT:${colors.reset}
+  1. cd ~/Documents/DEV/<project-name>
+  2. Run: /zen-roundtable <your-brief>
+  3. Follow Spec-Kit workflow (/speckit.design → /speckit.plan → /speckit.final)
+
+${colors.bright}DOCUMENTATION:${colors.reset}
+  See: ~/Documents/DEV/archon-orchestrator/CLAUDE.md
+  `);
+}
+
+function showVersion() {
+  console.log('Archon CLI v6.1.5 (Workflow V6.1.5 - Security & Observability)');
+}
+
+function validateProjectName(name) {
+  if (!name) {
+    log.error('Project name is required');
+    console.log('Usage: archon init <project-name>');
+    process.exit(1);
+  }
+
+  if (!/^[a-z0-9-]+$/.test(name)) {
+    log.error('Project name must be lowercase alphanumeric with hyphens only');
+    console.log('Example: ai-scraping-pro, my-saas-app');
+    process.exit(1);
+  }
+
+  return name;
+}
+
+function ensureDirectoryExists(dir) {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+}
+
+function copyDirectory(src, dest) {
+  ensureDirectoryExists(dest);
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+
+    if (entry.isDirectory()) {
+      copyDirectory(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
+function copyFile(src, dest) {
+  fs.copyFileSync(src, dest);
+}
+
+function createGitignore(projectPath) {
+  const gitignoreContent = `# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Env
+.env
+.env.local
+.env.production.local
+.env.development.local
+!.env.example
+
+# Vercel
+.vercel
+
+# OS
+.DS_Store
+*.swp
+*.swo
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+observability-pulse.jsonl
+
+# Context Bundles (commit if you want disaster recovery)
+# .agents/context-bundles/
+`;
+
+  fs.writeFileSync(path.join(projectPath, '.gitignore'), gitignoreContent);
+}
+
+function initProject(projectName) {
+  log.header(`🚀 Archon Init: ${projectName}`);
+
+  // Validate
+  validateProjectName(projectName);
+
+  const projectPath = path.join(DEV_ROOT, projectName);
+
+  // Check if project already exists
+  if (fs.existsSync(projectPath)) {
+    log.error(`Project "${projectName}" already exists at ${projectPath}`);
+    log.warn('Choose a different name or delete the existing directory');
+    process.exit(1);
+  }
+
+  // Step 1: Create project directory
+  log.step('Creating project directory...');
+  ensureDirectoryExists(projectPath);
+  log.success(`Created ${projectPath}`);
+
+  // Step 2: Initialize git
+  log.step('Initializing git repository...');
+  try {
+    execSync('git init', { cwd: projectPath, stdio: 'pipe' });
+    log.success('Git initialized');
+  } catch (error) {
+    log.error('Failed to initialize git');
+    process.exit(1);
+  }
+
+  // Step 3: Copy CLAUDE.md
+  log.step('Copying CLAUDE.md (Archon workflow instructions)...');
+  const claudeMdSrc = path.join(ARCHON_ROOT, 'CLAUDE.md');
+  const claudeMdDest = path.join(projectPath, 'CLAUDE.md');
+  if (fs.existsSync(claudeMdSrc)) {
+    copyFile(claudeMdSrc, claudeMdDest);
+    const size = (fs.statSync(claudeMdDest).size / 1024).toFixed(1);
+    log.success(`CLAUDE.md copied (${size}KB)`);
+  } else {
+    log.warn('CLAUDE.md not found in archon-orchestrator');
+  }
+
+  // Step 4: Copy .claude/commands/
+  log.step('Copying Spec-Kit slash commands...');
+  const commandsSrc = path.join(ARCHON_ROOT, '.claude', 'commands');
+  const commandsDest = path.join(projectPath, '.claude', 'commands');
+  if (fs.existsSync(commandsSrc)) {
+    copyDirectory(commandsSrc, commandsDest);
+    const count = fs.readdirSync(commandsDest).length;
+    log.success(`${count} slash commands copied`);
+  } else {
+    log.warn('.claude/commands/ not found');
+  }
+
+  // Step 5: Copy .claude/agents/
+  log.step('Copying sub-agents templates...');
+  const agentsSrc = path.join(ARCHON_ROOT, '.claude', 'agents');
+  const agentsDest = path.join(projectPath, '.claude', 'agents');
+  if (fs.existsSync(agentsSrc)) {
+    // Copy essential agents only
+    ensureDirectoryExists(agentsDest);
+    const essentialAgents = [
+      'backend-specialist.md',
+      'frontend-specialist.md',
+      'design-specialist.md',
+      'testing-specialist.md',
+      'prompt-specialist.md',
+    ];
+    let copied = 0;
+    for (const agent of essentialAgents) {
+      const src = path.join(agentsSrc, agent);
+      const dest = path.join(agentsDest, agent);
+      if (fs.existsSync(src)) {
+        copyFile(src, dest);
+        copied++;
+      }
+    }
+    log.success(`${copied} sub-agents copied`);
+  } else {
+    log.warn('.claude/agents/ not found');
+  }
+
+  // Step 6: Copy scripts/
+  log.step('Copying quality gates scripts...');
+  const scriptsSrc = path.join(ARCHON_ROOT, 'scripts');
+  const scriptsDest = path.join(projectPath, 'scripts');
+  if (fs.existsSync(scriptsSrc)) {
+    ensureDirectoryExists(scriptsDest);
+    const essentialScripts = [
+      'pulseLogger.cjs',
+      'bashSandbox.cjs',
+      'validateGates.cjs',
+      'contextBundler.cjs',
+      'viewPulse.sh',
+    ];
+    let copied = 0;
+    for (const script of essentialScripts) {
+      const src = path.join(scriptsSrc, script);
+      const dest = path.join(scriptsDest, script);
+      if (fs.existsSync(src)) {
+        copyFile(src, dest);
+        if (script.endsWith('.sh')) {
+          fs.chmodSync(dest, 0o755); // Make executable
+        }
+        copied++;
+      }
+    }
+    log.success(`${copied} scripts copied`);
+  } else {
+    log.warn('scripts/ not found');
+  }
+
+  // Step 7: Copy templates/
+  log.step('Copying templates...');
+  const templatesSrc = path.join(ARCHON_ROOT, 'templates');
+  const templatesDest = path.join(projectPath, 'templates');
+  if (fs.existsSync(templatesSrc)) {
+    ensureDirectoryExists(templatesDest);
+    const templateFile = 'project-memory-template.md';
+    const src = path.join(templatesSrc, templateFile);
+    const dest = path.join(templatesDest, templateFile);
+    if (fs.existsSync(src)) {
+      copyFile(src, dest);
+      log.success('project-memory-template.md copied');
+    }
+  } else {
+    log.warn('templates/ not found');
+  }
+
+  // Step 8: Create directory structure
+  log.step('Creating directory structure...');
+  const dirs = [
+    '.specify/memory',
+    'specs/001-mvp',
+  ];
+  for (const dir of dirs) {
+    ensureDirectoryExists(path.join(projectPath, dir));
+  }
+  log.success('Directory structure created');
+
+  // Step 9: Create .gitignore
+  log.step('Creating .gitignore...');
+  createGitignore(projectPath);
+  log.success('.gitignore created');
+
+  // Step 10: Initial commit
+  log.step('Creating initial commit...');
+  try {
+    execSync('git add .', { cwd: projectPath, stdio: 'pipe' });
+    const commitMessage = `chore: Initial project setup with Archon Workflow V6.1.5
+
+- CLAUDE.md (workflow instructions)
+- Spec-Kit commands (/zen-roundtable, /speckit.*)
+- Quality gates scripts (P0-P5)
+- Sub-agents templates (backend, frontend, testing, design)
+- .gitignore
+
+Ready for /zen-roundtable Phase 0 analysis.
+
+🤖 Generated with Archon CLI
+`;
+    execSync(`git commit -m "${commitMessage}"`, { cwd: projectPath, stdio: 'pipe' });
+    log.success('Initial commit created');
+  } catch (error) {
+    log.warn('Could not create initial commit');
+  }
+
+  // Summary
+  log.header('✅ Project Created Successfully!');
+  console.log(`${colors.bright}Location:${colors.reset} ${projectPath}\n`);
+  console.log(`${colors.bright}Next Steps:${colors.reset}`);
+  console.log(`  1. ${colors.cyan}cd ${projectPath}${colors.reset}`);
+  console.log(`  2. ${colors.cyan}code .${colors.reset} (open in Claude Code)`);
+  console.log(`  3. ${colors.cyan}/zen-roundtable${colors.reset} <your-project-brief>`);
+  console.log(`  4. Follow Spec-Kit workflow:\n`);
+  console.log(`     ${colors.yellow}/speckit.design${colors.reset}   → design-tokens.json + wireframes`);
+  console.log(`     ${colors.yellow}/speckit.plan${colors.reset}     → plan.md (architecture)`);
+  console.log(`     ${colors.yellow}/speckit.tasks${colors.reset}    → tasks.md (50-100 tasks)`);
+  console.log(`     ${colors.yellow}/speckit.agents${colors.reset}   → ORCHESTRATION.md`);
+  console.log(`     ${colors.yellow}/speckit.final${colors.reset}    → Auto-implementation (2-3h)\n`);
+
+  console.log(`${colors.bright}Documentation:${colors.reset}`);
+  console.log(`  See CLAUDE.md in your new project\n`);
+
+  // Try to open in Claude Code
+  log.step('Opening in Claude Code...');
+  try {
+    execSync(`code "${projectPath}"`, { stdio: 'pipe' });
+    log.success('Project opened in Claude Code');
+  } catch (error) {
+    log.warn('Could not auto-open Claude Code (run manually: code .)');
+  }
+}
+
+// Main CLI logic
+const args = process.argv.slice(2);
+const command = args[0];
+
+if (!command || command === '--help' || command === '-h') {
+  showHelp();
+  process.exit(0);
+}
+
+if (command === '--version' || command === '-v') {
+  showVersion();
+  process.exit(0);
+}
+
+if (command === 'init') {
+  const projectName = args[1];
+  initProject(projectName);
+} else {
+  log.error(`Unknown command: ${command}`);
+  console.log('Run "archon --help" for usage information');
+  process.exit(1);
+}
