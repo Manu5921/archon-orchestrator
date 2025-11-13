@@ -83,7 +83,38 @@ archon-sync ~/Documents/DEV/ai-scraping
 
 **Time:** 5 seconds
 
+**After sync:** Restart Claude Code session to detect new commands
+
 **See:** `bin/README.md` for complete documentation
+
+---
+
+## 💡 HOW SLASH COMMANDS WORK
+
+**Claude Code detects commands from:** `.claude/commands/` in current project directory
+
+**Example:**
+```
+Session archon-orchestrator → Uses /archon-orchestrator/.claude/commands/
+Session ai-scraping → Uses /ai-scraping/.claude/commands/
+```
+
+**Making commands available everywhere:**
+
+1. **New projects:** `archon init` OR `/speckit.init` copies ALL commands automatically
+2. **Existing projects:** Run `archon-sync /path/to/project` to update
+3. **After sync:** Restart Claude Code session (Cmd+Q → Reopen)
+
+**Verification:**
+```bash
+# List all available commands in current project
+ls -1 .claude/commands/*.md | wc -l
+
+# Check if specific command exists
+ls .claude/commands/speckit.bootstrap.md
+```
+
+**Latest commands always in:** `~/Documents/DEV/archon-orchestrator/.claude/commands/`
 
 ---
 
