@@ -159,6 +159,35 @@ Add debug output:
 console.log('DEBUG:', variableName);
 ```
 
+## Sync Commands (Update Existing Projects)
+
+If you have an existing project that's missing latest commands:
+
+```bash
+cd ~/Documents/DEV/archon-orchestrator
+./bin/sync-commands.sh /path/to/your/project
+```
+
+**Example:**
+```bash
+./bin/sync-commands.sh ~/Documents/DEV/ai-scraping
+```
+
+**What it does:**
+- Copies ALL latest commands from archon-orchestrator
+- Updates existing commands to latest version
+- Shows before/after count + new commands added
+- Lists all available commands
+
+**When to use:**
+- After updating archon-orchestrator (git pull)
+- Project missing commands (created before they existed)
+- Want latest command versions
+
+**Time:** 5 seconds
+
+---
+
 ## Version History
 
 - **v6.1.5** (2025-11-13) - Initial release
@@ -167,6 +196,7 @@ console.log('DEBUG:', variableName);
   - CLAUDE.md + slash commands + agents + scripts
   - .gitignore creation
   - Initial commit
+  - sync-commands.sh for updating existing projects
 
 ## License
 
