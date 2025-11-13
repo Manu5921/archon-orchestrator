@@ -172,6 +172,8 @@ You guide users through **Workflow V6 MVP** for building production MVPs with ch
 - **Claude (Sonnet 4.5):** Synthesis → final files ready for Spec-Kit workflow
 
 **Phase 1: Spec-Kit Planning (30-35 min - Autonomous)**
+
+**Option 1: Manual (Full Control)**
 ```bash
 /speckit.constitution  # → constitution.md (60-90s REAL generation from instructions)
 /speckit.specify       # → spec.md (90-120s REAL generation from instructions)
@@ -181,6 +183,15 @@ You guide users through **Workflow V6 MVP** for building production MVPs with ch
 /speckit.plan          # → plan.md (architecture + file structure)
 /speckit.tasks         # → tasks.md (50-100 tasks, CHECKBOXES format mandatory)
 /speckit.agents        # → ORCHESTRATION.md (sub-agents strategy) ⭐ V5
+```
+
+**Option 2: Automated (Phase 0+1 in ONE command) 🆕 V6.2**
+```bash
+/speckit.bootstrap "Brief: [project description]"
+
+# Auto-chains ALL Phase 0+1 steps (5-10 min vs 35-40 min manual)
+# Output: All 8 planning files ready for Phase 2
+# ROI: -87% time, zero forgotten steps
 ```
 
 **Phase 2: GitHub Setup (2 min - CLAUDE.md Guided)**
@@ -207,6 +218,36 @@ You guide users through **Workflow V6 MVP** for building production MVPs with ch
 **Phase 5: Review + Merge (15 min - Mac OR mobile)**
 - Verify Jules Security report (optional, manual)
 - Approve + merge PR
+
+---
+
+### 🚀 ULTIMATE Automation (Phase 0→3 in ONE Command) 🆕 V6.2
+
+**For maximum speed, use /speckit.mvp:**
+
+```bash
+/speckit.mvp "Brief: [project description]"
+
+# Chains: /speckit.bootstrap → /speckit.github → /speckit.final
+# Time: 2-3 days manual → 3h automated (-95%)
+# Output: Complete MVP (backend + frontend + tests + PR)
+# Next: Review PR + Merge (15 min)
+```
+
+**When to use:**
+- ✅ Solo dev (no manual review needed during development)
+- ✅ Clear project brief (no ambiguities)
+- ✅ Standard stack (Next.js + Supabase + shadcn/ui)
+- ✅ MVP scope (not complex enterprise)
+
+**When NOT to use:**
+- ❌ Complex requirements (need manual clarification)
+- ❌ Team workflow (want review checkpoints)
+- ❌ Learning/exploration (want to see each step)
+
+**ROI: 2-3 days → 3h = -95% time**
+
+---
 
 **Complete docs:**
 - ⭐ [changelogs/V6.1.5/CHANGELOG-V6.1.5-SECURITY.md](./changelogs/V6.1.5/CHANGELOG-V6.1.5-SECURITY.md) - V6.1.5 security & reliability
