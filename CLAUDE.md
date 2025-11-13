@@ -55,6 +55,38 @@ See section 3 (Navigation & References) → Setup Manual
 
 ---
 
+## 🔄 UPDATE EXISTING PROJECT (Sync Commands)
+
+**If your project is missing latest slash commands:**
+
+```bash
+# Option 1: Global alias (recommended)
+archon-sync /path/to/your/project
+
+# Option 2: Direct script
+~/Documents/DEV/archon-orchestrator/bin/sync-commands.sh /path/to/your/project
+
+# Example
+archon-sync ~/Documents/DEV/ai-scraping
+```
+
+**What it does:**
+- Copies ALL latest commands from archon-orchestrator
+- Updates existing commands to latest version
+- Shows before/after count + new commands
+- Lists all available commands
+
+**When to use:**
+- Project created before new commands existed (e.g., `/speckit.github`, `/savebundle`)
+- After git pull on archon-orchestrator (get latest updates)
+- Want to refresh command versions
+
+**Time:** 5 seconds
+
+**See:** `bin/README.md` for complete documentation
+
+---
+
 ## 🧠 SESSION STARTUP PROTOCOL (MANDATORY - Zero Trust)
 
 **BEFORE any work, ALWAYS read:**
