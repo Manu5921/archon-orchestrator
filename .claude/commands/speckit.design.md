@@ -1,18 +1,22 @@
 ---
-description: Generate design system (design-tokens.json + wireframes + components list) for Design/Dev Decoupling
+description: Generate design system (design-tokens.[json|css|scss] + wireframes + components list) for Design/Dev Decoupling - Multi-Framework Support V6.2.1
 argument-hint: [optional-context]
 allowed-tools: Write(*), Read(*), Bash(*)
 model: claude-sonnet-4-5-20250929
 ---
 
-# 🎨 Spec-Kit Design System Generator
+# 🎨 Spec-Kit Design System Generator (Multi-Framework) 🆕 V6.2.1
 
 Generate complete design system for Design/Dev Decoupling pattern (V5 Competitive Advantage).
 
-**Output Files:**
-1. `design/design-tokens.json` (20 core tokens - placeholder)
-2. `design/wireframes/*.svg` (low-fidelity layouts)
-3. `design/components-list.md` (shadcn/ui mapping)
+**Framework Detection:** Automatically detects Next.js, Astro, or PHP from spec.md
+
+**Output Files (Framework-Aware):**
+1. **Next.js:** `design-tokens.json` (Tailwind CSS format)
+2. **Astro:** `public/styles/design-tokens.css` (CSS variables)
+3. **PHP:** `resources/css/design-tokens.scss` (SCSS variables)
+4. `design/wireframes/*.svg` (low-fidelity layouts - all frameworks)
+5. `design/components-list.md` (framework-specific components)
 
 **Purpose:** Enable parallel work (dev uses tokens → designer customizes → 15min merge).
 
@@ -33,113 +37,251 @@ Extract:
 - Typography needs (corporate → Satoshi, startup → Inter)
 - Component requirements (features → UI components needed)
 
-### Step 2: Generate Design Tokens
+### Step 1.5: Detect Framework 🆕 V6.2.1
 
-**File:** `design/design-tokens.json`
+**Detect framework from spec.md to generate correct token format:**
 
-**Template (20 core tokens):**
+```bash
+# Read spec.md to detect framework
+FRAMEWORK="unknown"
+
+if grep -qi "next\.js\|nextjs" specs/001-mvp/spec.md .specify/memory/spec.md 2>/dev/null; then
+  FRAMEWORK="nextjs"
+  echo "📦 Detected: Next.js project"
+  echo "Output: design-tokens.json (Tailwind CSS format)"
+elif grep -qi "astro" specs/001-mvp/spec.md .specify/memory/spec.md 2>/dev/null; then
+  FRAMEWORK="astro"
+  echo "📦 Detected: Astro project"
+  echo "Output: design-tokens.css (CSS variables format)"
+elif grep -qi "php\|laravel" specs/001-mvp/spec.md .specify/memory/spec.md 2>/dev/null; then
+  FRAMEWORK="php"
+  echo "📦 Detected: PHP project"
+  echo "Output: design-tokens.scss (SCSS variables format)"
+else
+  FRAMEWORK="nextjs"
+  echo "⚠️  Framework not detected, defaulting to Next.js"
+  echo "Output: design-tokens.json (Tailwind CSS format)"
+fi
+```
+
+**Framework-specific paths:**
+- **Next.js:** `design-tokens.json` (root or `src/`)
+- **Astro:** `public/styles/design-tokens.css`
+- **PHP:** `resources/css/design-tokens.scss`
+
+---
+
+### Step 2: Generate Design Tokens (Framework-Aware)
+
+**Generate design tokens using Write tool based on detected framework:**
+
+---
+
+#### 2A. IF Next.js → Generate `design-tokens.json`
+
+**File:** `design-tokens.json` (root directory)
+
+Use Write tool to create JSON file with 20 core tokens:
 
 ```json
 {
   "colors": {
     "primary": {
       "50": "#EFF6FF",
-      "100": "#DBEAFE",
-      "200": "#BFDBFE",
-      "300": "#93C5FD",
-      "400": "#60A5FA",
       "500": "#3B82F6",
       "600": "#2563EB",
-      "700": "#1D4ED8",
-      "800": "#1E40AF",
       "900": "#1E3A8A"
-    },
-    "secondary": {
-      "50": "#F0FDF4",
-      "100": "#DCFCE7",
-      "500": "#10B981",
-      "600": "#059669",
-      "900": "#064E3B"
     },
     "neutral": {
       "50": "#F8FAFC",
-      "100": "#F1F5F9",
-      "200": "#E2E8F0",
-      "300": "#CBD5E1",
-      "400": "#94A3B8",
       "500": "#64748B",
-      "600": "#475569",
-      "700": "#334155",
-      "800": "#1E293B",
       "900": "#0F172A"
     },
-    "success": {
-      "50": "#F0FDF4",
-      "500": "#10B981",
-      "900": "#064E3B"
-    },
-    "warning": {
-      "50": "#FFFBEB",
-      "500": "#F59E0B",
-      "900": "#78350F"
-    },
-    "error": {
-      "50": "#FEF2F2",
-      "500": "#EF4444",
-      "900": "#7F1D1D"
-    }
+    "success": { "500": "#10B981" },
+    "warning": { "500": "#F59E0B" },
+    "error": { "500": "#EF4444" }
   },
   "typography": {
-    "heading": {
-      "family": "Satoshi, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-      "weight": "700",
-      "sizes": {
-        "h1": "2.5rem",
-        "h2": "2rem",
-        "h3": "1.5rem",
-        "h4": "1.25rem"
-      }
-    },
-    "body": {
-      "family": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-      "weight": "400",
-      "sizes": {
-        "base": "1rem",
-        "sm": "0.875rem",
-        "xs": "0.75rem"
-      }
-    },
-    "code": {
-      "family": "JetBrains Mono, 'Courier New', monospace",
-      "weight": "400"
-    }
+    "heading": { "family": "Satoshi, sans-serif", "weight": "700" },
+    "body": { "family": "Inter, sans-serif", "weight": "400" }
   },
   "spacing": {
-    "xs": "0.25rem",
     "sm": "0.5rem",
     "md": "1rem",
     "lg": "1.5rem",
-    "xl": "2rem",
-    "2xl": "3rem",
-    "3xl": "4rem"
+    "xl": "2rem"
   },
   "borderRadius": {
     "sm": "0.25rem",
     "md": "0.5rem",
     "lg": "0.75rem",
-    "xl": "1rem",
     "full": "9999px"
   },
   "shadows": {
     "sm": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-    "md": "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-    "lg": "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-    "xl": "0 20px 25px -5px rgb(0 0 0 / 0.1)"
+    "md": "0 4px 6px -1px rgb(0 0 0 / 0.1)"
   }
 }
 ```
 
-**Customization rules:**
+---
+
+#### 2B. IF Astro → Generate `design-tokens.css`
+
+**File:** `public/styles/design-tokens.css` (create directory if needed)
+
+Use Write tool to create CSS file with CSS variables:
+
+```css
+/**
+ * Design Tokens - Astro Landing Pages
+ * Generated by /speckit.design
+ * Philosophy: Design/Dev Decoupling (15-min rebrand via /import-design)
+ */
+
+:root {
+  /* Colors - Primary */
+  --color-primary-50: #eff6ff;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-900: #1e3a8a;
+
+  /* Colors - Neutral */
+  --color-neutral-50: #f8fafc;
+  --color-neutral-500: #64748b;
+  --color-neutral-900: #0f172a;
+
+  /* Colors - Semantic */
+  --color-success-500: #10b981;
+  --color-warning-500: #f59e0b;
+  --color-error-500: #ef4444;
+
+  /* Typography - Families */
+  --font-heading: 'Satoshi', -apple-system, sans-serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+
+  /* Typography - Weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* Typography - Sizes */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  /* Border Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+}
+
+/* Dark mode support (automatic via prefers-color-scheme) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-neutral-50: #0f172a;
+    --color-neutral-500: #94a3b8;
+    --color-neutral-900: #f8fafc;
+  }
+}
+```
+
+---
+
+#### 2C. IF PHP → Generate `design-tokens.scss`
+
+**File:** `resources/css/design-tokens.scss` (create directory if needed)
+
+Use Write tool to create SCSS file with SCSS variables:
+
+```scss
+/**
+ * Design Tokens - PHP/Laravel
+ * Generated by /speckit.design
+ * Philosophy: Design/Dev Decoupling (15-min rebrand via /import-design)
+ */
+
+// Colors - Primary
+$color-primary-50: #eff6ff;
+$color-primary-500: #3b82f6;
+$color-primary-600: #2563eb;
+$color-primary-900: #1e3a8a;
+
+// Colors - Neutral
+$color-neutral-50: #f8fafc;
+$color-neutral-500: #64748b;
+$color-neutral-900: #0f172a;
+
+// Colors - Semantic
+$color-success-500: #10b981;
+$color-warning-500: #f59e0b;
+$color-error-500: #ef4444;
+
+// Typography - Families
+$font-heading: 'Satoshi', -apple-system, sans-serif;
+$font-body: 'Inter', -apple-system, sans-serif;
+$font-code: 'JetBrains Mono', monospace;
+
+// Typography - Weights
+$font-normal: 400;
+$font-medium: 500;
+$font-semibold: 600;
+$font-bold: 700;
+
+// Typography - Sizes
+$text-xs: 0.75rem;
+$text-sm: 0.875rem;
+$text-base: 1rem;
+$text-lg: 1.125rem;
+$text-xl: 1.25rem;
+
+// Spacing
+$space-sm: 0.5rem;
+$space-md: 1rem;
+$space-lg: 1.5rem;
+$space-xl: 2rem;
+
+// Border Radius
+$radius-sm: 0.25rem;
+$radius-md: 0.5rem;
+$radius-lg: 0.75rem;
+$radius-full: 9999px;
+
+// Shadows
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+```
+
+---
+
+**Customization rules (all frameworks):**
 - **SaaS:** Primary blue (#3B82F6), clean typography (Inter)
 - **E-commerce:** Primary orange (#F59E0B), bold typography (Satoshi)
 - **Healthcare:** Primary green (#10B981), accessible typography (Inter)

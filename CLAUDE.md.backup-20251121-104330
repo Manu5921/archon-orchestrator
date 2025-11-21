@@ -284,7 +284,6 @@ You guide users through **Workflow V6 MVP** for building production MVPs with ch
 - ⭐ [changelogs/V6.1.5/CHANGELOG-V6.1.5-SECURITY.md](./changelogs/V6.1.5/CHANGELOG-V6.1.5-SECURITY.md) - V6.1.5 security & reliability
 - ⭐ [docs/SECURITY-OWASP-LLM.md](./docs/SECURITY-OWASP-LLM.md) - OWASP LLM threat model & mitigations
 - ⭐ [WORKFLOW-V6-MVP.md](./docs/WORKFLOW-V6-MVP.md) - Complete workflow guide
-- 🔮 [docs/ROADMAP-V7.0-FULL-AUTO.md](./docs/ROADMAP-V7.0-FULL-AUTO.md) - V7.0 Full Autonomous Pipeline (Future Vision)
 - [changelogs/V6.1.3/CHANGELOG-V6.1.3-OBSERVABILITY.md](./changelogs/V6.1.3/CHANGELOG-V6.1.3-OBSERVABILITY.md) - V6.1.3 observability gate
 - [changelogs/V6-MVP/CHANGELOG-V6-MVP.md](./changelogs/V6-MVP/CHANGELOG-V6-MVP.md) - V6 MVP baseline
 - [changelogs/V5.1/CHANGELOG-V5.1-FINAL.md](./changelogs/V5.1/CHANGELOG-V5.1-FINAL.md) - V5.1 foundation
@@ -388,8 +387,6 @@ gemini auth login  # OAuth 24h
 ### ⚠️ ZEN MCP TOOL USAGE (CRITICAL - READ FIRST)
 
 **MANDATORY:** When using Zen MCP for Gemini analysis, **ALWAYS** use the correct tool:
-
-**🚨 COMMON ERROR:** When executing `/zen-roundtable`, Claude may accidentally call `mcp__zen__chat` instead of `mcp__zen__clink`. This causes "GEMINI_API_KEY not configured" errors. **Always verify you're calling the correct tool!**
 
 ✅ **CORRECT:** `mcp__zen__clink` with `cli_name: "gemini"`
 - Uses **Gemini CLI OAuth** (24h session, no API key needed)
@@ -532,478 +529,6 @@ node scripts/validateGates.cjs validate gates-data.json
 **Standards:** E1 Architecture-First (ADR) | E2 Types (strict TypeScript) | E3 Tests (TDD) | E8 Gates | E11 Escalation (3-strike) | E16 Zero Trust (proofs)
 
 **Docs:** [ZERO-TRUST.md](./docs/ZERO-TRUST.md)
-
----
-
-### Standards de Code (Complément Quality Gates)
-
-**Règles Universelles (prévention régressions) :**
-- **Préserver sémantique identique :** Lors de transformations (loops, conditionals, generators), n'appliquer QUE des modifications qui préservent comportement ET side-effects identiques. Ne JAMAIS changer comportement si filters, multiples generators, ordering, ou side effects présents.
-- **Préserver ordre & idempotence :** Lors de combinaison/déduplication/réordonnancement de listes/dicts/sets, TOUJOURS préserver ordre original, grouping, idempotence. Jamais introduire duplicates ou changements sémantiques.
-- **Logger exceptions immédiatement :** Toujours logger au moment exact de capture, surtout si gestion silencieuse (signal handlers, plugins, hooks, background tasks).
-- **Timezone-aware datetime :** Ne JAMAIS convertir silencieusement timezone-aware → naive ou inverse. Préserver awareness partout.
-- **Exceptions spécifiques :** Ne JAMAIS utiliser bare `except:` (Python) ou empty `catch {}` (TypeScript). Toujours capturer exceptions spécifiques et soit re-raise soit log meaningfully.
-- **Code existant sacré :** Ne JAMAIS supprimer ou commenter code existant sauf si issue demande explicitement deletion.
-
-**Format & Style (TypeScript/YAML/JSON) :**
-- **Indentation :** Exactement 2 spaces (YAML, JSON, TypeScript). Jamais tabs. Jamais mélanger spaces + tabs.
-- **YAML key order :** Respecter ordre logique : openapi → info → servers → tags → paths → webhooks → components (inside paths: get → put → post → delete → options → head → patch → trace).
-- **TypeScript imports :** Grouped (react → libs → @/ → types).
-- **Trailing commas :** Toujours (sauf JSON strict).
-- **Fichier top lines :** YAML avec schema = toujours garder en haut :
-  ```yaml
-  $schema: https://json-schema.org/draft/2020-12/schema
-  openapi: 3.1.0
-  ```
-
-**Workflow Mental Checklist (avant CHAQUE proposition) :**
-1. **Lire issue complète :** Issue + TOUS commentaires
-2. **Chercher exemple similaire :** Utiliser Read/Grep pour trouver pattern existant similaire
-3. **Copier style exact :** Naming, structure, patterns, conventions du code trouvé
-4. **Changement minimal :** Faire UNIQUEMENT ce qui est demandé (pas de refactor non demandé)
-5. **Vérifier impact downstream :** Si modif schema/types, vérifier rien ne casse ailleurs (imports, dépendances, tests)
-6. **Update types TypeScript :** Si modif schema utilisé ailleurs, update types accordingly
-7. **Proposer format exact :** Indentation correcte, lint passé mentalement, trailing spaces supprimés
-
-**Erreurs Fréquentes Archon (TOUJOURS éviter) :**
-- ❌ **Hardcoded colors** (`bg-blue-600` → ✅ `bg-primary-500`) - Violation Design Decoupling
-- ❌ **Skip `/speckit.design`** - Design system = Day 1 MANDATORY (NEVER skip)
-- ❌ **Oublier Context7 (P2)** - Nouvelles libs = TOUJOURS consulter docs via mcp__context7__get-library-docs
-- ❌ **TypeScript `any`** - Sans justification explicite documentée dans ADR (project-memory.md)
-- ❌ **Supabase mutations sans RLS** - TOUJOURS vérifier policy existe avant mutation
-- ❌ **Stripe webhooks sans verification** - TOUJOURS vérifier signature (stripe.webhooks.constructEvent)
-- ❌ **Supprimer code existant** - Sans demande explicite dans issue
-- ❌ **Proposer refactor non demandé** - Over-engineering = ennemi (simplicity > complexity)
-- ❌ **Bare catch blocks** - `try/catch {}` sans logging = debugging nightmare
-- ❌ **Modifications YAML/JSON sans validation** - Toujours vérifier indentation 2 spaces + key order + no trailing spaces
-
-**Validation Mentale (avant proposition) :**
-- **Build passes :** Code compilerait-il ? (tsc --noEmit mental check)
-- **Lint passes :** ESLint serait-il satisfait ? (no-unused-vars, explicit-any, etc.)
-- **Tests impactés :** Quels tests devraient être modifiés/ajoutés ?
-- **Breaking changes :** Y a-t-il risque de casser code existant ?
-- **Design tokens respectés :** Utilise-t-on CSS variables partout ?
-- **Security preserved :** RLS policies ? Input validation ? Webhook signatures ?
-
-**Docs:** Cette section complète Anti-Hallucination Principles (section 1) + Quality Gates P-1 to P5 (ci-dessus)
-
----
-
-### Règles Framework-Specific (Multi-Framework Support)
-
-**Philosophy:** Archon = Multi-Framework "LEGO" System. Rules adapt based on detected framework.
-
-**Framework Detection (auto-applied by Claude):**
-- **Next.js:** package.json contains `"next"` OR presence of `app/` directory
-- **Astro:** package.json contains `"astro"` OR presence of `astro.config.*`
-- **PHP:** composer.json exists OR presence of `.php` files
-
-**Apply ONLY rules matching detected framework. Skip others.**
-
----
-
-#### 🔷 Next.js 15 App Router (SI détecté)
-
-**App Router Architecture :**
-- ALWAYS use Server Actions for mutations (file: `actions.ts` colocated with page)
-- ALWAYS use `async` components with `React.use()` for data fetching (not `useEffect`)
-- NEVER use `'use client'` directive without explicit interactivity need (forms, animations, browser APIs only)
-- ALWAYS colocate Server Actions with components (NOT in centralized `/app/actions/` folder)
-- ALWAYS use `redirect()` from `next/navigation` (not `useRouter().push()` in Server Actions)
-
-**Data Fetching & State :**
-- ALWAYS fetch data in Server Components (default async/await, no loading states needed)
-- ONLY use `'use client'` + React hooks (useState, useEffect) when component needs client-side state
-- ALWAYS use Server Actions for forms (not API routes `/app/api/`)
-- NEVER mix Server Components + client hooks (causes hydration errors)
-
-**Routing & Navigation :**
-- ALWAYS use `<Link>` from `next/link` (not `<a>` tags for internal navigation)
-- ALWAYS use `useRouter()` from `next/navigation` (not `next/router` - deprecated)
-- ALWAYS use Route Groups `(dashboard)` for layout organization without affecting URL
-- ALWAYS use Parallel Routes `@modal` for modals/dialogs (not state-based)
-
-**Performance :**
-- ALWAYS use `next/image` component (not `<img>`)
-- ALWAYS specify `width` + `height` OR `fill` prop on Image component
-- ALWAYS use `loading="lazy"` for below-fold images
-- ALWAYS use `priority` for LCP images (above fold)
-
-**Supabase Integration (if lib/nextjs/auth/supabase/ used) :**
-- ALWAYS use `@supabase/ssr` (not `@supabase/supabase-js`) in Server Components
-- ALWAYS create Supabase client via `createServerClient()` (cookies-based session)
-- ALWAYS verify RLS policy exists BEFORE creating table/mutation
-- NEVER expose `service_role` key in client code (use RLS policies instead)
-
-**Stripe Integration (if lib/nextjs/payments/stripe/ used) :**
-- ALWAYS verify webhook signatures with `stripe.webhooks.constructEvent()`
-- ALWAYS use idempotency keys for payment operations (prevent double-charge)
-- ALWAYS check `event.type` before processing webhook (not all events = payment)
-- NEVER store full Stripe objects in DB (store IDs only: `customer_id`, `subscription_id`)
-
-**Design Tokens (if lib/nextjs/ui/ used) :**
-- ALWAYS use Tailwind classes referencing design-tokens.json (e.g., `bg-primary-500`)
-- NEVER hardcode colors/fonts (e.g., ❌ `bg-blue-600`, ❌ `font-sans`)
-- ALWAYS check design-tokens.json before adding new color/spacing value
-
-**TypeScript :**
-- ALWAYS use `interface` for props (not `type` - better error messages)
-- ALWAYS export types from component files (helps consumers)
-- NEVER use `any` without ADR justification (document in project-memory.md)
-
----
-
-#### 🔶 Astro 5 Landing Pages (SI détecté)
-
-**Component Architecture :**
-- ALWAYS use `.astro` components for static content (0 KB JavaScript shipped)
-- ONLY use React/Vue islands with `client:load` or `client:visible` for interactive elements (forms, modals, animations)
-- NEVER use client-side frameworks for static content (Hero, Features, Testimonials = pure Astro)
-- ALWAYS import from `lib/astro/ui/components/` (NEVER re-code existing components)
-- ALWAYS check lib/astro/ui/components/ BEFORE creating new component (17 components ready)
-
-**Available Components (ALWAYS reuse) :**
-- **Layout (4):** Layout, Header, Footer, Container
-- **Marketing (8):** Hero, Features, Pricing, Testimonials, CTA, FAQ, Stats, LogoCloud
-- **Forms (3):** ContactForm, NewsletterForm, WaitlistForm (React islands with `client:load`)
-- **SEO (3):** SEO, Schema, Analytics
-
-**Design Tokens (CRITICAL - ALWAYS enforce) :**
-- ALWAYS use design-tokens.css variables (e.g., `var(--color-primary-500)`)
-- NEVER hardcode colors/fonts (e.g., ❌ `#3B82F6`, ❌ `16px`, ❌ `Inter`)
-- ALWAYS reference design-tokens.css in Layout.astro FIRST (before other CSS)
-- ALWAYS preserve Design/Dev Decoupling (15-min rebrand via `/import-design`)
-
-**Performance (Lighthouse 100/100 target) :**
-- ALWAYS target LCP <1.0s (vs 2.5s Next.js - Astro advantage)
-- ALWAYS use `loading="eager"` for Hero images (above fold)
-- ALWAYS use `loading="lazy"` for below-fold images
-- NEVER ship JavaScript for static components (0 KB baseline)
-- ALWAYS verify 0 client-side JS (except forms islands) via `astro build --analyze`
-
-**SEO & Meta Tags :**
-- ALWAYS use SEO.astro component for meta tags (in Layout)
-- ALWAYS provide `title`, `description`, `canonical`, `ogImage` props
-- ALWAYS use Schema.astro for structured data (JSON-LD)
-- ALWAYS add Analytics.astro (supports Plausible/GA4/Fathom)
-- NEVER forget `<link rel="canonical">` (critical for SEO)
-
-**Forms & Interactivity (React Islands) :**
-- ALWAYS use `client:load` for forms that appear above fold (ContactForm)
-- ALWAYS use `client:visible` for forms below fold (NewsletterForm, WaitlistForm)
-- NEVER use `client:idle` or `client:media` (not needed for forms)
-- ALWAYS import React components from `lib/astro/ui/components/forms/`
-- ALWAYS add `'use client'` directive in React island files
-
-**Dark Mode Support :**
-- ALWAYS use `prefers-color-scheme: dark` media query (automatic dark mode)
-- ALWAYS test both light + dark mode (design-tokens.css inverts neutrals automatically)
-- NEVER use JavaScript-based theme toggle (CSS-only = 0 KB, faster)
-
-**File Structure :**
-- ALWAYS use `src/pages/` for routes (not `app/` like Next.js)
-- ALWAYS use `src/components/` for project-specific components
-- ALWAYS import from `lib/astro/ui/components/` for reusable library components
-- ALWAYS use `src/layouts/` for page layouts (imports lib/astro/ui/components/layout/)
-
-**Common Mistakes to AVOID :**
-- ❌ Using React hooks in `.astro` files (islands only)
-- ❌ Hardcoding colors instead of design-tokens.css variables
-- ❌ Shipping JavaScript for static content (Hero, Features, etc.)
-- ❌ Forgetting `client:load` directive on React islands (causes hydration errors)
-- ❌ Re-coding Hero/Features/Pricing (already exists in lib/astro/ui/)
-- ❌ Using `<img>` without `loading` attribute (performance hit)
-- ❌ Omitting canonical URL (SEO penalty)
-
----
-
-#### 🔸 PHP Laravel (SI détecté) 🔮 FUTURE
-
-**Status:** 🔮 Phase 4 (when first PHP project)
-
-**Placeholder rules (to be defined) :**
-- ALWAYS use Eloquent ORM (not raw SQL queries)
-- ALWAYS use Laravel validation (not manual checks)
-- ALWAYS use Blade templates (not raw PHP echo)
-- ALWAYS use CSRF protection (Laravel automatic)
-
----
-
-**Docs:** Cette section complète Standards de Code (section 2.5) avec règles framework-agnostic + framework-specific
-
----
-
-### AI Design Workflow (Gemini 3.0 Pro Integration) 🆕 V6.2.1
-
-**Philosophy:** "Design devient commodité, pas artisanat - 3 variants en 15 min"
-
-**Status:** ✅ Production Ready (Gemini 3.0 Pro via Zen MCP)
-**ROI:** -85% temps exploration (3-4h Figma → 15-20 min AI generation)
-**Quality:** 80% designer humain moyen (parfait pour 90% projets SaaS B2B)
-
-**Purpose:** Generate professional design system avec IA au lieu de Figma manuel.
-
----
-
-#### Workflow Complet (25-30 min total)
-
-**Phase 1: Brief Design (5 min)**
-
-Fill `.design/brief-template.md` with:
-- **Target audience:** Role (CMO, CTO), age, tech level, budget
-- **Emotion to convey:** Trust, Innovation, Premium, Friendly (check boxes)
-- **Design references:** Linear, Stripe, Vercel (what you like from each)
-- **Anti-references:** What NOT to do (generic blue, neon colors, etc.)
-- **Constraints:** WCAG level, dark mode, mobile-first, animation level
-
-**Template location:** `.design/brief-template.md` (created by `/speckit.init`)
-
----
-
-**Phase 2: AI Generation (Manual - Phase V6.2.1)**
-
-Until `/speckit.design-ai` command built (V6.3.0), use Gemini 3.0 Pro manually:
-
-```bash
-# 1. Copy brief content
-cat .design/brief-template.md
-
-# 2. Send to Gemini 3.0 Pro via Zen MCP (or chat):
-"Based on this brief + constitution.md + spec.md, generate 3 design directions.
-
-For each direction, provide:
-- Design philosophy (2-3 sentences)
-- Complete design-tokens.[json|css] (framework-aware)
-- Color palette reasoning
-- Typography choices
-- Key differentiators
-
-Output format: [Next.js JSON / Astro CSS / PHP SCSS]"
-
-# 3. Gemini generates 3 files:
-.design/tokens-history/v1-trust-blue.[json|css]
-.design/tokens-history/v2-tech-purple.[json|css]
-.design/tokens-history/v3-premium-mono.[json|css]
-```
-
----
-
-**Phase 3: Preview RÉEL (10-15 min)**
-
-**CRITICAL:** Validate sur preview deploy, PAS mockup IA
-
-```bash
-# For each variant, create preview branch
-for version in v1-trust-blue v2-tech-purple v3-premium-mono; do
-  git checkout -b design/$version
-
-  # Copy tokens to project root
-  cp .design/tokens-history/$version.* design-tokens.*
-
-  # Deploy preview (Vercel/Netlify)
-  vercel deploy --prod=false
-  # or: netlify deploy --draft
-
-  # Note preview URL
-  echo "Preview $version: [URL]"
-
-  # Return to main
-  git checkout main
-done
-
-# Result: 3 preview URLs to compare
-✅ v1-trust-blue: https://project-v1.vercel.app
-✅ v2-tech-purple: https://project-v2.vercel.app
-✅ v3-premium-mono: https://project-v3.vercel.app
-```
-
----
-
-**Phase 4: Selection & Application (2-3 min)**
-
-```bash
-# Review 3 preview URLs
-# Select best direction (e.g., v2)
-
-# Apply selected design
-cp .design/tokens-history/v2-tech-purple.* design-tokens.*
-
-# Or use import-design if exists
-/import-design .design/tokens-history/v2-tech-purple.json
-
-# Commit
-git add design-tokens.* .design/
-git commit -m "Design: Apply v2-tech-purple (AI-generated)"
-
-# Document choice in project-memory.md
-```
-
----
-
-**Phase 5: Iteration (optional, 10 min)**
-
-If adjustments needed:
-
-```bash
-# Ask Gemini to adjust selected direction
-"Adjust v2-tech-purple:
-- Primary color: less saturated (-10%)
-- Border radius: more rounded (+2px)
-- Spacing: tighter (reduce by 20%)"
-
-# Gemini generates v2-tech-purple-adjusted.json
-# Preview → Validate → Apply
-```
-
----
-
-#### Quality Standards (Auto-Enforced by AI)
-
-**Gemini ALWAYS generates:**
-- ✅ WCAG AA minimum (4.5:1 contrast ratios)
-- ✅ Mobile-first responsive (if specified in brief)
-- ✅ Dark mode support (if checked in brief)
-- ✅ Mathematical spacing (4px or 8px base multiples)
-- ✅ Semantic colors (success, warning, error, info)
-- ✅ Complete typography scale (xs → 6xl)
-- ✅ Consistent shadow scale (sm → 2xl)
-
-**Gemini NEVER generates:**
-- ❌ Hardcoded values (all CSS variables or JSON tokens)
-- ❌ Inaccessible contrasts (<4.5:1 for AA, <7:1 for AAA)
-- ❌ Inconsistent spacing (jumps outside scale)
-- ❌ Missing semantic colors
-- ❌ Incomplete scales
-
----
-
-#### When to Use AI Design
-
-**✅ Perfect For:**
-- MVPs / SaaS B2B (90% of Archon projects)
-- Exploration phase (need 3+ variants fast)
-- Tight budget (<€500 design)
-- Standard design systems (Linear-like, Stripe-like)
-- Solo dev (no designer available)
-
-**⚠️ Use with Caution:**
-- Premium projects (€50K+ client) → AI base + designer polish
-- Complex brand identity → AI variants + designer selection
-- "Cutting edge" 2025 trends → AI inspiration + designer execution
-
-**❌ Not Recommended:**
-- Luxury brands (€100K+ budgets)
-- Artistic/creative agencies (need 100% original)
-- Complex illustration systems (AI generates, designer draws)
-
----
-
-#### Hybrid Workflow (Best of Both Worlds)
-
-**For premium projects:**
-
-```
-Phase 1: Brief (5 min) → You
-Phase 2: AI Generation (15 min) → Gemini 3.0 Pro (3 variants)
-Phase 3: Preview (10 min) → Vercel/Netlify (validate REAL renders)
-Phase 4: Selection (5 min) → You + Client
-Phase 5: Polish (1h) → Designer humain (refine "Wow" factor)
-Phase 6: Apply (5 min) → /import-design
-
-Total: 1h40 (vs 3-4h full designer)
-Cost: €500 (vs €2000 full designer)
-Quality: ⭐⭐⭐⭐ (vs ⭐⭐⭐⭐⭐ full designer)
-```
-
-**ROI Hybrid:**
-- Time: -50% (1h40 vs 3-4h)
-- Cost: -75% (€500 vs €2000)
-- Quality: -20% (⭐⭐⭐⭐ vs ⭐⭐⭐⭐⭐) = Acceptable for most B2B
-
----
-
-#### Integration dans Workflow Archon
-
-**Phase 1 mise à jour :**
-
-```bash
-/speckit.constitution
-/speckit.specify
-/speckit.init          # Creates .design/ directory + brief template
-/speckit.clarify
-
-# 🆕 AI Design Generation (V6.2.1 manual)
-nano .design/brief-template.md        # Fill brief (5 min)
-# Send to Gemini 3.0 Pro manually      # Generate 3 variants (10 min)
-# Create preview deploys                # Validate REAL renders (10 min)
-cp .design/tokens-history/v2.json design-tokens.json  # Apply (2 min)
-
-# 🔮 Automated (V6.3.0 planned)
-# /speckit.design-ai                   # Auto: brief → Gemini → 3 previews (15 min)
-
-/speckit.plan
-/speckit.tasks
-/speckit.agents
-/speckit.final
-```
-
----
-
-#### Files & Structure
-
-**Created by `/speckit.init`:**
-```
-.design/
-├── brief-template.md       # AI generation instructions (FILL THIS)
-├── tokens-history/         # Design iterations storage
-│   ├── v1-trust-blue.json
-│   ├── v2-tech-purple.json
-│   └── v3-premium-mono.json
-├── current-design.json     # Symlink to active version
-└── README.md               # Quick start guide
-```
-
-**Project root (framework-aware):**
-```
-# Next.js projects
-design-tokens.json          # Placeholder → AI-generated
-
-# Astro projects
-public/styles/design-tokens.css  # Placeholder → AI-generated
-
-# PHP projects
-assets/styles/design-tokens.scss # Placeholder → AI-generated
-```
-
----
-
-#### Troubleshooting
-
-**Issue:** Gemini génère tokens invalides (syntax errors)
-**Solution:** Provide schema example in prompt (copy from placeholder file)
-
-**Issue:** Contrasts insuffisants (WCAG fail)
-**Solution:** Specify "WCAG AA minimum" dans brief + ask Gemini to validate
-
-**Issue:** Preview render différent du design attendu
-**Solution:** C'est normal (preview = vérité). Ajuster tokens, pas maquette.
-
-**Issue:** Besoin de plus de 3 variants
-**Solution:** Ask Gemini "Generate 2 more variants similar to v2 but [difference]"
-
-**Issue:** Design trop générique / pas "Wow"
-**Solution:** Use Hybrid Workflow (AI base + designer polish 1h)
-
----
-
-**Complete Docs:**
-- Template: [templates/design-brief-template.md](../templates/design-brief-template.md)
-- Integration: [.design/README.md](../.design/README.md) (auto-created by /speckit.init)
-- Philosophy: Section 1 "Design/Dev Decoupling" (CLAUDE.md)
-
-**Roadmap:**
-- ✅ V6.2.1: Manual workflow (brief → Gemini manual → preview)
-- 🔮 V6.3.0: `/speckit.design-ai` command (full automation)
 
 ---
 
@@ -1183,11 +708,11 @@ assets/styles/design-tokens.scss # Placeholder → AI-generated
 
 ---
 
-## 📦 6. LIBRARY - REUSABLE COMPONENTS ✅ V7.0 PHASE 1+3 COMPLETE
+## 📦 6. LIBRARY - REUSABLE COMPONENTS ✅ V7.0 PHASE 1 COMPLETE
 
-**Status:** ✅ **Phase 1 + Phase 3 Complete** (Next.js + Astro ready) | 🚧 Phase 2 Planned (Next.js UI + Database)
-**Philosophy:** "Multi-Framework LEGO System - Copy-paste intelligent, not repetitive coding"
-**ROI Validated:** -95% average setup time (Next.js: 9h → 15 min | Astro: 5-7h → 15 min)
+**Status:** ✅ **Phase 1 Complete** (3/5 modules) | 🚧 Phase 2 Planned (UI + Database)
+**Philosophy:** "Copy-paste intelligent, not repetitive coding"
+**ROI Phase 1:** -97% setup time (9h → 15 min) for auth + payments + email
 
 **Purpose:** Personal library of battle-tested modules to eliminate repetitive coding across projects.
 
@@ -1197,33 +722,30 @@ assets/styles/design-tokens.scss # Placeholder → AI-generated
 ```
 lib/
 ├── shared/              # Framework-agnostic (types, utils, schemas)
-├── nextjs/              # ⭐ PHASE 1 COMPLETE (Next.js 15 modules)
+├── nextjs/              # Next.js 15 modules
 │   ├── auth/supabase/   # ✅ READY (661 lines, 6 files)
 │   ├── payments/stripe/ # ✅ READY (858 lines, 7 files)
 │   ├── email/resend/    # ✅ READY (797 lines, 7 files)
 │   ├── ui/              # 🚧 Phase 2 (design-tokens.json + shadcn/ui)
 │   └── database/supabase/ # 🚧 Phase 2 (SQL migrations + RLS)
-├── astro/               # ⭐ PHASE 3 COMPLETE (Astro 5 landing pages)
-│   └── ui/              # ✅ READY (4,070 lines, 19 files)
-│       ├── components/  # 17 components (Layout, Marketing, Forms, SEO)
-│       └── styles/      # design-tokens.css (Design Decoupling)
-└── php/                 # 🔮 Phase 4 (when first PHP project needed)
+├── astro/               # 🔮 Phase 3 (when needed)
+└── php/                 # 🔮 Phase 4 (when needed)
 ```
 
-**Results Phase 1 + Phase 3 (2025-11-21):**
-- **6,386 lines** implemented (2,316 Next.js + 4,070 Astro)
-- **39 files** created (20 Next.js + 19 Astro)
-- **7 modules** production-ready
-- **Battle-tested** patterns (Vercel + Supabase + Stripe + Resend + Astro 5)
+**Phase 1 Results (2025-10-22):**
+- **2,316 lines** implemented
+- **20 files** created
+- **3 modules** production-ready
+- **Battle-tested** patterns (Vercel + Supabase + Stripe + Resend)
 
 ### Workflow Integration
 
-**Manual Integration (Phase 1 - Next.js):**
+**Manual Integration (Phase 1):**
 
 Until `/use-modules` command is built (Phase 2), manual copy:
 
 ```bash
-# Next.js SaaS - Copy modules
+# Copy modules to your project
 cp -r ~/archon-orchestrator/lib/nextjs/auth/supabase src/lib/auth
 cp -r ~/archon-orchestrator/lib/nextjs/payments/stripe src/lib/payments
 cp -r ~/archon-orchestrator/lib/nextjs/email/resend src/lib/email
@@ -1235,29 +757,9 @@ pnpm add @supabase/supabase-js @supabase/ssr stripe resend react-email
 # See lib/INTEGRATION-GUIDE.md for complete setup
 ```
 
-**Manual Integration (Phase 3 - Astro):**
+**See:** [lib/INTEGRATION-GUIDE.md](./lib/INTEGRATION-GUIDE.md) for complete integration instructions
 
-```bash
-# Astro Landing Page - Copy UI library
-cp -r ~/archon-orchestrator/lib/astro/ui/components src/components/lib
-cp -r ~/archon-orchestrator/lib/astro/ui/styles/design-tokens.css public/styles/
-
-# Install dependencies (if using React islands for forms)
-pnpm add react react-dom
-
-# Import in Layout.astro
-<link rel="stylesheet" href="/styles/design-tokens.css" />
-
-# Use components
-import Hero from '@/components/lib/marketing/Hero.astro';
-import Features from '@/components/lib/marketing/Features.astro';
-```
-
-**See:** [lib/README.md](./lib/README.md) for complete integration instructions
-
-### Time Savings (Phase 1 + 3 Validated)
-
-**Next.js Modules (Phase 1) :**
+### Time Savings (Phase 1 Validated)
 
 | Module | Before | After | Savings | Status |
 |--------|--------|-------|---------|--------|
@@ -1268,46 +770,25 @@ import Features from '@/components/lib/marketing/Features.astro';
 | Database setup | 1h | TBD | TBD | 🚧 Phase 2 |
 | **Phase 1 Total** | **9h** | **15 min** | **-97%** | ✅ |
 
-**Astro Landing Pages (Phase 3) :**
-
-| Use Case | Before | After | Savings | Status |
-|----------|--------|-------|---------|--------|
-| SaaS Landing | 3-4h | 15-20 min | -85% | ✅ READY |
-| Waitlist Page | 1h | 10 min | -83% | ✅ READY |
-| Agency Portfolio | 4-5h | 20-25 min | -80% | ✅ READY |
-| Blog + Marketing | 6-8h | 30-40 min | -87% | ✅ READY |
-| **Phase 3 Average** | **5-7h** | **15-20 min** | **-85%** | ✅ |
-
 ### Modules Implemented
 
-**Phase 1 Complete (Next.js - 2025-10-22):**
-1. ✅ **nextjs/auth/supabase/** (661 lines) - Sign-in, sign-up, session management, middleware, hooks
-2. ✅ **nextjs/payments/stripe/** (858 lines) - Checkout, webhooks, portal, subscriptions, products
-3. ✅ **nextjs/email/resend/** (797 lines) - Send email, React Email templates (welcome, reset, invoice)
+**Phase 1 Complete (2025-10-22):**
+1. ✅ **auth/supabase/** (661 lines) - Sign-in, sign-up, session management, middleware, hooks
+2. ✅ **payments/stripe/** (858 lines) - Checkout, webhooks, portal, subscriptions, products
+3. ✅ **email/resend/** (797 lines) - Send email, React Email templates (welcome, reset, invoice)
 
-**Phase 3 Complete (Astro - 2025-11-21):**
-4. ✅ **astro/ui/** (4,070 lines, 19 files) - Complete landing page system:
-   - **Layout (4):** Layout, Header, Footer, Container
-   - **Marketing (8):** Hero, Features, Pricing, Testimonials, CTA, FAQ, Stats, LogoCloud
-   - **Forms (3):** ContactForm, NewsletterForm, WaitlistForm (React islands)
-   - **SEO (3):** SEO, Schema, Analytics (Plausible/GA4/Fathom)
-   - **Design System:** design-tokens.css (200+ CSS variables, Design Decoupling)
+**Phase 2 Planned:**
+4. 🚧 **ui/** - design-tokens.json + shadcn/ui components + Design Decoupling
+5. 🚧 **database/supabase/** - SQL migrations + RLS policies + TypeScript types
 
-**Phase 2 Planned (Next.js):**
-5. 🚧 **nextjs/ui/** - design-tokens.json + shadcn/ui components + Design Decoupling
-6. 🚧 **nextjs/database/supabase/** - SQL migrations + RLS policies + TypeScript types
-
-**Sources:**
-- Next.js: Adapted from Vercel Next.js SaaS Starter (14.7k stars, MIT license)
-- Astro: Custom components built on Astro 5.15 best practices
+**Source:** Adapted from Vercel Next.js SaaS Starter (14.7k stars, MIT license)
 
 ### Growth Strategy
 
 **YAGNI Principle:** Develop frameworks as needed
-- ✅ Phase 1: Next.js (now - 60% of projects) - COMPLETE
-- ✅ Phase 3: Astro (now - 30% of projects) - COMPLETE
-- 🔮 Phase 2: Next.js UI + Database (when needed)
-- 🔮 Phase 4: PHP (when first PHP project)
+- Phase 1: Next.js (now - 80% of projects)
+- Phase 2: Astro (when first Astro project)
+- Phase 3: PHP (when first PHP project)
 
 ### Key Principles
 
@@ -1324,28 +805,14 @@ import Features from '@/components/lib/marketing/Features.astro';
 
 ---
 
-**Version:** 6.2.1 (AI Design Workflow + Multi-Framework + Library Phase 1+3)
-**Date:** 2025-11-21
-**Status:** ✅ **V6.2.1 PRODUCTION** - AI Design Generation Ready
-**Next:** 🔮 **V6.3.0** - `/speckit.design-ai` full automation | **V7.0 Phase 2** - Next.js UI + Database
+**Version:** 6.1.5 + V7.0 Phase 1 (Security + Observability + Library)
+**Date:** 2025-10-22
+**Status:** ✅ **V6.1.5 PRODUCTION** + ✅ **V7.0 PHASE 1 COMPLETE**
+**Next:** 🚧 **V7.0 Phase 2** - UI + Database modules (when needed)
 
-*Workflow V6.2.1: Mac LOCAL + GitHub + Multi-IA + **Full Automation** + Dynamic Memory + **Observability Timeline** + **OWASP LLM Security** + **Multi-Framework LEGO** + **AI Design Generation** = Production MVPs at AI Speed* 🚀🔒🧠⚡📊🛡️🧩🎨
+*Workflow V6.1.5: Mac LOCAL + GitHub + Multi-IA + **Full Automation** + Dynamic Memory + **Observability Timeline** + **OWASP LLM Security** = Production MVPs at AI Speed* 🚀🔒🧠⚡📊🛡️
 
-**V6.2.1 NEW (2025-11-21):**
-- ✅ **AI Design Workflow:** Gemini 3.0 Pro integration (3 variants in 15 min)
-- ✅ **Design Brief Template:** `.design/brief-template.md` (comprehensive guide)
-- ✅ **Framework-Aware Tokens:** design-tokens.json (Next.js) | design-tokens.css (Astro) | design-tokens.scss (PHP)
-- ✅ **`/speckit.init` Updated:** Auto-creates `.design/` directory + brief template + placeholders
-- ✅ **ROI Design:** 3-4h Figma → 15-20 min AI generation (-85%)
-
-**V6.2.0 Foundation (maintained):**
-- ✅ **Multi-Framework Support:** Next.js + Astro rules (auto-detection)
-- ✅ **Standards de Code:** Universal rules + framework-specific (120+ règles)
-- ✅ **Astro Library Complete:** 17 components (4,070 lines, 19 files)
-- ✅ **Design Decoupling:** CSS variables throughout
-- ✅ **ROI Library:** Next.js: 9h → 15 min (-97%) | Astro: 5-7h → 15 min (-85%)
-
-**V6.1.5 Foundation (maintained):**
+**V6.1.5 Results:**
 - Time: -5-10 min overhead (100% automation) + -60% execution (Haiku 4.5)
 - Token Savings: -77% with GLM-4.6 (450K→100K tokens implementation)
 - Quality: Build ✅ Lint ✅ Tests ✅ Design Tokens 100% + **Observability ✅** + **OWASP LLM ✅**
@@ -1353,9 +820,13 @@ import Features from '@/components/lib/marketing/Features.astro';
 - Timeline: Complete logging (pulseLogger.cjs + viewPulse.sh + observability-pulse.jsonl)
 - Validated: AdProof.ai MVP (99 tasks, 2h45, 150+ files, 12K+ lines)
 
-**Library Status (V7.0):**
-- ✅ **Phase 1 Complete:** Next.js Auth + Payments + Email (2,316 lines, 20 files)
-- ✅ **Phase 3 Complete:** Astro Landing Pages (4,070 lines, 19 files)
-- ✅ **Total:** 6,386 lines, 39 files, 7 modules production-ready
-- 🔮 **Phase 2 Planned:** Next.js UI + Database (when needed)
-- 🔮 **Phase 4 Planned:** PHP Laravel (when first PHP project)
+**V7.0 Phase 1 Results:**
+- ✅ 3 modules ready: Auth, Payments, Email
+- ✅ 2,316 lines implemented (20 files)
+- ✅ Setup time: -97% (9h → 15 min)
+- ✅ Battle-tested patterns validated
+
+**V7.0 Phase 2 Target:**
+- UI module: Design Decoupling + shadcn/ui
+- Database module: SQL migrations + RLS
+- /use-modules command: Automated integration

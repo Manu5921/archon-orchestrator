@@ -26,24 +26,101 @@ Execute comprehensive project analysis and generate **constitution.md** + **spec
 
 **Project Brief:** $ARGUMENTS
 
+### Step 0: Setup Base Files (NOUVEAU - V6.2.1) 🆕
+
+**Purpose:** Copy essential Archon files before analysis (one-time setup per project)
+
+```bash
+# Check if already setup (skip if CLAUDE.md exists)
+if [ -f "CLAUDE.md" ]; then
+  echo "⏭️  Base files already exist, skipping setup"
+else
+  echo "📦 Setting up base files from archon-orchestrator..."
+
+  ARCHON_ROOT="$HOME/Documents/DEV/archon-orchestrator"
+
+  # Copy .claude/commands/ (slash commands)
+  if [ -d "$ARCHON_ROOT/.claude/commands" ]; then
+    mkdir -p .claude
+    cp -r "$ARCHON_ROOT/.claude/commands" .claude/
+    COUNT=$(ls -1 .claude/commands/*.md 2>/dev/null | wc -l | xargs)
+    echo "✅ $COUNT slash commands copied"
+  fi
+
+  # Copy .claude/agents/ (sub-agents)
+  if [ -d "$ARCHON_ROOT/.claude/agents" ]; then
+    mkdir -p .claude/agents
+    for agent in backend-specialist.md frontend-specialist.md design-specialist.md testing-specialist.md prompt-specialist.md; do
+      if [ -f "$ARCHON_ROOT/.claude/agents/$agent" ]; then
+        cp "$ARCHON_ROOT/.claude/agents/$agent" .claude/agents/
+      fi
+    done
+    COUNT=$(ls -1 .claude/agents/*.md 2>/dev/null | wc -l | xargs)
+    echo "✅ $COUNT sub-agents copied"
+  fi
+
+  # Copy templates/ (claudedebut.md, project-memory-template.md, design-brief-template.md)
+  if [ -d "$ARCHON_ROOT/templates" ]; then
+    mkdir -p templates
+    for template in claudedebut.md project-memory-template.md design-brief-template.md; do
+      if [ -f "$ARCHON_ROOT/templates/$template" ]; then
+        cp "$ARCHON_ROOT/templates/$template" templates/
+      fi
+    done
+    COUNT=$(ls -1 templates/*.md 2>/dev/null | wc -l | xargs)
+    echo "✅ $COUNT templates copied"
+  fi
+
+  # Copy scripts/ (quality gates + observability)
+  if [ -d "$ARCHON_ROOT/scripts" ]; then
+    mkdir -p scripts
+    for script in pulseLogger.cjs bashSandbox.cjs validateGates.cjs contextBundler.cjs viewPulse.sh; do
+      if [ -f "$ARCHON_ROOT/scripts/$script" ]; then
+        cp "$ARCHON_ROOT/scripts/$script" scripts/
+        if [[ "$script" == *.sh ]]; then
+          chmod +x "scripts/$script"
+        fi
+      fi
+    done
+    COUNT=$(ls -1 scripts/* 2>/dev/null | wc -l | xargs)
+    echo "✅ $COUNT scripts copied"
+  fi
+
+  # Create directory structure
+  mkdir -p .specify/memory specs/001-mvp .design/tokens-history
+  echo "✅ Directory structure created (.specify/, specs/, .design/)"
+
+  echo ""
+  echo "✅ Base files setup complete!"
+  echo "Next: Gemini analysis → constitution.md + spec.md"
+  echo ""
+fi
+```
+
+---
+
 ### Step 1: Setup TODO Tracking
 
 Create todo list for workflow tracking:
-1. Launch Gemini deep analysis
-2. Launch prompt-specialist sub-agent (token optimization)
-3. Verify prompts generated
-4. Claude synthesis (generate final files from prompts)
-5. Verify files created
+1. Setup base files (if needed)
+2. Launch Gemini deep analysis
+3. Launch prompt-specialist sub-agent (token optimization)
+4. Verify prompts generated
+5. Claude synthesis (generate final files from prompts)
+6. Verify files created
 
 ### Step 2: Launch Gemini Deep Analysis
 
+**CRITICAL: ALWAYS use `mcp__zen__clink` tool (OAuth) - NEVER use `mcp__zen__chat` (API key)**
+
 **Gemini Analysis (Comprehensive - Technical + Business + Critical):**
 
-```
-Use mcp__zen__clink with:
+Call the `mcp__zen__clink` tool with these exact parameters:
+
+```json
 {
-  cli_name: "gemini",
-  prompt: "Analyze this project comprehensively - technical, business, and critically:
+  "cli_name": "gemini",
+  "prompt": "Analyze this project comprehensively - technical, business, and critically:
 
 PROJECT BRIEF:
 $ARGUMENTS
@@ -97,6 +174,9 @@ STYLE: Be contrarian. Challenge assumptions. Cite sources. We need truth, not va
 OUTPUT: Structured analysis with evidence and numbers. Actionable recommendations."
 }
 ```
+
+**Tool to use:** `mcp__zen__clink` (NOT mcp__zen__chat)
+**Why:** Gemini in this project uses OAuth (gemini CLI), not API keys. The `clink` tool bridges to CLI clients.
 
 ### Step 3: Launch prompt-specialist Sub-Agent (Token Optimization)
 

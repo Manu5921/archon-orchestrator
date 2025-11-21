@@ -16,6 +16,10 @@ Initialize project structure with CLAUDE.md, project-memory.md, and CI/CD templa
 4. `.claude/commands/` (all slash commands including /savebundle, /loadbundle)
 5. `.claude/agents/` (sub-agents templates)
 6. `scripts/` (quality gates: pulseLogger.cjs, bashSandbox.cjs, etc.)
+7. `.design/` (AI Design workflow directory) 🆕 V6.2.1
+   - `brief-template.md` (AI design generation instructions)
+   - `tokens-history/` (design iterations storage)
+8. `design-tokens.*` (framework-specific placeholder)
 
 **Purpose:** Complete project bootstrap with session startup protocol + dynamic memory + context bundles.
 
@@ -143,6 +147,209 @@ fi
 
 ---
 
+### Step 2.1: Detect Framework and Setup Design System 🆕 V6.2.1
+
+**Detect framework from spec.md:**
+
+```bash
+# Read spec.md to detect framework
+FRAMEWORK="unknown"
+
+if grep -qi "next\.js\|nextjs" specs/001-mvp/spec.md .specify/memory/spec.md 2>/dev/null; then
+  FRAMEWORK="nextjs"
+  echo "📦 Detected: Next.js project"
+elif grep -qi "astro" specs/001-mvp/spec.md .specify/memory/spec.md 2>/dev/null; then
+  FRAMEWORK="astro"
+  echo "📦 Detected: Astro project"
+elif grep -qi "php\|laravel" specs/001-mvp/spec.md .specify/memory/spec.md 2>/dev/null; then
+  FRAMEWORK="php"
+  echo "📦 Detected: PHP project"
+else
+  echo "⚠️  Framework not detected, defaulting to Next.js"
+  FRAMEWORK="nextjs"
+fi
+```
+
+**Create .design/ directory structure:**
+
+```bash
+echo "🎨 Setting up AI Design workflow..."
+
+# Create directories
+mkdir -p .design/tokens-history
+
+# Copy design brief template
+if [ -f "$ARCHON_PATH/templates/design-brief-template.md" ]; then
+  cp "$ARCHON_PATH/templates/design-brief-template.md" .design/brief-template.md
+  echo "✅ Design brief template copied"
+else
+  echo "⚠️  Design brief template not found, skipping"
+fi
+
+# Create framework-specific design tokens placeholder
+case $FRAMEWORK in
+  nextjs)
+    # Create design-tokens.json placeholder
+    cat > design-tokens.json << 'EOF'
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0-placeholder",
+  "generated": "PLACEHOLDER - Run /speckit.design or /speckit.design-ai",
+  "colors": {
+    "primary": {
+      "50": "#eff6ff",
+      "500": "#3b82f6",
+      "600": "#2563eb"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "heading": "Inter, sans-serif",
+      "body": "Inter, sans-serif"
+    }
+  },
+  "_note": "This is a PLACEHOLDER. Generate real design system with /speckit.design-ai (AI-generated) or /speckit.design (manual)"
+}
+EOF
+    echo "✅ design-tokens.json placeholder created (Next.js)"
+    ;;
+
+  astro)
+    # Create design-tokens.css placeholder
+    mkdir -p public/styles
+    cat > public/styles/design-tokens.css << 'EOF'
+/**
+ * Design Tokens - Placeholder
+ * GENERATED: PLACEHOLDER - Run /speckit.design or /speckit.design-ai
+ *
+ * This is a PLACEHOLDER. Generate real design system with:
+ * - /speckit.design-ai (AI-generated, recommended)
+ * - /speckit.design (manual configuration)
+ */
+
+:root {
+  /* Primary Brand (Placeholder Blue) */
+  --color-primary-50: #eff6ff;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+
+  /* Neutral Palette */
+  --color-neutral-50: #fafafa;
+  --color-neutral-900: #171717;
+
+  /* Typography */
+  --font-heading: 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Spacing */
+  --space-4: 1rem;
+
+  /* NOTE: Complete design system required before implementation */
+}
+EOF
+    echo "✅ design-tokens.css placeholder created (Astro)"
+    ;;
+
+  php)
+    # Create design-tokens.scss placeholder
+    mkdir -p assets/styles
+    cat > assets/styles/design-tokens.scss << 'EOF'
+/**
+ * Design Tokens - Placeholder (PHP/Laravel)
+ * GENERATED: PLACEHOLDER - Run /speckit.design or /speckit.design-ai
+ */
+
+$primary-500: #3b82f6;
+$neutral-900: #171717;
+
+// NOTE: Complete design system required before implementation
+EOF
+    echo "✅ design-tokens.scss placeholder created (PHP)"
+    ;;
+esac
+
+echo "✅ AI Design workflow initialized (.design/ directory created)"
+```
+
+**Create .design/README.md guide:**
+
+```bash
+cat > .design/README.md << 'EOF'
+# .design/ - AI Design Workflow
+
+**Purpose:** AI-generated design system workflow (V6.2.1)
+
+**ROI:** 3-4h Figma → 15-20 min AI generation (-85%)
+
+---
+
+## 📁 Directory Structure
+
+```
+.design/
+├── brief-template.md     # AI design generation instructions (FILL THIS)
+├── tokens-history/       # Design iterations (v1, v2, v3, etc.)
+│   ├── v1-trust-blue.json
+│   ├── v2-tech-purple.json
+│   └── v3-premium-mono.json
+└── current-design.json   # Symlink to active version
+```
+
+---
+
+## 🚀 Quick Start
+
+**1. Fill Design Brief (5 min):**
+```bash
+nano .design/brief-template.md
+```
+
+Fill:
+- Target audience (role, age, tech level)
+- Emotion to convey (trust, innovation, premium)
+- Design references (Linear, Stripe, Vercel)
+- Constraints (WCAG, dark mode, mobile-first)
+
+**2. Generate Design with AI (10-15 min):**
+```bash
+/speckit.design-ai
+```
+
+This will:
+- Read brief + constitution.md + spec.md
+- Call Gemini 3.0 Pro via Zen MCP
+- Generate 3 design directions
+- Create Vercel preview deploys (3 URLs)
+
+**3. Select & Apply (2 min):**
+```bash
+# Review preview URLs
+# Select best direction (e.g., v2)
+
+/import-design .design/tokens-history/v2-tech-purple.json
+```
+
+---
+
+## 📚 Documentation
+
+See CLAUDE.md Section 2.7 for complete AI Design Workflow documentation.
+
+**Template:** brief-template.md (comprehensive guide)
+**Workflow:** /speckit.design-ai (automated generation)
+**Manual:** /speckit.design (if prefer manual configuration)
+
+---
+
+**Version:** 6.2.1
+**Created:** $(date +%Y-%m-%d)
+EOF
+
+echo "✅ .design/README.md created"
+```
+
+---
+
 ### Step 3: Enrich CLAUDE.md
 
 **Edit** `CLAUDE.md` to replace placeholders with project data:
@@ -151,9 +358,10 @@ fi
 ```markdown
 # 🚀 [PROJECT_NAME] - Claude Code Instructions
 
-**Version:** 6.1.3 (Observability Complete + Full Automation)
+**Version:** 6.2.1 (Multi-Framework Support + AI Design Workflow)
 **Date:** [CURRENT_DATE: YYYY-MM-DD]
 **Model:** Claude Sonnet 4.5 (claude-sonnet-4-5-20250929) | Haiku 4.5 for sub-agents
+**Framework:** [FRAMEWORK_DETECTED: Next.js / Astro / PHP]
 **Quality:** 8/8 critères via checkpoints MANDATORY every 10 tasks + Observability timeline
 ```
 
@@ -185,9 +393,44 @@ fi
 - **Kickoff:** [CURRENT_DATE]
 - **MVP Target:** [FROM constitution OR estimate +2 weeks]
 - **Launch Target:** [FROM constitution OR estimate +4 weeks]
+
+### Framework Detected 🆕 V6.2.1
+**[FRAMEWORK_DETECTED]** detected from spec.md
+
+[IF Next.js detected:]
+**Framework-Specific Rules Applied:** Next.js 15 App Router
+- ✅ Server Actions for mutations
+- ✅ Server Components for data fetching
+- ✅ Design tokens via design-tokens.json
+- ✅ Supabase @supabase/ssr integration
+- 📖 See Section "Framework-Specific Rules" in this CLAUDE.md for complete rules
+
+[IF Astro detected:]
+**Framework-Specific Rules Applied:** Astro 5 Landing Pages
+- ✅ .astro components for static content (0 KB JS)
+- ✅ React islands ONLY for forms (client:load)
+- ✅ Design tokens via design-tokens.css
+- ✅ 17 components available in lib/astro/ui/
+- ✅ Performance target: Lighthouse 100/100, LCP <1.0s
+- 📖 See Section "Framework-Specific Rules" in this CLAUDE.md for complete rules
+
+[IF PHP detected:]
+**Framework-Specific Rules Applied:** PHP Laravel (🔮 Phase 4)
+- ✅ Eloquent ORM
+- ✅ Laravel validation
+- ✅ Blade templates
+- 📖 See Section "Framework-Specific Rules" in this CLAUDE.md for complete rules
+
+### AI Design Workflow Available 🆕 V6.2.1
+**Status:** ✅ Ready (.design/ directory created)
+- Brief template: `.design/brief-template.md` (fill in 5 min)
+- Generate 3 variants via Gemini 3.0 Pro (15 min)
+- Preview deploys for validation (10 min)
+- ROI: -85% time vs manual Figma (3-4h → 20 min)
+- 📖 See Section "AI Design Workflow" in this CLAUDE.md for complete guide
 ```
 
-**Important:** Leave other sections (Session Startup Protocol, Workflow phases, etc.) UNCHANGED.
+**Important:** Leave other sections (Session Startup Protocol, Workflow phases, etc.) UNCHANGED except for header + Project Identity sections.
 
 ---
 
@@ -385,11 +628,17 @@ Files created:
 - .claude/commands/ ([COUNT] slash commands - includes /savebundle, /loadbundle)
 - .claude/agents/ ([COUNT] sub-agents templates)
 - scripts/ ([COUNT] quality gates scripts)
+- .design/ (AI Design workflow) 🆕 V6.2.1
+  - brief-template.md (AI design generation instructions)
+  - tokens-history/ (design iterations storage)
+  - README.md (quick start guide)
+- design-tokens.[json|css|scss] (framework-specific placeholder)
 
 Project Identity:
 - Name: [PROJECT_NAME]
 - Vision: [PROJECT_VISION]
 - Tech Stack: [SUMMARY]
+- Framework: [DETECTED_FRAMEWORK]
 
 Session Logged:
 - Session [DATE] - Phase 0 + Phase 1 Complete
@@ -400,18 +649,28 @@ Context Bundles Available:
 - /loadbundle <bundle-path> - Restore after crash (60-70% context recovery)
 - See CLAUDE.md Section 5 for complete Context Bundles documentation
 
+AI Design Workflow Ready: 🆕 V6.2.1
+- Brief template: .design/brief-template.md (fill in 5 min)
+- Generate AI design: /speckit.design-ai (15-20 min, 3 variants)
+- Manual design: /speckit.design (if prefer traditional approach)
+- ROI: 3-4h Figma → 15-20 min AI generation (-85%)
+
 Next Steps:
-1. /speckit.design (generate design-tokens.json)
-2. /speckit.plan (create implementation plan)
-3. /speckit.tasks (break down into 50-100 tasks)
-4. /speckit.agents (generate ORCHESTRATION.md)
-5. /speckit.final (full automation - 2h45-3h)
+1. Fill .design/brief-template.md (target audience, emotion, references) - 5 min
+2. /speckit.design-ai (AI-generated, 3 variants, preview deploys) - 15 min
+   OR /speckit.design (manual configuration) - 30-60 min
+3. /speckit.plan (create implementation plan)
+4. /speckit.tasks (break down into 50-100 tasks)
+5. /speckit.agents (generate ORCHESTRATION.md)
+6. /speckit.final (full automation - 2h45-3h)
 
 ⭐ CRITICAL: Design/Dev Decoupling
-   Run /speckit.design BEFORE implementation to enable:
-   - Parallel designer work (custom brand)
+   Run /speckit.design-ai or /speckit.design BEFORE implementation to enable:
+   - AI-generated professional design (3 variants in 15 min) 🆕
+   - Parallel designer work (custom brand polish if needed)
    - 15-minute merge (vs 1-2 days refactor)
    - 0 breaking changes (CSS variables)
+   - Framework-aware (Next.js JSON, Astro CSS, PHP SCSS)
 ```
 
 ---
@@ -482,6 +741,7 @@ Choose option before proceeding.
 
 ---
 
-**Version:** 6.1.3
+**Version:** 6.2.1
 **Created:** 2025-10-18
-**Purpose:** Complete /speckit.init implementation (was documented but never created)
+**Updated:** 2025-11-21 (AI Design workflow integration)
+**Purpose:** Complete /speckit.init implementation with AI Design workflow support

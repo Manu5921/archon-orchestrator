@@ -1,9 +1,9 @@
-# 🚀 Project Workflow - Claude Code V6.1.3
+# 🚀 Project Workflow - Claude Code V6.2.1
 
 **Status:** Setup phase (rename this to `CLAUDE.md` in your project)
-**Workflow:** Spec-Kit V6.1.3 (Gemini Analysis → Planning → Full Automation + Observability)
-**Version:** 6.1.3 (Observability Complete + Full Automation)
-**Date:** 2025-10-17
+**Workflow:** Spec-Kit V6.2.1 (Gemini Analysis → Planning → Full Automation + Multi-Framework + AI Design)
+**Version:** 6.2.1 (Multi-Framework Support + AI Design Workflow)
+**Date:** 2025-11-21
 
 ---
 
@@ -371,9 +371,176 @@ node scripts/pulseLogger.cjs summary
 
 ---
 
+## 🔷 Framework-Specific Rules (Multi-Framework Support) 🆕 V6.2.1
+
+**Philosophy:** Archon = Multi-Framework "LEGO" System. Rules adapt based on detected framework.
+
+**Framework Detection (auto-applied by Claude):**
+- **Next.js:** package.json contains `"next"` OR presence of `app/` directory
+- **Astro:** package.json contains `"astro"` OR presence of `astro.config.*`
+- **PHP:** composer.json exists OR presence of `.php` files
+
+**Apply ONLY rules matching detected framework. Skip others.**
+
+### 🔷 Next.js 15 App Router (SI détecté)
+
+**App Router Architecture:**
+- ALWAYS use Server Actions for mutations (file: `actions.ts` colocated with page)
+- ALWAYS use `async` components with `React.use()` for data fetching (not `useEffect`)
+- NEVER use `'use client'` directive without explicit interactivity need (forms, animations, browser APIs only)
+- ALWAYS use `redirect()` from `next/navigation` (not `useRouter().push()` in Server Actions)
+
+**Data Fetching & State:**
+- ALWAYS fetch data in Server Components (default async/await, no loading states needed)
+- ONLY use `'use client'` + React hooks (useState, useEffect) when component needs client-side state
+- ALWAYS use Server Actions for forms (not API routes `/app/api/`)
+
+**Design Tokens:**
+- ALWAYS use Tailwind classes referencing design-tokens.json (e.g., `bg-primary-500`)
+- NEVER hardcode colors/fonts (e.g., ❌ `bg-blue-600`, ❌ `font-sans`)
+
+**Supabase Integration (if lib/nextjs/auth/supabase/ used):**
+- ALWAYS use `@supabase/ssr` (not `@supabase/supabase-js`) in Server Components
+- ALWAYS verify RLS policy exists BEFORE creating table/mutation
+
+### 🔶 Astro 5 Landing Pages (SI détecté)
+
+**Component Architecture:**
+- ALWAYS use `.astro` components for static content (0 KB JavaScript shipped)
+- ONLY use React/Vue islands with `client:load` or `client:visible` for interactive elements (forms, modals)
+- NEVER use client-side frameworks for static content (Hero, Features, Testimonials = pure Astro)
+- ALWAYS import from `lib/astro/ui/components/` (NEVER re-code existing components)
+
+**Available Components (ALWAYS reuse):**
+- **Layout (4):** Layout, Header, Footer, Container
+- **Marketing (8):** Hero, Features, Pricing, Testimonials, CTA, FAQ, Stats, LogoCloud
+- **Forms (3):** ContactForm, NewsletterForm, WaitlistForm (React islands with `client:load`)
+- **SEO (3):** SEO, Schema, Analytics
+
+**Design Tokens (CRITICAL - ALWAYS enforce):**
+- ALWAYS use design-tokens.css variables (e.g., `var(--color-primary-500)`)
+- NEVER hardcode colors/fonts (e.g., ❌ `#3B82F6`, ❌ `16px`, ❌ `Inter`)
+- ALWAYS preserve Design/Dev Decoupling (15-min rebrand via `/import-design`)
+
+**Performance (Lighthouse 100/100 target):**
+- ALWAYS target LCP <1.0s (vs 2.5s Next.js - Astro advantage)
+- NEVER ship JavaScript for static components (0 KB baseline)
+- ALWAYS use `loading="eager"` for Hero images (above fold)
+- ALWAYS use `loading="lazy"` for below-fold images
+
+**Common Mistakes to AVOID:**
+- ❌ Using React hooks in `.astro` files (islands only)
+- ❌ Hardcoding colors instead of design-tokens.css variables
+- ❌ Shipping JavaScript for static content (Hero, Features, etc.)
+- ❌ Re-coding Hero/Features/Pricing (already exists in lib/astro/ui/)
+
+### 🔸 PHP Laravel (SI détecté) 🔮 FUTURE
+
+**Status:** 🔮 Phase 4 (when first PHP project)
+
+**Placeholder rules (to be defined):**
+- ALWAYS use Eloquent ORM (not raw SQL queries)
+- ALWAYS use Laravel validation (not manual checks)
+- ALWAYS use Blade templates (not raw PHP echo)
+
+---
+
+## 🎨 AI Design Workflow (Gemini 3.0 Pro) 🆕 V6.2.1
+
+**Philosophy:** "Design devient commodité, pas artisanat - 3 variants en 15 min"
+
+**Status:** ✅ Production Ready (Gemini 3.0 Pro via Zen MCP)
+**ROI:** -85% temps exploration (3-4h Figma → 15-20 min AI generation)
+**Quality:** 80% designer humain moyen (parfait pour 90% projets SaaS B2B)
+
+### Workflow Complet (25-30 min total)
+
+**Phase 1: Brief Design (5 min)**
+
+Fill `.design/brief-template.md` with:
+- **Target audience:** Role (CMO, CTO), age, tech level, budget
+- **Emotion to convey:** Trust, Innovation, Premium, Friendly (check boxes)
+- **Design references:** Linear, Stripe, Vercel (what you like from each)
+- **Anti-references:** What NOT to do (generic blue, neon colors, etc.)
+- **Constraints:** WCAG level, dark mode, mobile-first, animation level
+
+**Phase 2: AI Generation (Manual - V6.2.1)**
+
+Use Gemini 3.0 Pro via Zen MCP (or chat):
+
+```bash
+"Based on this brief + constitution.md + spec.md, generate 3 design directions.
+
+For each direction, provide:
+- Design philosophy (2-3 sentences)
+- Complete design-tokens.[json|css] (framework-aware)
+- Color palette reasoning
+- Typography choices
+
+Output format: [Next.js JSON / Astro CSS / PHP SCSS]"
+```
+
+**Phase 3: Preview RÉEL (10-15 min)**
+
+**CRITICAL:** Validate sur preview deploy, PAS mockup IA
+
+```bash
+# For each variant, create preview branch + deploy
+git checkout -b design/v1-trust-blue
+cp .design/tokens-history/v1-trust-blue.* design-tokens.*
+vercel deploy --prod=false  # Note preview URL
+
+# Result: 3 preview URLs to compare
+✅ v1-trust-blue: https://project-v1.vercel.app
+✅ v2-tech-purple: https://project-v2.vercel.app
+✅ v3-premium-mono: https://project-v3.vercel.app
+```
+
+**Phase 4: Selection & Application (2-3 min)**
+
+```bash
+# Apply selected design
+cp .design/tokens-history/v2-tech-purple.* design-tokens.*
+git add design-tokens.* .design/
+git commit -m "Design: Apply v2-tech-purple (AI-generated)"
+```
+
+### When to Use AI Design
+
+**✅ Perfect For:**
+- MVPs / SaaS B2B (90% of Archon projects)
+- Exploration phase (need 3+ variants fast)
+- Tight budget (<€500 design)
+- Solo dev (no designer available)
+
+**⚠️ Use with Caution:**
+- Premium projects (€50K+ client) → AI base + designer polish
+
+**❌ Not Recommended:**
+- Luxury brands (€100K+ budgets)
+- Artistic/creative agencies (need 100% original)
+
+### Hybrid Workflow (Best of Both Worlds)
+
+For premium projects:
+```
+Phase 1: Brief (5 min) → You
+Phase 2: AI Generation (15 min) → Gemini 3.0 Pro (3 variants)
+Phase 3: Preview (10 min) → Vercel/Netlify (validate REAL renders)
+Phase 4: Selection (5 min) → You + Client
+Phase 5: Polish (1h) → Designer humain (refine "Wow" factor)
+Phase 6: Apply (5 min) → /import-design
+
+Total: 1h40 (vs 3-4h full designer)
+Cost: €500 (vs €2000 full designer)
+Quality: ⭐⭐⭐⭐ (vs ⭐⭐⭐⭐⭐ full designer)
+```
+
+---
+
 ## 🔗 Key References
 
-**Archon Orchestrator V6.1.3:**
+**Archon Orchestrator V6.2.1:**
 - [WORKFLOW-V6-MVP.md](https://github.com/BeehiveInnovations/archon-orchestrator/blob/main/docs/WORKFLOW-V6-MVP.md) - Complete workflow
 - [CHANGELOG-V6.1.3-OBSERVABILITY.md](https://github.com/BeehiveInnovations/archon-orchestrator/blob/main/changelogs/V6.1.3/CHANGELOG-V6.1.3-OBSERVABILITY.md) - V6.1.3 features
 - [GOLDEN-PATTERNS.md](https://github.com/BeehiveInnovations/archon-orchestrator/blob/main/docs/GOLDEN-PATTERNS.md) - Design/Dev Decoupling
